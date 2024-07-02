@@ -1,0 +1,158 @@
+/* Grid Container */
+body {
+    display: grid;
+    grid-template-areas: 
+        "header header"
+        "nav main"
+        "footer footer";
+    grid-template-rows: 50px 1fr 35px;
+    grid-template-columns: 230px 1fr;
+    min-height: 100vh;
+    font-family: 'Montserrat', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Grid Items */
+.header {
+    grid-area: header;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+
+.header img {
+    margin-left: 1rem;
+}
+
+.nav {
+    grid-area: nav;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+}
+
+.ul-first {
+    margin-top: 6rem; /* Ajuste conforme necessário */
+}
+
+.nav-link {
+    font-size: 14px; /* Adjust the font size as needed */
+}
+
+.menu-lateral {
+    max-height: 100vh; /* Máxima altura da viewport */
+    overflow-y: auto; /* Habilita rolagem vertical quando necessário */
+    position: fixed; /* Mantém o menu fixo na posição */
+    left: 0; /* Alinha o menu à esquerda */
+    top: 0; /* Alinha o menu no topo */
+    background-color: #007bff; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    width: 230px; /* Define a largura do menu lateral */
+    word-wrap: break-word; /* Permite quebra de linha */
+    white-space: normal; /* Permite quebra de linha */
+}
+
+.submenu-1 {
+    list-style-type: none;
+    padding-left: 20px; /* Ajuste conforme necessário */
+}
+
+.submenu-1 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-2 {
+    margin-left: 20px; /* Ajuste conforme necessário para o segundo nível */
+}
+
+.submenu-2 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-3 {
+    margin-left: 40px; /* Ajuste conforme necessário para o terceiro nível */
+}
+
+.submenu-3 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.main {
+    grid-area: main;
+    display: grid;
+    grid-template-columns: 3fr 1fr;
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.content {
+    background: #fff;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.sidebar {
+    background: #f9f9f9;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.footer {
+    grid-area: footer;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px; /* Altura fixa para o rodapé */
+}
+
+.footer p {
+    margin-bottom: 0;
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6; /* Ajuste a opacidade conforme necessário */
+}
+
+/* Remove a borda da classe content */
+section .content {
+    border: none;
+}
+
+.form-container {
+    background-color: #f8f9fa; /* Cor de fundo clara */
+    padding: 20px; /* Preenchimento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin-top: 20px; /* Margem superior */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
+
+    .nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+}

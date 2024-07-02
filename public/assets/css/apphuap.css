@@ -1,0 +1,9 @@
+/* override styles when printing */
+@media print {
+
+    html, body {
+        width:  210mm;
+        height: 297mm;
+    }
+
+}
