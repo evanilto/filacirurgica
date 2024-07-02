@@ -9,6 +9,12 @@
         }
     </style>
 
+    <div class="row">
+        <div class="col">
+            <?= $this->include('layouts/div_flashdata') ?>
+        </div>
+    </div>
+
     <?= $this->include($view);?>
 
     <script>

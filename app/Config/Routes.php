@@ -35,7 +35,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('resgatar', 'Prontuarios::resgatar');
     $routes->get('recuperar', 'Prontuarios::recuperarProntuario');
     $routes->get('enviadosparaosetor', 'Prontuarios::listarProntuariosEnviadosParaSetor');
-    $routes->get('exibir', 'ListaEspera::exibirListaEspera');
+    $routes->post('exibir', 'ListaEspera::exibirListaEspera');
     $routes->get('solicitacoesexternas', 'Prontuarios::listarSolicitacoesExternas');
     $routes->get('solicitacoes/excluir/(:num)', 'Prontuarios::excluirSolicitacao/$1');
     $routes->get('recuperar/(:num)/(:num)', 'Prontuarios::recuperar/$1/$2');

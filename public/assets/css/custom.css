@@ -145,6 +145,40 @@ section .content {
     margin-top: 20px; /* Margem superior */
 }
 
+/* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
+#table, #table th, #table td {
+    font-size: 14px;  /* Você pode ajustar o tamanho conforme necessário */
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Adiciona uma classe de estilo personalizado para ajustar o tamanho da fonte da tabela */
+.table-smaller-font td,
+.table-smaller-font th {
+    font-size: 0.875rem; /* Ajuste o tamanho da fonte conforme necessário */
+}
+
+table {
+    page-break-inside: auto;
+    width: 100%;
+    border-collapse: collapse; /* Remove gaps between table cells */
+    background-color: #f8f9fa; /* Cor de fundo clara */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tfoot {
+    display: table-footer-group;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main {

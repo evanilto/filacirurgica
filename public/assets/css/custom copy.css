@@ -1,0 +1,419 @@
+.dataTables_wrapper .dataTables_paginate {
+    display: flex;
+    align-items: center; /* Centraliza os itens verticalmente */
+}
+
+.dataTables_wrapper .dataTables_info {
+    flex: 1;
+    text-align: left; /* Ajusta para esquerda conforme preferência */
+}
+
+.page-display {
+    float: right;
+}
+.pagination b {
+    border: 1px solid #999999;
+    transition: background-color .3s;
+    text-decoration: none;
+    padding: 8px 16px;
+    color: #fff;
+    background: #999999;
+    float: left;
+
+}
+.pagination a:first-child {
+    border-bottom-left-radius: 6px;
+    border-top-left-radius: 6px;
+}
+.pagination a:last-child {
+    border-bottom-right-radius: 6px;
+    border-top-right-radius: 6px;
+}
+.pagination .label-pagination {
+    float: left;
+}
+.pagination a:hover {
+    background: #999999;
+}
+
+.pagination {
+    display: right;
+}
+
+.pagination a {
+    color: black;
+    float: left;
+    padding: 8px 16px;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #ddd;
+}
+
+.pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #ddd;}
+
+.pagination-btns {
+    float: right;
+}
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+}
+
+.menu-lateral {
+    width: 280px; /* ou a largura que você desejar */
+    max-height: 100vh; /* Máxima altura da viewport */
+    overflow-y: auto; /* Habilita rolagem vertical quando necessário */
+    position: fixed; /* Mantém o menu fixo na posição */
+    left: 0; /* Alinha o menu à esquerda */
+    top: 0; /* Alinha o menu no topo */
+    background-color: #007bff; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    padding: 20px; /* Espaçamento interno */
+    box-sizing: border-box; /* Garante que o padding seja incluído na largura */
+}
+
+.menu-lateral li a {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.navbar {
+    font-family: 'Montserrat', sans-serif;
+}
+
+#menu {
+    width: 300px;
+    color: #fff;
+    background-color: whitesmoke;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.menu-list {
+width: 250px;
+background-color: steelblue;
+color: #fff;
+padding: 20px;
+box-sizing: border-box;
+}
+
+.menu-list a {
+    color: #fff;
+    text-decoration: blue;
+    font-weight: normal;
+    display: block;
+    padding: 10px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.3s; /* Adicionando transição suave */
+}
+
+.menu-list a.is-active {
+    background-color: #555;
+    padding-left: 15px; /* Aumentando o padding à esquerda para cobrir todo o item */
+}
+
+#conteudo {
+    flex: 1;
+    padding: 120px;
+    box-sizing: border-box;
+}
+
+#menu a:hover {
+}
+
+form {
+    max-width: 400px;
+    margin: 80px 0 50px 100px; /* Ajuste a margem esquerda aqui */
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.submenu-1 {
+    list-style-type: none;
+    padding-left: 20px; /* Ajuste conforme necessário */
+}
+
+.submenu-1 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-2 {
+    margin-left: 20px; /* Ajuste conforme necessário para o segundo nível */
+}
+
+.submenu-2 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-3 {
+    margin-left: 40px; /* Ajuste conforme necessário para o terceiro nível */
+}
+
+.submenu-3 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+/* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
+#table, #table th, #table td {
+    font-size: 14px;  /* Você pode ajustar o tamanho conforme necessário */
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* Adiciona uma classe de estilo personalizado para ajustar o tamanho da fonte da tabela */
+.table-smaller-font td,
+.table-smaller-font th {
+    font-size: 0.875rem; /* Ajuste o tamanho da fonte conforme necessário */
+}
+/* Aplica o estilo camelCase aos campos de texto */
+.camelCaseText {
+    text-transform: capitalize;
+}
+/* Aplica o estilo UPPER CASE aos campos de texto */
+.upperCaseText {
+    text-transform: uppercase;
+}
+
+.pagination-info, .page-list {
+    font-size: 14px;  /* Ajuste o tamanho da fonte conforme necessário */
+}
+
+.pagination img {
+    width: 10px; /* Ajuste a largura da imagem conforme necessário */
+    height: 10px; /* Ajuste a altura da imagem conforme necessário */
+}
+
+/************** Spinner ***************************/        
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 999;
+background-color: transparent; /* Remova o fundo escurecido */
+}
+
+.modal-content {
+position: fixed;
+top: 50%;
+left: 56%;
+transform: translate(-50%, -50%);
+max-width: 15%;
+padding: 20px;
+border: 2px solid #000;
+border-radius: 5px;
+background-color: white;
+z-index: 1001; /* Deve ser maior que o z-index de modal-overlay */
+}
+
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.3);
+z-index: 1000;
+}
+
+.modal-text {
+text-align: center;
+margin: 10px 0 0 0;
+padding: 0;
+}
+
+.spinner {
+text-align: center;
+}
+
+.spinner div {
+width: 15px;
+height: 15px;
+background-color: #333;
+border-radius: 100%;
+display: inline-block;
+animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+/****************************************************/
+
+/* Estilo para os campos de entrada */
+.form-control {
+    width: 100%; /* Defina a largura dos campos como 100% */
+    margin-bottom: 15px; /* Adicione um espaçamento abaixo de cada campo */
+}
+.bordered-container {
+    border: 1px solid #ccc; /* Cor e espessura da borda */
+    border-radius: 5px; /* Opcional: define cantos arredondados */
+    padding: 10px; /* Espaçamento interno dentro do contêiner */
+    margin-top: 10px; /* Margem superior para empurrar o conteúdo para baixo */
+    margin-bottom: 10px; /* Margem inferior para espaço adicional abaixo do campo */
+}
+/* Estilo para o formulário */
+#usuarioForm {
+    width: 100%;
+    max-width: 550px; /* Defina a largura máxima do formulário */
+    margin: 0 auto; /* Centralize o formulário na página */
+    padding: 20px; /* Adicione um espaçamento interno ao formulário */
+}
+
+#clock {
+    right: 0px;           /* Distância da direita da viewport */
+    z-index: 1000;         /* Garante que o timer fique sobre outros conteúdos */
+    font-size: 16px;       /* Tamanho do texto */
+    background: none;      /* Sem fundo */
+    border: none;          /* Sem bordas */
+    padding: 0;            /* Sem espaçamento interno */
+    box-shadow: none;      /* Sem sombra */
+}
+
+.content_custom {
+    max-width: 1000px; /* Defina o tamanho máximo desejado em pixels */
+    margin: 0 auto; /* Para centralizar o conteúdo horizontalmente */
+    width: 100%;
+    padding: 80px;
+    box-sizing: border-box;
+}
+
+.btn-responsive {
+    height: 40px;
+    width: 113px;
+    text-align: center;
+    margin-right: 10px;
+}
+
+@media (max-width: 300px) {
+    .dataTables_wrapper .dataTables_paginate,
+    .dataTables_wrapper .dataTables_info {
+        display: block;
+        text-align: center;
+        background-color: #ffffcc; /* Amarelo claro */
+
+    }
+    .btn-responsive {
+            font-size: 0.75em;
+    }
+    body {
+        font-size: 0.75em; /* Defina o tamanho de fonte menor desejado */
+        background-color: #ffffcc; /* Amarelo claro */
+    }
+}
+/* CSS Personalizado */
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+
+    table th.col-left, table td.col-left {
+    text-align: left !important;
+    margin-left: 0;
+}
+    /* Ocultar elementos não desejados durante a impressão */
+    header, footer, ul, aside, img, .sidebar, nav, .navbar, .wrapper, .non-printable {
+        display: none;
+    }
+
+    /* Mostrar apenas a tabela */
+    .printable {
+        display: block;
+    }
+
+    /* Quebras de página para a tabela */
+    html, body, .main-content, .tabs, .tabbed-content { 
+        float: none; 
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+
+    .tab {
+        display: block; /* unhide all tabs */
+        break-before: always;
+        page-break-before: always;
+    }
+
+    table {
+        page-break-inside: auto;
+        width: 100%;
+        border-collapse: collapse; /* Remove gaps between table cells */
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+   /*  tr:nth-child(18n) {
+        page-break-after: always;
+    } */
+}

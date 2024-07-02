@@ -8,10 +8,10 @@
         <div class="col-md-8">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Consultar Paciente' ?></b>
+                    <b><?= 'Consultar Lista de Espera' ?></b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="idForm" method="post" action="<?= base_url('prontuarios/listar') ?>">
+                    <form id="idForm" method="post" action="<?= base_url('listaespera/exibir') ?>">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">

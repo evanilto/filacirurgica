@@ -9,13 +9,13 @@
                 <div class="collapse" id="listaespera">
                     <ul class="nav flex-column submenu-2">
                         <li>
-                            <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Consultar
+                            <a href="<?= base_url('listaespera/ncluir') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Incluir
                             </a>
                         </li>
                         <li>
-                            <a href="<?= base_url('listaespera/exibir') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Exibir
+                            <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
                         <li>

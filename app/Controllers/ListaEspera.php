@@ -1074,7 +1074,7 @@ class ListaEspera extends ResourceController
 
             HUAP_Functions::limpa_msgs_flash();
             //return view('ListaEspera/listar_ListaEspera', ['ListaEspera' => $result]);
-            return view('layouts/sub_content', ['view' => 'ListaEspera/list_ListaEspera',
+            return view('layouts/sub_content', ['view' => 'listaspera/list_listalspera',
                                                'ListaEspera' => $result]);
 
 
@@ -1089,7 +1089,7 @@ class ListaEspera extends ResourceController
             }
             
             //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
-            return view('layouts/sub_content', ['view' => 'ListaEspera/form_consulta_listaespera', 'validation' => $this->validator]);
+            return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera', 'validation' => $this->validator]);
 
         }
     }
@@ -2487,8 +2487,9 @@ class ListaEspera extends ResourceController
             session()->setFlashdata('warning_message', 'Lista de Espera sem Pacientes Ativos!');
         } 
 
-        return view('ListaEspera/list_listaespera', ['listaespera' => $listaespera,
-                                                     'qtd' => count($listaespera)]);
+        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+                                            'listaespera' => $listaespera,
+                                            'qtd' => count($listaespera)]);
     }
     /**
      * Create a new resource object, from "posted" parameters
