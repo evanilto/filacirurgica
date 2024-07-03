@@ -4,11 +4,11 @@ namespace App\Controllers;
 use CodeIgniter\RESTful\ResourceController;
 use App\Controllers\Exception;
 use App\Libraries\HUAP_Functions;
-use App\Models\ListaEsperaModel;
+use App\Models\VwListaEsperaModel;
 
 class ListaEspera extends ResourceController
 {
-    private $listaesperamodel;
+    private $vwlistaesperamodel;
     private $movimentacaomodel;
     private $solicitacaomodel;
     private $pacientesmvmodel;
@@ -23,7 +23,7 @@ class ListaEspera extends ResourceController
 
     public function __construct()
     {
-        $this->listaesperamodel = new ListaEsperaModel();
+        $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->usuariocontroller = new Usuarios();
         $this->aghucontroller = new Aghu();
     }
@@ -45,24 +45,23 @@ class ListaEspera extends ResourceController
 
         echo view('templates/header', ['menu' => 'Setores']);
         echo view('setores/maincontent', [
-        'setores' => $this->listaesperamodel->paginate(10),
+        'setores' => $this->vwlistaesperamodel->paginate(10),
         'pager_links' => $pager_links,
         ]);
         echo view('templates/footer');
 
     }
-
     /**
-     * Retorna todos os setors cadastrados
+     * 
      *
      * @return mixed
      */
     public function getListaEspera(int $listaespera = null) {
         
         if ($listaespera) {
-            return $this->listaesperamodel->getWhere(['numProntuarioAGHU' => $listaespera])->getResult();
+            return $this->vwlistaesperamodel->getWhere(['numProntuarioAGHU' => $listaespera])->getResult();
         } else {
-            return $this->respond($this->listaesperamodel->findAll());
+            return $this->respond($this->vwlistaesperamodel->findAll());
         }
     }
      /**
@@ -70,26 +69,16 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getProntuario($listaespera, $volume = null)
+    public function getDetailsAside($numProntuario)
     {
-        //var_dump($nu_volume);die();
-        //$data = $this->listaesperamodel->getWhere(['numProntuarioAGHU' => $nu_listaespera,'numVolume' =>$nu_volume])->getResult();
+        // Pegue o registro pelos $id e passe os dados para a view
+        $data = [
+            'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario)
+        ];
 
-        $db = \Config\Database::connect('default');
+        //die(var_dump($data));
 
-        $sql = "SELECT * FROM ListaEspera WHERE numProntuarioAGHU = $listaespera";
-
-        if (!is_null($volume) && $volume != "" && $volume > 0) {
-            $sql .= " AND numVolume = $volume";
-        } else {
-            $sql .= " AND numVolume IS NULL";
-        }
-
-        $query = $db->query($sql);
-
-        $data = $query->getResult();
-
-        return $data;
+        return view('listaespera/exibe_paciente', $data);
     }
     /**
      * Return the properties of a resource object
@@ -98,7 +87,7 @@ class ListaEspera extends ResourceController
      */
     public function getUltimoVolume($nu_listaespera)
     {
-        $data = $this->listaesperamodel->Where('numProntuarioAGHU', $nu_listaespera)->orderBy('numVolume', 'desc')->first();
+        $data = $this->vwlistaesperamodel->Where('numProntuarioAGHU', $nu_listaespera)->orderBy('numVolume', 'desc')->first();
 
         return $data;
     }
@@ -109,7 +98,7 @@ class ListaEspera extends ResourceController
      */
     public function show($id = null)
     {
-        $data = $this->listaesperamodel->getWhere(['id' => $id])->getResult();
+        $data = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
 
         if($data){
             return $this->respond($data);
@@ -925,7 +914,7 @@ class ListaEspera extends ResourceController
                     $ListaEsperaame['numProntuarioAGHU'] = $listaespera ?? $this->pacientesmvcontroller->getProntuarioAGHU($data['listaesperamv']);
                     $ListaEsperaame['numProntuarioMV'] = $listaesperamv ?? $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
                     if (!empty($ListaEsperaame['numProntuarioAGHU'])) { // existem ListaEspera no mv sem correspondência no aghu! Estes não serão considerados no sistema
-                        $id_same = $this->listaesperamodel->insert($ListaEsperaame);
+                        $id_same = $this->vwlistaesperamodel->insert($ListaEsperaame);
                     } else {
                         session()->setFlashdata('failed', 'Esse prontuário do MV não tem correspondência no AGHU!');
                         //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
@@ -1020,7 +1009,7 @@ class ListaEspera extends ResourceController
                             $ListaEsperaame['numProntuarioAGHU'] = $listaesperaaghu->listaespera;
                             $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($listaesperaaghu->listaespera, $listaesperaaghu->codigo);
                            
-                            $id_same = $this->listaesperamodel->insert($ListaEsperaame);
+                            $id_same = $this->vwlistaesperamodel->insert($ListaEsperaame);
 
                             $listaespera[$key]['id'] = $id_same;
                             $listaespera[$key]['numProntuarioAGHU'] = $ListaEsperaame['numProntuarioAGHU'];
@@ -1101,7 +1090,7 @@ class ListaEspera extends ResourceController
     public function editar_listaespera($id = null)
     {
        
-        $ListaEsperaAME = $this->listaesperamodel->getWhere(['id' => $id])->getResult();
+        $ListaEsperaAME = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
 
         if($ListaEsperaAME){
 
@@ -1160,9 +1149,9 @@ class ListaEspera extends ResourceController
                     $array['numColuna'] = !empty($data['numColuna']) ? $data['numColuna'] : null ;
                     $array['txtObs'] = $data['txtObs'];
 
-                    $this->listaesperamodel->update($id, $array);
+                    $this->vwlistaesperamodel->update($id, $array);
                         
-                    if ($this->listaesperamodel->affectedRows() > 0) {
+                    if ($this->vwlistaesperamodel->affectedRows() > 0) {
 
                         session()->setFlashdata('success', 'Operação concluída com sucesso!');
                         
@@ -1246,7 +1235,7 @@ class ListaEspera extends ResourceController
     public function criar_volume(int $id)
     {
 
-        $ListaEsperaAME = $this->listaesperamodel->getWhere(['id' => $id])->getResult();
+        $ListaEsperaAME = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
 
         $numVolume = $ListaEsperaAME[0]->numVolume ?? 0;
 
@@ -1254,14 +1243,14 @@ class ListaEspera extends ResourceController
 
             if ($numVolume == 0) {
                 $array['numVolume'] = ++$numVolume ;
-                $this->listaesperamodel->update($id, $array);
+                $this->vwlistaesperamodel->update($id, $array);
             }
 
             $ListaEsperaame['numProntuarioAGHU'] = $ListaEsperaAME[0]->numProntuarioAGHU;
             $ListaEsperaame['numProntuarioMV'] = $ListaEsperaAME[0]->numProntuarioMV;
             $ListaEsperaame['numVolume'] = ++$numVolume;
 
-            $this->listaesperamodel->insert($ListaEsperaame);
+            $this->vwlistaesperamodel->insert($ListaEsperaame);
             
         } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
             $msg = 'Erro na criação do volume';
@@ -1320,7 +1309,7 @@ class ListaEspera extends ResourceController
     {
         $mov = $this->movimentacaocontroller->getMovimentacoes($id);
 
-        $ListaEsperaAME = $this->listaesperamodel->getWhere(['id' => $id])->getResult();
+        $ListaEsperaAME = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
 
         if (!$ListaEsperaAME) {
             //return redirect()->back();
@@ -1336,12 +1325,12 @@ class ListaEspera extends ResourceController
 
             try {
                 $where = ['id' => $id];
-                $this->listaesperamodel->delete($where);
+                $this->vwlistaesperamodel->delete($where);
         
                 $result = $this->getListaEspera($ListaEsperaAME[0]->numProntuarioAGHU);
         
                 if (count($result) === 1) {
-                    $this->listaesperamodel->update($result[0]->id, ['numVolume' => NULL]);
+                    $this->vwlistaesperamodel->update($result[0]->id, ['numVolume' => NULL]);
                 }
         
                 $db->transComplete(); // Completa a transação
@@ -1574,9 +1563,9 @@ class ListaEspera extends ResourceController
                                     if (is_null($idsame)) {
                                         $ListaEsperaame['numProntuarioAGHU'] = $data['listaespera'];
                                         $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
-                                        $idsame = $this->listaesperamodel->insert($ListaEsperaame);
+                                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
                                     } else {
-                                        $this->listaesperamodel->update($idsame, $ListaEsperaame);
+                                        $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
                                     }
 
                                     //var_dump($listaespera_movimentado);die();
@@ -1728,7 +1717,7 @@ class ListaEspera extends ResourceController
                                         $ListaEsperaame['nmsetorAtual'] = $setororigem;
                                         $ListaEsperaame['numProntuarioAGHU'] = $listaespera;
                                         $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera'], $resultAGHUX[0]->codigo);
-                                        $idsame = $this->listaesperamodel->insert($ListaEsperaame);
+                                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
                                     }
                                     
                                     $solicitacao = [];
@@ -1962,9 +1951,9 @@ class ListaEspera extends ResourceController
                         if (is_null($idsame)) {
                             $ListaEsperaame['numProntuarioAGHU'] = $data['listaespera'];
                             $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
-                            $idsame = $this->listaesperamodel->insert($ListaEsperaame);
+                            $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
                         } else {
-                            $this->listaesperamodel->update($idsame, $ListaEsperaame);
+                            $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
                         }
                         
                         $movimentacao = [];
@@ -2072,11 +2061,11 @@ class ListaEspera extends ResourceController
                     if (!empty($ListaEsperaame)) {
                         //$ListaEsperaame = [];
                         $idsame = $ListaEsperaame[0]->id;
-                        $this->listaesperamodel->update($idsame, $ListaEsperaame);
+                        $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
                     } else {
                         $ListaEsperaame['numProntuarioAGHU'] = $listaespera;
                         $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera'], $resultAGHUX[0]->codigo);
-                        $idsame = $this->listaesperamodel->insert($ListaEsperaame);
+                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
                     }
                     $movimentacao = [];
                     $movimentacao['idProntuario'] = $idsame;
@@ -2479,7 +2468,7 @@ class ListaEspera extends ResourceController
     {        
         \Config\Services::session();
 
-        $listaespera = $this->listaesperamodel->where('idSituacao', 'A')->findAll();
+        $listaespera = $this->vwlistaesperamodel->findAll();
 
         //die(var_dump($result));
 
@@ -2650,7 +2639,7 @@ class ListaEspera extends ResourceController
         
            $ListaEsperaame = [];
            $ListaEsperaame['nmSetorTramite'] = null;
-           $this->listaesperamodel->update($mov[0]->idProntuario, $ListaEsperaame);
+           $this->vwlistaesperamodel->update($mov[0]->idProntuario, $ListaEsperaame);
 
            session()->setFlashdata('success', 'Operação concluída com sucesso!');
 
@@ -2685,7 +2674,7 @@ class ListaEspera extends ResourceController
 
         try {
 
-            if(!$this->listaesperamodel->getWhere(['id' => $id])->getResult()) {
+            if(!$this->vwlistaesperamodel->getWhere(['id' => $id])->getResult()) {
 
                 $response = [
                     'status'   => 404,
@@ -2694,9 +2683,9 @@ class ListaEspera extends ResourceController
 
             } else {
             
-                    $this->listaesperamodel->update($id, $data);
+                    $this->vwlistaesperamodel->update($id, $data);
                         
-                    if ($this->listaesperamodel->affectedRows() > 0) {
+                    if ($this->vwlistaesperamodel->affectedRows() > 0) {
                         $response = [
                             'status'   => 200,
                             'error'    => null,
@@ -2731,11 +2720,11 @@ class ListaEspera extends ResourceController
     public function delete($id = null)
     {
       
-        $data = $this->listaesperamodel->find($id);
+        $data = $this->vwlistaesperamodel->find($id);
         
         if($data){
             try {
-                $this->listaesperamodel->delete($id);
+                $this->vwlistaesperamodel->delete($id);
                 $response = [
                     'status'   => 200,
                     'error'    => null,
@@ -2813,7 +2802,7 @@ class ListaEspera extends ResourceController
 
                 try {
 
-                    $this->listaesperamodel->insert($ListaEsperaame);
+                    $this->vwlistaesperamodel->insert($ListaEsperaame);
 
                 } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                     $msg = 'Erro na criação dos Prontuários - '. $reg_aghu->listaespera .' ==> '.$e->getMessage();
@@ -2870,7 +2859,7 @@ class ListaEspera extends ResourceController
 
             try {
 
-                $this->listaesperamodel->update($reg_aghu->id, $ListaEsperaame);
+                $this->vwlistaesperamodel->update($reg_aghu->id, $ListaEsperaame);
 
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                 $msg .= 'Erro na atualização dos Prontuários - '.$e->getMessage();
@@ -2918,7 +2907,7 @@ class ListaEspera extends ResourceController
                     try {
                         $array = [];
                         $array['numVolume'] = 1 ;
-                        $this->listaesperamodel->update($pro_same[0]->id, $array);
+                        $this->vwlistaesperamodel->update($pro_same[0]->id, $array);
 
                     } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                         $msg .= 'Erro na alteração do Prontuario SAME - '.$e->getMessage();
@@ -2948,7 +2937,7 @@ class ListaEspera extends ResourceController
                             $array['nmSetorAtual'] = $ult_loc ? $ult_loc[0]['setor'] : NULL;
                             $array['nmSetorTramite'] = $ult_loc ? $ult_loc[0]['setortramite'] : NULL;
 
-                            $this->listaesperamodel->insert($array);
+                            $this->vwlistaesperamodel->insert($array);
         
                         } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                             $msg .= 'Erro na inclusão do Prontuario SAME - '.$e->getMessage();
@@ -2992,7 +2981,7 @@ class ListaEspera extends ResourceController
                 try {
                     $array = [];
                     $array['numVolume'] = 1 ;
-                    $this->listaesperamodel->update($pro_same[0]->id, $array);
+                    $this->vwlistaesperamodel->update($pro_same[0]->id, $array);
 
                 } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                     $msg .= 'Erro na alteração do Prontuario SAME - '.$e->getMessage();
@@ -3022,7 +3011,7 @@ class ListaEspera extends ResourceController
                         $array['nmSetorAtual'] = $ult_loc ? $ult_loc[0]['setor'] : NULL;
                         $array['nmSetorTramite'] = $ult_loc ? $ult_loc[0]['setortramite'] : NULL;
 
-                        $this->listaesperamodel->insert($array);
+                        $this->vwlistaesperamodel->insert($array);
     
                     } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                         $msg .= 'Erro na inclusão do Prontuario SAME - '.$e->getMessage();
@@ -3067,7 +3056,7 @@ class ListaEspera extends ResourceController
 
             try {
 
-                $this->listaesperamodel->update($reg_aghu->id, $array);
+                $this->vwlistaesperamodel->update($reg_aghu->id, $array);
 
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                 $msg .= 'Erro na atualização dos Prontuários - '.$e->getMessage();

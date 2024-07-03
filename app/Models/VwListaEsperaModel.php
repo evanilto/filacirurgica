@@ -4,9 +4,9 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ListaEsperaModel extends Model
+class VwListaEsperaModel extends Model
 {
-    protected $table            = 'lista_espera';
+    protected $table            = 'vw_lista_espera';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';

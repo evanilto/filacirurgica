@@ -4,7 +4,7 @@
             <th scope="col" colspan="4" class="bg-light text-center"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
-            <th scope="col" class="col-0" data-field="id" >Id</th>
+            <th scope="col" class="col-0" data-field="id" >No. Ordem</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="acao" colspan="2" style="text-align: center;">Ação</th>
         </tr>
@@ -12,7 +12,7 @@
     <tbody>
         <?php foreach($listaespera as $itemlista): ?>
             <tr>
-                <td><?php echo $itemlista['id'] ?></td>
+                <td><?php echo $itemlista['ordem_fila'] ?></td>
                 <td><?php echo $itemlista['numProntuario'] ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('prontuarios/editar/'.$itemlista['id'], '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar')) ?>
@@ -59,6 +59,63 @@
                 'pdf',
                 'print' 
             ] } }
+        });
+
+        var table = $('#table').DataTable();
+        var firstRecordId;
+
+        function loadAsideContent(recordId) {
+            $.ajax({
+                url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
+                method: 'GET',
+                beforeSend: function() {
+                    $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
+                },
+                success: function(response) {
+                    $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
+                    console.error(errorMessage);
+                    console.error(xhr.responseText);
+                    $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
+                }
+            });
+        }
+
+        $('#table tbody').on('click', 'tr', function() {
+
+            $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
+            /* $('#table tbody tr').removeClass('lineselected');
+            $(this).addClass('lineselected'); */
+
+            var data = table.row(this).data(); // Obtenha os dados da linha clicada
+            var recordId = data[1];
+
+            loadAsideContent(recordId); 
+
+        });
+
+        function markFirstRecordSelected() {
+            // Obter o índice do primeiro registro na página
+            var firstRecordIndex = table.page.info().start;
+
+            // Selecionar a linha correspondente ao índice
+            var $firstRecordRow = $(table.row(firstRecordIndex).node());
+
+            // Remover a classe 'selected' de todas as linhas e adicionar ao primeiro registro da página
+            $('#table tbody tr').removeClass('lineselected');
+            $firstRecordRow.addClass('lineselected');
+
+            // Obter os dados do registro selecionado e carregar os detalhes no aside
+            var data = table.row(firstRecordIndex).data();
+            var recordId = data[1]; // Supondo que o ID está na segunda coluna
+            loadAsideContent(recordId);
+        }
+
+        // Marcar o primeiro registro como selecionado ao redesenhar a tabela
+        table.on('draw.dt', function() {
+            markFirstRecordSelected();
         });
     });
 </script>
