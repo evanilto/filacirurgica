@@ -1,19 +1,45 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="4" class="bg-light text-center"><h5><strong>Lista de Espera</strong></h5></th>
+            <th scope="col" colspan="16" class="bg-light text-center"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
-            <th scope="col" class="col-0" data-field="id" >No. Ordem</th>
+            <th scope="col" class="col-0" data-field="id" >Ordem</th>
+            <th scope="col" data-field="prontuarioaghu" >Dt/Hr. Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+            <th scope="col" data-field="prontuarioaghu" >Nome</th>
+            <th scope="col" data-field="prontuarioaghu" >Origem</th>
+            <th scope="col" data-field="prontuarioaghu" >Fila</th>
+            <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
+            <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
+            <th scope="col" data-field="prontuarioaghu" >CID</th>
+            <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
+            <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
+            <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
+            <th scope="col" data-field="prontuarioaghu" >Risco</th>
+            <th scope="col" data-field="prontuarioaghu" >Dt. Risco</th>
             <th scope="col" data-field="acao" colspan="2" style="text-align: center;">Ação</th>
         </tr>
     </thead>
     <tbody>
-        <?php foreach($listaespera as $itemlista): ?>
+        <?php foreach($listaespera as $itemlista): 
+            $itemlista['created_at'] = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista['created_at'])->format('d/m/Y H:i');
+        ?>
             <tr>
                 <td><?php echo $itemlista['ordem_fila'] ?></td>
-                <td><?php echo $itemlista['numProntuario'] ?></td>
+                <td><?php echo $itemlista['created_at'] ?></td>
+                <td><?php echo $itemlista['prontuario'] ?></td>
+                <td><?php echo $itemlista['nome_paciente'] ?></td>
+                <td><?php echo $itemlista['origem_descricao'] ?></td>
+                <td><?php echo $itemlista['fila'] ?></td>
+                <td><?php echo $itemlista['especialidade_descricao'] ?></td>
+                <td><?php echo $itemlista['procedimento_descricao'] ?></td>
+                <td><?php echo $itemlista['cid'] ?></td>
+                <td><?php echo $itemlista['cid_descricao'] ?></td>
+                <td><?php echo $itemlista['complexidade_descricao'] ?></td>
+                <td><?php echo $itemlista['lateralidade_descricao'] ?></td>
+                <td><?php echo $itemlista['risco_descricao'] ?></td>
+                <td><?php echo $itemlista['data_risco'] ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('prontuarios/editar/'.$itemlista['id'], '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar')) ?>
                 </td>
@@ -48,6 +74,8 @@
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
+            "autoWidth": false,  /* Desative a largura automática */
+            "scrollX": true,  /* Ative a rolagem horizontal */
            /*  "columnDefs": [
             { "orderable": false, "targets": [1] },
             { "visible": false, "targets": [0] } 
@@ -90,7 +118,7 @@
             $(this).addClass('lineselected'); */
 
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var recordId = data[1];
+            var recordId = data[2];
 
             loadAsideContent(recordId); 
 
@@ -109,7 +137,7 @@
 
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
-            var recordId = data[1]; // Supondo que o ID está na segunda coluna
+            var recordId = data[2];
             loadAsideContent(recordId);
         }
 

@@ -9,7 +9,7 @@
                 <div class="collapse" id="listaespera">
                     <ul class="nav flex-column submenu-2">
                         <li>
-                            <a href="<?= base_url('listaespera/ncluir') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <a href="<?= base_url('listaespera/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir
                             </a>
                         </li>
@@ -201,7 +201,7 @@
     <ul class="nav flex-column">
         <li>
             <a href="<?= base_url('home_index') ?>" class="nav-link text-white p-2" aria-current="page">
-                <i class="fa-solid fa-user-nurse"></i> Início
+            <i class="fa-solid fa-backward-step"></i> Início
             </a>
         </li>
     </ul>

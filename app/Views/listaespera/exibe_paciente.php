@@ -7,12 +7,16 @@
                 <td><b><?= $paciente[0]->prontuario ?></b></td>
             </tr>
             <tr>
-                <td width="40%"><i class="fa-solid fa-id-card-clip"></i> Nome:</td>
+                <td width="40%"><i class="fa-solid fa-user"></i> Nome:</td>
                 <td><b><?= $paciente[0]->nome ?></b></td>
             </tr>
             <tr>
                 <td width="40%"><i class="fa-solid fa-cake-candles"></i> Data Nasc.:</td>
                 <td><b><?= $paciente[0]->dt_nascimento ?></b></td>
+            </tr>
+            <tr>
+                <td width="40%"><i class="fa-solid fa-person-half-dress"></i> Sexo:</td>
+                <td><b><?= $paciente[0]->sexo ?></b></td>
             </tr>
             <tr>
                 <td width="40%"><i class="fa-solid fa-person-breastfeeding"></i> Mãe:</td>
@@ -29,6 +33,11 @@
             <tr>
                 <td width="40%"><i class="fa-solid fa-hospital-user"></i> CNS:</td>
                 <td><b><?= $paciente[0]->cns ?></b></td>
+            </tr>
+            <tr>
+                <td width="40%"><i class="fa-solid fa-mobile-retro"></i> Telefone:</td>
+                <td><b><?= $paciente[0]->tel_1 ?>
+                <?= $paciente[0]->tel_2 ? ', '.$paciente[0]->tel_2 : '' ?></b></td>
             </tr>
             <tr>
                 <td width="40%"><i class="fa-solid fa-at"></i> Email:</td>
@@ -53,11 +62,6 @@
             <tr>
                 <td width="40%"><i class="fa-solid fa-list"></i> CEP:</td>
                 <td><b><?= substr($paciente[0]->cep, 0, 5) . '-' . substr($paciente[0]->cep, 5, 3) ?></b></td>
-            </tr>
-            <tr>
-                <td width="40%"><i class="fa-solid fa-list"></i> Telefone:</td>
-                <td><b><?= $paciente[0]->tel_1 ?>
-                <?= $paciente[0]->tel_2 ? ', '.$paciente[0]->tel_2 : '' ?></b></td>
             </tr>
         </tbody>
     </table>

@@ -171,3 +171,13 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#idForm').submit(function() {
+            $('#janelaAguarde').show();
+            setTimeout(function() {
+            window.location.href = href;
+            }, 1000);
+        });
+    });
+</script>

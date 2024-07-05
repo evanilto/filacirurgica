@@ -2470,11 +2470,12 @@ class ListaEspera extends ResourceController
 
         $listaespera = $this->vwlistaesperamodel->findAll();
 
-        //die(var_dump($result));
-
         if (empty($listaespera)) {
             session()->setFlashdata('warning_message', 'Lista de Espera sem Pacientes Ativos!');
         } 
+
+        //die(var_dump($listaespera));
+        //die(var_dump($listaespera['created_at']));
 
         return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
                                             'listaespera' => $listaespera,

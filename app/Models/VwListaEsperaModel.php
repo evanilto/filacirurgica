@@ -8,23 +8,11 @@ class VwListaEsperaModel extends Model
 {
     protected $table            = 'vw_lista_espera';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
-    protected $protectFields    = true;
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = false;
     protected $allowedFields    = [
-        'numProntuario',
-        'idEspecialidade',
-        'dtAvaliacao',
-        'numCID',
-        'nmComplexidade',
-        'idTipoProcedimento',
-        'idRiscoCirurgico',
-        'idOrigemPaciente',
-        'idProcedimento',
-        'nmLateralidade',
-        'idSituacao',
-        'txtInfoAdicionais',
     ];
 
     // Dates
