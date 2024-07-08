@@ -19,7 +19,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtinicio')): ?>is-invalid<?php endif ?>"
-                                            name="dtinicio" value="<!--?= set_value('dtinicio', $dtinicio) ?-->"/>
+                                            name="dtinicio" value="<?= set_value('dtinicio', $data['dtinicio']) ?>"/>
                                         <?php if ($validation->getError('dtinicio')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtinicio') ?>
@@ -34,7 +34,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtfim" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtfim')): ?>is-invalid<?php endif ?>"
-                                            name="dtfim" value="<!--?= set_value('dtfim', $dtfim) ?-->"/>
+                                            name="dtfim" value="<?= set_value('dtfim', $data['dtfim']) ?>"/>
                                         <?php if ($validation->getError('dtfim')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtfim') ?>
@@ -60,14 +60,14 @@
                             </div>
                             <div class="col-md-8">
                                 <div class="mb-3">
-                                    <label for="prontuariomv" class="form-label">Nome</label>
+                                    <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
-                                        <input type="text" id="prontuariomv" maxlength="7"
-                                        class="form-control <?php if($validation->getError('prontuariomv')): ?>is-invalid<?php endif ?>"
-                                        name="prontuariomv" value="" />
-                                        <?php if ($validation->getError('prontuariomv')): ?>
+                                        <input type="text" id="nome" minlength="3"
+                                        class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
+                                        name="nome" value="" />
+                                        <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('prontuariomv') ?>
+                                                <?= $validation->getError('nome') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -75,22 +75,22 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="Setor" class="form-label">Especialidade<b class="text-danger">*</b></label>
+                                    <label for="especialidade" class="form-label">Especialidade</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('Setor')): ?>is-invalid<?php endif ?>"
-                                            id="Setor" name="Setor" onchange=""
+                                        <select class="form-select <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
+                                            id="especialidade" name="especialidade" onchange=""
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('especialidade', '', TRUE); ?> ></option>
                                             <?php
-                                            /* foreach ($selectSetor['Setor'] as $key => $setor) {
-                                                $setorenconded = $setor['idSetor'].'#'.$setor['nmSetor'].'#'.$setor['origSetor'];
-                                                $selected = (set_value('Setor') == $setorenconded) ? 'selected' : '';
-                                                echo '<option value="'.$setorenconded.'" '.$selected.'>'.$setor['nmSetor'].'</option>';
-                                            } */
+                                            foreach ($data['especialidades'] as $key => $especialidade) {
+                                                $selected = (set_value('especialidade') == $especialidade->seq) ? 'selected' : '';
+                                                echo '<option value="'.$especialidade->seq.'" '.$selected.'>'.$especialidade->nome_especialidade.'</option>';
+                                            }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('nmSetor')): ?>
+                                        <?php if ($validation->getError('especialidade')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('nmSetor'.$i) ?>
+                                                <?= $validation->getError('especialidade') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -98,21 +98,22 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="idPerfil" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
+                                    <label for="fila" class="form-label">Fila Cirúrgica</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('idPerfil')): ?>is-invalid<?php endif ?>"
-                                            id="idPerfil" name="idPerfil" onchange="verificarPerfil()"
+                                        <select class="form-select <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                            id="fila" name="fila"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
                                             <?php
-                                            /* foreach ($selectPerfil as $key => $perfil) {
-                                                $selected = (set_value('idPerfil') == $perfil['id']) ? 'selected' : '';
-                                                echo '<option value="'.$perfil['id'].'" '.$selected.'>'.$perfil['nmPerfil'].'</option>';
-                                            } */
+                                            foreach ($data['filas'] as $key => $fila) {
+                                                $selected = (set_value('fila') == $fila['id']) ? 'selected' : '';
+                                                echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                            }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('idPerfil')): ?>
+                                        <?php if ($validation->getError('fila')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('idPerfil'.$i) ?>
+                                                <?= $validation->getError('fila') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -120,21 +121,22 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="idPerfil" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
+                                    <label for="risco" class="form-label">Risco Cirúrgico</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('idPerfil')): ?>is-invalid<?php endif ?>"
-                                            id="idPerfil" name="idPerfil" onchange="verificarPerfil()"
+                                        <select class="form-select <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                            id="risco" name="risco" onchange="verificarPerfil()"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
-                                            /* foreach ($selectPerfil as $key => $perfil) {
-                                                $selected = (set_value('idPerfil') == $perfil['id']) ? 'selected' : '';
-                                                echo '<option value="'.$perfil['id'].'" '.$selected.'>'.$perfil['nmPerfil'].'</option>';
-                                            } */
+                                            foreach ($data['riscos'] as $key => $risco) {
+                                                $selected = (set_value('risco') == $fila['id']) ? 'selected' : '';
+                                                echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
+                                            }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('idPerfil')): ?>
+                                        <?php if ($validation->getError('risco')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('idPerfil'.$i) ?>
+                                                <?= $validation->getError('risco') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -142,16 +144,19 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="indSituacao" id="indSituacaoA" value="A" checked>
-                                            <label class="form-check-label" for="indSituacaoA">&nbsp;Ativo</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="indSituacao" id="indSituacaoI" value="I">
-                                            <label class="form-check-label" for="indSituacaoI">&nbsp;Inativo</label>
-                                        </div>
+                                <label class="form-label">Complexidade<b class="text-danger"></b></label>
+                                <div class="input-group bordered-container">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeA" value="ALTA">
+                                        <label class="form-check-label" for="complexidadeA">&nbsp;Alta</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeM" value="MÉDIA">
+                                        <label class="form-check-label" for="complexidadeM">&nbsp;Média</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeB" value="BAIXA">
+                                        <label class="form-check-label" for="complexidadeB">&nbsp;Baixa</label>
                                     </div>
                                 </div>
                             </div>

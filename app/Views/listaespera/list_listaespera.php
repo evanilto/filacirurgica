@@ -23,28 +23,29 @@
     </thead>
     <tbody>
         <?php foreach($listaespera as $itemlista): 
-            $itemlista['created_at'] = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista['created_at'])->format('d/m/Y H:i');
+            $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
         ?>
             <tr>
-                <td><?php echo $itemlista['ordem_fila'] ?></td>
-                <td><?php echo $itemlista['created_at'] ?></td>
-                <td><?php echo $itemlista['prontuario'] ?></td>
-                <td><?php echo $itemlista['nome_paciente'] ?></td>
-                <td><?php echo $itemlista['origem_descricao'] ?></td>
-                <td><?php echo $itemlista['fila'] ?></td>
-                <td><?php echo $itemlista['especialidade_descricao'] ?></td>
-                <td><?php echo $itemlista['procedimento_descricao'] ?></td>
-                <td><?php echo $itemlista['cid'] ?></td>
-                <td><?php echo $itemlista['cid_descricao'] ?></td>
-                <td><?php echo $itemlista['complexidade_descricao'] ?></td>
-                <td><?php echo $itemlista['lateralidade_descricao'] ?></td>
-                <td><?php echo $itemlista['risco_descricao'] ?></td>
-                <td><?php echo $itemlista['data_risco'] ?></td>
+                <td><?php echo $itemlista->ordem_fila ?></td>
+                <td><?php echo $itemlista->created_at ?></td>
+                <td><?php echo $itemlista->prontuario ?></td>
+                <td><?php echo $itemlista->nome_paciente ?></td>
+                <td><?php echo $itemlista->origem_descricao ?></td>
+                <td><?php echo $itemlista->fila ?></td>
+                <td><?php echo $itemlista->especialidade_descricao ?></td>
+                <td><?php echo $itemlista->procedimento_descricao ?></td>
+                <td><?php echo $itemlista->cid ?></td>
+                <td><?php echo $itemlista->cid_descricao ?></td>
+                <td><?php echo $itemlista->complexidade ?></td>
+                <td><?php echo $itemlista->lateralidade ?></td>
+                <td><?php echo $itemlista->risco_descricao ?></td>
+                <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('prontuarios/editar/'.$itemlista['id'], '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar')) ?>
+                    <?php echo anchor('listaespera/editar/'.$itemlista->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar')) ?>
                 </td>
+                <?=  session()->set('parametros_consulta_lista', $data); ?>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('prontuarios/excluirvolume/'.$itemlista['id'], '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Volume', 'onclick' => 'return confirma_excluir()')) ?>
+                    <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Volume', 'onclick' => 'return confirma_excluir()')) ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -64,6 +65,13 @@
     setTimeout(function() {
       window.location.href = href;
     }, 1000);
+  }
+  function confirma_excluir () {
+        if (!confirm('Confirma a exclusão deste Paciente da Lista de Espera?')) {
+            return false;
+        };
+        
+        return true;
   }
   $(document).ready(function() {
         $('#table').DataTable({

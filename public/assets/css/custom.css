@@ -192,6 +192,14 @@ tfoot {
     display: table-footer-group;
 }
 
+.bordered-container {
+    border: 1px solid #d6cfcf; /* Define a Espessura e a Cor da Borda */
+    background-color: #fff;   /* Define o Fundo Branco */
+    border-radius: 5px;       /* Define o Arredondamento dos Cantos da Borda */
+    padding: 4px;            /* Define o Espaçamento Interno */
+}
+
+
 ************** Spinner ***************************/        
 .modal {
 display: none;

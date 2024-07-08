@@ -4,26 +4,28 @@ namespace App\Controllers;
 use CodeIgniter\RESTful\ResourceController;
 use App\Controllers\Exception;
 use App\Libraries\HUAP_Functions;
+use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
+use App\Models\FilaModel;
+use App\Models\RiscoModel;
+use DateTime;
+use CodeIgniter\Config\Services;
 
 class ListaEspera extends ResourceController
 {
+    private $listaesperamodel;
     private $vwlistaesperamodel;
-    private $movimentacaomodel;
-    private $solicitacaomodel;
-    private $pacientesmvmodel;
-    private $setortramitemodel;
-    private $movimentacaocontroller;
-    private $setorcontroller;
+    private $filamodel;
+    private $riscomodel;
     private $usuariocontroller;
     private $aghucontroller;
-    private $pacientesmvcontroller;
-    //private $function;
-
 
     public function __construct()
     {
+        $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
+        $this->filamodel = new FilaModel();
+        $this->riscomodel = new RiscoModel();
         $this->usuariocontroller = new Usuarios();
         $this->aghucontroller = new Aghu();
     }
@@ -56,13 +58,9 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getListaEspera(int $listaespera = null) {
+    public function getFirst() {
         
-        if ($listaespera) {
-            return $this->vwlistaesperamodel->getWhere(['numProntuarioAGHU' => $listaespera])->getResult();
-        } else {
-            return $this->respond($this->vwlistaesperamodel->findAll());
-        }
+        return $this->listaesperamodel->orderBy('created_at', 'ASC')->first();;
     }
      /**
      * Return the properties of a resource object
@@ -836,7 +834,17 @@ class ListaEspera extends ResourceController
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera']);
+        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtfim'] = date('d/m/Y');
+        $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+        $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
+        $data['especialidades'] = $this->aghucontroller->getEspecialidades($especialidades);
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                            'data' => $data]);
 
     }
     /**
@@ -844,242 +852,119 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function exibir()
+    public function exibirListaEspera()
     {        
         helper(['form', 'url', 'session']);
 
         \Config\Services::session();
 
-        $listaespera = null;
-        $listaesperamv = null;
+        $prontuario = null;
 
         $data = $this->request->getVar();
 
-        if(!empty($data['listaespera']) && is_numeric($data['listaespera'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['listaespera']);
+        //die(var_dump($data));
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
 
             if(!empty($resultAGHUX[0])) {
-                $listaespera = $data['listaespera'];
-            }
-        }
-
-        if(!empty($data['listaesperamv']) && is_numeric($data['listaesperamv'])) {
-            //var_dump($data['listaesperamv']);die();
-            $resultMV = $this->pacientesmvcontroller->getPacientePorCdPaciente((int)$data['listaesperamv']);
-
-            if(!empty($resultMV[0])) {
-                $listaesperamv = $data['listaesperamv'];
+                $prontuario = $data['prontuario'];
             }
         }
 
         $rules = [
-            'listaespera' => 'permit_empty|min_length[1]|max_length[8]|equals['.$listaespera.']',
-            'listaesperamv' => 'permit_empty|min_length[1]|max_length[7]|equals['.$listaesperamv.']',
-            'nmpaciente' => 'permit_empty|max_length[100]|min_length[10]',
-            'nmmae' => 'permit_empty|min_length[10]|max_length[100]'
+            'dtinicio' => 'required|valid_date[d/m/Y]',
+            'dtfim' => 'required|valid_date[d/m/Y]',
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'nome' => 'permit_empty|min_length[3]',
         ];
 
         if ($this->validate($rules)) {
-            if(empty($data['listaespera']) && empty($data['listaesperamv']) && empty($data['nmmae']) && empty($data['nmpaciente'])) {
-                session()->setFlashdata('failed', 'Preencha pelo menos um campo do formulário!');
-                //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
-                return view('layouts/sub_content', ['view' => 'ListaEspera/form_consulta_listaespera', 'validation' => $this->validator]);
 
-            } 
+            if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+
+                session()->setFlashdata('warning_message', 'Nenhum item da Lista localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            }
             
             $this->validator->reset();
 
-            $clausula_where = 'TRUE';
-            if (!empty($data['listaespera'])) {
-                $clausula_where .= " AND numProntuarioAGHU = $data[listaespera]";
-            } else {
-                if (!empty($data['listaesperamv'])) {
-                    $clausula_where .= " AND numProntuarioMV = $data[listaesperamv]";
-                }
-            }
+            $dt_ini = $data['dtinicio'];
+            $dt_fim = $data['dtfim'];
+            
+            $data_ini = DateTime::createFromFormat('d/m/Y', $dt_ini);
+            $data_fim = DateTime::createFromFormat('d/m/Y', $dt_fim);
 
-            if (!empty($data['listaespera']) || !empty($data['listaesperamv'])) {
+            $this->validator->reset();
 
-                $db = \Config\Database::connect('default');
+            $db = \Config\Database::connect('default');
 
-                $sql = "SELECT * FROM ListaEspera WHERE $clausula_where";
+            $builder = $db->table('vw_listaespera');
 
-                $query = $db->query($sql);
+            //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
+            $builder->where("created_at BETWEEN '$dt_ini' AND '$dt_fim'");
 
-                $result = $query->getResult();
+            if (!empty($data['prontuario'])) {
+                //$clausula_where .= " AND prontuario = $data[prontuario]";
+                $builder->where('prontuario', $data['prontuario']);
+            };
+            if (!empty($data['nome'])) {
+                //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
+                $builder->where('nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+            };
+            if (!empty($data['especialidade'])) {
+                //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
+                $builder->where('idespecialidade', $data['especialidade']);
+            };
+            if (!empty($data['fila'])) {
+                //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
+                $builder->where('idtipoprocedimento', $data['fila']);
+            };
+            if (!empty($data['risco'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->where('idriscocirurgico',  $data['risco']);
+            };
+            if (!empty($data['complexidades'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->whereIn('complexidade',  $data['complexidades']);
+            };
 
-                if (empty($result)) {
+            //var_dump($builder->getCompiledSelect());die();
 
-                    $ListaEsperaame = [];
-                    $ListaEsperaame['numProntuarioAGHU'] = $listaespera ?? $this->pacientesmvcontroller->getProntuarioAGHU($data['listaesperamv']);
-                    $ListaEsperaame['numProntuarioMV'] = $listaesperamv ?? $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
-                    if (!empty($ListaEsperaame['numProntuarioAGHU'])) { // existem ListaEspera no mv sem correspondência no aghu! Estes não serão considerados no sistema
-                        $id_same = $this->vwlistaesperamodel->insert($ListaEsperaame);
-                    } else {
-                        session()->setFlashdata('failed', 'Esse prontuário do MV não tem correspondência no AGHU!');
-                        //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
-                        return view('layouts/sub_content', ['view' => 'ListaEspera/form_consulta_listaespera', 'validation' => $this->validator]);
-                    }
-
-                    $listaespera = [];
-                    $listaespera[0]['id'] = $id_same;
-                    $listaespera[0]['numProntuarioAGHU'] = $ListaEsperaame['numProntuarioAGHU'];
-                    $listaespera[0]['numProntuarioMV'] = $ListaEsperaame['numProntuarioMV'];
-                    $listaespera[0]['numVolume'] = 1;
-                    $listaespera[0]['numArmario'] = null;
-                    $listaespera[0]['numSala'] = null;
-                    $listaespera[0]['numLinha'] = null;
-                    $listaespera[0]['numColuna'] = null;
-                    $listaespera[0]['txtObs'] = null;
-                    $listaespera[0]['nmSetorAtual'] = null;
-
-                    $resultAGHU = $this->aghucontroller->getPaciente($ListaEsperaame['numProntuarioAGHU']);
-                    $listaespera[0]['nmPaciente'] = $resultAGHU[0]->nome;
-                    $listaespera[0]['nmMae'] = $resultAGHU[0]->nome_mae;
-                    $listaespera[0]['dtNascimento'] = $resultAGHU[0]->dt_nascimento;
-
-                    $listaespera[0]['ultimoVolume'] = true;
-
-                } else {
-
-                    $listaespera = [];
-
-                    //var_dump($result);die();
-
-                    foreach ($result as $key => $ListaEsperaame) {
-                        $listaespera[$key]['id'] = $ListaEsperaame->id;
-                        $listaespera[$key]['numProntuarioAGHU'] = $ListaEsperaame->numProntuarioAGHU;
-                        $listaespera[$key]['numProntuarioMV'] = $ListaEsperaame->numProntuarioMV;
-                        $listaespera[$key]['numVolume'] = $ListaEsperaame->numVolume;
-                        $listaespera[$key]['numArmario'] = $ListaEsperaame->numArmario;
-                        $listaespera[$key]['numSala'] = $ListaEsperaame->numSala;
-                        $listaespera[$key]['numLinha'] = $ListaEsperaame->numLinha;
-                        $listaespera[$key]['numColuna'] = $ListaEsperaame->numColuna;
-                        $listaespera[$key]['nmSetorAtual'] = $ListaEsperaame->nmSetorAtual;
-
-                        $resultAGHU = $this->aghucontroller->getPaciente($ListaEsperaame->numProntuarioAGHU);
-                        $listaespera[$key]['nmPaciente'] = $resultAGHU[0]->nome;
-                        $listaespera[$key]['nmMae'] = $resultAGHU[0]->nome_mae;
-                        $listaespera[$key]['dtNascimento'] = $resultAGHU[0]->dt_nascimento;
-
-                        $listaespera[$key]['ultimoVolume'] = count($result) == ($ListaEsperaame->numVolume ?? 1);
-
-                        if (!$listaespera[$key]['numVolume'] || $listaespera[$key]['numVolume'] == 1) {
-                            if(isset($resultMV) && !empty($resultMV[0])) {
-                                $listaespera[$key]['txtObs'] = ($resultMV[0]->DS_OBSERVACAO ? 'Obs. MV => '.$resultMV[0]->DS_OBSERVACAO.'<br>' : '').$ListaEsperaame->txtObs;
-                            } else {
-                                if ($ListaEsperaame->numProntuarioMV) {
-                                    $resultMV = $this->pacientesmvcontroller->getPacientePorCdPaciente($ListaEsperaame->numProntuarioMV);
-                                    $listaespera[$key]['txtObs'] = ($resultMV[0]->DS_OBSERVACAO ? 'Obs. MV => '.$resultMV[0]->DS_OBSERVACAO.'<br>' : '').$ListaEsperaame->txtObs;
-                                } else {
-                                    $listaespera[$key]['txtObs'] = $ListaEsperaame->txtObs;
-                                }
-                            }
-                        } else {
-                            $listaespera[$key]['txtObs'] = $ListaEsperaame->txtObs;
-                        }
-                    }
-                }
-
-                //var_dump($listaespera);die();
-
-                $result = $listaespera;
-
-            } else {
-
-                if (!empty($data['nmpaciente'])) {
-                    $result = $this->aghucontroller->getPacientePorNome('%'.$data['nmpaciente'].'%');
-                } else {
-                    if (!empty($data['nmmae'])) {
-                        $result = $this->aghucontroller->getPacientePorNomeMae('%'.$data['nmmae'].'%');
-                    }
-                }
-
-                if (!empty($result)) {
-
-                    $listaespera = [];
-
-                    foreach ($result as $key => $listaesperaaghu) {
-
-                        $resultSAME = $this->getProntuario($listaesperaaghu->listaespera);
-
-                        if (empty($resultSAME)) {
-
-                            $ListaEsperaame = [];
-                            $ListaEsperaame['numProntuarioAGHU'] = $listaesperaaghu->listaespera;
-                            $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($listaesperaaghu->listaespera, $listaesperaaghu->codigo);
-                           
-                            $id_same = $this->vwlistaesperamodel->insert($ListaEsperaame);
-
-                            $listaespera[$key]['id'] = $id_same;
-                            $listaespera[$key]['numProntuarioAGHU'] = $ListaEsperaame['numProntuarioAGHU'];
-                            $listaespera[$key]['numProntuarioMV'] = $ListaEsperaame['numProntuarioMV'];
-                            $listaespera[$key]['numVolume'] = null;
-                            $listaespera[$key]['numArmario'] = null;
-                            $listaespera[$key]['numSala'] = null;
-                            $listaespera[$key]['numLinha'] = null;
-                            $listaespera[$key]['numColuna'] = null;
-                            $listaespera[$key]['txtObs'] = null;
-                            $listaespera[$key]['nmSetorAtual'] = null;
-                            $listaespera[$key]['nmPaciente'] = $listaesperaaghu->nome;
-                            $listaespera[$key]['nmMae'] = $listaesperaaghu->nome_mae;
-                            $listaespera[$key]['dtNascimento'] = $listaesperaaghu->dt_nascimento;
-                            $listaespera[$key]['ultimoVolume'] = true;
-
-                        } else {
-
-                            $listaespera[$key]['id'] = $resultSAME[0]->id;
-                            $listaespera[$key]['numProntuarioAGHU'] = $resultSAME[0]->numProntuarioAGHU;
-                            $listaespera[$key]['numProntuarioMV'] = $resultSAME[0]->numProntuarioMV;
-                            $listaespera[$key]['numVolume'] = $resultSAME[0]->numVolume;
-                            $listaespera[$key]['numArmario'] = $resultSAME[0]->numArmario;
-                            $listaespera[$key]['numSala'] = $resultSAME[0]->numSala;
-                            $listaespera[$key]['numLinha'] = $resultSAME[0]->numLinha;
-                            $listaespera[$key]['numColuna'] = $resultSAME[0]->numColuna;
-                            $listaespera[$key]['txtObs'] = $resultSAME[0]->txtObs;
-                            $listaespera[$key]['nmSetorAtual'] = $resultSAME[0]->nmSetorAtual;
-                            $listaespera[$key]['nmPaciente'] = $listaesperaaghu->nome;
-                            $listaespera[$key]['nmMae'] = $listaesperaaghu->nome_mae;
-                            $listaespera[$key]['dtNascimento'] = $listaesperaaghu->dt_nascimento;
-                            $listaespera[$key]['ultimoVolume'] = count($resultSAME) == ($resultSAME[0]->numVolume ?? 1);
-                        }
-                    }
-
-                    $result = $listaespera;
-
-                    //var_dump($result);die();
-
-                }
-
-            }
+            $result = $builder->get()->getResult();
 
             if (empty($result)) {
-                
-                session()->setFlashdata('failed', 'Nenhum Prontuário localizado com os parâmetros informados!');
-                //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
-                return view('layouts/sub_content', ['view' => 'ListaEspera/form_consulta_listaespera', 'validation' => $this->validator]);
 
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+                $data['especialidades'] = $this->aghucontroller->getEspecialidades();
+
+                session()->setFlashdata('warning_message', 'Nenhum item da Lista localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
             }
 
-            HUAP_Functions::limpa_msgs_flash();
-            //return view('ListaEspera/listar_ListaEspera', ['ListaEspera' => $result]);
-            return view('layouts/sub_content', ['view' => 'listaspera/list_listalspera',
-                                               'ListaEspera' => $result]);
-
+            return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+                                               'listaespera' => $result,
+                                               'data' => $data]);
 
         } else {
-            //session()->setFlashdata('error', $this->validator);
             if(isset($resultAGHUX) && empty($resultAGHUX)) {
-                $this->validator->setError('listaespera', 'Esse prontuário não existe na base do AGHUX!');
-            }
-            //var_dump(isset($resultMV));die();
-            if(!empty($data['listaesperamv']) && is_null($resultMV)) {
-                $this->validator->setError('listaesperamv', 'Esse prontuário não existe na base do MV!');
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
-            //return view('ListaEspera/consultar_listaespera', ['validation' => $this->validator]);
-            return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera', 'validation' => $this->validator]);
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+            $data['especialidades'] = $this->aghucontroller->getEspecialidades();
 
+            return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
         }
     }
     /**
@@ -1305,84 +1190,44 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function excluir_volume(int $id)
+    public function excluirItemDaLista(int $id)
     {
-        $mov = $this->movimentacaocontroller->getMovimentacoes($id);
+        $data = session()->get('parametros_consulta_lista');
 
-        $ListaEsperaAME = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
+        //die(var_dump($data));
 
-        if (!$ListaEsperaAME) {
-            //return redirect()->back();
-            return redirect()->to(base_url('ListaEspera/consultar')); //para resolver problema no refresh
-        }
+        $db = \Config\Database::connect('default');
 
-        if (!empty($mov)) {
-            session()->setFlashdata('failed', 'Não é possível excluir um volume que já tenha sido tramitado!');
-        } else {
-            $db = \Config\Database::connect('default');
+        $db->transStart();
 
-            $db->transStart();
-
-            try {
-                $where = ['id' => $id];
-                $this->vwlistaesperamodel->delete($where);
-        
-                $result = $this->getListaEspera($ListaEsperaAME[0]->numProntuarioAGHU);
-        
-                if (count($result) === 1) {
-                    $this->vwlistaesperamodel->update($result[0]->id, ['numVolume' => NULL]);
-                }
-        
-                $db->transComplete(); // Completa a transação
-        
-                if ($db->transStatus() === false) {
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao completar a transação.');
-                }
-        
-                // Operações concluídas com sucesso, redireciona ou exibe mensagem de sucesso
-        
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = 'Erro na exclusão do volume';
-                $msg .= ' - '.$e->getMessage();
-                log_message('error', $msg.': ' . $e->getMessage());
-                session()->setFlashdata('failed', $msg);
-        
-                // Redireciona ou exibe mensagem de erro
+        try {
+            $this->listaesperamodel->delete(['id' => $id]);
+    
+            $db->transComplete(); // Completa a transação
+    
+            if ($db->transStatus() === false) {
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao excluir um item da Lista!');
             }
-        };
-
-        //var_dump($ListaEsperaAME);die();
-
-        $result = $this->getListaEspera($ListaEsperaAME[0]->numProntuarioAGHU);
-
-        $listaespera = [];
-
-        foreach ($result as $key => $ListaEsperaame) {
-            $listaespera[$key]['id'] = $ListaEsperaame->id;
-            $listaespera[$key]['numProntuarioAGHU'] = $ListaEsperaame->numProntuarioAGHU;
-            $listaespera[$key]['numProntuarioMV'] = $ListaEsperaame->numProntuarioMV;
-            $listaespera[$key]['numVolume'] = $ListaEsperaame->numVolume;
-            $listaespera[$key]['numArmario'] = $ListaEsperaame->numArmario;
-            $listaespera[$key]['numSala'] = $ListaEsperaame->numSala;
-            $listaespera[$key]['numLinha'] = $ListaEsperaame->numLinha;
-            $listaespera[$key]['numColuna'] = $ListaEsperaame->numColuna;
-            $listaespera[$key]['txtObs'] = $ListaEsperaame->txtObs;
-            $listaespera[$key]['nmSetorAtual'] = $ListaEsperaame->nmSetorAtual;
-
-            $resultAGHU = $this->aghucontroller->getPaciente($ListaEsperaame->numProntuarioAGHU);
-            $listaespera[$key]['nmPaciente'] = $resultAGHU[0]->nome;
-            $listaespera[$key]['nmMae'] = $resultAGHU[0]->nome_mae;
-            $listaespera[$key]['dtNascimento'] = $resultAGHU[0]->dt_nascimento;
-
-            $listaespera[$key]['ultimoVolume'] = count($result) == ($ListaEsperaame->numVolume ?? 1);
+    
+        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+            $db->transRollback(); // Reverte a transação em caso de erro
+            $msg = 'Erro na exclusão do item da Lista';
+            $msg .= ' - '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            session()->setFlashdata('failed', $msg);
         }
 
-        //var_dump($listaespera);die();
+        //return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                           // 'data' => $data]);
 
-        //return view('ListaEspera/listar_ListaEspera', ['ListaEspera' => $listaespera]);
-        return view('layouts/sub_content', ['view' => 'ListaEspera/list_ListaEspera', 'ListaEspera' => $listaespera]);
-                       
+        $client = Services::curlrequest();
+        
+        $response = $client->request('POST', base_url('listaespera/exibir'), ['data' => $data]);
+        
+        // Obter o corpo da resposta
+        //$resposta = $response->getBody();
+
+  
     }
     /**
      * Return a new resource object, with default properties
@@ -2458,28 +2303,6 @@ class ListaEspera extends ResourceController
         return view('ListaEspera/listar_ListaEspera_retidos', ['ListaEspera' => $ListaEspera,
                                                                'qtdTotal' => count($result)
                                                               ]);
-    }
-    /**
-     * Create a new resource object, from "posted" parameters
-     *
-     * @return mixed
-     */
-    public function exibirListaEspera()
-    {        
-        \Config\Services::session();
-
-        $listaespera = $this->vwlistaesperamodel->findAll();
-
-        if (empty($listaespera)) {
-            session()->setFlashdata('warning_message', 'Lista de Espera sem Pacientes Ativos!');
-        } 
-
-        //die(var_dump($listaespera));
-        //die(var_dump($listaespera['created_at']));
-
-        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                            'listaespera' => $listaespera,
-                                            'qtd' => count($listaespera)]);
     }
     /**
      * Create a new resource object, from "posted" parameters

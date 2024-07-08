@@ -4,15 +4,27 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class VwListaEsperaModel extends Model
+class ListaEsperaModel extends Model
 {
-    protected $table            = 'vw_listaespera';
+    protected $table            = 'lista_espera';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = false;
+    protected $useSoftDeletes   = true;
+    protected $protectFields    = true;
     protected $allowedFields    = [
+        'numprontuario',
+        'idespecialidade',
+        'dtavaliacao',
+        'numcid',
+        'nmcomplexidade',
+        'idtipoprocedimento',
+        'idriscocirurgico',
+        'idorigempaciente',
+        'idprocedimento',
+        'nmlateralidade',
+        'indsituacao',
+        'txtinfoadicionais'
     ];
 
     // Dates

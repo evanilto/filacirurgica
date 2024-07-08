@@ -131,23 +131,25 @@ class Aghu extends ResourceController
      *
      * @return mixed
      */
-    public function getEspecialidades(int $codigo) {
-
-        if ($codigo) {
-            $sql = "SELECT * FROM agh.especialidades WHERE ind_situacao = 'A' AND codigo = $codigo";
+    public function getEspecialidades(array $especialidades = null) {
+        $sql = "SELECT * FROM agh.agh_especialidades WHERE ind_situacao = 'A'";
+    
+        if ($especialidades) {
+            $placeholders = array_fill(0, count($especialidades), '?');
+            $placeholders = implode(',', $placeholders);
+    
+            $sql .= " AND seq IN ($placeholders) ORDER BY nome_especialidade";
         } else {
-            $sql = "SELECT * FROM agh.especialidades WHERE ind_situacao = 'A'";
+            $sql .= " ORDER BY nome_especialidade";
         }
-
-        //var_dump($sql);die();
-
-        $query = $this->db->query($sql);
-
+    
+        $query = $this->db->query($sql, $especialidades);
+    
         $result = $query->getResult();
-
+    
         return $result;
-
     }
+   
     /**
      * Retorna o prontuario cadastrado no aghu
      *

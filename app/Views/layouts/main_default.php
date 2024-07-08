@@ -54,7 +54,7 @@
                 <?= $this->renderSection('content') ?>
             </section>
             <aside class="sidebar" id="sidebar">
-                teste
+                Aguarde...
             </aside>
         </main>
         <footer class="footer">
