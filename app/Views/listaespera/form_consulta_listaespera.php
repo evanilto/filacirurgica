@@ -1,8 +1,6 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-<?= $this->include('layouts/div_flashdata') ?>
-
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -144,19 +142,20 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                <label class="form-label">Complexidade<b class="text-danger"></b></label>
-                                <div class="input-group bordered-container">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeA" value="ALTA">
-                                        <label class="form-check-label" for="complexidadeA">&nbsp;Alta</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeM" value="MÉDIA">
-                                        <label class="form-check-label" for="complexidadeM">&nbsp;Média</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeB" value="BAIXA">
-                                        <label class="form-check-label" for="complexidadeB">&nbsp;Baixa</label>
+                                    <label class="form-label">Complexidade<b class="text-danger"></b></label>
+                                    <div class="input-group bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeA" value="ALTA">
+                                            <label class="form-check-label" for="complexidadeA">&nbsp;Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeM" value="MÉDIA">
+                                            <label class="form-check-label" for="complexidadeM">&nbsp;Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeB" value="BAIXA">
+                                            <label class="form-check-label" for="complexidadeB">&nbsp;Baixa</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

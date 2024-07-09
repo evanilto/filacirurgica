@@ -9,7 +9,7 @@
                 <div class="collapse" id="listaespera">
                     <ul class="nav flex-column submenu-2">
                         <li>
-                            <a href="<?= base_url('listaespera/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <a href="<?= base_url('listaespera/incluirpaciente') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir
                             </a>
                         </li>
@@ -17,80 +17,6 @@
                             <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
-                        </li>
-                        <li>
-                            <a href="#consultar" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-chevron-right toggle-icon"></i> Pesquisar
-                            </a>
-                            <div class="collapse" id="consultar">
-                                <ul class="nav flex-column submenu-3">
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/localizadosnosetor') ?>" class="nav-link link-aguarde text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Localizados no Setor
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/enviadosparaosetor') ?>" class="nav-link link-aguarde text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Encaminhados para o Setor
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a href="#tramitar" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-chevron-right toggle-icon"></i> Tramitar
-                            </a>
-                            <div class="collapse" id="tramitar">
-                                <ul class="nav flex-column submenu-3">
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/tramitar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Enviar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/receber') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Receber
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/recuperar') ?>" class="nav-link link-aguarde text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Recuperar
-                                        </a>
-                                    </li>
-                                    <?php if(true) { ?>
-                                        <li>
-                                            <a href="<?= base_url('prontuarios/resgatar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                                <i class="fa-solid fa-user-nurse"></i> Resgatar
-                                            </a>
-                                        </li>
-                                    <?php } ?>
-                                </ul>
-                            </div>
-                        </li>
-                        <li>
-                            <a href="#solicitacoes" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-chevron-right toggle-icon"></i> Solicitações
-                            </a>
-                            <div class="collapse" id="solicitacoes">
-                                <ul class="nav flex-column submenu-3">
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/solicitar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Solicitar
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/solicitacoesdosetor') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Solicitacoes do Setor
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('prontuarios/solicitacoesexternas') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Solicitações Externas
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
                         </li>
                     </ul>
                 </div>

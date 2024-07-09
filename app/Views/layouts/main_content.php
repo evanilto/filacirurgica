@@ -11,6 +11,7 @@
 
         <div class="content" id="content">
             <div class="content-container">
+                <?= $this->include('layouts/div_flashdata') ?>
                 <?= $this->renderSection('subcontent') ?>
             </div>
 

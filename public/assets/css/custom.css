@@ -8,8 +8,9 @@ body {
     grid-template-rows: 50px 1fr 35px;
     grid-template-columns: 230px 1fr;
     min-height: 100vh;
-    font-family: 'Montserrat', sans-serif;
     line-height: 1.6;
+    font-size: 16px; /* Adjust the font size as needed */
+    font-family: 'Montserrat', sans-serif;
     background-color: #f4f4f4;
     color: #333;
 }
@@ -37,7 +38,7 @@ body {
 .main {
     grid-area: main;
     display: grid;
-    grid-template-columns: 3fr 1fr;
+    grid-template-columns: 3.5fr 1fr;
     gap: 1rem;
     padding: 1rem;
 }
@@ -62,7 +63,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 35px; /* Altura fixa para o rodapé */
+    height: 35px; 
 }
 
 .footer p {
@@ -159,7 +160,9 @@ section .content {
 
 /* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
 #table, #table th, #table td {
-    font-size: 14px;  /* Você pode ajustar o tamanho conforme necessário */
+    font-size: 12px;  /* Você pode ajustar o tamanho conforme necessário */
+    line-height: 1px;
+    vertical-align: middle;  /* Centraliza verticalmente o conteúdo das células */
     font-family: 'Montserrat', sans-serif;
     white-space: nowrap;  /* Impede quebra de linha dentro das células */
 }
@@ -199,6 +202,42 @@ tfoot {
     padding: 4px;            /* Define o Espaçamento Interno */
 }
 
+/* Estilos do Select2 */
+.custom-dropdown {
+    width: 700px !important; /* Ajuste este valor conforme necessário */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    height: 30px; /* Altura do campo select */
+    line-height: 30px; /* Alinha verticalmente o texto */
+    padding-left: 10px; /* Ajuste conforme necessário */
+    padding-right: 10px; /* Ajuste conforme necessário */
+    box-sizing: border-box;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 30px; /* Altura da seta */
+}
+
+.select2-results__option {
+    height: 30px; /* Altura das opções */
+    display: flex;
+    align-items: center;
+}
+
+.form-control, .form-select, .select2-container .select2-selection--single {
+    height: 30px; /* Garantir altura consistente para todos os campos */
+    display: flex;
+    align-items: center; /* Centralizando verticalmente */
+    padding: 0; /* Remove o padding */
+}
+
+/* Ajusta padding e borda para alinhar visualmente */
+.select2-container .select2-selection--single .select2-selection__rendered {
+    display: flex;
+    align-items: center;
+}
+
 
 ************** Spinner ***************************/        
 .modal {
@@ -215,7 +254,7 @@ background-color: transparent; /* Remova o fundo escurecido */
 .modal-content {
 position: fixed;
 top: 50%;
-left: 56%;
+left: 45%;
 transform: translate(-50%, -50%);
 max-width: 15%;
 padding: 20px;

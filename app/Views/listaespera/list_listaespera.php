@@ -5,7 +5,7 @@
         </tr>
         <tr>
             <th scope="col" class="col-0" data-field="id" >Ordem</th>
-            <th scope="col" data-field="prontuarioaghu" >Dt/Hr. Inscr.</th>
+            <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
             <th scope="col" data-field="prontuarioaghu" >Origem</th>
@@ -17,13 +17,14 @@
             <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
             <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
             <th scope="col" data-field="prontuarioaghu" >Risco</th>
-            <th scope="col" data-field="prontuarioaghu" >Dt. Risco</th>
+            <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
             <th scope="col" data-field="acao" colspan="2" style="text-align: center;">Ação</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach($listaespera as $itemlista): 
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
+            $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
             <tr>
                 <td><?php echo $itemlista->ordem_fila ?></td>
@@ -70,6 +71,8 @@
         if (!confirm('Confirma a exclusão deste Paciente da Lista de Espera?')) {
             return false;
         };
+
+        $('#janelaAguarde').show();
         
         return true;
   }
@@ -77,17 +80,17 @@
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
-            "pageLength": 10,
+            "pageLength": 15,
             "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
-           /*  "columnDefs": [
-            { "orderable": false, "targets": [1] },
-            { "visible": false, "targets": [0] } 
-            ], */
+            "columnDefs": [
+            { "orderable": false, "targets": [14] },
+            /*{ "visible": false, "targets": [0] } */
+            ],
             layout: { topStart: { buttons: [
                 'copy',
                 'csv',

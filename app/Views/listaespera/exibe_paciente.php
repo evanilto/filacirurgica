@@ -1,5 +1,5 @@
 <?php if(isset($paciente)): ?>
-    <h5><strong>Paciente</strong></h5>
+    <h6><strong>Paciente</strong></h6>
     <table class="table table-left-aligned table-smaller-font">
         <tbody>
             <tr>
@@ -44,7 +44,7 @@
                 <td><b><?= mb_strtolower($paciente[0]->email, 'UTF-8') ?></b></td>
             </tr>
             <tr>
-                <td><b><i class="fas fa-map-marker-alt"></i></i><h7><strong> Endereço</strong></h7></b></td>
+                <td width="40%"><i class="fas fa-map-marker-alt"></i> Endereço</td>
             </tr>
             <tr>
                 <td width="40%"><i class="fa-solid fa-list"></i> Logradouro:</td>

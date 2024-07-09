@@ -149,7 +149,52 @@ class Aghu extends ResourceController
     
         return $result;
     }
+    /**
+    * Retorna o prontuario cadastrado no aghu
+    *
+    * @return mixed
+    */
+   public function getCIDs(array $cids = null) {
+       $sql = "SELECT * FROM agh.agh_cids WHERE ind_situacao = 'A'";
    
+       if ($cids) {
+           $placeholders = array_fill(0, count($cids), '?');
+           $placeholders = implode(',', $placeholders);
+   
+           $sql .= " AND codigo IN ($placeholders) ORDER BY descricao";
+       } else {
+           $sql .= " ORDER BY descricao";
+       }
+   
+       $query = $this->db->query($sql);
+   
+       $result = $query->getResult();
+   
+       return $result;
+   }
+   /**
+    * Retorna o prontuario cadastrado no aghu
+    *
+    * @return mixed
+    */
+    public function getItensProcedimentosHospitalares(array $itensproc = null) {
+        $sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A' AND ind_internacao = 'S'";
+    
+        if ($itensproc) {
+            $placeholders = array_fill(0, count($itensproc), '?');
+            $placeholders = implode(',', $placeholders);
+    
+            $sql .= " AND cod_tabela IN ($placeholders) ORDER BY descricao";
+        } else {
+            $sql .= " ORDER BY descricao";
+        }
+    
+        $query = $this->db->query($sql);
+    
+        $result = $query->getResult();
+    
+        return $result;
+    }
     /**
      * Retorna o prontuario cadastrado no aghu
      *
