@@ -13,7 +13,7 @@
         <!-- Styles and scripts -->
         <link href="<?= base_url('/assets/DataTables/i18n/datatables.min.css') ?>" rel="stylesheet">
         <link href="<?= base_url('/assets/css/bootswatch-flatly-bootstrap.min.css') ?>" rel="stylesheet">
-        <link href="<?= base_url('/assets/select2-bootstrap-5-theme-master/dist/select2-bootstrap-5-theme.min.css') ?>" rel="stylesheet">
+        <link href="<?= base_url('/assets/select2-410-rc0/dist/css/select2.min.css') ?>"  rel="stylesheet">
         <link href="<?= base_url('/assets/bootstrap-table.1.22.5/bootstrap-table.min.css') ?>" rel="stylesheet">
         <link href="<?= base_url('/assets/fontawesome.6.5.2/css/all.min.css') ?>" rel="stylesheet">
         <link href="<?= base_url('/assets/css/custom.css') ?>" rel="stylesheet">
@@ -32,8 +32,7 @@
         <script src="<?= base_url('/assets/DataTables/i18n/datatables.min.js') ?>"></script>
         <!----------------------------------------------------------------------------------------------------------------------------------------------------->
         <script src="<?= base_url('/assets/bootstrap.5.3.3/js/bootstrap.bundle.min.js') ?>"></script>
-        <script src="<?= base_url('/assets/select2/dist/js/select2.min.js') ?>" crossorigin="anonymous"></script>
-        <script src="<?= base_url('/assets/select2/dist/js/i18n/pt-BR.js') ?>" crossorigin="anonymous"></script>
+        <script src="<?= base_url('/assets/select2-410-rc0/dist/js/select2.min.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/bootstrap-table.1.22.5/bootstrap-table.min.js'); ?>"></script>
         <script src="<?= base_url('/assets/bootstrap-table.1.22.5/locale/bootstrap-table-pt-BR.min.js'); ?>"></script>
         <script src="<?= base_url('/assets/jquery.countdown-2.2.0/jquery.countdown.min.js') ?>" crossorigin="anonymous"></script>

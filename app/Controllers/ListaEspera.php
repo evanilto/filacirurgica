@@ -9,6 +9,7 @@ use App\Models\VwListaEsperaModel;
 use App\Models\FilaModel;
 use App\Models\RiscoModel;
 use App\Models\OrigemPacienteModel;
+use App\Models\LateralidadeModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 
@@ -19,6 +20,7 @@ class ListaEspera extends ResourceController
     private $filamodel;
     private $riscomodel;
     private $origempacientemodel;
+    private $lateralidademodel;
     private $usuariocontroller;
     private $aghucontroller;
     private $selectfila;
@@ -28,6 +30,8 @@ class ListaEspera extends ResourceController
     private $selectcids;
     private $selectitensprocedhospit;
     private $selectorigempaciente;
+    private $selectlateralidade;
+
 
 
     public function __construct()
@@ -37,12 +41,14 @@ class ListaEspera extends ResourceController
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
         $this->origempacientemodel = new OrigemPacienteModel();
+        $this->lateralidademodel = new LateralidadeModel();
         $this->usuariocontroller = new Usuarios();
         $this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
+        $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         $this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
         $this->selectcids = $this->aghucontroller->getCIDs();
@@ -95,7 +101,7 @@ class ListaEspera extends ResourceController
         return $this->response->setJSON(['nome' => $paciente[0]->nome]);
     }
 
-    return $this->response->setJSON(['error' => 'Paciente não encontrado'], 404);
+    return $this->response->setJSON(['error' => 'Paciente não encontrado na base do AGHU'], 404);
 }
 
     /**
@@ -274,15 +280,159 @@ class ListaEspera extends ResourceController
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
         //die(var_dump($data));
+        //die(var_dump($data['lateralidade']));
+
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                             'data' => $data]);
 
+    }
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function incluir()
+    {
+
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $data = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+
+            if(!empty($resultAGHUX[0])) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $dataform['dtinclusao'] = date('d/m/Y H:i:s');
+        $dataform['dtrisco'] = null;
+        $dataform['filas'] = $this->selectfila;
+        $dataform['riscos'] = $this->selectrisco;
+        $dataform['origens'] = $this->selectorigempaciente;
+        $dataform['lateralidades'] = $this->selectlateralidade;
+        $dataform['especialidades'] = $this->selectespecialidadeaghu;
+        $dataform['cids'] = $this->selectcids;
+        $dataform['procedimentos'] = $this->selectitensprocedhospit;
+
+        //die(var_dump($dataform['lateralidade']));
+
+        $rules = [
+            'especialidade' => 'required',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
+            'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
+            'fila' => 'required',
+            'procedimento' => 'required',
+            'origem' => 'required',
+            'lateralidade' => 'required',
+        ];
+
+        if ($this->validate($rules)) {
+
+            $this->validator->reset();
+
+            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+
+            } else {
+
+                $db = \Config\Database::connect('default');
+
+                $db->transStart();
+
+                try {
+                    //die(var_dump($data));
+
+                    $paciente = [];
+                    $paciente['numprontuario'] = $data['prontuario'];
+                    $paciente['idespecialidade'] = $data['especialidade'];
+                    $paciente['dtavaliacao'] = $data['dtrisco'];
+                    $paciente['numcid'] = $data['cid'];
+                    $paciente['nmcomplexidade'] = $data['complexidade'];
+                    $paciente['idtipoprocedimento'] = $data['fila'];
+                    $paciente['idriscocirurgico'] = $data['risco'];
+                    $paciente['idorigempaciente'] = $data['origem'];
+                    $paciente['indcongelacao'] = $data['congelacao'];
+                    $paciente['idprocedimento'] = $data['procedimento'];
+                    $paciente['nmlateralidade'] = $data['lateralidade'];
+                    $paciente['indsituacao'] = 'A';
+                    $paciente['txtinfoadicionais'] = $data['info'];
+                    $paciente['txtorigemjustificativa'] = $data['justorig'];
+
+                    $this->listaesperamodel->insert($paciente);
+                    //db->table('lista_espera')->insert($paciente);
+
+                    $db->transComplete();
+
+                    if ($db->transStatus() === false) {
+                        // Obtenha erros de banco de dados, se houver
+                        $error = $db->error();
+                        // Crie uma mensagem de erro detalhada
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        die(var_dump($errorMessage));
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    // Se a transação foi bem-sucedida, prossiga com a lógica necessária
+                    return redirect()->to('/success'); // Redirecione a uma página de sucesso
+
+                } catch (\Exception $e) {
+                    // Reverter todas as operações em caso de erro
+                    $db->transRollback();
+                    // Capture a mensagem de erro do banco de dados
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : $e->getMessage();
+                    $errorCode = isset($error['code']) ? $error['code'] : $e->getCode();
+                    
+                    die(var_dump($errorMessage));
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage),
+                        $errorCode,
+                        $e
+                    );
+                }
+
+                session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                    'data' => $dataform]);
+            }
+        } 
+
+        //die(var_dump($this->validator));
+
+        if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            die(var_dump($this->validator));
+            $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+        }
+
+       /*  if ($this->validator->hasError('procedimento')) {
+            die(var_dump($this->validator->getError('procedimento')));
+        } */
+              
+        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                            'validation' => $this->validator,
+                                            'data' => $dataform]);
     }
     /**
      * Return a new resource object, with default properties

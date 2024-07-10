@@ -75,7 +75,7 @@
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
                                             id="especialidade" name="especialidade" onchange=""
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('especialidade', '', TRUE); ?> ></option>
@@ -98,7 +98,7 @@
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
@@ -121,7 +121,7 @@
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco" onchange="verificarPerfil()"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
@@ -182,6 +182,17 @@
             setTimeout(function() {
             window.location.href = href;
             }, 1000);
+        });
+
+        $('.select2-dropdown').select2({
+            dropdownCssClass: 'custom-dropdown',
+        });
+
+        const prontuarioInput = document.getElementById('prontuario');
+
+        prontuarioInput.addEventListener('change', function() {
+            fetchPacienteNome(prontuarioInput.value);
+            loadAsideContent(prontuarioInput.value);
         });
     });
 </script>
