@@ -199,15 +199,16 @@ tfoot {
     border: 1px solid #d6cfcf; /* Define a Espessura e a Cor da Borda */
     background-color: #fff;   /* Define o Fundo Branco */
     border-radius: 5px;       /* Define o Arredondamento dos Cantos da Borda */
-    padding: 4px;            /* Define o Espaçamento Interno */
+    padding: 1px;            /* Define o Espaçamento Interno */
+    padding-left: 7px;
 }
 
 /* Estilos do Select2 */
 .custom-dropdown {
-    width: 700px !important; /* Ajuste este valor conforme necessário */
+    max-width: max-content !important; /* Ajuste este valor conforme necessário */
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container--default .select2-selection--single .select2-selection__rendered .select2-dropdown{
     height: 30px; /* Altura do campo select */
     line-height: 30px; /* Alinha verticalmente o texto */
     padding-left: 10px; /* Ajuste conforme necessário */
@@ -215,7 +216,7 @@ tfoot {
     box-sizing: border-box;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
+.select2-selection__arrow {
     height: 30px; /* Altura da seta */
 }
 
@@ -225,7 +226,7 @@ tfoot {
     align-items: center;
 }
 
-.form-control, .form-select, .select2-container .select2-selection--single {
+.form-select, .select2-container .select2-selection--single .form-lab {
     height: 30px; /* Garantir altura consistente para todos os campos */
     display: flex;
     align-items: center; /* Centralizando verticalmente */
@@ -238,6 +239,15 @@ tfoot {
     align-items: center;
 }
 
+/* CSS para impedir quebra de linha nas opções do select2 */
+.select2-container--default .select2-results__option {
+    white-space: nowrap; /* Impede quebra de linha */
+}
+
+.form-control {
+    padding: 2px;
+    padding-left: 4px;
+}
 
 ************** Spinner ***************************/        
 .modal {

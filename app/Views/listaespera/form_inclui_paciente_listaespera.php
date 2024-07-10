@@ -30,7 +30,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="prontuario" class="form-label">Prontuario</label>
+                                    <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
@@ -47,7 +47,7 @@
                                 <div class="mb-3">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
-                                        <input type="text" id="nome" minlength="3"
+                                        <input type="text" id="nome" minlength="3" disabled
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
                                         name="nome" value="" />
                                         <?php if ($validation->getError('nome')): ?>
@@ -62,9 +62,9 @@
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="especialidade" class="form-label">Especialidade</b></label>
+                                    <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown<?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
                                             id="especialidade" name="especialidade" onchange=""
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('especialidade', '', TRUE); ?> ></option>
@@ -83,11 +83,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="fila" class="form-label">Fila Cirúrgica</b></label>
+                                    <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown<?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
@@ -106,22 +106,22 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="mb-3">
-                                    <label for="proced" class="form-label">Procedimento</label>
-                                    <select class="form-select <?php if($validation->getError('proced')): ?>is-invalid<?php endif ?>"
-                                        id="proced" name="proced" onchange="verificarPerfil()"
-                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                        <option value="" <?php echo set_select('proced', '', TRUE); ?> ></option>
-                                        <?php
-                                        foreach ($data['procedimentos'] as $key => $proced) {
-                                            $selected = (set_value('proced') == $proced->cod_tabela) ? 'selected' : '';
-                                            echo '<option value="'.$proced->cod_tabela.'" '.$selected.'>'.$proced->descricao.'</option>';
-                                        }
-                                        ?>
-                                    </select>
+                                    <label for="proced" class="form-label">Procedimento<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown<?php if($validation->getError('proced')): ?>is-invalid<?php endif ?>"
+                                            id="proced" name="proced" onchange="verificarPerfil()"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('proced', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['procedimentos'] as $key => $proced) {
+                                                $selected = (set_value('proced') == $proced->cod_tabela) ? 'selected' : '';
+                                                echo '<option value="'.$proced->cod_tabela.'" '.$selected.'>'.$proced->descricao.'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
                                     <?php if ($validation->getError('proced')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('proced') ?>
@@ -129,13 +129,38 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-7">
+                                <div class="mb-3">
+                                    <label for="cid" class="form-label">CID</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
+                                            id="cid" name="cid"
+                                            data-placeholder="" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['cids'] as $key => $cid) {
+                                                $selected = (set_value('cid') == $cid->codigo) ? 'selected' : '';
+                                                echo '<option value="'.$cid->codigo.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                    <?php if ($validation->getError('cid')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('cid') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
-                                        <select class="form-select <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco" onchange="verificarPerfil()"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
@@ -169,45 +194,22 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="cid" class="form-label">CID</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
-                                            id="cid" name="cid"
-                                            data-placeholder="" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['cids'] as $key => $cid) {
-                                                $selected = (set_value('cid') == $cid->codigo) ? 'selected' : '';
-                                                echo '<option value="'.$cid->codigo.'" '.$selected.'>'.$cid->descricao.'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                    </div>
-                                    <?php if ($validation->getError('cid')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('cid') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-4">
-                                    <label for="origem" class="form-label">Origem Paciente</label>
-                                    <select class="form-select <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
-                                        id="origem" name="origem"
-                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                        <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
-                                        <?php
-                                        foreach ($data['origens'] as $key => $origem) {
-                                            $selected = (set_value('origem') == $origem['id']) ? 'selected' : '';
-                                            echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
-                                        }
-                                        ?>
+                                    <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
+                                            id="origem" name="origem"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['origens'] as $key => $origem) {
+                                                $selected = (set_value('origem') == $origem['id']) ? 'selected' : '';
+                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
+                                            }
+                                            ?>
                                     </select>
+                                    </div>
                                     <?php if ($validation->getError('origem')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('origem') ?>
@@ -217,14 +219,17 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-4">
-                                    <label for="proced" class="form-label">Lateralidade</label>
-                                    <select class="form-select" id="lateralidade" name="lateralidade">
-                                        <option value="item4">NÃO SE APLICA</option>
-                                        <option value="item1">DIREITA</option>
-                                        <option value="item2">ESQUERDA</option>
-                                        <option value="item3">AMBOS</option>
-                                        <option value="item5">NÃO INFORMADO</option>
-                                    </select>
+                                    <label for="proced" class="form-label">Lateralidade<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown" id="lateralidade" name="lateralidade">
+                                            <option value="" disabled selected>Selecione uma opção</option>
+                                            <option value="item4">NÃO SE APLICA</option>
+                                            <option value="item1">DIREITA</option>
+                                            <option value="item2">ESQUERDA</option>
+                                            <option value="item3">AMBOS</option>
+                                            <option value="item5">NÃO INFORMADO</option>
+                                        </select>
+                                    </div>
                                     <?php if ($validation->getError('lateralidade')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('lateralidade') ?>
@@ -309,9 +314,58 @@
         </div>
     </div>
 </div>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
+    function fetchPacienteNome(prontuarioValue) {
+      if (prontuarioValue) {
+        fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.nome) {
+            document.getElementById('nome').value = data.nome;
+          } else {
+            document.getElementById('nome').value = '';
+            console.error(data.error || 'Nome não encontrado');
+          }
+        })
+        .catch(error => {
+          console.error('Erro:', error);
+          document.getElementById('nome').value = '';
+        });
+      } else {
+        document.getElementById('nome').value = '';
+      }
+    }
+    
+    function loadAsideContent(recordId) {
+        $.ajax({
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
+            method: 'GET',
+            beforeSend: function() {
+                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
+            },
+            success: function(response) {
+                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
+                console.error(errorMessage);
+                console.error(xhr.responseText);
+                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
+            }
+        });
+    }
+    
     $(document).ready(function() {
         $('#idForm').submit(function() {
             $('#janelaAguarde').show();
@@ -323,5 +377,13 @@
         $('.select2-dropdown').select2({
             dropdownCssClass: 'custom-dropdown',
         });
-     });
+
+        const prontuarioInput = document.getElementById('prontuario');
+
+        prontuarioInput.addEventListener('change', function() {
+            fetchPacienteNome(prontuarioInput.value);
+            loadAsideContent(prontuarioInput.value);
+        });
+    });
+
 </script>

@@ -19,6 +19,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->post('exibir', 'ListaEspera::exibirListaEspera');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
+    $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
 });

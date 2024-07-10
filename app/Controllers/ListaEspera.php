@@ -83,6 +83,22 @@ class ListaEspera extends ResourceController
         return view('listaespera/exibe_paciente', $data);
     }
     /**
+     * Return the properties of a resource object
+     *
+     * @return mixed
+     */
+    public function getNomePaciente($numProntuario)
+{
+    $paciente = $this->aghucontroller->getPaciente($numProntuario);
+
+    if ($paciente && isset($paciente[0]->nome)) {
+        return $this->response->setJSON(['nome' => $paciente[0]->nome]);
+    }
+
+    return $this->response->setJSON(['error' => 'Paciente não encontrado'], 404);
+}
+
+    /**
      * Return a new resource object, with default properties
      *
      * @return mixed
