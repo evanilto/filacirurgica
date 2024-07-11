@@ -32,7 +32,8 @@
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
-                                        name="prontuario" value="" />
+                                        name="prontuario" value="<?= set_value('prontuario') ?>"/>
+
                                         <?php if ($validation->getError('prontuario')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('prontuario') ?>
@@ -139,8 +140,8 @@
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
-                                                $selected = (set_value('cid') == $cid->codigo) ? 'selected' : '';
-                                                echo '<option value="'.$cid->codigo.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
+                                                $selected = (set_value('cid') == $cid->seq) ? 'selected' : '';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -162,7 +163,7 @@
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
-                                                $selected = (set_value('risco') == $fila['id']) ? 'selected' : '';
+                                                $selected = (set_value('risco') == $risco['id']) ? 'selected' : '';
                                                 echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
                                             }
                                             ?>
@@ -181,7 +182,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
-                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
+                                            name="dtrisco" value="<?= set_value('dtrisco') ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
@@ -225,8 +226,8 @@
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = (set_value('lateralidade') == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                                $selected = (set_value('lateralidade') == $lateralidade['descricao']) ? 'selected' : '';
+                                                echo '<option value="'.$lateralidade['descricao'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -277,7 +278,9 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea class="form-control" id="justorig" name="justorig" rows="2" placeholder="">
+                                    <textarea type="text" id="justorig" maxlength="255" rows="2"
+                                        class="form-control <?php if($validation->getError('justorig')): ?>is-invalid<?php endif ?>"
+                                        name="justorig" value="<?= set_value('justorig') ?>"></textarea>
                                         <?php if ($validation->getError('justorig')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('justorig') ?>
@@ -289,7 +292,9 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea class="form-control" id="info" name="info" rows="2" placeholder="">
+                                    <textarea type="text" id="info" maxlength="255" rows="2"
+                                        class="form-control <?php if($validation->getError('info')): ?>is-invalid<?php endif ?>"
+                                        name="info" value="<?= set_value('info') ?>"></textarea>
                                         <?php if ($validation->getError('info')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('info') ?>
@@ -369,11 +374,18 @@
         });
     }
 
+    function fetchPacienteNomeOnLoad() {
+        const prontuarioInput = document.getElementById('prontuario');
+        fetchPacienteNome(prontuarioInput.value);
+    }
+
+    fetchPacienteNomeOnLoad();
+
     $(document).ready(function() {
         $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
-            window.location.href = href;
+                window.location.href = href;
             }, 1000);
         });
         
@@ -383,10 +395,8 @@
         });
 
         const prontuarioInput = document.getElementById('prontuario');
-
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
         });
     });
-
 </script>

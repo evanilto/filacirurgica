@@ -8,7 +8,7 @@ class ListaEsperaModel extends Model
 {
     protected $table            = 'lista_espera';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = false;
+    protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;

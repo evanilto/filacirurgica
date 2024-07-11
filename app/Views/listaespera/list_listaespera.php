@@ -53,7 +53,7 @@
     </tbody>
 </table>
 <div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
 </div>

@@ -5,6 +5,7 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
+$routes->get('inserir-paciente', 'PacientesController::inserir_paciente');
 
 $routes->group('/', function ($routes) {
     $routes->get('', 'Home');
