@@ -4,7 +4,7 @@
         <?php if(true) { ?>
             <li>
                 <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-chevron-right toggle-icon"></i> Lista de Espera
+                    <i class="fa-solid fa-plus toggle-icon"></i> Lista de Espera
                 </a>
                 <div class="collapse" id="listaespera">
                     <ul class="nav flex-column submenu-2">
@@ -26,8 +26,8 @@
     <ul class="nav flex-column">
         <?php if(true) { ?>
             <li>
-                <a href="#agendas" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-chevron-right toggle-icon"></i> Mapa Cirúrgico
+                <a href="#agendas" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="fa-solid fa-plus toggle-icon"></i> Mapa Cirúrgico
                 </a>
                 <div class="collapse" id="agendas">
                     <ul class="nav flex-column submenu-2">
@@ -44,8 +44,8 @@
     <ul class="nav flex-column">
         <?php if(true) { ?>
             <li>
-                <a href="#relatorios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-chevron-right toggle-icon"></i> Relatórios
+                <a href="#relatorios" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="fa-solid fa-plus toggle-icon"></i> Relatórios
                 </a>
                 <div class="collapse" id="relatorios">
                     <ul class="nav flex-column submenu-2">
@@ -76,14 +76,14 @@
     <ul class="nav flex-column">
         <?php if(true) { ?>
             <li>
-                <a href="#cadastros" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-chevron-right toggle-icon"></i> Cadastros
+                <a href="#cadastros" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="fa-solid fa-plus toggle-icon"></i> Cadastros
                 </a>
                 <div class="collapse" id="cadastros">
                     <ul class="nav flex-column submenu-2">
                         <li>
                             <a href="#setores" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-chevron-right toggle-icon"></i> Setores
+                                <i class="fa-solid fa-plus toggle-icon"></i> Setores
                             </a>
                             <div class="collapse" id="setores">
                                 <ul class="nav flex-column submenu-3">
@@ -102,7 +102,7 @@
                         </li>
                         <li>
                             <a href="#usuarios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-chevron-right toggle-icon"></i> Usuários
+                                <i class="fa-solid fa-plus toggle-icon"></i> Usuários
                             </a>
                             <div class="collapse" id="usuarios">
                                 <ul class="nav flex-column submenu-3">
@@ -137,7 +137,7 @@
         // Atualiza ícones ao abrir submenus
         $('.collapse').on('show.bs.collapse', function() {
             // Muda o ícone do link imediatamente acima para '-'
-            $(this).prev('.nav-link').find('.toggle-icon').removeClass('fa-chevron-right').addClass('fa-chevron-down');
+            $(this).prev('.nav-link').find('.toggle-icon').removeClass('fa-plus').addClass('fa-minus');
         });
 
         // Atualiza ícones ao fechar submenus
@@ -146,7 +146,7 @@
             // Aplica a mudança de ícone após o colapso ser totalmente realizado
             setTimeout(() => {
                 if (!$this.hasClass('show')) {
-                    $this.prev('.nav-link').find('.toggle-icon').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+                    $this.prev('.nav-link').find('.toggle-icon').removeClass('fa-minus').addClass('fa-plus');
                 }
             }, 250);
         });
@@ -159,7 +159,7 @@
             // Verifica se é o collapse atual que está sendo fechado, não apenas um interno
             if ($(e.target).is($this)) {
                 if ($parentCollapse.length === 0 || $parentCollapse.find('.collapse.show').length === 0) {
-                    $this.prev('.nav-link').find('.toggle-icon').removeClass('fa-chevron-down').addClass('fa-chevron-right');
+                    $this.prev('.nav-link').find('.toggle-icon').removeClass('fa-minus').addClass('fa-plus');
                 }
             }
         });

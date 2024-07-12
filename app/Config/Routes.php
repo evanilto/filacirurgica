@@ -5,8 +5,6 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('inserir-paciente', 'PacientesController::inserir_paciente');
-
 $routes->group('/', function ($routes) {
     $routes->get('', 'Home');
     $routes->get('home', 'Home');
@@ -18,7 +16,7 @@ $routes->group('/', function ($routes) {
 
 $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
-    $routes->post('exibir', 'ListaEspera::exibirListaEspera');
+    $routes->add('exibir', 'ListaEspera::exibirListaEspera');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
@@ -53,3 +51,6 @@ $routes->group('relatorios', function ($routes) {
     $routes->get('imprimirprontuariosretidos', 'Prontuarios::imprimirProntuariosRetidos');
 
 });
+
+/* $routes->get('inserir-paciente', 'PacientesController::inserir_paciente');
+ */

@@ -266,6 +266,29 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
+    public function getPacienteNaLista ($data) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('lista_espera');
+
+        $builder->where('numprontuario', $data['prontuario']);
+        $builder->where('idespecialidade', $data['especialidade']);
+        $builder->where('idtipoprocedimento', $data['fila']);
+        $builder->where('idprocedimento', $data['procedimento']);
+        //$builder->where('nmlateralidade', $data['lateralidade']);
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function incluirPacienteNaLista(string $idlistaespera = null)
     {
         HUAP_Functions::limpa_msgs_flash();
@@ -341,88 +364,90 @@ class ListaEspera extends ResourceController
 
             if(isset($resultAGHUX) && empty($resultAGHUX)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
-
             } else {
+                if ($this->getPacienteNaLista($data)) {
+                    session()->setFlashdata('failed', 'Paciente já tem cirurgia cadastrada na mesma especialidade, fila e procedimento!');
+                } else {
 
-                $db = \Config\Database::connect('default');
+                    $db = \Config\Database::connect('default');
 
-                $db->transStart();
+                    $db->transStart();
 
-                try {
+                    try {
 
-                    $paciente = [
-                        'numprontuario' => $data['prontuario'],
-                        'idespecialidade' => $data['especialidade'],
-                        'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                        'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
-                        'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                        'nmcomplexidade' => $data['complexidade'],
-                        'idtipoprocedimento' => $data['fila'],
-                        'idorigempaciente' => $data['origem'],
-                        'indcongelacao' => $data['congelacao'],
-                        'idprocedimento' => $data['procedimento'],
-                        'nmlateralidade' => $data['lateralidade'],
-                        /* 'indsituacao' => 'A', */
-                        'txtinfoadicionais' => $data['info'],
-                        'txtorigemjustificativa' => $data['justorig']
-                    ];
-                    
-                    $this->listaesperamodel->insert($paciente);
+                        $paciente = [
+                            'numprontuario' => $data['prontuario'],
+                            'idespecialidade' => $data['especialidade'],
+                            'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
+                            'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                            'numcid' => empty($data['cid']) ? NULL : $data['cid'],
+                            'nmcomplexidade' => $data['complexidade'],
+                            'idtipoprocedimento' => $data['fila'],
+                            'idorigempaciente' => $data['origem'],
+                            'indcongelacao' => $data['congelacao'],
+                            'idprocedimento' => $data['procedimento'],
+                            'nmlateralidade' => $data['lateralidade'],
+                            /* 'indsituacao' => 'A', */
+                            'txtinfoadicionais' => $data['info'],
+                            'txtorigemjustificativa' => $data['justorig']
+                        ];
+                        
+                        $this->listaesperamodel->insert($paciente);
 
-                    $db->transComplete();
+                        $db->transComplete();
 
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = isset($error['code']) ? $error['code'] : 0;
 
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                        );
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                        session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
+
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                            'data' => $dataform]);     
+
+                    /*  $response = service('response');
+                        $response->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
+                        $response->setHeader('Pragma', 'no-cache'); // HTTP 1.0.
+                        $response->setHeader('Expires', '0'); // Proxies.
+                                                            
+                        $data_le['prontuario'] = $data['prontuario'];
+                        $data_le['dtinicio'] = date('Y-m-d');
+                        $data_le['dtfim'] = date('Y-m-d') . ' ' .date('H:i:s');
+                
+                        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+                                                            'listaespera' => $this->getListaEspera($data_le),
+                                                            'data' => $data_le]); */
+
+                    } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                        $errorMessage = $e->getMessage();
+                        $errorCode = $e->getCode();
+                        
+                        throw new \CodeIgniter\Database\Exceptions\DataException(
+                            sprintf('Erro ao incluir um paciente da Lista! [%d] %s', (int) $errorCode, $errorMessage), (int) $errorCode, $e);
+
+                    } catch (\CodeIgniter\Database\Exceptions\DatabaseException $databaseException) {
+                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DatabaseException: ' . $databaseException->getMessage());
+
+                    } catch (\CodeIgniter\Database\Exceptions\DataException $databaseException) {
+                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DataException: ' . $databaseException->getMessage());
+
+                    } catch (\Exception $e) {
+                        throw new \Exception('Erro de Exception: ' . $e->getMessage());
                     }
-
-                    session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
-
-                    return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                                        'data' => $dataform]);     
-
-                   /*  $response = service('response');
-                    $response->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
-                    $response->setHeader('Pragma', 'no-cache'); // HTTP 1.0.
-                    $response->setHeader('Expires', '0'); // Proxies.
-                                                        
-                    $data_le['prontuario'] = $data['prontuario'];
-                    $data_le['dtinicio'] = date('Y-m-d');
-                    $data_le['dtfim'] = date('Y-m-d') . ' ' .date('H:i:s');
-            
-                    return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                                        'listaespera' => $this->getListaEspera($data_le),
-                                                        'data' => $data_le]); */
-
-                } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                    $errorMessage = $e->getMessage();
-                    $errorCode = $e->getCode();
-                    
-                    throw new \CodeIgniter\Database\Exceptions\DataException(
-                        sprintf('Erro ao incluir um paciente da Lista! [%d] %s', (int) $errorCode, $errorMessage), (int) $errorCode, $e);
-
-                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $databaseException) {
-                    throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DatabaseException: ' . $databaseException->getMessage());
-
-                } catch (\CodeIgniter\Database\Exceptions\DataException $databaseException) {
-                    throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DataException: ' . $databaseException->getMessage());
-
-                } catch (\Exception $e) {
-                    throw new \Exception('Erro de Exception: ' . $e->getMessage());
                 }
-               
             }
         } 
 
         //die(var_dump($this->validator));
 
         if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            die(var_dump($this->validator));
+            //die(var_dump($this->validator));
             $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
         }
 

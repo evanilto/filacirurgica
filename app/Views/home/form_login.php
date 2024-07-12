@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/main'); $this->section('title') ?>
+<?= $this->extend('layouts/main_login'); $this->section('title') ?>
 Entrar <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 

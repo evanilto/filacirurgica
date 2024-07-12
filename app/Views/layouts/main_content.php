@@ -2,13 +2,6 @@
 
 <?= $this->section('content') ?>
 
-        <style>
-            .content {
-                background: url('<?= base_url('assets/img/cirurgia-950.png') ?>') no-repeat center center fixed;
-                background-size: cover;
-            }
-        </style>
-
         <div class="content" id="content">
             <div class="content-container">
                 <?= $this->include('layouts/div_flashdata') ?>
@@ -20,11 +13,10 @@
         </div>
 
         <script>
-            $(document).ready(function() {
-                $('#idForm').submit(function() {
-                    $('#janelaAguarde').show();
-                });
-            });
+            // Limpar o conteúdo do sidebar
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelector('#sidebar').innerHTML = '';
+             });
         </script>
 
 <?= $this->endSection() ?>

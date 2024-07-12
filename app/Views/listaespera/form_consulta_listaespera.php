@@ -177,7 +177,7 @@
 </div>
 <script>
     $(document).ready(function() {
-        $('#idForm').submit(function() {
+        $('#idForm').submit(function(event) {
             $('#janelaAguarde').show();
             setTimeout(function() {
             window.location.href = href;

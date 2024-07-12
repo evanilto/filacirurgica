@@ -35,7 +35,7 @@ class Home extends ResourceController
     public function index_home()
     {
 
-        return view('layouts/main_content', ['timer' => env('huap.session.expires')]);
+        return view('layouts/form_home', ['timer' => env('huap.session.expires')]);
 
     }
 
