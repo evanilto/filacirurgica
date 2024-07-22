@@ -5,10 +5,12 @@ use CodeIgniter\RESTful\ResourceController;
 use App\Libraries\HUAP_Functions;
 use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
+use App\Models\MapaCirurgicoModel;
 use App\Models\FilaModel;
 use App\Models\RiscoModel;
 use App\Models\OrigemPacienteModel;
 use App\Models\LateralidadeModel;
+use App\Models\PosOperatorioModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
@@ -20,10 +22,12 @@ class ListaEspera extends ResourceController
 {
     private $listaesperamodel;
     private $vwlistaesperamodel;
+    private $mapacirurgicomodel;
     private $filamodel;
     private $riscomodel;
     private $origempacientemodel;
     private $lateralidademodel;
+    private $posoperatoriomodel;
     private $usuariocontroller;
     private $aghucontroller;
     private $selectfila;
@@ -34,17 +38,19 @@ class ListaEspera extends ResourceController
     private $selectitensprocedhospit;
     private $selectorigempaciente;
     private $selectlateralidade;
-
+    private $selectposoperatorio;
 
 
     public function __construct()
     {
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
+        $this->mapacirurgicomodel = new MapaCirurgicoModel();
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
         $this->origempacientemodel = new OrigemPacienteModel();
         $this->lateralidademodel = new LateralidadeModel();
+        $this->posoperatoriomodel = new PosOperatorioModel;
         $this->usuariocontroller = new Usuarios();
         $this->aghucontroller = new Aghu();
 
@@ -52,6 +58,7 @@ class ListaEspera extends ResourceController
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
+        $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         $this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
         $this->selectcids = $this->aghucontroller->getCIDs();
@@ -197,6 +204,8 @@ class ListaEspera extends ResourceController
                                                     'data' => $data]);
             
             }
+
+            //die(var_dump($result));
 
             return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
                                                'listaespera' => $result,
@@ -356,6 +365,8 @@ class ListaEspera extends ResourceController
             'procedimento' => 'required',
             'origem' => 'required',
             'lateralidade' => 'required',
+            'justorig' => 'max_length[250]|min_length[0]',
+            'info' => 'max_length[250]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
@@ -464,33 +475,44 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function editarListaEspera($id = null)
+    public function editarLista(int $id)
     {
-       
-        $ListaEsperaAME = $this->vwlistaesperamodel->getWhere(['id' => $id])->getResult();
+        HUAP_Functions::limpa_msgs_flash();
 
-        if($ListaEsperaAME){
+        //$data = $this->request->getVar();
 
-            $listaesperaAGHU = $this->aghucontroller->getPaciente($ListaEsperaAME[0]->numProntuarioAGHU);
+        $lista = $this->listaesperamodel->find($id);
 
-            return view('ListaEspera/editar_listaespera',[
-            'id' => $id,
-            'numProntuarioAGHU' => $ListaEsperaAME[0]->numProntuarioAGHU,
-            'numProntuarioMV' => $ListaEsperaAME[0]->numProntuarioMV,
-            'numVolume' => $ListaEsperaAME[0]->numVolume,
-            'nmPaciente' => $listaesperaAGHU[0]->nome,
-            'nmMae' => $listaesperaAGHU[0]->nome_mae,
-            'dtNascimento' => $listaesperaAGHU[0]->dt_nascimento,
-            'numArmario' => $ListaEsperaAME[0]->numArmario,
-            'numLinha' => $ListaEsperaAME[0]->numLinha,
-            'numSala' => $ListaEsperaAME[0]->numSala,
-            'numColuna' => $ListaEsperaAME[0]->numColuna,
-            'txtObs' => $ListaEsperaAME[0]->txtObs,
-            'nmSetorAtual' => $ListaEsperaAME[0]->nmSetorAtual
-            ]);
-        }
-        
-        return redirect()->to('ListaEspera/listar');
+        //die(var_dump($lista['id']));
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['risco'] = $lista['idriscocirurgico'];
+        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
+        $data['cid'] = $lista['numcid'];
+        $data['complexidade'] = $lista['nmcomplexidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['origem'] = $lista['idorigempaciente'];
+        $data['congelacao'] = $lista['indcongelacao'];
+        $data['procedimento'] = $lista['idprocedimento'];
+        $data['lateralidade'] = $lista['nmlateralidade'];
+        $data['info'] = $lista['txtinfoadicionais'];
+        $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+
+        //var_dump($data['id']);die();
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                            'data' => $data]);
 
     }
     /**
@@ -498,7 +520,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function editar($id = null)
+    public function editar()
     {
         \Config\Services::session();
 
@@ -506,102 +528,88 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //var_dump($data);die();
+        //die(var_dump($data));
 
         $rules = [
-            'numSala' => 'max_length[2]|min_length[0]',
-            'numArmario' => 'max_length[2]|min_length[0]',
-            'numLinha' => 'max_length[2]|min_length[0]',
-            'numColuna' => 'max_length[2]|min_length[0]',
-            'txtObs' => 'max_length[250]|min_length[0]',
+            'especialidade' => 'required',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
+            'fila' => 'required',
+            'procedimento' => 'required',
+            'origem' => 'required',
+            'lateralidade' => 'required',
+            'justorig' => 'max_length[250]|min_length[0]',
+            'info' => 'max_length[250]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
 
             try {
-                    $array['numSala'] = !empty($data['numSala']) ? $data['numSala'] : null ;
-                    $array['numArmario'] = !empty($data['numArmario']) ? $data['numArmario'] : null ;
-                    $array['numVolume'] = !empty($data['numVolume']) ? $data['numVolume'] : null ;
-                    $array['numLinha'] = !empty($data['numLinha']) ? $data['numLinha'] : null ;
-                    $array['numColuna'] = !empty($data['numColuna']) ? $data['numColuna'] : null ;
-                    $array['txtObs'] = $data['txtObs'];
 
-                    $this->vwlistaesperamodel->update($id, $array);
-                        
-                    if ($this->vwlistaesperamodel->affectedRows() > 0) {
+                $lista = [
+                        'idespecialidade' => $data['especialidade'],
+                        'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
+                        'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                        'numcid' => empty($data['cid']) ? NULL : $data['cid'],
+                        'nmcomplexidade' => $data['complexidade'],
+                        'idtipoprocedimento' => $data['fila'],
+                        'idorigempaciente' => $data['origem'],
+                        'indcongelacao' => $data['congelacao'],
+                        'idprocedimento' => $data['procedimento'],
+                        'nmlateralidade' => $data['lateralidade'],
+                        'txtinfoadicionais' => $data['info'],
+                        'txtorigemjustificativa' => $data['justorig']
+                        ];
 
-                        session()->setFlashdata('success', 'Operação concluída com sucesso!');
-                        
-                    } else {
+                $this->listaesperamodel->update($data['id'], $lista);
 
-                        session()->setFlashdata('nochange', 'Sem dados para atualizar!');
+                if ($this->vwlistaesperamodel->affectedRows() > 0) {
+                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
+                    
+                } else {
+                    session()->setFlashdata('nochange', 'Sem dados para atualizar!');
+                }
 
-                    }
-
-                    $this->validator->reset();
+                $this->validator->reset();
                 
+            } catch (\Exception $e) {
+                $msg = sprintf('Exception - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = 'Erro na alteração do Usuario';
-                if($e->getCode() == 1062) {
-                    $msg .= ' - Já existe um Usuario com esse Login!';
-                } else {
-                    $msg .= ' - '.$e->getMessage();
-                    log_message('error', $msg.': ' . $e->getMessage());
-                }
-                session()->setFlashdata('failed', $msg);
+                $msg = sprintf('DatabaseException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                $msg = sprintf('DataException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
             }
 
-            $result = $this->getListaEspera($data['numProntuarioAGHU']);
+            $data['filas'] = $this->selectfila;
+            $data['riscos'] = $this->selectrisco;
+            $data['origens'] = $this->selectorigempaciente;
+            $data['lateralidades'] = $this->selectlateralidade;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['cids'] = $this->selectcids;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
 
-            $listaespera = [];
-
-            if ($result[0]->numProntuarioMV) { 
-                $resultMV = $this->pacientesmvcontroller->getPacientePorCdPaciente($data['numProntuarioMV']);
-            }
-           
-            foreach ($result as $key => $ListaEsperaame) {
-                $listaespera[$key]['id'] = $ListaEsperaame->id;
-                $listaespera[$key]['numProntuarioAGHU'] = $ListaEsperaame->numProntuarioAGHU;
-                $listaespera[$key]['numProntuarioMV'] = $ListaEsperaame->numProntuarioMV;
-                $listaespera[$key]['numVolume'] = $ListaEsperaame->numVolume;
-                $listaespera[$key]['numArmario'] = $ListaEsperaame->numArmario;
-                $listaespera[$key]['numSala'] = $ListaEsperaame->numSala;
-                $listaespera[$key]['numLinha'] = $ListaEsperaame->numLinha;
-                $listaespera[$key]['numColuna'] = $ListaEsperaame->numColuna;
-                $listaespera[$key]['nmSetorAtual'] = $ListaEsperaame->nmSetorAtual;
-
-                $resultAGHU = $this->aghucontroller->getPaciente($ListaEsperaame->numProntuarioAGHU);
-                $listaespera[$key]['nmPaciente'] = $resultAGHU[0]->nome;
-                $listaespera[$key]['nmMae'] = $resultAGHU[0]->nome_mae;
-                $listaespera[$key]['dtNascimento'] = $resultAGHU[0]->dt_nascimento;
-
-                $listaespera[$key]['ultimoVolume'] = count($result) == ($ListaEsperaame->numVolume ?? 1);
-
-                if ($ListaEsperaame->numProntuarioMV && (!$ListaEsperaame->numVolume || $ListaEsperaame->numVolume == 1)) { 
-                    $listaespera[$key]['txtObs'] = ($resultMV[0]->DS_OBSERVACAO ? 'Obs. MV => '.$resultMV[0]->DS_OBSERVACAO.'<br>' : '').$ListaEsperaame->txtObs;
-                } else {
-                    $listaespera[$key]['txtObs'] = $ListaEsperaame->txtObs;
-                }
-            }
-
-            //return view('ListaEspera/listar_ListaEspera', ['ListaEspera' => $listaespera]);
-            return view('layouts/sub_content', ['view' => 'ListaEspera/list_ListaEspera', 'ListaEspera' => $listaespera]);
-
+            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                'data' => $data]);
         } else {
             session()->setFlashdata('error', $this->validator);
 
-            //var_dump($data); die();
-            return view('ListaEspera/editar_listaespera', ['validation' => $this->validator, 
-            'id' => $data['id'],
-            'numProntuarioAGHU' => $data['numProntuarioAGHU'],
-            'numProntuarioMV' => $data['numProntuarioMV'],
-            'numVolume' => $data['numVolume'],
-            'numArmario' => $data['numArmario'],
-            'numLinha' => $data['numLinha'],
-            'numSala' => $data['numSala'],
-            'numColuna' => $data['numColuna'],
-            'txtObs' => $data['txtObs']
-            ]);
+            $data['filas'] = $this->selectfila;
+            $data['riscos'] = $this->selectrisco;
+            $data['origens'] = $this->selectorigempaciente;
+            $data['lateralidades'] = $this->selectlateralidade;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['cids'] = $this->selectcids;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
+
+            //die(var_dump($data));
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                'data' => $data]);
         }
     }
     /**
@@ -726,6 +734,72 @@ class ListaEspera extends ResourceController
         //$resposta = $response->getBody();
 
   
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function enviarMapa(int $id)
+    {
+       
+        HUAP_Functions::limpa_msgs_flash();
+
+        $lista = $this->listaesperamodel->find($id);
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['risco'] = $lista['idriscocirurgico'];
+        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
+        $data['cid'] = $lista['numcid'];
+        $data['complexidade'] = $lista['nmcomplexidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['origem'] = $lista['idorigempaciente'];
+        $data['congelacao'] = $lista['indcongelacao'];
+        $data['procedimento'] = $lista['idprocedimento'];
+        $data['proced_adic'] = [];
+        $data['lateralidade'] = $lista['nmlateralidade'];
+        $data['posoperatorio'] = null;
+        $data['info'] = $lista['txtinfoadicionais'];
+        $data['nec_proced'] = '';
+        $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['justenvio'] = '';
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['posoperatorios'] = $this->selectposoperatorio;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+
+        $codToRemove = $lista['idprocedimento'];
+        $procedimentos = $data['procedimentos'];
+
+        //var_dump($codToRemove);die();
+
+        $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+            return $procedimento->cod_tabela !== $codToRemove;
+        });
+
+        $data['equipe'] = [];
+
+        $data['equipes'] = [
+            (object) ['cod_tabela' => 1, 'descricao' => 'Procedimento 1', 'categoria' => 'Categoria A'],
+            (object) ['cod_tabela' => 2, 'descricao' => 'Procedimento 2', 'categoria' => 'Categoria B'],
+            (object) ['cod_tabela' => 3, 'descricao' => 'Procedimento 3', 'categoria' => 'Categoria A']
+        ];
+
+        $data['filtros'] = ['Categoria A', 'Categoria B', 'Categoria C'];
+
+
+        //var_dump($data['procedimentos']);die();
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+                                            'data' => $data]);
     }
     /**
      * Return a new resource object, with default properties

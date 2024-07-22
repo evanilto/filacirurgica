@@ -1,7 +1,7 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="16" class="bg-light text-center"><h5><strong>Lista de Espera</strong></h5></th>
+            <th scope="col" colspan="18" class="bg-light text-center"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" data-field="id" >Ordem</th>
@@ -16,9 +16,10 @@
             <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
             <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
             <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
+            <th scope="col" data-field="prontuarioaghu" >Congelação</th>
             <th scope="col" data-field="prontuarioaghu" >Risco</th>
             <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
-            <th scope="col" data-field="acao" colspan="2" style="text-align: center;">Ação</th>
+            <th scope="col" data-field="acao" colspan="3" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -39,14 +40,17 @@
                 <td><?php echo $itemlista->cid_descricao ?></td>
                 <td><?php echo $itemlista->complexidade ?></td>
                 <td><?php echo $itemlista->lateralidade ?></td>
+                <td><?php echo $itemlista->indcongelacao ?></td>
                 <td><?php echo $itemlista->risco_descricao ?></td>
                 <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/editar/'.$itemlista->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar')) ?>
+                    <?php echo anchor('listaespera/editarlista/'.$itemlista->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
+                </td> <td style="text-align: center; vertical-align: middle;">
+                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico')) ?>
                 </td>
                 <?=  session()->set('parametros_consulta_lista', $data); ?>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Volume', 'onclick' => 'return confirma_excluir()')) ?>
+                    <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -66,15 +70,6 @@
     setTimeout(function() {
       window.location.href = href;
     }, 1000);
-  }
-  function confirma_excluir () {
-        if (!confirm('Confirma a exclusão deste Paciente da Lista de Espera?')) {
-            return false;
-        };
-
-        $('#janelaAguarde').show();
-        
-        return true;
   }
   $(document).ready(function() {
         $('#table').DataTable({

@@ -21,7 +21,10 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');
+    $routes->get('editarlista/(:num)', 'ListaEspera::editarLista/$1');
+    $routes->post('editar', 'ListaEspera::editar');
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
+    $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
 });
 
 $routes->group('usuarios', function ($routes) {
