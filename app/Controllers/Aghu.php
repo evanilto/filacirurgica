@@ -266,4 +266,68 @@ class Aghu extends ResourceController
         return $result;
 
     }
+    /**
+     * Retorna o prontuario cadastrado no aghu
+     *
+     * @return mixed
+     */
+    public function getProfEspecialidades(array $esp_seq = null) {
+
+        $sql = "
+                select 
+                pessoas.nome,
+                especialidade.seq as esp_seq,
+                especialidade.sigla as esp_sigla, 
+                especialidade.nome_reduzido as esp_nome_reduzido,
+                especialidade.nome_especialidade as esp_nome,
+                servidores.pes_codigo,
+                servidores.ser_vin_codigo,
+                servidores.ser_matricula,
+                conselho_profissional.sigla||'-'||qualificacao.nro_reg_conselho as conselho
+                from 
+                agh.rap_pessoas_fisicas pessoas
+                inner join agh.rap_servidores servidores on pessoas.codigo = servidores.pes_codigo
+                inner join agh.agh_prof_especialidades as profissional_especialidade on profissional_especialidade.ser_matricula = servidores.matricula and profissional_especialidade.ser_vin_codigo = servidores.vin_codigo
+                inner Join agh.agh_especialidades as especialidade on especialidade.seq = profissional_especialidade.esp_seq
+                left join agh.rap_pessoa_tipo_informacoes as pessoa_tipo_informacao on pessoa_tipo_informacao.pes_codigo = servidores.pes_codigo
+                left Join agh.rap_qualificacoes as qualificacao on qualificacao.pes_codigo = pessoas.codigo
+                left Join agh.rap_tipos_qualificacao as tipo_qualificacao on tipo_qualificacao.codigo = qualificacao.tql_codigo
+                left Join agh.rap_conselhos_profissionais as conselho_profissional on conselho_profissional.codigo = tipo_qualificacao.cpr_codigo
+                where 
+                ((servidores.ind_situacao = 'A') or (servidores.ind_situacao = 'P' and (servidores.dt_fim_vinculo isnull or servidores.dt_fim_vinculo >= current_date)))
+                AND pessoas.nome NOT like 'AGHU%' 
+                AND (profissional_especialidade.ind_atua_internacao = 'S' OR profissional_especialidade.ind_cirurgiao_bloco = 'S') 
+                AND qualificacao.nro_reg_conselho is not null
+            "; 
+
+        if ($esp_seq) {
+            $placeholders = array_fill(0, count($esp_seq), '?');
+            $placeholders = implode(',', $placeholders);
+    
+            $sql .= " AND especialidade.seq IN ($placeholders) ";
+        }
+
+        $sql .= " group by 
+                    pessoas.nome,
+                    especialidade.seq,
+                    especialidade.sigla, 
+                    especialidade.nome_reduzido,
+                    especialidade.nome_especialidade,
+                    servidores.pes_codigo,
+                    servidores.ser_vin_codigo,
+                    servidores.ser_matricula, 
+                    conselho_profissional.sigla,
+                    qualificacao.nro_reg_conselho
+                    order by
+                    pessoas.nome asc
+                ";
+    
+        $query = $this->db->query($sql, $esp_seq);
+    
+        $result = $query->getResult();
+    
+        return $result;
+        
+    }
+
 }

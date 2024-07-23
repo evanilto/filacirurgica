@@ -25,6 +25,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('editar', 'ListaEspera::editar');
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
+    $routes->post('enviar', 'ListaEspera::enviar');
 });
 
 $routes->group('usuarios', function ($routes) {

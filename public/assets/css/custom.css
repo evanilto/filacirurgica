@@ -77,6 +77,7 @@ section {
 /* Remove a borda da classe content */
 section .content {
     border: none;
+    padding: 0;
 }
 
 #content table {
@@ -199,8 +200,9 @@ tfoot {
     border: 1px solid #d6cfcf; /* Define a Espessura e a Cor da Borda */
     background-color: #fff;   /* Define o Fundo Branco */
     border-radius: 5px;       /* Define o Arredondamento dos Cantos da Borda */
-    padding: 1px;            /* Define o Espaçamento Interno */
-    padding-left: 7px;
+    padding: 0px;            /* Define o Espaçamento Interno */
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 /* Estilos do Select2 */
@@ -242,6 +244,23 @@ tfoot {
 /* CSS para impedir quebra de linha nas opções do select2 */
 .select2-container--default .select2-results__option {
     white-space: nowrap; /* Impede quebra de linha */
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+.select2-selection--multiple {
+    height: auto !important;
+    min-height: 30px !important; /* Valor que corresponde à altura de um campo de formulário padrão */
+}
+
+.select2-selection--single {
+    height: 30px !important; /* Valor que corresponde à altura de um campo de formulário padrão */
+}
+
+.select2-selection__rendered {
+    padding-top: 0px !important; /* Ajuste de padding para centralização do texto */
 }
 
 .form-control {

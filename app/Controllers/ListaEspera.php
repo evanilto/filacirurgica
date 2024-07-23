@@ -17,7 +17,6 @@ use Config\Database;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
 
-
 class ListaEspera extends ResourceController
 {
     private $listaesperamodel;
@@ -34,6 +33,7 @@ class ListaEspera extends ResourceController
     private $selectrisco;
     private $selectespecialidade;
     private $selectespecialidadeaghu;
+    private $selectprofespecialidadeaghu;
     private $selectcids;
     private $selectitensprocedhospit;
     private $selectorigempaciente;
@@ -61,6 +61,8 @@ class ListaEspera extends ResourceController
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         $this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
+        //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
+        $this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
     }
@@ -767,6 +769,7 @@ class ListaEspera extends ResourceController
         $data['nec_proced'] = '';
         $data['justorig'] = $lista['txtorigemjustificativa'];
         $data['justenvio'] = '';
+        $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -775,31 +778,128 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
 
         $codToRemove = $lista['idprocedimento'];
         $procedimentos = $data['procedimentos'];
-
-        //var_dump($codToRemove);die();
-
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        $data['equipe'] = [];
-
-        $data['equipes'] = [
-            (object) ['cod_tabela' => 1, 'descricao' => 'Procedimento 1', 'categoria' => 'Categoria A'],
-            (object) ['cod_tabela' => 2, 'descricao' => 'Procedimento 2', 'categoria' => 'Categoria B'],
-            (object) ['cod_tabela' => 3, 'descricao' => 'Procedimento 3', 'categoria' => 'Categoria A']
-        ];
-
-        $data['filtros'] = ['Categoria A', 'Categoria B', 'Categoria C'];
-
-
-        //var_dump($data['procedimentos']);die();
+        //var_dump($data['prof_especialidades']);die();
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
                                             'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function enviar()
+    {
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $data = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        $rules = [
+            'especialidade' => 'required',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y H:i:s]',
+            'fila' => 'required',
+            'procedimento' => 'required',
+            'posoperatorio' => 'required',
+            'profissional' => 'required',
+            'lateralidade' => 'required',
+            'justorig' => 'max_length[250]|min_length[0]',
+            'info' => 'max_length[250]|min_length[0]',
+            'nec_proced' => 'required||max_length[250]|min_length[3]',
+        ];
+
+        if ($this->validate($rules)) {
+
+            try {
+
+                $lista = [
+                        'idespecialidade' => $data['especialidade'],
+                        'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
+                        'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                        'numcid' => empty($data['cid']) ? NULL : $data['cid'],
+                        'nmcomplexidade' => $data['complexidade'],
+                        'idtipoprocedimento' => $data['fila'],
+                        'idorigempaciente' => $data['origem'],
+                        'indcongelacao' => $data['congelacao'],
+                        'idprocedimento' => $data['procedimento'],
+                        'nmlateralidade' => $data['lateralidade'],
+                        'txtinfoadicionais' => $data['info'],
+                        'txtorigemjustificativa' => $data['justorig']
+                        ];
+
+                $this->listaesperamodel->update($data['id'], $lista);
+
+                if ($this->vwlistaesperamodel->affectedRows() > 0) {
+                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
+                    
+                } else {
+                    session()->setFlashdata('nochange', 'Sem dados para atualizar!');
+                }
+
+                $this->validator->reset();
+                
+            } catch (\Exception $e) {
+                $msg = sprintf('Exception - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                $msg = sprintf('DatabaseException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                $msg = sprintf('DataException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            }
+
+            $data['filas'] = $this->selectfila;
+            $data['riscos'] = $this->selectrisco;
+            $data['origens'] = $this->selectorigempaciente;
+            $data['lateralidades'] = $this->selectlateralidade;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['cids'] = $this->selectcids;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                'data' => $data]);
+        } else {
+            session()->setFlashdata('error', $this->validator);
+
+            $data['filas'] = $this->selectfila;
+            $data['riscos'] = $this->selectrisco;
+            $data['origens'] = $this->selectorigempaciente;
+            $data['lateralidades'] = $this->selectlateralidade;
+            $data['posoperatorios'] = $this->selectposoperatorio;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['cids'] = $this->selectcids;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
+            $data['especialidades_med'] = $this->selectespecialidadeaghu;
+            $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+            $data['proced_adic'] = $data['proced_adic_hidden'];
+
+            $codToRemove = $data['procedimento'];
+            $procedimentos = $data['procedimentos'];
+            $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+                return $procedimento->cod_tabela !== $codToRemove;
+            });
+
+            //die(var_dump($data));
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+                                                'data' => $data]);
+        }
     }
     /**
      * Return a new resource object, with default properties
@@ -907,617 +1007,7 @@ class ListaEspera extends ResourceController
         }
 
     }
-     /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function envia_listaespera($data) {
-
-        $setor_user = $_SESSION['Sessao']['nmSetor'];
-
-        $busca_hist_ant = ['SSGH'];
-        //$busca_hist_ant = [];
-
-        $local = $this->getUltimaLocalizacao($data['listaespera'], $data['volume'], $busca_hist_ant);
-
-        //die(var_dump($local));
-        if ($local && $local[0]['mov_origem'] != 'same' && $local[0]['tramite']) {
-            $local = null;
-        }
-        
-        if (empty($local)) {
-            $ult_loc = null;
-            $listaespera_movimentado = false;
-            $setororigem = $setor_user;
-            $resgatador = (int)$_SESSION['Sessao']['id'];
-        } else {
-            $listaespera_movimentado = true;
-            $ult_loc = $local[0];
-            $setororigem = $ult_loc['setor'];
-            $resgatador = null;
-        }
-
-        $ListaEsperaame = $this->getProntuario($data['listaespera'], $data['volume']);
-
-        if (!empty($ListaEsperaame)) {
-            $idsame = $ListaEsperaame[0]->id;
-        } else {
-            $idsame = null;
-        }
-
-        //die(var_dump($local));
-        if (empty($local) && $_SESSION['Sessao']['nmSetor'] != 'ARQUIVO MÉDICO') {
-            session()->setFlashdata('failed', 'Esse prontuário precisa de tramitação inicial pelo ARQUIVO MÉDICO');
-        } else {
-            if (!$listaespera_movimentado && ($data['Setor'] == $setor_user)) {
-                session()->setFlashdata('failed', 'Esse prontuário não pode ser movimentado para o seu próprio setor');
-            } else {
-                if ($listaespera_movimentado && $ult_loc['tramite']) {
-                    session()->setFlashdata('failed', 'Esse prontuário está em trâmite para o setor '.$ult_loc['setortramite']);
-                } else {
-                    if ($listaespera_movimentado && ($data['Setor'] == $ult_loc['setor'])) {
-                        session()->setFlashdata('failed', 'Esse prontuário já está localizado no setor destino! '.$ult_loc['setor']);
-                    } else {
-                        if ($listaespera_movimentado && (($setor_user != $ult_loc['setor']) && !HUAP_Functions::permite_tramitar($ult_loc['setor']))) {
-                            session()->setFlashdata('failed', 'Esse prontuário não se encontra no seu setor!');
-                        } else {
-                            $setor_solic = null;
-                            $solic = $this->solicitacaomodel->getWhere(['idDocumento' => $idsame, 'indSolicitacao' => 'P'])->getResult();
-                            if (!empty($solic)) {
-                                $setor_solic = $solic[0]->nmSetorSolicitante;
-                            }
-                            if (!is_null($idsame) && (!is_null($setor_solic) && $setor_solic != $data['Setor'])) {
-                                session()->setFlashdata('failed', 'Existe uma solicitação para esse prontuário! ');
-                            } else {
-                                
-                                try 
-                                {
-                                    $ListaEsperaame = [];
-                                    $ListaEsperaame['nmSetorAtual'] = $setororigem;
-                                    $ListaEsperaame['nmSetorTramite'] = $data['Setor'];
-
-                                    if (is_null($idsame)) {
-                                        $ListaEsperaame['numProntuarioAGHU'] = $data['listaespera'];
-                                        $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
-                                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
-                                    } else {
-                                        $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
-                                    }
-
-                                    //var_dump($listaespera_movimentado);die();
-                                    if ($listaespera_movimentado && is_null($ult_loc['dtenvio'])) { //Prontuário resgatado
-                                        $movimentacao = [];
-                                        $movimentacao['mov_origem'] = $ult_loc['mov_origem'];
-                                        $movimentacao['dtMovimentacao'] = date('Y-m-d H:i:s');
-                                        $movimentacao['idRemetente'] = (int)$_SESSION['Sessao']['id'];
-                                        $movimentacao['nmRemetente'] = (int)$_SESSION['Sessao']['NomeCompleto'];
-                                        $movimentacao['nmSetorDestino'] = $data['Setor'];
-                                        $movimentacao['nmProfissional'] = $data['nome_profissional'] ?? null;
-                                        $movimentacao['dtPrazoRetorno'] = $data['dtretorno'];
-                                        $movimentacao['txtObs'] = $data['txtObs'];
-                                    
-                                        $this->movimentacaomodel->update($ult_loc['id'], $movimentacao);
-                                    } else {
-                                        $movimentacao = [];
-                                        $movimentacao['idProntuario'] = $idsame;
-                                        $movimentacao['dtMovimentacao'] = date('Y-m-d H:i:s');
-                                        $movimentacao['idResgatador'] = $resgatador;
-                                        $movimentacao['idRemetente'] = (int)$_SESSION['Sessao']['id'];
-                                        $movimentacao['nmSetorOrigem'] = $setororigem;
-                                        $movimentacao['nmSetorDestino'] = $data['Setor'];
-                                        $movimentacao['nmProfissional'] = $data['nome_profissional'] ?? null;
-                                        $movimentacao['dtPrazoRetorno'] = $data['dtretorno'];
-                                        $movimentacao['txtObs'] = $data['txtObs'];
-
-                                        $this->movimentacaomodel->insert($movimentacao);
-                                    };
-
-                                    if (!is_null($setor_solic)) {
-                                        $solicitacao['indSolicitacao'] = 'A';
-                                        $this->solicitacaomodel->update($solic[0]->id, $solicitacao);
-                                    }
-
-                                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
-
-                                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                                    $msg = 'Erro na tramitação';
-                                    $msg .= ' - '.$e->getMessage();
-                                    log_message('error', $msg.': ' . $e->getMessage());
-                                    session()->setFlashdata('failed', $msg);
-                                }
-                            }
-                    
-                        }
-                    }
-                }
-            }
-        }
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function solicitarProntuario()
-    {
-        HUAP_Functions::limpa_msgs_flash();
-
-        return view('ListaEspera/solicitar_listaespera',  ['select' => $this->usuariocontroller->getUsuariosSetor(session()->get('Sessao')['idSetor'])]);
-
-    }
-     /**
-     * Create a new resource object, from "posted" parameters
-     *
-     * @return mixed
-     */
-    public function solicitar()
-    {        
-        helper(['form', 'url', 'session']);
-
-        \Config\Services::session();
-       
-        $listaespera = '';
-        $volume = '100';
-
-        $data = $this->request->getVar();
-
-        if(!empty($data['listaespera']) && is_numeric($data['listaespera'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['listaespera']);
-
-            if(!empty($resultAGHUX[0])) {
-                $listaespera = $data['listaespera'];
-
-                $resultSAME = $this->getUltimoVolume($data['listaespera']);
-
-                if((empty($resultSAME) || empty($resultSAME['numVolume']) && (int)$data['volume'] === 0) || ((int)$data['volume'] > 0  && ((int)$resultSAME['numVolume'] >= (int)$data['volume']))) {
-                    $volume = $data['volume'];
-                }
-            }
-        }
-
-        $rules = [
-            'listaespera' => 'required|max_length[8]|numeric|equals['.$listaespera.']',
-            'volume' => 'max_length[2]|equals['.$volume.']',
-            'justificativa' => 'required|max_length[255]|min_length[3]'
-        ];
-
-        if ($this->validate($rules)) {
-            
-            $this->validator->reset();
-
-            $busca_hist_ant = ['SSGH'];
-
-            $local = $this->getUltimaLocalizacao($data['listaespera'], $data['volume'], $busca_hist_ant);
-
-            //var_dump($local);die();
-
-            $setor_user = $_SESSION['Sessao']['nmSetor'];
-
-            $receptor = $data['receptor'];
-
-            $ListaEsperaame = $this->getProntuario($data['listaespera'], $data['volume']);
-            $idsame = !empty($ListaEsperaame) ? $ListaEsperaame[0]->id : null;
-            //var_dump($ListaEsperaame);die();
-
-            if (empty($local)) {
-                //session()->setFlashdata('failed', 'Esse prontuário nunca foi tramitado!');
-                $listaespera_movimentado = false;
-                $setororigem = $setor_user;
-            } else {
-                $listaespera_movimentado = true;
-                $ult_loc = $local[0];
-                $setororigem = $ult_loc['setor'];
-            }
-
-            //if ($listaespera_movimentado && $setor_user != $ult_loc['setor']  && $ult_loc['tramite']) {
-            if ($listaespera_movimentado && $setor_user == $ult_loc['setortramite'] && $ult_loc['tramite']) {
-                session()->setFlashdata('failed', 'Esse prontuário já está em trâmite para o seu setor! ');
-            } else {
-                if ($listaespera_movimentado && $setor_user == $ult_loc['setor'] && !$ult_loc['tramite']) {
-                    session()->setFlashdata('failed', 'Esse prontuário já está localizado no seu setor! ');
-                } else {
-                    if ($listaespera_movimentado && $ult_loc['tramite']) {
-                        session()->setFlashdata('failed', 'Esse prontuário não pode ser solicitado por estar em trâmite para o setor '.$ult_loc['setortramite']);
-                    } else {
-                        if (!is_null($idsame) && !empty($this->solicitacaomodel->getWhere(['idDocumento' => $idsame, 'indSolicitacao' => 'P'])->getResult())) {
-                            session()->setFlashdata('failed', 'Não é possível solicitar o documento pois já existe uma solicitação para o mesmo!');
-                        } else {
-                            if (!$listaespera_movimentado) {
-                                session()->setFlashdata('failed', 'Não é possível solicitar o documento pois esse prontuário não foi tramitado!');
-                            } else {
-
-                                try 
-                                {
-                                    if (is_null($idsame)) {
-                                        $ListaEsperaame = [];
-                                        $ListaEsperaame['nmsetorAtual'] = $setororigem;
-                                        $ListaEsperaame['numProntuarioAGHU'] = $listaespera;
-                                        $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera'], $resultAGHUX[0]->codigo);
-                                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
-                                    }
-                                    
-                                    $solicitacao = [];
-                                    $solicitacao['idDocumento'] = $idsame;
-                                    $solicitacao['idReceptor'] = $receptor;
-                                    $solicitacao['idSolicitante'] = (int)$_SESSION['Sessao']['id'];
-                                    $solicitacao['nmSetorSolicitante'] = $setor_user;
-                                    $solicitacao['txtJustificativa'] = $data['justificativa'];
-
-                                    $this->solicitacaomodel->insert($solicitacao);
-
-                                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
-
-                                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                                    $msg = 'Erro na solicitação';
-                                    $msg .= ' - '.$e->getMessage();
-                                    log_message('error', $msg.': ' . $e->getMessage());
-                                    session()->setFlashdata('failed', $msg);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (!empty(session()->getFlashdata('failed'))) {
-                return redirect()->to(base_url('ListaEspera/historico/'.$listaespera.'/'.$volume));
-            } else {
-                return redirect()->to(base_url('ListaEspera/solicitacoesdosetor/'));
-            }
-
-        } else {
-            //session()->setFlashdata('error', $this->validator);
-            if(isset($result) && empty($result)) {
-                $this->validator->setError('listaespera', 'Esse prontuário não existe na base do AGHUX!');
-            }
-
-            if($volume === '100') {
-                $this->validator->setError('volume', 'Volume sem correspondência!');
-            }
-
-            session()->setFlashdata('error', $this->validator);
-
-            return view('ListaEspera/solicitar_listaespera', ['validation' => $this->validator,
-                                                             'select' => $this->usuariocontroller->getUsuariosSetor(session()->get('Sessao')['idSetor'])]);
-        }
-
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function receberProntuario(string $idlistaespera = null, string $nuvolume = null)
-    {
-     /*    HUAP_Functions::limpa_msgs_flash(); */
-
-        if (is_null($idlistaespera)) {
-            //return view('ListaEspera/receber_listaespera',  ['idlistaespera' => $idlistaespera,'nuvolume' => $nuvolume]);
-            return view('ListaEspera/receber_listaespera');
-        } else {
-            $this->recebe_listaespera(['listaespera' => $idlistaespera, 'volume' => $nuvolume]);
-            return redirect()->to(base_url('ListaEspera/historico/'.$idlistaespera.'/'.$nuvolume));
-        }
-
-    }
-    /**
-     * Create a new resource object, from "posted" parameters
-     *
-     * @return mixed
-     */
-    public function receber()
-    {        
-
-        helper(['form', 'url', 'session']);
-
-        \Config\Services::session();
-
-        $listaespera = '';
-        $volume = '100';
-
-        $data = $this->request->getVar();
-
-        if(!empty($data['listaespera']) && is_numeric($data['listaespera'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['listaespera']);
-
-            if(!empty($resultAGHUX[0])) {
-                $listaespera = $data['listaespera'];
-
-                $resultSAME = $this->getUltimoVolume($data['listaespera']);
-
-                if((empty($resultSAME) || empty($resultSAME['numVolume']) && (int)$data['volume'] === 0) || ((int)$data['volume'] > 0  && ((int)$resultSAME['numVolume'] >= (int)$data['volume']))) {
-                    $volume = $data['volume'];
-                }
-            }
-        }
-
-        $rules = [
-            'listaespera' => 'required|max_length[8]|numeric|equals['.$listaespera.']',
-            'volume' => 'max_length[2]|equals['.$volume.']'
-        ];
-
-        if ($this->validate($rules)) {
-
-            $this->validator->reset();
-
-            if ($this->recebe_listaespera($data)) {
-                //if ($data['origem_chamado'] === 'menu_tramite') {
-                    /* return view('ListaEspera/receber_listaespera',  ['idlistaespera' => null, 'nuvolume' => null]); */
-                    return redirect()->to(base_url('ListaEspera/receber/'));
-                //} else {
-                    //return redirect()->to(base_url('ListaEspera/historico/'.$listaespera.'/'.$volume));
-                //}
-            } else {
-                //if ($data['origem_chamado'] === 'menu_tramite') {
-                    return view('ListaEspera/receber_listaespera',  ['idlistaespera' => $listaespera, 'nuvolume' => $volume]);
-                //} else {
-                    //return redirect()->to(base_url('ListaEspera/historico/'.$listaespera.'/'.$volume));
-                //}
-            };
-
-        } else {
-            //session()->setFlashdata('error', $this->validator);
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
-                $this->validator->setError('listaespera', 'Esse prontuário não existe na base do AGHUX!');
-            }
-
-            if($volume === '100') {
-                $this->validator->setError('volume', 'Volume sem correspondência!');
-            }
-
-            return view('ListaEspera/receber_listaespera', ['validation' => $this->validator]);
-        }
-    }
-    /**
-     * Retorna um array de consultas agendadas
-     *
-     * @return mixed
-     */
-    public function ReceberEmLote() 
-    {
-        \Config\Services::session();
-
-        helper(['form', 'url', 'session']);
-
-        $ListaEsperaJSON = $this->request->getGet('ListaEspera');
-
-        $ListaEspera = json_decode(urldecode($ListaEsperaJSON), true);
-
-        if (empty($ListaEspera)) {
-            session()->setFlashdata('failed', 'Nenhum prontuário selecionado!');
-        } else {
-            foreach ($ListaEspera as $listaespera) {
-                //$data = [];
-                //$data["listaespera"] = $listaespera;
-
-                $this->recebe_listaespera($listaespera);
-
-            }
-
-            if (session()->has('failed')) {
-                session()->remove('failed');
-                $msg = 'Alguns Prontuários não puderam ser Recebidos!';
-                session()->setFlashdata('warning_message', $msg);
-                log_message('error', $msg);
-            } else {
-                session()->setFlashdata('success', 'Operação concluída com sucesso!');
-            }
-        }
-
-        return redirect()->to(base_url('ListaEspera/enviadosparaosetor'));
-
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function recebe_listaespera($data) {    
-
-        $setor_user = $_SESSION['Sessao']['nmSetor'];
-
-        $ListaEsperaame = $this->getProntuario($data['listaespera'], $data['volume']);
-
-        if (!empty($ListaEsperaame)) {
-            $idsame = $ListaEsperaame[0]->id;
-        } else {
-            $idsame = null;
-        }
-
-        $busca_hist_ant = ['MV', 'SSGH'];
-        
-        $local = $this->getUltimaLocalizacao($data['listaespera'], $data['volume'], $busca_hist_ant);
-
-        //die(var_dump($local));
-        if ($local && $local[0]['mov_origem'] != 'same' && $local[0]['tramite']) {
-            $tem_hist_ant = true;
-            $local = null;
-        } else {
-            $tem_hist_ant = false;
-        }
-
-        if (empty($local)) {
-            //session()->setFlashdata('failed', 'Esse prontuário nunca foi tramitado!');
-            //die(var_dump('ok'));
-            $listaespera_movimentado = false;
-            //$setororigem = $setor_user;
-        } else {
-            $listaespera_movimentado = true;
-            $ult_loc = $local[0];
-            //$setororigem = $ult_loc['setor'];
-        };
-
-        if ($tem_hist_ant) {
-            session()->setFlashdata('failed', 'Só é possível receber prontuário com movimentação no sistema atual!');
-        } else {
-            if (!$listaespera_movimentado || ($listaespera_movimentado && !$ult_loc['tramite'])) {
-                session()->setFlashdata('failed', 'Esse prontuário não se encontra em trâmite para recebimento!');
-            } else {
-                if (($listaespera_movimentado && $ult_loc['tramite'] && (($setor_user != $ult_loc['setortramite']) && !HUAP_Functions::permite_tramitar($ult_loc['setortramite'])))){
-                    session()->setFlashdata('failed', 'Esse prontuário não foi enviado para o seu setor!');
-                } else {
-
-                    try 
-                    {
-                        $ListaEsperaame = [];
-                        //$ListaEsperaame['nmSetorAtual'] = $setororigem;
-                        $ListaEsperaame['nmSetorAtual'] = $ult_loc['setortramite'];
-                        $ListaEsperaame['nmSetorTramite'] = null;
-
-                        if (is_null($idsame)) {
-                            $ListaEsperaame['numProntuarioAGHU'] = $data['listaespera'];
-                            $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera']);
-                            $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
-                        } else {
-                            $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
-                        }
-                        
-                        $movimentacao = [];
-                        $movimentacao['mov_origem'] = $ult_loc['mov_origem'];
-                        $movimentacao['id'] = $ult_loc['id'];
-                        $movimentacao['dtRecebimento'] = date('Y-m-d H:i:s');
-                        $movimentacao['idRecebedor'] = (int)$_SESSION['Sessao']['id'];
-                        $movimentacao['nmRecebedor'] = $_SESSION['Sessao']['NomeCompleto'];
-                        //$movimentacao['nmRecebedor'] = $this->usuariocontroller->getUsuario((int)$_SESSION['Sessao']['id']);
-                    
-                        $this->movimentacaomodel->editar($ult_loc['id'], $movimentacao);
-                    
-                        session()->setFlashdata('success', 'Operação concluída com sucesso!');
-
-                        return true;
-
-                    } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                        $msg = 'Erro no recebimento!';
-                        $msg .= ' - '.$e->getMessage();
-                        log_message('error', $msg.': ' . $e->getMessage());
-                        session()->setFlashdata('failed', $msg);
-                    }
-                }
-            }
-        }
-
-        return false;
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function resgatarProntuario()
-    {
-        HUAP_Functions::limpa_msgs_flash();
-
-        return view('ListaEspera/resgatar_listaespera');
-
-    }
-    /**
-     * Create a new resource object, from "posted" parameters
-     *
-     * @return mixed
-     */
-    public function resgatar()
-    {        
-        helper(['form', 'url', 'session']);
-
-        \Config\Services::session();
-
-        $listaespera = '';
-        $volume = '100';
-
-        //$perfil_same = true;
-
-        $data = $this->request->getVar();
-
-        if(!empty($data['listaespera']) && is_numeric($data['listaespera'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['listaespera']);
-
-            if(!empty($resultAGHUX[0])) {
-                $listaespera = $data['listaespera'];
-
-                $resultSAME = $this->getUltimoVolume($data['listaespera']);
-
-                if((empty($resultSAME) || empty($resultSAME['numVolume']) && (int)$data['volume'] === 0) || ((int)$data['volume'] > 0  && ((int)$resultSAME['numVolume'] >= (int)$data['volume']))) {
-                    $volume = $data['volume'];
-                }
-            }
-        }
-
-        $rules = [
-            'listaespera' => 'required|max_length[8]|numeric|equals['.$listaespera.']',
-            'volume' => 'max_length[2]|equals['.$volume.']',
-        ];
-
-        if ($this->validate($rules)) {
-            
-            $this->validator->reset();
-
-            //$local = $this->getUltimaLocalizacao($data['listaespera']);
-            $local = $this->getUltimaLocalizacao($listaespera, $data['volume']);
-
-            //var_dump($local[0]['setor']);die    ();
-
-            //if (!empty($local) && empty($local[0]['dtenvio'])) {
-            if (!empty($local)) {
-                session()->setFlashdata('failed', 'Esse prontuário já foi resgatado!');
-            //} else if (!empty($local) && !$local[0]['tramite']) {
-            } else if (!HUAP_Functions::permite_tramitar('ARQUIVO MÉDICO')) {
-                session()->setFlashdata('failed', 'Você não tem autorização para resgatar esse prontuário!');
-            } else {
-
-                $this->validator->reset();
-                
-                $setor_user = $_SESSION['Sessao']['nmSetor'];
-
-                try 
-                {
-                    $ListaEsperaame = $this->getProntuario($data['listaespera'], $data['volume']);
-
-                    $ListaEsperaame['nmSetorAtual'] = $_SESSION['Sessao']['nmSetor'];
-
-                    if (!empty($ListaEsperaame)) {
-                        //$ListaEsperaame = [];
-                        $idsame = $ListaEsperaame[0]->id;
-                        $this->vwlistaesperamodel->update($idsame, $ListaEsperaame);
-                    } else {
-                        $ListaEsperaame['numProntuarioAGHU'] = $listaespera;
-                        $ListaEsperaame['numProntuarioMV'] = $this->pacientesmvcontroller->getProntuarioMV($data['listaespera'], $resultAGHUX[0]->codigo);
-                        $idsame = $this->vwlistaesperamodel->insert($ListaEsperaame);
-                    }
-                    $movimentacao = [];
-                    $movimentacao['idProntuario'] = $idsame;
-                    $movimentacao['nmSetorOrigem'] = $setor_user;
-                    $movimentacao['idResgatador'] = (int)$_SESSION['Sessao']['id'];
-
-                    $this->movimentacaomodel->insert($movimentacao);
-                
-                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
-
-                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                    $msg = 'Erro no resgate do prontuário!';
-                    $msg .= ' - '.$e->getMessage();
-                    log_message('error', $msg.': ' . $e->getMessage());
-                    session()->setFlashdata('failed', $msg);
-                }
-            }
-
-            return redirect()->to(base_url('ListaEspera/historico/'.$listaespera.'/'.$volume));
-
-        } else {
-            //session()->setFlashdata('error', $this->validator);
-
-            if(isset($result) && empty($result)) {
-                $this->validator->setError('listaespera', 'Esse prontuário não existe na base do AGHUX!');
-            }
-
-            if($volume === '100') {
-                $this->validator->setError('volume', 'Volume sem correspondência!');
-            }
-
-            return view('ListaEspera/resgatar_listaespera', ['validation' => $this->validator]);
-        }
-    }
-    /**
+        /**
      * Create a new resource object, from "posted" parameters
      *
      * @return mixed
