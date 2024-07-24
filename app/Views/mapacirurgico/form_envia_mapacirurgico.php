@@ -16,7 +16,7 @@
                                     <label for="dtcirurgia" class="form-label">Data/Hora da Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM:SS"
-                                            class="form-control<?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
+                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
                                             <div class="invalid-feedback">
