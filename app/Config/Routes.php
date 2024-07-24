@@ -28,6 +28,12 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('enviar', 'ListaEspera::enviar');
 });
 
+$routes->group('mapacirurgico', function ($routes) {
+    $routes->get('consultar', 'MapaCirurgico::consultarMapaCirurgico');
+    $routes->add('exibir', 'MapaCirurgico::exibirMapaCirurgico');
+    $routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
+});
+
 $routes->group('usuarios', function ($routes) {
     $routes->get('', 'Usuarios');
     $routes->post('', 'Usuarios::create');

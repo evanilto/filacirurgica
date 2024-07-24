@@ -20,7 +20,7 @@ use CodeIgniter\Database\Exceptions\DatabaseException;
 use PHPUnit\Framework\Constraint\IsNull;
 
 
-class ListaEspera extends ResourceController
+class MapaCirurgico extends ResourceController
 {
     private $listaesperamodel;
     private $vwlistaesperamodel;
@@ -90,7 +90,7 @@ class ListaEspera extends ResourceController
      */
     public function getFirst() {
         
-        return $this->listaesperamodel->orderBy('created_at', 'ASC')->first();;
+        return $this->mapacirurgicomodel->orderBy('created_at', 'ASC')->first();;
     }
      /**
      * Return the properties of a resource object
@@ -129,26 +129,19 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function consultarListaEspera(string $idlistaespera = null)
+    public function consultarMapaCirurgico(string $idmapacirurgico = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 
         $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
         $data['dtfim'] = date('d/m/Y');
-        /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-        $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-        $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        $data['especialidades'] = $this->aghucontroller->getEspecialidades($especialidades);
-        $data['origens'] = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll(); */
-
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
-        //$data['origens'] = $this->selectorigempaciente;
         $data['especialidades'] = $this->selectespecialidadeaghu;
 
         //die(var_dump($data));
 
-        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                             'data' => $data]);
 
     }
@@ -157,7 +150,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function exibirListaEspera()
+    public function exibirMapaCirurgico()
     {        
         helper(['form', 'url', 'session']);
 
@@ -189,8 +182,8 @@ class ListaEspera extends ResourceController
             if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
                 $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
             }
@@ -200,7 +193,7 @@ class ListaEspera extends ResourceController
             $horaAtual = date('H:i:s');
             $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
 
-            $result = $this->getListaEspera($data);
+            $result = $this->getMapaCirurgico($data);
 
             if (empty($result)) {
 
@@ -208,8 +201,8 @@ class ListaEspera extends ResourceController
                 $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
                 $data['especialidades'] = $this->aghucontroller->getEspecialidades();
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_mapacirurgico',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
             
@@ -217,8 +210,8 @@ class ListaEspera extends ResourceController
 
             //die(var_dump($result));
 
-            return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                               'listaespera' => $result,
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_mapacirurgico',
+                                               'mapacirurgico' => $result,
                                                'data' => $data]);
 
         } else {
@@ -230,7 +223,7 @@ class ListaEspera extends ResourceController
             $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
             $data['especialidades'] = $this->aghucontroller->getEspecialidades();
 
-            return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                                 'validation' => $this->validator,
                                                 'data' => $data]);
         }
@@ -240,13 +233,13 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getListaEspera ($data) 
+    public function getMapaCirurgico ($data) 
     {
         //die(var_dump($data));
 
         $db = \Config\Database::connect('default');
 
-        $builder = $db->table('vw_listaespera');
+        $builder = $db->table('vw_mapacirurgico');
 
         //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
         $builder->where("created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
@@ -629,8 +622,8 @@ class ListaEspera extends ResourceController
      */
     public function excluirPacienteDaLista(int $id)
     {
-        $data = session()->get('parametros_consulta_lista');
-        session()->remove('parametros_consulta_lista');
+        $data = session()->get('parametros_consulta_mapa');
+        session()->remove('parametros_consulta_mapa');
 
         //die(var_dump($data));
 

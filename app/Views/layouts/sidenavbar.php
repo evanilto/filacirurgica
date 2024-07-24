@@ -26,14 +26,14 @@
     <ul class="nav flex-column">
         <?php if(true) { ?>
             <li>
-                <a href="#agendas" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
+                <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Mapa Cirúrgico
                 </a>
-                <div class="collapse" id="agendas">
+                <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
                         <li>
-                            <a href="<?= base_url('agendas/recuperaragendas') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Buscar
+                            <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
                     </ul>

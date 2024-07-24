@@ -1,7 +1,7 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+            <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" data-field="id" >Ordem</th>
@@ -11,7 +11,7 @@
             <th scope="col" data-field="prontuarioaghu" >Origem</th>
             <th scope="col" data-field="prontuarioaghu" >Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
-            <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
+            <th scope="col" data-field="prontuarioaghu" >Procedimento Principal</th>
             <th scope="col" data-field="prontuarioaghu" >CID</th>
             <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
             <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
@@ -23,41 +23,41 @@
         </tr>
     </thead>
     <tbody>
-        <?php foreach($listaespera as $itemlista): 
-            $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
-            $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
+        <?php foreach($mapacirurgico as $itemmapa): 
+            $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
+            $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
         ?>
             <tr>
-                <td><?php echo $itemlista->ordem_fila ?></td>
-                <td><?php echo $itemlista->created_at ?></td>
-                <td><?php echo $itemlista->prontuario ?></td>
-                <td><?php echo $itemlista->nome_paciente ?></td>
-                <td><?php echo $itemlista->origem_descricao ?></td>
-                <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->especialidade_descricao ?></td>
-                <td><?php echo $itemlista->procedimento_descricao ?></td>
-                <td><?php echo $itemlista->cid ?></td>
-                <td><?php echo $itemlista->cid_descricao ?></td>
-                <td><?php echo $itemlista->complexidade ?></td>
-                <td><?php echo $itemlista->lateralidade ?></td>
-                <td><?php echo $itemlista->indcongelacao ?></td>
-                <td><?php echo $itemlista->risco_descricao ?></td>
-                <td><?php echo $itemlista->data_risco ?></td>
+                <td><?php echo $itemmapa->ordem_mapa ?></td>
+                <td><?php echo $itemmapa->created_at ?></td>
+                <td><?php echo $itemmapa->prontuario ?></td>
+                <td><?php echo $itemmapa->nome_paciente ?></td>
+                <td><?php echo $itemmapa->origem_descricao ?></td>
+                <td><?php echo $itemmapa->fila ?></td>
+                <td><?php echo $itemmapa->especialidade_descricao ?></td>
+                <td><?php echo $itemmapa->procedimento_principal ?></td>
+                <td><?php echo $itemmapa->cid ?></td>
+                <td><?php echo $itemmapa->cid_descricao ?></td>
+                <td><?php echo $itemmapa->complexidade ?></td>
+                <td><?php echo $itemmapa->lateralidade ?></td>
+                <td><?php echo $itemmapa->indcongelacao ?></td>
+                <td><?php echo $itemmapa->risco_descricao ?></td>
+                <td><?php echo $itemmapa->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/editarlista/'.$itemlista->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
+                    <?php echo anchor('mapacirurgico/editarmapa/'.$itemmapa->idmapa, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
                 </td> <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico')) ?>
+                    <?php echo anchor('mapacirurgico/enviarmapa/'.$itemmapa->idmapa, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico')) ?>
                 </td>
-                <?=  session()->set('parametros_consulta_lista', $data); ?>
+                <?=  session()->set('parametros_consulta_mapa', $data); ?>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
+                    <?php echo anchor('mapacirurgico/excluir/'.$itemmapa->idmapa, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
                 </td>
             </tr>
         <?php endforeach; ?>
     </tbody>
 </table>
 <div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
+    <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/consultar') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
 </div>
@@ -100,7 +100,7 @@
 
         function loadAsideContent(recordId) {
             $.ajax({
-                url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
+                url: '<?= base_url('mapacirurgico/carregaaside/') ?>' + recordId,
                 method: 'GET',
                 beforeSend: function() {
                     $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
