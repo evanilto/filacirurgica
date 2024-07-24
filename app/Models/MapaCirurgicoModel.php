@@ -18,12 +18,14 @@ class MapaCirurgicoModel extends Model
         'dthrcirurgia',
         'dthrsaida',
         'dthrsuspensao',
-        'dtagendacirurgia',
+        'dthragendacirurgia',
         'idcentrocirurgico',
         'idsala',
         'idposoperatorio',
         'indhemoderivados',
         'dthrsaidacentrocirurgico',
+        'txtnecessidadesproced',
+        'txtjustificativaenvio',
         'numordem'
     ];
 

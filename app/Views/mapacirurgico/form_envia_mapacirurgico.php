@@ -131,30 +131,27 @@
                         <div class="row g-3">
                             <div class="col-md-5">
                                 <div class="mb-4">
-                                    <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
-                                                id="proced_adic" name="proced_adic[]" multiple="multiple"
-                                                data-placeholder="" data-allow-clear="1">
-                                            <?php
-                                            // Certifique-se de que $data['proced_adic'] está definido como um array
-                                            $data['proced_adic'] = isset($data['proced_adic']) ? (array)$data['proced_adic'] : [];
-
-                                            // Certifique-se de que o array não tenha valores vazios
-                                            $data['proced_adic'] = array_filter($data['proced_adic']);
-                                            
-                                            foreach ($data['procedimentos_adicionais'] as $procedimento) {
-                                                $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
-                                                echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->hasError('proced_adic')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('proced_adic') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
+                                <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
+                                <div class="input-group">
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
+                                            id="proced_adic" name="proced_adic[]" multiple="multiple"
+                                            data-placeholder="" data-allow-clear="1">
+                                        <?php
+                                        // Certifique-se de que $data['proced_adic'] está definido como um array
+                                        $data['proced_adic'] = isset($data['proced_adic']) ? (array)$data['proced_adic'] : [];
+                                        $data['proced_adic'] = array_filter($data['proced_adic']);
+                                        
+                                        foreach ($data['procedimentos_adicionais'] as $procedimento) {
+                                            $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
+                                            echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                    <?php if ($validation->hasError('proced_adic')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('proced_adic') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-7">
@@ -430,8 +427,14 @@
                                                 // Certifique-se de que o array não tenha valores vazios
                                                 $data['profissional'] = array_filter($data['profissional']);
 
+                                                $array_selected = [];
                                                 foreach ($data['prof_especialidades'] as $prof_espec) {
-                                                    $selected = in_array($prof_espec->pes_codigo, $data['profissional']) ? 'selected' : '';
+                                                    if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
+                                                        $selected = 'selected';
+                                                        $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
+                                                    } else {
+                                                        $selected = '';
+                                                    }
                                                     echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
                                                 }
                                                 ?>
@@ -549,24 +552,27 @@
             $("#profissional").empty();
             
             // Adicione as opções que já estão selecionadas primeiro para garantir que sejam visíveis
+            var addedOptions = [];
             <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
-            var especie = '<?= $prof_espec->esp_seq ?>';
             var value = '<?= $prof_espec->pes_codigo ?>';
             var text = '<?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>';
-            if (selectedValues.includes(value)) {
-                var option = new Option(text, value, false, true);
+            var especie = '<?= $prof_espec->esp_seq ?>';
+            if (selectedValues.includes(value) && !addedOptions.includes(value)) {
+                var option = new Option(text, value, true, true);
                 $("#profissional").append(option);
+                addedOptions.push(value);
             }
             <?php endforeach; ?>
 
             // Adicione as opções que correspondem ao filtro (mas não estão selecionadas)
             <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
-            var especie = '<?= $prof_espec->esp_seq ?>';
             var value = '<?= $prof_espec->pes_codigo ?>';
             var text = '<?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>';
-            if ((!selectedValues.includes(value)) && (!selectedFilter || selectedFilter === especie)) {
+            var especie = '<?= $prof_espec->esp_seq ?>';
+            if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === especie)) {
                 var option = new Option(text, value, false, false);
                 $("#profissional").append(option);
+                addedOptions.push(value);
             }
             <?php endforeach; ?>
             
@@ -574,16 +580,34 @@
             $('#profissional').val(selectedValues).trigger('change');
         }
 
-        // Atualiza a lista de prof_especs baseado no filtro selecionado
+        // Atualiza a lista de profissionais baseado no filtro selecionado
         $('#filtro_especialidades').change(function() {
             var selectedFilter = $(this).val();
             updateProfEspecialidades(selectedFilter);
         });
 
-        // Inicializa os procedimentos adicionais já selecionados
+        // Inicializa os profissionais adicionais já selecionados
         updateProfEspecialidades($('#filtro_especialidades').val());
 
-        // Fim do filtro de profissionais ----------------------------------------------------------------------------
+        $('#profissional').on('change', function() {
+            $('#profissional_hidden').val($(this).val());
+        });
+
+        // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
+        $('#profissional_hidden').val($('#profissional').val());
+
+        // Fim do filtro de profissionais -----------------------------------------------------------------------
+
+        // Procedimentos Adicionais  ----------------------------------------------------------------------------
+
+        $('#proced_adic').on('change', function() {
+            $('#proced_adic_hidden').val($(this).val());
+        });
+
+        // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
+        $('#proced_adic_hidden').val($('#proced_adic').val());
+        
+        // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
         $('#idForm').submit(function() {
             $('#janelaAguarde').show();
@@ -601,20 +625,6 @@
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
         });
-
-        $('#proced_adic').on('change', function() {
-            $('#proced_adic_hidden').val($(this).val());
-        });
-
-        // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
-        $('#proced_adic_hidden').val($('#proced_adic').val());
-
-        $('#profissional').on('change', function() {
-            $('#profissional_hidden').val($(this).val());
-        });
-
-        // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
-        $('#profissional_hidden').val($('#profissional').val());
 
     });
 </script>
