@@ -20,33 +20,31 @@
             $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
         ?>
             <tr>
-                <td style="text-align: center; vertical-align: middle;">
-                    <i class="fa-regular fa-square-full" style="color: <?= $itemmapa->status_fila == 'Realizada' ? '#6495ED' : 'black' ?>; background-color: <?= $itemmapa->status_fila == 'Realizada' ? '#6495ED' : 'white' ?>"></i>
-                </td>
+                <td style="text-align: center; vertical-align: middle;"><i class="fa-regular fa-square-full" style="color: yellow; background-color: yellow"></i></td>
                 <td><?php echo $itemmapa->prontuario ?></td>
                 <td><?php echo $itemmapa->fila ?></td>
                 <td><?php echo $itemmapa->especialidade_descricao ?></td>
                 <td><?php echo $itemmapa->procedimento_principal ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('mapacirurgico/enviarmapa/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: green; background-color: #32CD32"></i>', array('title' => 'Entrada no Centro Cirúrgica')) ?>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('mapacirurgico/editarmapa/'.$itemmapa->idmapa, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Consultar/Atualizar Mapa')) ?>
+                </td>
+                 <td style="text-align: center; vertical-align: middle;">
+                    <?php echo anchor('mapacirurgico/enviarmapa/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: green; background-color: green"></i>', array('title' => 'Entrada na Sala Cirúrgica')) ?>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('mapacirurgico/excluir/'.$itemmapa->idmapa, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
@@ -58,21 +56,23 @@
         <?php endforeach; ?>
     </tbody>
 </table>
-<div class="container mt-3">
-    <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
-        <i class="fa-solid fa-arrow-left"></i> Voltar
-    </a>
-    <table class="legend-table">
-        <tr>
-            <td class="legend-cell" style="background-color: yellow; color: black;">Aguardando</td>
-            <td class="legend-cell" style="background-color: #32CD32; color: black;">No Centro Cirúrgico</td>
-            <td class="legend-cell" style="background-color: green;">Em Cirurgia</td>
-            <td class="legend-cell" style="background-color: #87CEFA; color: black;">Saída da Sala</td>
-            <td class="legend-cell" style="background-color: #6495ED; color: black;">Saída C. Cirúrgico</td>
-            <td class="legend-cell" style="background-color: #E9967A; color: black;">Troca de Paciente</td>
-            <td class="legend-cell" style="background-color: red;">Cirurgia Suspensa</td>
-        </tr>
-    </table>
+<div class="col-md-12">
+    <div class="col-md-6">
+        <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/consultar') ?>">
+            <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
+    </div>
+    <div class="col-md-6">
+        <table class="legend-table">
+            <tr>
+                <td class="legend-cell" style="background-color: red;">Urgente</td>
+                <td class="legend-cell" style="background-color: orange;">Alto</td>
+                <td class="legend-cell" style="background-color: yellow; color: black;">Médio</td>
+                <td class="legend-cell" style="background-color: green;">Baixo</td>
+                <td class="legend-cell" style="background-color: blue;">Informativo</td>
+            </tr>
+        </table>
+    </div>
 </div>
 <script>
   function mostrarAguarde(event, href) {

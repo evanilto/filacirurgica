@@ -4,30 +4,15 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MapaCirurgicoModel extends Model
+class VwStatusFilaCirurgicaModel extends Model
 {
-    protected $table            = 'mapa_cirurgico';
+    protected $table            = 'vw_listaespera';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
-    protected $protectFields    = true;
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = false;
     protected $allowedFields    = [
-        'idlistacirurgica',
-        'dthrnocentrocirurgico',
-        'dthrcirurgia',
-        'dthrsaida',
-        'dthrsuspensao',
-        'dthrcirurgiaestimada',
-        'idcentrocirurgico',
-        'idsala',
-        'idposoperatorio',
-        'indhemoderivados',
-        'dthrsaidacentrocirurgico',
-        'txtnecessidadesproced',
-        'txtjustificativaenvio',
-        'txtjustificativasuspensao',
-        'numordem'
     ];
 
     // Dates

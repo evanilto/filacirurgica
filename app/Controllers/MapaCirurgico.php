@@ -5,6 +5,7 @@ use CodeIgniter\RESTful\ResourceController;
 use App\Libraries\HUAP_Functions;
 use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
+use App\Models\VwStatusFilaCirurgicaModel;
 use App\Models\MapaCirurgicoModel;
 use App\Models\FilaModel;
 use App\Models\RiscoModel;
@@ -24,6 +25,7 @@ class MapaCirurgico extends ResourceController
 {
     private $listaesperamodel;
     private $vwlistaesperamodel;
+    private $vwstatusfilacirurgicamodel;
     private $mapacirurgicomodel;
     private $filamodel;
     private $riscomodel;
@@ -51,6 +53,7 @@ class MapaCirurgico extends ResourceController
     {
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
+        $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
         $this->mapacirurgicomodel = new MapaCirurgicoModel();
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
@@ -233,46 +236,63 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function getMapaCirurgico ($data) 
-    {
-        //die(var_dump($data));
+    public function getMapaCirurgico($data) 
+{
+    // Conexão com o banco de dados
+    $db = \Config\Database::connect('default');
 
-        $db = \Config\Database::connect('default');
+    // Iniciando o Query Builder na tabela vw_mapacirurgico
+    $builder = $db->table('vw_mapacirurgico');
 
-        $builder = $db->table('vw_mapacirurgico');
+    // Adicionando o JOIN com vw_statusfilacirurgica
+    $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'left');
 
-        //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
-        $builder->where("created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+    // Selecionando campos específicos com aliases
+    $builder->select('
+        vw_mapacirurgico.*,
+        (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+    ');
 
-        if (!empty($data['prontuario'])) {
-            //$clausula_where .= " AND prontuario = $data[prontuario]";
-            $builder->where('prontuario', $data['prontuario']);
-        };
-        if (!empty($data['nome'])) {
-            //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
-            $builder->where('nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
-        };
-        if (!empty($data['especialidade'])) {
-            //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
-            $builder->where('idespecialidade', $data['especialidade']);
-        };
-        if (!empty($data['fila'])) {
-            //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
-            $builder->where('idtipoprocedimento', $data['fila']);
-        };
-        if (!empty($data['risco'])) {
-            //$clausula_where .= " AND  idrisco = $data[risco]";
-            $builder->where('idriscocirurgico',  $data['risco']);
-        };
-        if (!empty($data['complexidades'])) {
-            //$clausula_where .= " AND  idrisco = $data[risco]";
-            $builder->whereIn('complexidade',  $data['complexidades']);
-        };
+    // Adicionando a cláusula WHERE para o intervalo de datas
+    $builder->where("vw_mapacirurgico.dthrcirurgiaestimada BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
 
-        //var_dump($builder->getCompiledSelect());die();
-
-        return $builder->get()->getResult();
+    // Condicional para prontuario
+    if (!empty($data['prontuario'])) {
+        $builder->where('vw_mapacirurgico.prontuario', $data['prontuario']);
     }
+
+    // Condicional para nome
+    if (!empty($data['nome'])) {
+        $builder->like('vw_mapacirurgico.nome_paciente', strtoupper($data['nome']));
+    }
+
+    // Condicional para especialidade
+    if (!empty($data['especialidade'])) {
+        $builder->where('vw_mapacirurgico.idespecialidade', $data['especialidade']);
+    }
+
+    // Condicional para fila
+    if (!empty($data['fila'])) {
+        $builder->where('vw_mapacirurgico.idtipoprocedimento', $data['fila']);
+    }
+
+    // Condicional para risco
+    if (!empty($data['risco'])) {
+        $builder->where('vw_mapacirurgico.idriscocirurgico', $data['risco']);
+    }
+
+    // Condicional para complexidades
+    if (!empty($data['complexidades'])) {
+        $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
+    }
+
+    // Debug da query (opcional)
+     //var_dump($builder->get()->getResult());die();
+
+    // Executa a query e retorna os resultados
+    return $builder->get()->getResult();
+}
+
     /**
      * Return a new resource object, with default properties
      *
@@ -292,6 +312,25 @@ class MapaCirurgico extends ResourceController
         $builder->where('idprocedimento', $data['procedimento']);
         //$builder->where('nmlateralidade', $data['lateralidade']);
 
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getStatusCirurgia ($data) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('vw_statusfilacirurgica');
+
+        $builder->where('idlistaespera', $data['id_listaespera']);
+       
         //var_dump($builder->getCompiledSelect());die();
 
         return $builder->get()->getResult();

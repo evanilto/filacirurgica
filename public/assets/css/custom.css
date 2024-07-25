@@ -268,6 +268,31 @@ tfoot {
     padding-left: 4px;
 }
 
+.container {
+    display: flex;
+    justify-content: space-between; /* espaços iguais entre os itens */
+    align-items: center;
+}
+
+.legend-table {
+    border-collapse: collapse; /* Para garantir que as bordas não se sobreponham */
+    border: none; /* Remove a borda da tabela */
+    vertical-align: bottom;
+    max-width: 80%
+}
+
+.legend-cell {
+    width: 100px;  
+    height: 30px; 
+    text-align: center;
+    vertical-align: middle;
+    font-size: 0.75rem; /* diminuir tamanho da fonte */
+    padding: 0px;  /* reduzir espaço interno */
+    color: #fff;
+    border: none; /* Remove a borda das células */
+    /*font-weight: bold;  */
+}
+
 ************** Spinner ***************************/        
 .modal {
 display: none;
