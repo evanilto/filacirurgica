@@ -3,15 +3,14 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="14" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
+            <th scope="col" colspan="13" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
             <th scope="col" class="col-0" >Situação</th>
-            <th scope="col" data-field="fila" >Fila</th>
+            <th scope="col" data-field="prontuarioaghu" >Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
-            <th scope="col" data-field="nome" >Nome do Paciente</th>
-            <th scope="col" data-field="dthrcirurgiaestimada" >DtHr Prevista</th>
+            <th scope="col" data-field="prontuarioaghu" >Nome do Paciente</th>
             <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
         </tr>
     </thead>
@@ -72,16 +71,7 @@
             }
             
         ?>
-            <tr
-                data-prontuario="<?= $itemmapa->prontuario ?>" 
-                data-nome_paciente="<?= $itemmapa->nome_paciente ?>" 
-                data-fila="<?= $itemmapa->fila ?>"
-                data-especialidade="<?= $itemmapa->especialidade_descricao ?>"
-                data-cid="<?= $itemmapa->cid_descricao ?>"
-                data-procedimento="<?= $itemmapa->procedimento_principal ?>"
-                data-ordem="<?= $itemmapa->ordem_mapa ?>"
-                data-complexidade="<?= $itemmapa->complexidade ?>">
-
+            <tr>
                 <td><?php echo $itemmapa->id ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?>"></i>
@@ -89,8 +79,7 @@
                 <td><?php echo $itemmapa->fila ?></td>
                 <td><?php echo $itemmapa->prontuario ?></td>
                 <td><?php echo $itemmapa->nome_paciente ?></td>
-                <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgiaestimada)->format('d/m/Y H:i') ?></td>
-                                <td style="text-align: center; vertical-align: middle;">
+                <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
                             echo anchor('mapacirurgico/nocentrocirurgico/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i>', array('title' => 'Entrada no Centro Cirúrgico'));
@@ -160,7 +149,7 @@
         <?php endforeach; ?>
     </tbody>
 </table>
-<div class="container-legend mt-3">
+<div class="container mt-3">
     <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
@@ -188,131 +177,85 @@
     }, 1000);
   }
   $(document).ready(function() {
-    $('#table').DataTable({
-        "order": [[0, 'asc']],
-        "lengthChange": true,
-        "pageLength": 15,
-        "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
-        "language": {
-            "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
-        },
-        "autoWidth": false,
-        "scrollX": true,
-        "columnDefs": [
+        $('#table').DataTable({
+            "order": [[0, 'asc']],
+            "lengthChange": true,
+            "pageLength": 15,
+            "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
+            "language": {
+                "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
+            },
+            "autoWidth": false,  /* Desative a largura automática */
+            "scrollX": true,  /* Ative a rolagem horizontal */
+            "columnDefs": [
             { "orderable": false, "targets": [0, 5] },
             { "visible": false, "targets": [0] }
-        ],
-        layout: { topStart: { buttons: [
-            'copy',
-            'csv',
-            'excel',
-            'pdf',
-            'print' 
-        ] } }
+            ],
+            layout: { topStart: { buttons: [
+                'copy',
+                'csv',
+                'excel',
+                'pdf',
+                'print' 
+            ] } }
+        });
+
+        var table = $('#table').DataTable();
+        var firstRecordId;
+
+        function loadAsideContent(recordId) {
+            $.ajax({
+                url: '<?= base_url('mapacirurgico/carregaaside/') ?>' + recordId,
+                method: 'GET',
+                beforeSend: function() {
+                    $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
+                },
+                success: function(response) {
+                    $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
+                },
+                error: function(xhr, status, error) {
+                    var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
+                    console.error(errorMessage);
+                    console.error(xhr.responseText);
+                    $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
+                }
+            });
+        }
+
+        $('#table tbody').on('click', 'tr', function() {
+
+            $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
+            /* $('#table tbody tr').removeClass('lineselected');
+            $(this).addClass('lineselected'); */
+
+            var data = table.row(this).data(); // Obtenha os dados da linha clicada
+            var recordId = data[0]; // posição do idmapa na tabela
+
+            loadAsideContent(recordId); 
+
+        });
+
+        function markFirstRecordSelected() {
+            // Obter o índice do primeiro registro na página
+            var firstRecordIndex = table.page.info().start;
+
+            // Selecionar a linha correspondente ao índice
+            var $firstRecordRow = $(table.row(firstRecordIndex).node());
+
+            // Remover a classe 'selected' de todas as linhas e adicionar ao primeiro registro da página
+            $('#table tbody tr').removeClass('lineselected');
+            $firstRecordRow.addClass('lineselected');
+
+            // Obter os dados do registro selecionado e carregar os detalhes no aside
+            var data = table.row(firstRecordIndex).data();
+            var recordId = data[0]; // posição do idmapa na tabela
+            loadAsideContent(recordId);
+        }
+
+        // Marcar o primeiro registro como selecionado ao redesenhar a tabela
+        table.on('draw.dt', function() {
+            markFirstRecordSelected();
+        });
     });
-
-    var table = $('#table').DataTable();
-
-    // Função para exibir os dados na seção aside
-    function displayAsideContent(paciente) {
-        var htmlContent = `
-            <h6><strong>Paciente</strong></h6>
-            <table class="table table-left-aligned table-smaller-font">
-                <tbody>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Mapa:</td>
-                        <td><b>${paciente.ordem}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-user"></i> Prontuário:</td>
-                        <td><b>${paciente.prontuario}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-user"></i> Nome:</td>
-                        <td><b>${paciente.nome}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Fila:</td>
-                        <td><b>${paciente.fila}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Especialidade:</td>
-                        <td><b>${paciente.especialidade}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Procedimento Principal:</td>
-                        <td><b>${paciente.procedimento}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> CID:</td>
-                        <td><b>${paciente.cid}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Complexidade:</td>
-                        <td><b>${paciente.complexidade}</b></td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
-        // Atualizar o conteúdo do aside
-        $('#sidebar').html(htmlContent);
-    }
-
-    $('#table tbody').on('click', 'tr', function() {
-        $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
-
-        // Cria um objeto de paciente com os dados
-        var paciente = {
-            prontuario: $(this).data('prontuario'),
-            nome: $(this).data('nome_paciente'),
-            especialidade: $(this).data('especialidade'),
-            cid: $(this).data('cid'),
-            procedimento: $(this).data('procedimento'),
-            ordem: $(this).data('ordem'),
-            complexidade: $(this).data('complexidade'),
-            fila:  $(this).data('fila')
-        };
-
-        // Exibe as informações do paciente na seção aside
-        displayAsideContent(paciente);
-    });
-
-    function markFirstRecordSelected() {
-        // Obter o índice do primeiro registro na página
-        var firstRecordIndex = table.page.info().start;
-
-        // Selecionar a linha correspondente ao índice
-        var $firstRecordRow = $(table.row(firstRecordIndex).node());
-
-        // Remover a classe 'lineselected' de todas as linhas e adicionar ao primeiro registro da página
-        $('#table tbody tr').removeClass('lineselected');
-        $firstRecordRow.addClass('lineselected');
-
-        // Cria um objeto de paciente
-        var paciente = {
-            prontuario: $firstRecordRow.data('prontuario'),
-            nome: $firstRecordRow.data('nome_paciente'),
-            especialidade: $firstRecordRow.data('especialidade'),
-            cid: $firstRecordRow.data('cid'),
-            procedimento: $firstRecordRow.data('procedimento'),
-            ordem: $firstRecordRow.data('ordem'),
-            complexidade: $firstRecordRow.data('complexidade'),
-            fila: $firstRecordRow.data('fila')
-        };
-
-        // Exibe os detalhes do primeiro registro
-        displayAsideContent(paciente);
-    }
-
-    // Marcar o primeiro registro como selecionado ao inicializar a DataTable
-    markFirstRecordSelected();
-
-    table.on('draw.dt', function() {
-        markFirstRecordSelected();
-    });
-
-});
-
 </script>
 

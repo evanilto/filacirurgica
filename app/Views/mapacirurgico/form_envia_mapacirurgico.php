@@ -130,28 +130,29 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-5">
-                                <div class="mb-4">
-                                <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
-                                <div class="input-group">
-                                    <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
-                                            id="proced_adic" name="proced_adic[]" multiple="multiple"
-                                            data-placeholder="" data-allow-clear="1">
-                                        <?php
-                                        // Certifique-se de que $data['proced_adic'] está definido como um array
-                                        $data['proced_adic'] = isset($data['proced_adic']) ? (array)$data['proced_adic'] : [];
-                                        $data['proced_adic'] = array_filter($data['proced_adic']);
-                                        
-                                        foreach ($data['procedimentos_adicionais'] as $procedimento) {
-                                            $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
-                                            echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                    <?php if ($validation->hasError('proced_adic')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('proced_adic') ?>
-                                        </div>
-                                    <?php endif; ?>
+                                <div class="mb-3">
+                                    <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
+                                                id="proced_adic" name="proced_adic[]" multiple="multiple"
+                                                data-placeholder="" data-allow-clear="1">
+                                            <?php
+                                            // Certifique-se de que $data['proced_adic'] está definido como um array
+                                            $data['proced_adic'] = isset($data['proced_adic']) ? (array)$data['proced_adic'] : [];
+                                            $data['proced_adic'] = array_filter($data['proced_adic']);
+                                            
+                                            foreach ($data['procedimentos_adicionais'] as $procedimento) {
+                                                $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
+                                                echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->hasError('proced_adic')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('proced_adic') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-7">

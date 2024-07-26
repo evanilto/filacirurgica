@@ -3,7 +3,7 @@
     <table class="table table-left-aligned table-smaller-font">
         <tbody>
             <tr>
-                <td width="40%"><i class="fa-solid fa-hashtag"></i> Prontuário:</td>
+                <td width="40%"><i class="fa-solid fa-user"></i> Prontuário:</td>
                 <td><b><?= $paciente[0]->prontuario ?></b></td>
             </tr>
             <tr>

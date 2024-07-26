@@ -28,7 +28,7 @@
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
             <tr>
-                <td><?php echo $itemlista->ordem_fila ?></td>
+                <td><?php echo $itemlista->ordem_lista ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome_paciente ?></td>

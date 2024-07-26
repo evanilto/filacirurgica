@@ -268,7 +268,7 @@ tfoot {
     padding-left: 4px;
 }
 
-.container {
+.container-legend {
     display: flex;
     justify-content: space-between; /* espaços iguais entre os itens */
     align-items: center;
