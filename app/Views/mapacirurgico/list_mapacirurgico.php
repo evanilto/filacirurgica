@@ -3,56 +3,142 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="14" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
+            <th scope="col" colspan="11" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" >Situação</th>
-            <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Fila</th>
-            <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
-            <th scope="col" data-field="prontuarioaghu" >Procedimento Principal</th>
-            <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
+            <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+            <th scope="col" data-field="prontuarioaghu" >Nome do Paciente</th>
+            <th scope="col" class="col-0" colspan="7" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach($mapacirurgico as $itemmapa): 
             $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
             $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
+
+           $corProgramada = 'yellow';
+           $corNoCentroCirúrgico = '#97DA4B';
+           $corEmCirurgia = '#804616';
+           $corSaídaDaSala = '#87CEFA';
+           $corSaídaCentroCirúrgico = '#277534';
+           $corTrocaPaciente = '#E9967A';
+           $corCirurgiaSuspensa = '#B54398';
+           $corCirurgiaCancelada = 'red';
+
+            switch ($itemmapa->status_fila) {
+                case 'Programada':
+                    $color =$corProgramada;
+                    $background_color = $color;
+                    break;
+                case 'NoCentroCirúrgico':
+                    $color =$corNoCentroCirúrgico;
+                    $background_color = $color;
+                    break;
+                case 'EmCirurgia':
+                    $color =$corEmCirurgia;
+                    $background_color = $color;
+                    break;
+                case 'SaídaDaSala':
+                    $color =$corSaídaDaSala;
+                    $background_color = $color;
+                    break;
+                case 'SaídaCentroCirúrgico':
+                    $color = $corSaídaCentroCirúrgico;
+                    $background_color = $color;
+                    break;
+                case 'TrocaPaciente':
+                    $color =$corTrocaPaciente;
+                    $background_color = $color;
+                    break;
+                case 'Suspensa':
+                    $color =$corCirurgiaSuspensa;
+                    $background_color = $color;
+                    break;
+                case 'Cancelada':
+                    $color = $corCirurgiaCancelada;
+                    $background_color = $color;
+                    break;
+                case 'Realizada':
+                    $color = $corSaídaCentroCirúrgico;
+                    $background_color = $color;
+                    break;
+                default:
+                    $color = 'gray';
+                    $background_color = $color;
+            }
+            
         ?>
             <tr>
                 <td style="text-align: center; vertical-align: middle;">
-                    <i class="fa-regular fa-square-full" style="color: <?= $itemmapa->status_fila == 'Realizada' ? '#6495ED' : 'black' ?>; background-color: <?= $itemmapa->status_fila == 'Realizada' ? '#6495ED' : 'white' ?>"></i>
+                    <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?>"></i>
                 </td>
-                <td><?php echo $itemmapa->prontuario ?></td>
                 <td><?php echo $itemmapa->fila ?></td>
-                <td><?php echo $itemmapa->especialidade_descricao ?></td>
-                <td><?php echo $itemmapa->procedimento_principal ?></td>
+                <td><?php echo $itemmapa->prontuario ?></td>
+                <td><?php echo $itemmapa->nome_paciente ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('mapacirurgico/enviarmapa/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: green; background-color: #32CD32"></i>', array('title' => 'Entrada no Centro Cirúrgica')) ?>
+                    <?php
+                        if ($itemmapa->status_fila == "Programada") {
+                            echo anchor('mapacirurgico/nocentrocirurgico/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i>', array('title' => 'Entrada no Centro Cirúrgico'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                    <?php
+                        if ($itemmapa->status_fila == "NoCentroCirúrgico") {
+                            echo anchor('mapacirurgico/emcirurgia/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i>', array('title' => 'Em Cirurgia'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                    <?php
+                        if ($itemmapa->status_fila == "EmCirurgia") {
+                            echo anchor('mapacirurgico/saidadasala/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i>', array('title' => 'Saída da Sala'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                    <?php
+                        if ($itemmapa->status_fila == "SaídaDaSala") {
+                            echo anchor('mapacirurgico/saidacentrocirurgico/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i>', array('title' => 'Saída do Centro Cirúrgico'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                    <?php
+                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                            echo anchor('mapacirurgico/suspendercirurgia/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corCirurgiaSuspensa.';"></i>', array('title' => 'Suspender Cirurgia'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray; background-color: gray"></i></span>
+                    <?php
+                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                            echo anchor('mapacirurgico/cancelarcirurgia/'.$itemmapa->idmapa, '<i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.';"></i>', array('title' => 'Cancelar Cirurgia'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                        }
+                    ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('mapacirurgico/editarmapa/'.$itemmapa->idmapa, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Consultar/Atualizar Mapa')) ?>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('mapacirurgico/excluir/'.$itemmapa->idmapa, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
-                </td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('mapacirurgico/excluir/'.$itemmapa->idmapa, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
+                    <?php
+                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada") {
+                            echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->idmapa, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Consultar/Atualizar Mapa'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-trash-alt" style="color: gray; background-color: gray"></i></span>';
+                        }
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -64,13 +150,14 @@
     </a>
     <table class="legend-table">
         <tr>
-            <td class="legend-cell" style="background-color: yellow; color: black;">Aguardando</td>
-            <td class="legend-cell" style="background-color: #32CD32; color: black;">No Centro Cirúrgico</td>
-            <td class="legend-cell" style="background-color: green;">Em Cirurgia</td>
-            <td class="legend-cell" style="background-color: #87CEFA; color: black;">Saída da Sala</td>
-            <td class="legend-cell" style="background-color: #6495ED; color: black;">Saída C. Cirúrgico</td>
-            <td class="legend-cell" style="background-color: #E9967A; color: black;">Troca de Paciente</td>
-            <td class="legend-cell" style="background-color: red;">Cirurgia Suspensa</td>
+            <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
+            <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
+            <td class="legend-cell" style="background-color: <?= $corEmCirurgia ?>;">Em Cirurgia</td>
+            <td class="legend-cell" style="background-color: <?= $corSaídaDaSala ?>; color: black;">Saída da Sala</td>
+            <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
+            <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
+            <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
+            <td class="legend-cell" style="background-color: <?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td>
         </tr>
     </table>
 </div>
@@ -137,7 +224,7 @@
             $(this).addClass('lineselected'); */
 
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var recordId = data[1]; // posição do prontuario na tabela
+            var recordId = data[2]; // posição do prontuario na tabela
 
             loadAsideContent(recordId); 
 
@@ -156,7 +243,7 @@
 
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
-            var recordId = data[1]; // posição do prontuario na tabela
+            var recordId = data[2]; // posição do prontuario na tabela
             loadAsideContent(recordId);
         }
 
