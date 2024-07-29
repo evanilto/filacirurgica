@@ -17,7 +17,7 @@ $routes->group('/', function ($routes) {
 $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
-    $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
+    $routes->get('carregaaside/(:num)/(:num)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');
@@ -31,7 +31,8 @@ $routes->group('listaespera', function ($routes) {
 $routes->group('mapacirurgico', function ($routes) {
     $routes->get('consultar', 'MapaCirurgico::consultarMapaCirurgico');
     $routes->add('exibir', 'MapaCirurgico::exibirMapaCirurgico');
-    $routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
+    $routes->get('atualizarcirurgia/(:num)', 'MapaCirurgico::atualizarCirurgia/$1');
+    #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
 });
 
 $routes->group('usuarios', function ($routes) {

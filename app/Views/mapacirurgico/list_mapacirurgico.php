@@ -1,33 +1,48 @@
-<?=  session()->set('parametros_consulta_mapa', $data); ?>
+<?php
+    session()->set('parametros_consulta_mapa', $data); 
+
+    $corProgramada = 'yellow';
+    $corNoCentroCirúrgico = '#97DA4B';
+    $corEmCirurgia = '#804616';
+    $corSaídaDaSala = '#87CEFA';
+    $corSaídaCentroCirúrgico = '#277534';
+    $corTrocaPaciente = '#E9967A';
+    $corCirurgiaSuspensa = '#B54398';
+    $corCirurgiaCancelada = 'red';
+?>
 
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="14" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
+            <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
-            <th scope="col" class="col-0" >Situação</th>
-            <th scope="col" data-field="fila" >Fila</th>
-            <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+            <th scope="col" class="col-0" >Sit.</th>
+            <th scope="col" class="col-0" >Sala</th>
+            <th scope="col" class="col-0" >Centro Cirúrgico</th>
+            <th scope="col" data-field="fila" >Dt/Hr Estimada</th>
+            <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                    <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
+            </th>
+            <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                    <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
+            </th>
+            <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                    <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
+            </th>
+            <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                    <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
+            </th>
             <th scope="col" data-field="nome" >Nome do Paciente</th>
-            <th scope="col" data-field="dthrcirurgiaestimada" >DtHr Prevista</th>
             <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
-        <?php foreach($mapacirurgico as $itemmapa): 
-            $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
-            $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
-
-           $corProgramada = 'yellow';
-           $corNoCentroCirúrgico = '#97DA4B';
-           $corEmCirurgia = '#804616';
-           $corSaídaDaSala = '#87CEFA';
-           $corSaídaCentroCirúrgico = '#277534';
-           $corTrocaPaciente = '#E9967A';
-           $corCirurgiaSuspensa = '#B54398';
-           $corCirurgiaCancelada = 'red';
+        <?php
+            foreach($mapacirurgico as $itemmapa): 
+                $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
+                $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
 
             switch ($itemmapa->status_fila) {
                 case 'Programada':
@@ -79,18 +94,22 @@
                 data-especialidade="<?= $itemmapa->especialidade_descricao ?>"
                 data-cid="<?= $itemmapa->cid_descricao ?>"
                 data-procedimento="<?= $itemmapa->procedimento_principal ?>"
-                data-ordem="<?= $itemmapa->ordem_mapa ?>"
+                data-ordem="<?= $itemmapa->ordem_fila ?>"
                 data-complexidade="<?= $itemmapa->complexidade ?>">
 
                 <td><?php echo $itemmapa->id ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?>"></i>
                 </td>
-                <td><?php echo $itemmapa->fila ?></td>
-                <td><?php echo $itemmapa->prontuario ?></td>
-                <td><?php echo $itemmapa->nome_paciente ?></td>
+                <td><?php echo $itemmapa->idsala ?></td>
+                <td><?php echo $itemmapa->idcentrocirurgico ?></td>
                 <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgiaestimada)->format('d/m/Y H:i') ?></td>
-                                <td style="text-align: center; vertical-align: middle;">
+                <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->nome_paciente ?></td>
+                <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
                             echo anchor('mapacirurgico/nocentrocirurgico/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i>', array('title' => 'Entrada no Centro Cirúrgico'));
@@ -199,7 +218,7 @@
         "autoWidth": false,
         "scrollX": true,
         "columnDefs": [
-            { "orderable": false, "targets": [0, 5] },
+            { "orderable": false, "targets": [1, 2, 3, 4, 5, 6, 7, 8, 10,  11, 12, 13, 14, 15, 16, 17] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: { buttons: [
@@ -220,7 +239,7 @@
             <table class="table table-left-aligned table-smaller-font">
                 <tbody>
                     <tr>
-                        <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Mapa:</td>
+                        <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
                         <td><b>${paciente.ordem}</b></td>
                     </tr>
                     <tr>
@@ -304,6 +323,7 @@
         // Exibe os detalhes do primeiro registro
         displayAsideContent(paciente);
     }
+    
 
     // Marcar o primeiro registro como selecionado ao inicializar a DataTable
     markFirstRecordSelected();

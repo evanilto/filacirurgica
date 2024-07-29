@@ -13,6 +13,7 @@ use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
+//use App\Controllers\MapaCirurgico;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
@@ -33,6 +34,7 @@ class ListaEspera extends ResourceController
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
     private $usuariocontroller;
+    //private $mapacirurgicocontroller;
     private $aghucontroller;
     private $selectfila;
     private $selectrisco;
@@ -60,6 +62,7 @@ class ListaEspera extends ResourceController
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
         $this->usuariocontroller = new Usuarios();
+        //$this->mapacirurgicocontroller = new MapaCirurgico();
         $this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -97,11 +100,12 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getDetailsAside($numProntuario)
+    public function getDetailsAside($numProntuario, $ordemFila)
     {
         // Pegue o registro pelos $id e passe os dados para a view
         $data = [
-            'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario)
+            'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario),
+            'ordemfila' => $ordemFila
         ];
 
         //die(var_dump($data));
@@ -248,33 +252,41 @@ class ListaEspera extends ResourceController
 
         $builder = $db->table('vw_listaespera');
 
-        //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
-        $builder->where("created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+        if (!empty($data['idlista'])) {
+            //die(var_dump($data['idlista']));
+        
+            $builder->where('id', $data['idlista']);
+    
+        } else {
 
-        if (!empty($data['prontuario'])) {
-            //$clausula_where .= " AND prontuario = $data[prontuario]";
-            $builder->where('prontuario', $data['prontuario']);
-        };
-        if (!empty($data['nome'])) {
-            //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
-            $builder->where('nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
-        };
-        if (!empty($data['especialidade'])) {
-            //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
-            $builder->where('idespecialidade', $data['especialidade']);
-        };
-        if (!empty($data['fila'])) {
-            //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
-            $builder->where('idtipoprocedimento', $data['fila']);
-        };
-        if (!empty($data['risco'])) {
-            //$clausula_where .= " AND  idrisco = $data[risco]";
-            $builder->where('idriscocirurgico',  $data['risco']);
-        };
-        if (!empty($data['complexidades'])) {
-            //$clausula_where .= " AND  idrisco = $data[risco]";
-            $builder->whereIn('complexidade',  $data['complexidades']);
-        };
+            //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
+            $builder->where("created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+
+            if (!empty($data['prontuario'])) {
+                //$clausula_where .= " AND prontuario = $data[prontuario]";
+                $builder->where('prontuario', $data['prontuario']);
+            };
+            if (!empty($data['nome'])) {
+                //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
+                $builder->where('nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+            };
+            if (!empty($data['especialidade'])) {
+                //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
+                $builder->where('idespecialidade', $data['especialidade']);
+            };
+            if (!empty($data['fila'])) {
+                //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
+                $builder->where('idtipoprocedimento', $data['fila']);
+            };
+            if (!empty($data['risco'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->where('idriscocirurgico',  $data['risco']);
+            };
+            if (!empty($data['complexidades'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->whereIn('complexidade',  $data['complexidades']);
+            };
+        }
 
         //var_dump($builder->getCompiledSelect());die();
 
@@ -684,7 +696,10 @@ class ListaEspera extends ResourceController
 
         $lista = $this->listaesperamodel->find($id);
 
+        //die(var_dump($id));
+
         $data = [];
+        $data['ordem_fila'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
         $data['id'] = $lista['id'];
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $lista['numprontuario'];
@@ -722,7 +737,7 @@ class ListaEspera extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['prof_especialidades']);die();
+        //var_dump($data['ordem_fila']);die();
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
                                             'data' => $data]);

@@ -3,6 +3,10 @@
     <table class="table table-left-aligned table-smaller-font">
         <tbody>
             <tr>
+                <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
+                <td><b><?= $ordemfila ?></b></td>
+            </tr>
+            <tr>
                 <td width="40%"><i class="fa-solid fa-user"></i> Prontuário:</td>
                 <td><b><?= $paciente[0]->prontuario ?></b></td>
             </tr>

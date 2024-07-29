@@ -4,7 +4,7 @@
             <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
-            <th scope="col" class="col-0" data-field="id" >Ordem</th>
+            <th scope="col" class="col-0" data-field="id" >Ord.</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
@@ -27,7 +27,8 @@
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
-            <tr>
+            <tr data-ordem="<?= $itemlista->ordem_fila ?>">
+
                 <td><?php echo $itemlista->ordem_lista ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
@@ -71,6 +72,15 @@
       window.location.href = href;
     }, 1000);
   }
+
+  function confirma_excluir () {
+        if (!confirm('Confirma a exclusão do Volume?')) {
+            return false;
+        };
+        
+        return true;
+    }
+    
   $(document).ready(function() {
         $('#table').DataTable({
             "order": [[0, 'asc']],
@@ -98,9 +108,9 @@
         var table = $('#table').DataTable();
         var firstRecordId;
 
-        function loadAsideContent(recordId) {
+        function loadAsideContent(recordId, idOrdemFila) {
             $.ajax({
-                url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
+                url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + idOrdemFila,
                 method: 'GET',
                 beforeSend: function() {
                     $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -123,16 +133,18 @@
             /* $('#table tbody tr').removeClass('lineselected');
             $(this).addClass('lineselected'); */
 
+            var ordemFila = $(this).data('ordem');
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
             var recordId = data[2];
 
-            loadAsideContent(recordId); 
+            loadAsideContent(recordId, ordemFila); 
 
         });
 
         function markFirstRecordSelected() {
             // Obter o índice do primeiro registro na página
             var firstRecordIndex = table.page.info().start;
+            var $firstRecordRow = $(table.row(firstRecordIndex).node());
 
             // Selecionar a linha correspondente ao índice
             var $firstRecordRow = $(table.row(firstRecordIndex).node());
@@ -141,16 +153,19 @@
             $('#table tbody tr').removeClass('lineselected');
             $firstRecordRow.addClass('lineselected');
 
+            var ordemFila = $firstRecordRow.data('ordem');  // Acessando o atributo data-ordem_fila
+
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
             var recordId = data[2];
-            loadAsideContent(recordId);
+            loadAsideContent(recordId, ordemFila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
         table.on('draw.dt', function() {
             markFirstRecordSelected();
         });
+
     });
 </script>
 

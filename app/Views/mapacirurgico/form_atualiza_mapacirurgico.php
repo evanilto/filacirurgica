@@ -9,7 +9,7 @@
                     <b><?= 'Enviar para o Mapa Cirúrgico' ?></b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="idForm" method="post" action="<?= base_url('listaespera/enviar') ?>">
+                    <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-3">
