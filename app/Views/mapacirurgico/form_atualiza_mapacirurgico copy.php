@@ -438,10 +438,27 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                        <label for="sala" class="form-label">Salas<b class="text-danger">*</b></label>
+                                            <label for="sala" class="form-label">Salas<b class="text-danger">*</b></label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>"
-                                                    id="sala" name="sala" data-placeholder="" data-allow-clear="1">
-                                                <!-- As salas irão aparecer aqui dinamicamente -->
+                                                    id="sala" name="sala[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
+                                                <?php
+                                                // Certifique-se de que $data['sala'] está definido como um array
+                                                $data['sala'] = isset($data['sala']) ? (array)$data['sala'] : [];
+
+                                                // Certifique-se de que o array não tenha valores vazios
+                                                $data['sala'] = array_filter($data['sala']);
+
+                                                $array_selected = [];
+                                                foreach ($data['salas_cirurgicas'] as $sala) {
+                                                    if (in_array($sala->seq, $data['sala'], true) && !in_array($sala->seq, $array_selected, true)) {
+                                                        $selected = 'selected';
+                                                        $array_selected[] = $sala->seq; // Adicione ao array de selecionados
+                                                    } else {
+                                                        $selected = '';
+                                                    }
+                                                    echo '<option value="'.$sala->seq.'" data-especie="'.$sala->unf_seq.'" '.$selected.'>'.$sala->nome.'</option>';
+                                                }
+                                                ?>
                                             </select>
                                             <?php if ($validation->hasError('sala')): ?>
                                                 <div class="invalid-feedback">
@@ -556,19 +573,16 @@
         function updateSalasCirurgicas(selectedFilter) {
             // Mantenha as opções selecionadas
             var selectedValues = $('#sala').val() || [];
-
+            
             // Esvaziar o select
             $("#sala").empty();
-
+            
             // Adicione as opções que já estão selecionadas primeiro para garantir que sejam visíveis
             var addedOptions = [];
-            
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
             var value = '<?= $sala->seq ?>';
             var text = '<?= $sala->nome  ?>';
             var centrocirurgico = '<?= $sala->unf_seq ?>';
-            
-            // Se a sala já está selecionada, adicione-a ao dropdown
             if (selectedValues.includes(value) && !addedOptions.includes(value)) {
                 var option = new Option(text, value, true, true);
                 $("#sala").append(option);
@@ -581,26 +595,24 @@
             var value = '<?= $sala->seq ?>';
             var text = '<?= $sala->nome ?>';
             var centrocirurgico = '<?= $sala->unf_seq ?>';
-            
-            // Filtra as salas que pertencem ao centro cirúrgico selecionado
             if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === centrocirurgico)) {
                 var option = new Option(text, value, false, false);
                 $("#sala").append(option);
                 addedOptions.push(value);
             }
             <?php endforeach; ?>
-
+            
             // Atualize a seleção do Select2 para as opções visíveis
             $('#sala').val(selectedValues).trigger('change');
         }
 
-        // Atualiza a lista de salas baseado no filtro selecionado
+        // Atualiza a lista de profissionais baseado no filtro selecionado
         $('#filtro_centrocirurgicos').change(function() {
             var selectedFilter = $(this).val();
             updateSalasCirurgicas(selectedFilter);
         });
 
-        // Inicializa as salas adicionais já selecionadas
+        // Inicializa os profissionais adicionais já selecionados
         updateSalasCirurgicas($('#filtro_centrocirurgicos').val());
 
         $('#sala').on('change', function() {

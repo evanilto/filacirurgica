@@ -340,7 +340,7 @@ class Aghu extends ResourceController
                 from AGH.AGH_UNIDADES_FUNCIONAIS uf
                 inner join AGH.AGH_CARACT_UNID_FUNCIONAIS cuf on cuf.unf_seq = uf.seq 
                 where uf.ind_sit_unid_func = 'A'
-                and cuf.caracteristica like 'Unid Executora Cirurgias'    
+                and cuf.caracteristica = 'Unid Executora Cirurgias'    
             ";
 
         if ($cc) {
@@ -350,6 +350,35 @@ class Aghu extends ResourceController
             $sql .= " AND seq IN ($placeholders) ORDER BY descricao";
         } else {
             $sql .= " ORDER BY descricao";
+        }
+
+        $query = $this->db->query($sql);
+
+        $result = $query->getResult();
+
+        return $result;
+    }
+    /**
+    * Retorna o prontuario cadastrado no aghu
+    *
+    * @return mixed
+    */
+   public function getSalasCirurgicas(array $salas = null) {
+        $sql = "
+                select 
+                CONCAT(unf_seq::text, seqp::text) AS seq,
+                *
+                from AGH.mbc_sala_cirurgicas MSC
+                where MSC.situacao = 'A'
+              ";
+
+        if ($salas) {
+            $placeholders = array_fill(0, count($salas), '?');
+            $placeholders = implode(',', $placeholders);
+
+            $sql .= " AND seqp IN ($placeholders) ORDER BY descricao";
+        } else {
+            $sql .= " ORDER BY nome";
         }
 
         $query = $this->db->query($sql);

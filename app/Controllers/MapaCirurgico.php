@@ -7,6 +7,7 @@ use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
 use App\Models\VwMapaCirurgicoModel;
 use App\Models\VwStatusFilaCirurgicaModel;
+use App\Models\VwSalasCirurgicasModel;
 use App\Models\MapaCirurgicoModel;
 use App\Models\FilaModel;
 use App\Models\RiscoModel;
@@ -28,6 +29,7 @@ class MapaCirurgico extends ResourceController
     private $vwlistaesperamodel;
     private $vwmapacirurgicomodel;
     private $vwstatusfilacirurgicamodel;
+    private $vwsalascirurgicasmodel;
     private $mapacirurgicomodel;
     private $filamodel;
     private $riscomodel;
@@ -43,6 +45,8 @@ class MapaCirurgico extends ResourceController
     private $selectespecialidade;
     private $selectespecialidadeaghu;
     private $selectprofespecialidadeaghu;
+    private $selectcentroscirurgicosaghu;
+    private $selectsalascirurgicasaghu;
     private $selectcids;
     private $selectitensprocedhospit;
     private $selectorigempaciente;
@@ -57,6 +61,7 @@ class MapaCirurgico extends ResourceController
         $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->vwmapacirurgicomodel = new vwMapaCirurgicoModel();
         $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
+        $this->vwsalascirurgicasmodel = new VwSalasCirurgicasModel();
         $this->mapacirurgicomodel = new MapaCirurgicoModel();
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
@@ -79,6 +84,10 @@ class MapaCirurgico extends ResourceController
         $this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
+        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
+        $this->selectcentroscirurgicosaghu = $this->aghucontroller->getCentroCirurgico();
+        $this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
+
     }
 
     /**
@@ -1151,6 +1160,9 @@ class MapaCirurgico extends ResourceController
         $this->data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
             return $procedimento->cod_tabela !== $codToRemove;
         });
+
+        $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
     }
     /**
      * Return the editable properties of a resource object
@@ -1199,6 +1211,8 @@ class MapaCirurgico extends ResourceController
         $data['procedimentos'] = $this->selectitensprocedhospit;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
 
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
@@ -1206,8 +1220,9 @@ class MapaCirurgico extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['ordem_fila']);die();
-
+        //var_dump($data['salas_cirurgicas'][0]['salas']);die();
+        //var_dump($data['salas_cirurgicas']);die();
+        
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                             'data' => $data]);
     }
@@ -1226,7 +1241,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //die(var_dump($this->data));
 
         $rules = [
             'especialidade' => 'required',
@@ -1245,16 +1260,6 @@ class MapaCirurgico extends ResourceController
         if ($this->validate($rules)) {
 
             $db = \Config\Database::connect('default');
-
-            if ($this->mapacirurgicomodel->where('idlistacirurgica', $this->data['id'])->where('deleted_at', null)->findAll()) {
-                session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
-
-                $this->carregaMapa();
-
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
-                                                    'data' => $this->data]);
-            }
-
 
             $db->transStart();
 
@@ -1289,10 +1294,13 @@ class MapaCirurgico extends ResourceController
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
-                    'txtjustificativaenvio' => $this->data['justenvio']
+                    'txtjustificativaenvio' => $this->data['justenvio'],
+                    'idcentrocirurgico' => $this->data['filtro_centrocirurgicos'],
+                    'idsala' => $this->data['sala']
+
                     ];
 
-                $idmapa = $this->mapacirurgicomodel->insert($mapa);
+                $this->mapacirurgicomodel->update($this->data['id'], $mapa);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1300,7 +1308,7 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Mapa [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1311,6 +1319,20 @@ class MapaCirurgico extends ResourceController
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['codtabela'] = (int) $procedimento;
 
+                        $this->procedimentosadicionaismodel->where('idmapacirurgico', $array['idmapacirurgico'])
+                                        ->where('codtabela', $array['codtabela'])
+                                        ->delete();
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
                         $this->procedimentosadicionaismodel->insert($array);
 
                         if ($db->transStatus() === false) {
@@ -1319,7 +1341,7 @@ class MapaCirurgico extends ResourceController
                             $errorCode = !empty($error['code']) ? $error['code'] : 0;
         
                             throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao inserir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                                sprintf('Erro ao atualizar procedimento adicional [%d] %s', $errorCode, $errorMessage)
                             );
                         }
 
@@ -1333,6 +1355,20 @@ class MapaCirurgico extends ResourceController
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['codpessoa'] = (int) $profissional;
 
+                        $this->equipemedicamodel->where('idmapacirurgico', $array['idmapacirurgico'])
+                        ->where('codpessoa', $array['codpessoa'])
+                        ->delete();
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
                         $this->equipemedicamodel->insert($array);
 
                         if ($db->transStatus() === false) {
@@ -1341,23 +1377,11 @@ class MapaCirurgico extends ResourceController
                             $errorCode = !empty($error['code']) ? $error['code'] : 0;
         
                             throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao inserir equipe médica [%d] %s', $errorCode, $errorMessage)
+                                sprintf('Erro ao atualizar equipe médica [%d] %s', $errorCode, $errorMessage)
                             );
                         }
 
                     }
-                }
-
-                $this->listaesperamodel->delete($this->data['id']);
-
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
-                    );
                 }
 
                 $db->transComplete();
@@ -1368,34 +1392,34 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao enviar paciente para o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
-                session()->setFlashdata('success', 'Paciente emviado ao Mapa Cirúrgico com sucesso!');
+                session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');
 
                 $this->validator->reset();
                 
             } catch (\Exception $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('Exception - Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                $msg = sprintf('Exception - Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                $msg = sprintf('DatabaseException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                $msg = sprintf('DataException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'data' => $this->data]);
 
         } else {
@@ -1403,7 +1427,7 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
         }
