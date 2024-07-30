@@ -42,7 +42,7 @@
         <?php
             foreach($mapacirurgico as $itemmapa): 
                 $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
-                $itemmapa->data_risco = $itemmapa->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->data_risco)->format('d/m/Y') : '';
+                $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
 
             switch ($itemmapa->status_fila) {
                 case 'Programada':

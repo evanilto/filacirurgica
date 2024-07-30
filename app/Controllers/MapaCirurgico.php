@@ -283,6 +283,8 @@ class MapaCirurgico extends ResourceController
 
             $result = $this->getMapaCirurgico($data);
 
+            //die(var_dump($result));
+
             if (empty($result)) {
 
                 $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -295,8 +297,6 @@ class MapaCirurgico extends ResourceController
                                                     'data' => $data]);
             
             }
-
-            //die(var_dump($result));
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/list_mapacirurgico',
                                                'mapacirurgico' => $result,
@@ -338,8 +338,6 @@ class MapaCirurgico extends ResourceController
         (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
     ');
 
-    die(var_dump($data));
-
     if (!empty($data['idmapa'])) {
     
         $builder->where('id', $data['idmapa']);
@@ -380,6 +378,8 @@ class MapaCirurgico extends ResourceController
         }
     }
     
+    //var_dump($builder->getCompiledSelect());die();
+
     return $builder->get()->getResult();
 }
 
@@ -1171,22 +1171,22 @@ class MapaCirurgico extends ResourceController
         $data['ordem_fila'] = $mapa->ordem_fila;
         $data['id'] = $mapa->id;
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
-        $data['prontuario'] = $mapa->numprontuario;
+        $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['risco'] = $mapa->idriscocirurgico;
-        $data['dtrisco'] = $mapa->dtavaliacao ? DateTime::createFromFormat('Y-m-d', $mapa->dtavaliacao>format('d/m/Y')) : NULL;
-        $data['cid'] = $mapa->numcid;
-        $data['complexidade'] = $mapa->nmcomplexidade;
-        $data['fila'] = $mapa->idtipoprocedimento;
+        $data['dtrisco'] = $mapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $mapa->dtrisco)->format('d/m/Y') : NULL;
+        $data['cid'] = $mapa->cid;
+        $data['complexidade'] = $mapa->complexidade;
+        $data['fila'] = $mapa->fila;
         $data['origem'] = $mapa->idorigempaciente;
         $data['congelacao'] = $mapa->indcongelacao;
         $data['procedimento'] = $mapa->idprocedimento;
         $data['proced_adic'] = [];
-        $data['lateralidade'] = $mapa->nmlateralidade;
+        $data['lateralidade'] = $mapa->lateralidade;
         $data['posoperatorio'] = null;
-        $data['info'] = $mapa->txtinfoadicionais;
+        $data['info'] = $mapa->infoadicionais;
         $data['nec_proced'] = '';
-        $data['justorig'] = $mapa->txtorigemjustificativa;
+        $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;

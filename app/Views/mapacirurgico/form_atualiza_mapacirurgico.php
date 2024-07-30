@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Enviar para o Mapa Cirúrgico' ?></b>
+                    <b><?= 'Atualizar Cirurgia' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
@@ -349,19 +349,6 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="2"
-                                            class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
-                                            name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justorig')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('justorig') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
                                     <textarea id="info" maxlength="255" rows="2"
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
@@ -373,8 +360,6 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
@@ -384,19 +369,6 @@
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('nec_proced') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
-                                    <textarea id="justenvio" maxlength="255" rows="2"
-                                            class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
-                                            name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justenvio')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('justenvio') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -431,6 +403,53 @@
                                                 $array_selected = [];
                                                 foreach ($data['prof_especialidades'] as $prof_espec) {
                                                     if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
+                                                        $selected = 'selected';
+                                                        $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
+                                                    } else {
+                                                        $selected = '';
+                                                    }
+                                                    echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                            <?php if ($validation->hasError('profissional')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('profissional') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="container bordered-container">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="filtro_salas" class="form-label">Centro Cirúrgico<b class="text-danger">*</b></label>
+                                            <select class="form-select select2-dropdown" id="filtro_salas" name="filtro_salas">
+                                                <option value="">Todas</option>
+                                                <?php foreach ($data['centro_cirurgico'] as $filtro): ?>
+                                                    <option value="<?= $filtro->seq ?>"><?= $filtro->centrocirurgico ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="sala" class="form-label">Salas<b class="text-danger">*</b></label>
+                                            <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>"
+                                                    id="sala" name="sala[]" data-placeholder="" data-allow-clear="1">
+                                                <?php
+                                                $data['sala'] = isset($data['sala']) ? (array)$data['sala'] : [];
+
+                                                // Certifique-se de que o array não tenha valores vazios
+                                                $data['sala'] = array_filter($data['sala']);
+
+                                                $array_selected = [];
+                                                foreach ($data['salas'] as $sala) {
+                                                    if (in_array($sala->pes_codigo, $data['sala'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
                                                         $selected = 'selected';
                                                         $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
                                                     } else {
