@@ -777,7 +777,7 @@ class ListaEspera extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            if ($this->mapacirurgicomodel->where('idlistacirurgica', $this->data['id'])->where('deleted_at', null)->findAll()) {
+            if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['id'])->where('deleted_at', null)->findAll()) {
                 session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
 
                 $this->carregaMapa();
@@ -815,7 +815,7 @@ class ListaEspera extends ResourceController
                 }
 
                 $mapa = [
-                    'idlistacirurgica' => $this->data['id'],
+                    'idlistaespera' => $this->data['id'],
                     'dthragendacirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],

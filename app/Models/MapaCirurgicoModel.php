@@ -13,7 +13,7 @@ class MapaCirurgicoModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'idlistacirurgica',
+        'idlistaespera',
         'dthrnocentrocirurgico',
         'dthrcirurgia',
         'dthrsaida',

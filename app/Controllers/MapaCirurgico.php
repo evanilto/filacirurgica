@@ -893,7 +893,7 @@ class MapaCirurgico extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            if ($this->mapacirurgicomodel->where('idlistacirurgica', $this->data['id'])->where('deleted_at', null)->findAll()) {
+            if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['id'])->where('deleted_at', null)->findAll()) {
                 session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
 
                 $this->carregaMapa();
@@ -931,7 +931,7 @@ class MapaCirurgico extends ResourceController
                 }
 
                 $mapa = [
-                    'idlistacirurgica' => $this->data['id'],
+                    'idlistaespera' => $this->data['id'],
                     'dthragendacirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
@@ -1177,11 +1177,12 @@ class MapaCirurgico extends ResourceController
         //$mapa = $this->mapacirurgicomodel->find($id);
         $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
 
-        //die(var_dump($mapa->ordem_fila));
+        //die(var_dump($mapa));
 
         $data = [];
         $data['ordem_fila'] = $mapa->ordem_fila;
         $data['id'] = $mapa->id;
+        $data['idlistaespera'] = $mapa->idlista;
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
@@ -1252,9 +1253,10 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
+            'info' => 'max_length[250]|min_length[3]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
+            'centrocirurgico' => 'required',
+            'sala' => 'required'
         ];
 
         if ($this->validate($rules)) {
@@ -1272,11 +1274,10 @@ class MapaCirurgico extends ResourceController
                         'nmcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
                         'nmlateralidade' => $this->data['lateralidade'],
-                        'txtinfoadicionais' => $this->data['info'],
-                        'txtorigemjustificativa' => $this->data['justorig']
+                        'txtinfoadicionais' => $this->data['info']
                         ];
 
-                $this->listaesperamodel->update($this->data['id'], $lista);
+                $this->listaesperamodel->update($this->data['idlistaespera'], $lista);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1289,15 +1290,13 @@ class MapaCirurgico extends ResourceController
                 }
 
                 $mapa = [
-                    'idlistacirurgica' => $this->data['id'],
+                    'idlistaespera' => $this->data['id'],
                     'dthragendacirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
-                    'txtjustificativaenvio' => $this->data['justenvio'],
-                    'idcentrocirurgico' => $this->data['filtro_centrocirurgicos'],
+                    'idcentrocirurgico' => $this->data['centrocirurgico'],
                     'idsala' => $this->data['sala']
-
                     ];
 
                 $this->mapacirurgicomodel->update($this->data['id'], $mapa);
@@ -1316,7 +1315,7 @@ class MapaCirurgico extends ResourceController
 
                     foreach ($this->data['proced_adic'] as $key => $procedimento) {
 
-                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['idmapacirurgico'] = (int) $this->data['id'];
                         $array['codtabela'] = (int) $procedimento;
 
                         $this->procedimentosadicionaismodel->where('idmapacirurgico', $array['idmapacirurgico'])
@@ -1423,9 +1422,12 @@ class MapaCirurgico extends ResourceController
                                                 'data' => $this->data]);
 
         } else {
+
             session()->setFlashdata('error', $this->validator);
 
             $this->carregaMapa();
+
+            //die(var_dump($this->validator->getErrors()));
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'validation' => $this->validator,

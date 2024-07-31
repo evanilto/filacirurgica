@@ -427,13 +427,22 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="filtro_centrocirurgicos" class="form-label">Centro Cirúrgico</label>
-                                            <select class="form-select select2-dropdown" id="filtro_centrocirurgicos" name="filtro_centrocirurgicos">
-                                                <option value="">Todas</option>
-                                                <?php foreach ($data['centros_cirurgicos'] as $filtro): ?>
-                                                    <option value="<?= $filtro->seq ?>"><?= $filtro->descricao ?></option>
-                                                <?php endforeach; ?>
+                                            <label for="centrocirurgico" class="form-label">Centro Cirúrgico<b class="text-danger">*</b></label>
+                                            <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>"
+                                                 id="centrocirurgico" name="centrocirurgico">
+                                                <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
+                                                <?php 
+                                                    foreach ($data['centros_cirurgicos'] as $filtro):
+                                                        $selected = ($data['centrocirurgico'] == $filtro->seq) ? 'selected' : '';
+                                                        echo '<option value="'.$filtro->seq.'" '.$selected.'>'.$filtro->descricao.'</option>';
+                                                    endforeach 
+                                                 ?>
                                             </select>
+                                            <?php if ($validation->hasError('centrocirurgico')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('centrocirurgico') ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -456,7 +465,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
-                                    <i class="fa-solid fa-paper-plane"></i> Enviar
+                                <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
                                 <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
@@ -465,7 +474,8 @@
                         </div>
 
                         <input type="hidden" name="id" value="<?= $data['id'] ?>" />
-                        <input type="hidden" name="ordem" id='ordem' value="<?= $data['ordem_fila'] ?>" />
+                        <input type="hidden" name="idlistaespera" value="<?= $data['idlistaespera'] ?>" />
+                        <input type="hidden" name="ordem_fila" id='ordem' value="<?= $data['ordem_fila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
@@ -564,30 +574,30 @@
             var addedOptions = [];
             
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
-            var value = '<?= $sala->seq ?>';
-            var text = '<?= $sala->nome  ?>';
-            var centrocirurgico = '<?= $sala->unf_seq ?>';
-            
-            // Se a sala já está selecionada, adicione-a ao dropdown
-            if (selectedValues.includes(value) && !addedOptions.includes(value)) {
-                var option = new Option(text, value, true, true);
-                $("#sala").append(option);
-                addedOptions.push(value);
-            }
+                var value = '<?= $sala->seq ?>';
+                var text = '<?= $sala->nome  ?>';
+                var centrocirurgico = '<?= $sala->unf_seq ?>';
+                
+                // Se a sala já está selecionada, adicione-a ao dropdown
+                if (selectedValues.includes(value) && !addedOptions.includes(value)) {
+                    var option = new Option(text, value, true, true);
+                    $("#sala").append(option);
+                    addedOptions.push(value);
+                }
             <?php endforeach; ?>
 
             // Adicione as opções que correspondem ao filtro (mas não estão selecionadas)
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
-            var value = '<?= $sala->seq ?>';
-            var text = '<?= $sala->nome ?>';
-            var centrocirurgico = '<?= $sala->unf_seq ?>';
-            
-            // Filtra as salas que pertencem ao centro cirúrgico selecionado
-            if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === centrocirurgico)) {
-                var option = new Option(text, value, false, false);
-                $("#sala").append(option);
-                addedOptions.push(value);
-            }
+                var value = '<?= $sala->seq ?>';
+                var text = '<?= $sala->nome ?>';
+                var centrocirurgico = '<?= $sala->unf_seq ?>';
+                
+                // Filtra as salas que pertencem ao centro cirúrgico selecionado
+                if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === centrocirurgico)) {
+                    var option = new Option(text, value, false, false);
+                    $("#sala").append(option);
+                    addedOptions.push(value);
+                }
             <?php endforeach; ?>
 
             // Atualize a seleção do Select2 para as opções visíveis
@@ -595,13 +605,14 @@
         }
 
         // Atualiza a lista de salas baseado no filtro selecionado
-        $('#filtro_centrocirurgicos').change(function() {
+        $('#centrocirurgico').change(function() {
             var selectedFilter = $(this).val();
             updateSalasCirurgicas(selectedFilter);
         });
 
         // Inicializa as salas adicionais já selecionadas
-        updateSalasCirurgicas($('#filtro_centrocirurgicos').val());
+        updateSalasCirurgicas($('#centrocirurgico').val());
+        $('#sala').val('<?= $data['sala'] ?>').trigger('change'); // Adiciona esta linha para garantir que o valor inicial é definido
 
         $('#sala').on('change', function() {
             $('#sala_hidden').val($(this).val());
