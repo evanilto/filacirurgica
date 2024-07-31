@@ -45,7 +45,7 @@
                 <td><?php echo $itemlista->risco_descricao ?></td>
                 <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/editarlista/'.$itemlista->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
+                    <?php echo anchor('listaespera/editarlista/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
                 </td> <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico')) ?>
                 </td>

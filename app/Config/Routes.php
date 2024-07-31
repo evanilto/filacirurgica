@@ -17,11 +17,12 @@ $routes->group('/', function ($routes) {
 $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
+    $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:num)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');
-    $routes->get('editarlista/(:num)', 'ListaEspera::editarLista/$1');
+    $routes->get('editarlista/(:num/(:num))', 'ListaEspera::editarLista/$1/$2');
     $routes->post('editar', 'ListaEspera::editar');
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
@@ -32,6 +33,7 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->get('consultar', 'MapaCirurgico::consultarMapaCirurgico');
     $routes->add('exibir', 'MapaCirurgico::exibirMapaCirurgico');
     $routes->get('atualizarcirurgia/(:num)', 'MapaCirurgico::atualizarCirurgia/$1');
+    $routes->get('consultarcirurgia/(:num)', 'MapaCirurgico::consultarCirurgia/$1');
     $routes->post('atualizar', 'MapaCirurgico::atualizar');
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
 });

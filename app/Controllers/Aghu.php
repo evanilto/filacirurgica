@@ -366,7 +366,7 @@ class Aghu extends ResourceController
    public function getSalasCirurgicas(array $salas = null) {
         $sql = "
                 select 
-                CONCAT(unf_seq::text, seqp::text) AS seq,
+                seqp AS seq,
                 *
                 from AGH.mbc_sala_cirurgicas MSC
                 where MSC.situacao = 'A'

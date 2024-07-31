@@ -1165,6 +1165,38 @@ class MapaCirurgico extends ResourceController
         $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
     }
     /**
+     * 
+     * @return mixed
+     */
+    private function carregaProfissionais($id) {
+
+
+        die(var_dump($this->equipemedicamodel->where(['idmapacirurgico' => $id])->find()));
+
+        $this->data['filas'] = $this->selectfila;
+        $this->data['riscos'] = $this->selectrisco;
+        $this->data['origens'] = $this->selectorigempaciente;
+        $this->data['lateralidades'] = $this->selectlateralidade;
+        $this->data['posoperatorios'] = $this->selectposoperatorio;
+        $this->data['especialidades'] = $this->selectespecialidadeaghu;
+        $this->data['cids'] = $this->selectcids;
+        $this->data['procedimentos'] = $this->selectitensprocedhospit;
+        $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+
+        $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
+        $this->data['proced_adic'] = array_filter($this->data['proced_adic']);
+
+        $codToRemove = $this->data['procedimento'];
+        $procedimentos = $this->data['procedimentos'];
+        $this->data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+            return $procedimento->cod_tabela !== $codToRemove;
+        });
+
+        $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+    }
+    /**
      * Return the editable properties of a resource object
      *
      * @return mixed
@@ -1174,14 +1206,13 @@ class MapaCirurgico extends ResourceController
        
         HUAP_Functions::limpa_msgs_flash();
 
-        //$mapa = $this->mapacirurgicomodel->find($id);
         $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
 
         //die(var_dump($mapa));
 
         $data = [];
         $data['ordem_fila'] = $mapa->ordem_fila;
-        $data['id'] = $mapa->id;
+        $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $mapa->prontuario;
@@ -1190,18 +1221,21 @@ class MapaCirurgico extends ResourceController
         $data['dtrisco'] = $mapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $mapa->dtrisco)->format('d/m/Y') : NULL;
         $data['cid'] = $mapa->cid;
         $data['complexidade'] = $mapa->complexidade;
-        $data['fila'] = $mapa->fila;
+        $data['fila'] = $mapa->idfila;
         $data['origem'] = $mapa->idorigempaciente;
         $data['congelacao'] = $mapa->indcongelacao;
         $data['procedimento'] = $mapa->idprocedimento;
-        $data['proced_adic'] = [];
         $data['lateralidade'] = $mapa->lateralidade;
-        $data['posoperatorio'] = null;
+        $data['hemoderivados'] = $mapa->indhemoderivados;
+        $data['posoperatorio'] = $mapa->idposoperatorio;
         $data['info'] = $mapa->infoadicionais;
-        $data['nec_proced'] = '';
+        $data['nec_proced'] = $mapa->necessidadesproced;
         $data['justorig'] = $mapa->origemjustificativa;
-        $data['justenvio'] = '';
-        $data['profissional'] = [];
+        $data['justenvio'] = $mapa->justificativaenvio;
+        $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
+        $data['sala'] =  $mapa->idsala;
+        $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
+        $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -1214,7 +1248,6 @@ class MapaCirurgico extends ResourceController
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
-
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
@@ -1290,7 +1323,7 @@ class MapaCirurgico extends ResourceController
                 }
 
                 $mapa = [
-                    'idlistaespera' => $this->data['id'],
+                    'idlistaespera' => $this->data['idlistaespera'],
                     'dthragendacirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
@@ -1299,7 +1332,7 @@ class MapaCirurgico extends ResourceController
                     'idsala' => $this->data['sala']
                     ];
 
-                $this->mapacirurgicomodel->update($this->data['id'], $mapa);
+                $this->mapacirurgicomodel->update($this->data['idmapa'], $mapa);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1313,24 +1346,23 @@ class MapaCirurgico extends ResourceController
 
                 if (isset($this->data['proced_adic'])) {
 
+                    $array['idmapacirurgico'] = (int) $this->data['idmapa'];
+
+                    $this->procedimentosadicionaismodel->where('idmapacirurgico', $array['idmapacirurgico'])->delete();
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
                     foreach ($this->data['proced_adic'] as $key => $procedimento) {
 
-                        $array['idmapacirurgico'] = (int) $this->data['id'];
                         $array['codtabela'] = (int) $procedimento;
-
-                        $this->procedimentosadicionaismodel->where('idmapacirurgico', $array['idmapacirurgico'])
-                                        ->where('codtabela', $array['codtabela'])
-                                        ->delete();
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-        
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
 
                         $this->procedimentosadicionaismodel->insert($array);
 
@@ -1349,24 +1381,24 @@ class MapaCirurgico extends ResourceController
 
                 if (isset($this->data['profissional'])) {
 
+                    $array['idmapacirurgico'] = (int) $this->data['idmapa'];
+
+                    $this->equipemedicamodel->where('idmapacirurgico', $array['idmapacirurgico'])->delete();
+                    //$this->equipemedicamodel->where('idmapacirurgico', $array['idmapacirurgico'])->purgeDeleted();
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
                     foreach ($this->data['profissional'] as $key => $profissional) {
 
-                        $array['idmapacirurgico'] = (int) $idmapa;
                         $array['codpessoa'] = (int) $profissional;
-
-                        $this->equipemedicamodel->where('idmapacirurgico', $array['idmapacirurgico'])
-                        ->where('codpessoa', $array['codpessoa'])
-                        ->delete();
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-        
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
 
                         $this->equipemedicamodel->insert($array);
 
@@ -1433,6 +1465,70 @@ class MapaCirurgico extends ResourceController
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
         }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function ConsultarCirurgia(int $id)
+    {
+       
+        HUAP_Functions::limpa_msgs_flash();
+
+        $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
+
+        //die(var_dump($mapa));
+
+        $data = [];
+        $data['ordem_fila'] = $mapa->ordem_fila;
+        $data['idmapa'] = $mapa->id;
+        $data['idlistaespera'] = $mapa->idlista;
+        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['prontuario'] = $mapa->prontuario;
+        $data['especialidade'] = $mapa->idespecialidade;
+        $data['risco'] = $mapa->idriscocirurgico;
+        $data['dtrisco'] = $mapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $mapa->dtrisco)->format('d/m/Y') : NULL;
+        $data['cid'] = $mapa->cid;
+        $data['complexidade'] = $mapa->complexidade;
+        $data['fila'] = $mapa->idfila;
+        $data['origem'] = $mapa->idorigempaciente;
+        $data['congelacao'] = $mapa->indcongelacao;
+        $data['procedimento'] = $mapa->idprocedimento;
+        $data['lateralidade'] = $mapa->lateralidade;
+        $data['hemoderivados'] = $mapa->indhemoderivados;
+        $data['posoperatorio'] = $mapa->idposoperatorio;
+        $data['info'] = $mapa->infoadicionais;
+        $data['nec_proced'] = $mapa->necessidadesproced;
+        $data['justorig'] = $mapa->origemjustificativa;
+        $data['justenvio'] = $mapa->justificativaenvio;
+        $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
+        $data['sala'] =  $mapa->idsala;
+        $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
+        $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['posoperatorios'] = $this->selectposoperatorio;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $codToRemove = $mapa->idprocedimento;
+        $procedimentos = $data['procedimentos'];
+        $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+            return $procedimento->cod_tabela !== $codToRemove;
+        });
+
+        //var_dump($data['salas_cirurgicas'][0]['salas']);die();
+        //var_dump($data['salas_cirurgicas']);die();
+        
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
+                                            'data' => $data]);
     }
    
 }

@@ -100,7 +100,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getDetailsAside($numProntuario, $ordemFila)
+    public function getDetailsAside($numProntuario, $ordemFila = 'A Definir')
     {
         // Pegue o registro pelos $id e passe os dados para a view
         $data = [
@@ -497,7 +497,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function editarLista(int $id)
+    public function editarLista(int $id, $ordemfila)
     {
         HUAP_Functions::limpa_msgs_flash();
 
@@ -505,10 +505,11 @@ class ListaEspera extends ResourceController
 
         $lista = $this->listaesperamodel->find($id);
 
-        //die(var_dump($lista['id']));
+        //die(var_dump($lista));
 
         $data = [];
         $data['id'] = $lista['id'];
+        $data['ordemfila'] = $ordemfila;
         $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];

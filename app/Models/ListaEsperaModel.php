@@ -24,6 +24,9 @@ class ListaEsperaModel extends Model
         'idprocedimento',
         'nmlateralidade',
         'indsituacao',
+        'indcongelacao',
+        'txtinfoadicionais',
+        'txtorigemjustificativa',
         'txtinfoadicionais'
     ];
 

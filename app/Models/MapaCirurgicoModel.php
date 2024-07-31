@@ -27,6 +27,7 @@ class MapaCirurgicoModel extends Model
         'txtnecessidadesproced',
         'txtjustificativaenvio',
         'txtjustificativasuspensao',
+        'txtnecessidadesproced',
         'numordem'
     ];
 

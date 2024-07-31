@@ -19,8 +19,8 @@
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
             <th scope="col" class="col-0" >Sit.</th>
-            <th scope="col" class="col-0" >Sala</th>
             <th scope="col" class="col-0" >Centro Cirúrgico</th>
+            <th scope="col" class="col-0" >Sala</th>
             <th scope="col" data-field="fila" >Dt/Hr Estimada</th>
             <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
                     <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
@@ -101,8 +101,8 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?>"></i>
                 </td>
-                <td><?php echo $itemmapa->idsala ?></td>
-                <td><?php echo $itemmapa->idcentrocirurgico ?></td>
+                <td><?php echo $itemmapa->centrocirurgico ?></td>
+                <td><?php echo $itemmapa->sala ?></td>
                 <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgiaestimada)->format('d/m/Y H:i') ?></td>
                 <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') : ' ' ?></td>
@@ -166,14 +166,14 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia'));
+                            echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>                
                 <td style="text-align: center; vertical-align: middle;">
-                   <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia')); ?>
+                   <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)')); ?>
                 </td>
             </tr>
         <?php endforeach; ?>

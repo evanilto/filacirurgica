@@ -318,6 +318,7 @@
                         </div>
 
                         <input type="hidden" name="id" value="<?= $data['id'] ?>" />
+                        <input type="hidden" name="ordemfila" id="ordemfila" value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="dtinclusao" value="<?= $data['dtinclusao'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                     </form>
@@ -345,7 +346,8 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
-            loadAsideContent(prontuarioValue);
+            const ordemfila = document.getElementById('ordemfila');
+            loadAsideContent(prontuarioValue, ordemfila.value);
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -361,9 +363,9 @@
       }
     }
     
-    function loadAsideContent(recordId) {
+    function loadAsideContent(recordId, ordemFila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando

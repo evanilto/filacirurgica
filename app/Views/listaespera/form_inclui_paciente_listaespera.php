@@ -115,8 +115,8 @@
                                             <option value="" <?php echo set_select('procedimento', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['procedimentos'] as $key => $procedimento) {
-                                                $selected = (set_value('procedimento') == $procedimento->seq) ? 'selected' : '';
-                                                echo '<option value="'.$procedimento->seq.'" '.$selected.'>'.$procedimento->cod_tabela.' - '.$procedimento->descricao.'</option>';
+                                                $selected = (set_value('procedimento') == $procedimento->cod_tabela) ? 'selected' : '';
+                                                echo '<option value="'.$procedimento->cod_tabela.'" '.$selected.'>'.$procedimento->cod_tabela.' - '.$procedimento->descricao.'</option>';
                                             }
                                             ?>
                                         </select>

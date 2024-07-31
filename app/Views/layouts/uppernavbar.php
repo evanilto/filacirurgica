@@ -1,4 +1,11 @@
-<?php $session = \Config\Services::session(); ?>
+<?php
+ $session = \Config\Services::session();
+ 
+ if (!isset($_SESSION)) {
+    return redirect()->to('/');
+ }
+ 
+ ?>
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-primary pt-1 pb-1">
     <img class="mb-6" src="<?= base_url() ?>/assets/img/doctor-32.png" alt="">
     <div class="container-fluid">

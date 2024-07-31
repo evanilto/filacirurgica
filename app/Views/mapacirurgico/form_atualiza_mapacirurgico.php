@@ -473,7 +473,7 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="id" value="<?= $data['id'] ?>" />
+                        <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
                         <input type="hidden" name="idlistaespera" value="<?= $data['idlistaespera'] ?>" />
                         <input type="hidden" name="ordem_fila" id='ordem' value="<?= $data['ordem_fila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
