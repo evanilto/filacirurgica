@@ -1530,5 +1530,31 @@ class MapaCirurgico extends ResourceController
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
                                             'data' => $data]);
     }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function entradaCentroCirurgico()
+    {
+        //$request = service('request');
+
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $idmapa = $this->request->getPost('idMapa');
+        
+        if ($this->request->isAJAX()) {
+
+            //return $this->response->setJSON(['success' => true, 'message' => 'Item excluído com sucesso', 'redirect' => base_url('mapacirurgico/consultar')]);
+            return $this->response->setJSON(['success' => true, 'message' => 'item id - '.$idmapa]);
+
+        }
+
+        // Se não for uma solicitação AJAX, mostrar um erro ou redirecionar
+
+        throw new \CodeIgniter\Exceptions\PageNotFoundException('Página não encontrada');
+    }
    
 }
