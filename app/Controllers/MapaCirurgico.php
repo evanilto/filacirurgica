@@ -1557,13 +1557,13 @@ class MapaCirurgico extends ResourceController
                 throw new \Exception('Erro ao decodificar JSON: ' . json_last_error_msg());
             }
 
+            //return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!'.$evento['dthrsaidasala']]);
+
             $db = Database::connect('default');
 
             $db->transStart();
 
             $this->mapacirurgicomodel->update($idMapa, $evento);
-
-            $db->transComplete();
 
             if ($db->transStatus() === false) {
                 $db->transRollback(); 
@@ -1573,6 +1573,21 @@ class MapaCirurgico extends ResourceController
 
                 throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
             }
+
+           /*  if ($evento['dthrsuspensao']) {
+                $this->listaesperamodel->update($idlista, ['delete_at' => '']);
+
+                if ($db->transStatus() === false) {
+                    $db->transRollback(); 
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                    throw new DatabaseException(sprintf('Erro ao atualizar Lista de Espera! [%d] %s', $errorCode, $errorMessage));
+                }
+            } */
+
+            $db->transComplete();
 
             session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');
 

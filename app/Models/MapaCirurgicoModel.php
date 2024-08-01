@@ -16,7 +16,7 @@ class MapaCirurgicoModel extends Model
         'idlistaespera',
         'dthrnocentrocirurgico',
         'dthrcirurgia',
-        'dthrsaida',
+        'dthrsaidasala',
         'dthrsuspensao',
         'dthrcirurgiaestimada',
         'idcentrocirurgico',

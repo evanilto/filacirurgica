@@ -131,7 +131,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "EmCirurgia") {
-                            echo anchor('mapacirurgico/saidadasala/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i>', array('title' => 'Saída da Sala', 'id' => 'saidasalacirurgica', 'onclick' => 'return confirma(this)'));
+                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -140,7 +140,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "SaídaDaSala") {
-                            echo anchor('mapacirurgico/saidacentrocirurgico/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i>', array('title' => 'Saída do Centro Cirúrgico', 'id' => 'saidacentrocirurgico', 'onclick' => 'return confirma(this)'));
+                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -158,7 +158,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo anchor('mapacirurgico/cancelarcirurgia/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.';"></i>', array('title' => 'Cancelar Cirurgia', 'id' => 'cancelar', 'onclick' => 'return confirma(this)'));
+                            echo '<a href="#" id="cancelar" title="Confirma o cancelamento da cirurgia" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.'; background-color: '.$corCirurgiaCancelada.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -212,7 +212,7 @@
         let message;
         let array;
 
-        const arrayId = ['programada', 'suspender', 'cancelar', 'nocentrocirurgico', 'saidasalacirurgica', 'saidacentrocirurgico'];
+        //const arrayId = ['programada', 'nocentrocirurgico', 'emcirurgia', 'saidadasala', 'suspender', 'cancelar'];
 
         switch (link.id) {
             case 'programada':
@@ -223,28 +223,32 @@
                 evento = 'dthrcirurgia';
                 message = 'Confirma o paciente em cirurgia?';
                 break;
+            case 'emcirurgia':
+                evento = 'dthrsaidasala';
+                message = 'Confirma a saída da sala?';
+                break;
+            case 'saidadasala':
+                evento = 'dthrsaidacentrocirurgico';
+                message = 'Confirma a saída do centro cirúrgico?';
+                break;
             case 'suspender':
+                evento = 'dthrsuspensao';
                 message = 'Confirma a suspensão da cirurgia?';
                 break;
             case 'cancelar':
+                evento = 'dthrsuspensao';
                 message = 'Confirma o cancelamento da cirurgia?';
-                break;
-            case 'saidasalacirurgica':
-                message = 'Confirma a saída da sala?';
-                break;
-            case 'saidacentrocirurgico':
-                message = 'Confirma a saída do centro cirúrgico?';
                 break;
             default:
                 message = 'Confirma a exclusão da cirurgia?';
                 break;
         }
 
-        if (arrayId.includes(link.id)) {
+        //if (arrayId.includes(link.id)) {
             if (!confirm(message)) {
                 return false; 
             }
-        }
+        //}
 
         tratarLink(link, evento);
 
@@ -253,7 +257,7 @@
 
     function tratarLink(link, evento) {
 
-        $('#janelaAguarde').show();
+        //$('#janelaAguarde').show();
 
         // Previnir o comportamento padrão do link
         event.preventDefault(); 
