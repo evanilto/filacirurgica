@@ -49,7 +49,7 @@
                     $color =$corProgramada;
                     $background_color = $color;
                     break;
-                case 'NoCentroCirúrgico':
+                case 'NoCentroCirurgico':
                     $color =$corNoCentroCirúrgico;
                     $background_color = $color;
                     break;
@@ -112,7 +112,8 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
-                            echo '<a href="#" id="programada" data-item-id="'.$itemmapa->id,'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
+
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -120,8 +121,8 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila == "NoCentroCirúrgico") {
-                            echo '<a href="#" id="nocentrocirurgico" data-item-id="'.$itemmapa->id,'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
+                        if ($itemmapa->status_fila == "NoCentroCirurgico") {
+                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -209,17 +210,24 @@
 
     function confirma(link) {
         let message;
-        const arrayId = ['suspender', 'cancelar', 'nocentrocirurgico', 'saidasalacirurgica', 'saidacentrocirurgico'];
+        let array;
+
+        const arrayId = ['programada', 'suspender', 'cancelar', 'nocentrocirurgico', 'saidasalacirurgica', 'saidacentrocirurgico'];
 
         switch (link.id) {
+            case 'programada':
+                evento = 'dthrnocentrocirurgico';
+                message = 'Confirma a entrada no centro cirúrgico?';
+                break;
+            case 'nocentrocirurgico':
+                evento = 'dthrcirurgia';
+                message = 'Confirma o paciente em cirurgia?';
+                break;
             case 'suspender':
                 message = 'Confirma a suspensão da cirurgia?';
                 break;
             case 'cancelar':
                 message = 'Confirma o cancelamento da cirurgia?';
-                break;
-            case 'nocentrocirurgico':
-                message = 'Confirma a entrada no centro cirúrgico?';
                 break;
             case 'saidasalacirurgica':
                 message = 'Confirma a saída da sala?';
@@ -238,58 +246,44 @@
             }
         }
 
-      /*   if (link.id === 'nocentrocirurgico') {
-            return informarEntradaCentroCirurgico(link); 
-        } */
-
-        switch (link.id) {
-            case 'programada':
-                return informarEntradaCentroCirurgico(link); 
-            case 'nocentrocirurgico':
-                return informarEntradaCentroCirurgico(link); 
-            case 'nocentrocirurgico':
-                message = 'Confirma a entrada no centro cirúrgico?';
-                break;
-            case 'saidasalacirurgica':
-                message = 'Confirma a saída da sala?';
-                break;
-            case 'saidacentrocirurgico':
-                message = 'Confirma a saída do centro cirúrgico?';
-                break;
-            default:
-                message = 'Confirma a exclusão da cirurgia?';
-                break;
-        }
+        tratarLink(link, evento);
 
         return false; 
     }
 
-    function informarEntradaCentroCirurgico(link) {
+    function tratarLink(link, evento) {
 
-        event.preventDefault(); // Prevenir o comportamento padrão do botão
+        $('#janelaAguarde').show();
+
+        // Previnir o comportamento padrão do link
+        event.preventDefault(); 
 
         const itemId = link.dataset.itemId;
-        var mapa = JSON.parse(itemId);
-
-        alert(itemId);
-        alert(mapa);
-
+        const timeValue = link.dataset.time;
 
         var formData = new FormData();
         formData.append('idMapa', itemId);
 
+        //const array = { evento: timeValue };
+        const array = {};
+        array[evento] = timeValue;
+        formData.append('evento', JSON.stringify(array));
+
+        // Configurar a requisição AJAX
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', '<?= base_url('mapacirurgico/nocentrocirurgico') ?>', true);
+        xhr.open('POST', '<?= base_url('mapacirurgico/tratareventocirurgico') ?>', true);
         xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
+        // Tratar a resposta da requisição AJAX
         xhr.onload = function() {
             if (xhr.status >= 200 && xhr.status < 400) {
                 var response = JSON.parse(xhr.responseText);
                 console.log(response); 
 
-                if (response.success && response.redirect) {
-                    console.log('Redirecting to: ' + response.redirect);
-                    window.location.href = response.redirect;
+                if (response.success) {
+                    console.log('Evento registrado com sucesso.');
+                    window.history.back();
+                    window.location.reload();
                 } else {
                     console.error('Erro ao redirecionar.');
                 }
@@ -297,12 +291,17 @@
                 console.error('Erro ao enviar os dados.');
             }
         };
+
+        xhr.onerror = function() {
+            console.error('Erro na requisição AJAX.');
+        };
         
+        // Enviar o FormData com a requisição AJAX
         xhr.send(formData);
 
-        // Impedir o link de redirecionar
         return false;
     }
+
 
   $(document).ready(function() {
     $('#table').DataTable({

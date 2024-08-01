@@ -1535,26 +1535,53 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function entradaCentroCirurgico()
+    public function tratarEventoCirurgico()
     {
-        //$request = service('request');
+        try {
+            $request = service('request');
 
-        \Config\Services::session();
+            if (!$request->isAJAX()) {
+                throw new \Exception('Acesso não autorizado');
+            }
 
-        helper(['form', 'url', 'session']);
+            $idMapa = $this->request->getPost('idMapa');
+            $eventoJson = $this->request->getPost('evento');
 
-        $idmapa = $this->request->getPost('idMapa');
-        
-        if ($this->request->isAJAX()) {
+            if (empty($idMapa) || empty($eventoJson)) {
+                throw new \Exception('Parâmetros ausentes');
+            }
 
-            //return $this->response->setJSON(['success' => true, 'message' => 'Item excluído com sucesso', 'redirect' => base_url('mapacirurgico/consultar')]);
-            return $this->response->setJSON(['success' => true, 'message' => 'item id - '.$idmapa]);
+            $evento = json_decode($eventoJson, true);
 
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Erro ao decodificar JSON: ' . json_last_error_msg());
+            }
+
+            $db = Database::connect('default');
+
+            $db->transStart();
+
+            $this->mapacirurgicomodel->update($idMapa, $evento);
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $db->transRollback(); 
+                $error = $db->error();
+                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
+            }
+
+            session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');
+
+            return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!']);
+
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                  ->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
-
-        // Se não for uma solicitação AJAX, mostrar um erro ou redirecionar
-
-        throw new \CodeIgniter\Exceptions\PageNotFoundException('Página não encontrada');
     }
    
 }
