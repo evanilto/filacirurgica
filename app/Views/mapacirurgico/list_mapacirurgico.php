@@ -48,42 +48,52 @@
                 case 'Programada':
                     $color =$corProgramada;
                     $background_color = $color;
+                    $title = 'Cirurgia Programada';
                     break;
                 case 'NoCentroCirurgico':
                     $color =$corNoCentroCirúrgico;
                     $background_color = $color;
+                    $title = 'Paciente no Centro Cirúrgico';
                     break;
                 case 'EmCirurgia':
                     $color =$corEmCirurgia;
                     $background_color = $color;
+                    $title = 'Paciente em Cirurgia';
                     break;
                 case 'SaídaDaSala':
                     $color =$corSaídaDaSala;
                     $background_color = $color;
+                    $title = 'Paciente saiu da Sala';
                     break;
                 case 'SaídaCentroCirúrgico':
                     $color = $corSaídaCentroCirúrgico;
                     $background_color = $color;
+                    $title = 'Cirurgia Realizada';
                     break;
                 case 'TrocaPaciente':
                     $color =$corTrocaPaciente;
                     $background_color = $color;
+                    $title = 'Troca de Paciente';
                     break;
                 case 'Suspensa':
                     $color =$corCirurgiaSuspensa;
                     $background_color = $color;
+                    $title = 'Cirurgia Suspensa';
                     break;
                 case 'Cancelada':
                     $color = $corCirurgiaCancelada;
                     $background_color = $color;
+                    $title = 'Cirurgia Cancelada';
                     break;
                 case 'Realizada':
                     $color = $corSaídaCentroCirúrgico;
                     $background_color = $color;
+                    $title = 'Cirurgia Realizada';
                     break;
                 default:
                     $color = 'gray';
                     $background_color = $color;
+                    $title = 'Undefined';
             }
             
         ?>
@@ -99,7 +109,7 @@
 
                 <td><?php echo $itemmapa->id ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?>"></i>
+                    <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?> "  title="<?= $title?>"></i>
                 </td>
                 <td><?php echo $itemmapa->centrocirurgico ?></td>
                 <td><?php echo $itemmapa->sala ?></td>
@@ -112,7 +122,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
-                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
 
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
@@ -122,7 +132,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "NoCentroCirurgico") {
-                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
+                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -131,7 +141,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "EmCirurgia") {
-                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
+                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -140,7 +150,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "SaídaDaSala") {
-                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -149,7 +159,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo anchor('mapacirurgico/suspendercirurgia/'.$itemmapa->id, '<i class="fa-regular fa-square-check" style="color: '.$corCirurgiaSuspensa.';"></i>', array('title' => 'Suspender Cirurgia', 'id' => 'suspender', 'onclick' => 'return confirma(this)'));
+                            echo '<a href="#" id="suspender" title="Confirma a suspensão da cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -158,7 +168,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo '<a href="#" id="cancelar" title="Confirma o cancelamento da cirurgia" data-item-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.'; background-color: '.$corCirurgiaCancelada.'"></i></a>';
+                            echo '<a href="#" id="cancelar" title="Confirma o cancelamento da cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -174,7 +184,7 @@
                     ?>
                 </td>                
                 <td style="text-align: center; vertical-align: middle;">
-                   <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia','onclick' => 'mostrarAguarde(event, this.href)')); ?>
+                   <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar detalhes da cirurgia','onclick' => 'mostrarAguarde(event, this.href)')); ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -262,16 +272,22 @@
         // Previnir o comportamento padrão do link
         event.preventDefault(); 
 
-        const itemId = link.dataset.itemId;
+        const mapaId = link.dataset.mapaId;
+        const listaId = link.dataset.listaId;
         const timeValue = link.dataset.time;
 
         var formData = new FormData();
-        formData.append('idMapa', itemId);
+        //formData.append('idMapa', itemId);
+
+        const arrayId = {};
+        arrayId['idMapa'] = mapaId;
+        arrayId['idLista'] = listaId;
+        formData.append('arrayid', JSON.stringify(arrayId));
 
         //const array = { evento: timeValue };
-        const array = {};
-        array[evento] = timeValue;
-        formData.append('evento', JSON.stringify(array));
+        const arrayevento = {};
+        arrayevento[evento] = timeValue;
+        formData.append('evento', JSON.stringify(arrayevento));
 
         // Configurar a requisição AJAX
         const xhr = new XMLHttpRequest();

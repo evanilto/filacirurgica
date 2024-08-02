@@ -27,7 +27,8 @@ class ListaEsperaModel extends Model
         'indcongelacao',
         'txtinfoadicionais',
         'txtorigemjustificativa',
-        'txtinfoadicionais'
+        'txtinfoadicionais',
+        'deleted_at'
     ];
 
     // Dates

@@ -1544,13 +1544,16 @@ class MapaCirurgico extends ResourceController
                 throw new \Exception('Acesso não autorizado');
             }
 
-            $idMapa = $this->request->getPost('idMapa');
+            //$idMapa = $this->request->getPost('idMapa');
+            $arrayidJson = $this->request->getPost('arrayid');
             $eventoJson = $this->request->getPost('evento');
 
-            if (empty($idMapa) || empty($eventoJson)) {
+            //if (empty($idMapa) || empty($eventoJson)) {
+            if (empty($arrayidJson) || empty($eventoJson)) {
                 throw new \Exception('Parâmetros ausentes');
             }
 
+            $arrayid = json_decode($arrayidJson, true);
             $evento = json_decode($eventoJson, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
@@ -1563,7 +1566,8 @@ class MapaCirurgico extends ResourceController
 
             $db->transStart();
 
-            $this->mapacirurgicomodel->update($idMapa, $evento);
+            //$this->mapacirurgicomodel->update($idMapa, $evento);
+            $this->mapacirurgicomodel->update($arrayid['idMapa'], $evento);
 
             if ($db->transStatus() === false) {
                 $db->transRollback(); 
@@ -1574,8 +1578,9 @@ class MapaCirurgico extends ResourceController
                 throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
             }
 
-           /*  if ($evento['dthrsuspensao']) {
-                $this->listaesperamodel->update($idlista, ['delete_at' => '']);
+            if ($evento['dthrsuspensao'] /*|| $evento['dthrcancelamento']*/) {
+                //$this->listaesperamodel->update($arrayid['idLista'], ['delete_at' => '']);
+                $this->listaesperamodel->where('id', $arrayid['idLista'])->set('deleted_at', NULL)->update();
 
                 if ($db->transStatus() === false) {
                     $db->transRollback(); 
@@ -1585,7 +1590,7 @@ class MapaCirurgico extends ResourceController
     
                     throw new DatabaseException(sprintf('Erro ao atualizar Lista de Espera! [%d] %s', $errorCode, $errorMessage));
                 }
-            } */
+            }
 
             $db->transComplete();
 
