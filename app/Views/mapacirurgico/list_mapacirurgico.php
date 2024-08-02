@@ -14,7 +14,7 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
+            <th scope="col" colspan="19" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
@@ -35,7 +35,7 @@
                     <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
             </th>
             <th scope="col" data-field="nome" >Nome do Paciente</th>
-            <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
+            <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -113,9 +113,9 @@
                 </td>
                 <td><?php echo $itemmapa->centrocirurgico ?></td>
                 <td><?php echo $itemmapa->sala ?></td>
-                <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgiaestimada)->format('d/m/Y H:i') ?></td>
+                <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y H:i') ?></td>
                 <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
-                <td><?php echo $itemmapa->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->nome_paciente ?></td>
@@ -159,21 +159,30 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo '<a href="#" id="suspender" title="Confirma a suspensão da cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
+                            echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo '<a href="#" id="cancelar" title="Confirma o cancelamento da cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corCirurgiaCancelada.';"></i></a>';
+                            echo '<a href="#" id="trocar" title="Trocar Paciente" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-people-arrows" style="color: '.$corTrocaPaciente.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-people-arrows" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <?php
+                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                            echo anchor('mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id, '<i class="fa-regular fa-clock"></i>', array('title' => 'Atualizar Horários', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" style="color: gray;"></i></span>';
+                        }
+                    ?>
+                </td>         
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
@@ -182,7 +191,7 @@
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';
                         }
                     ?>
-                </td>                
+                </td>        
                 <td style="text-align: center; vertical-align: middle;">
                    <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar detalhes da cirurgia','onclick' => 'mostrarAguarde(event, this.href)')); ?>
                 </td>
@@ -196,6 +205,7 @@
     </a>
     <table class="legend-table">
         <tr>
+            <!--td class="legend-cell">Legenda:</td-->
             <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
             <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
             <td class="legend-cell" style="background-color: <?= $corEmCirurgia ?>;">Em Cirurgia</td>
@@ -203,7 +213,7 @@
             <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
             <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
             <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
-            <td class="legend-cell" style="background-color: <?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td>
+            <!--td class="legend-cell" style="background-color: <-?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
         </tr>
     </table>
 </div>
@@ -230,7 +240,7 @@
                 message = 'Confirma a entrada no centro cirúrgico?';
                 break;
             case 'nocentrocirurgico':
-                evento = 'dthrcirurgia';
+                evento = 'dthremcirurgia';
                 message = 'Confirma o paciente em cirurgia?';
                 break;
             case 'emcirurgia':
@@ -245,12 +255,12 @@
                 evento = 'dthrsuspensao';
                 message = 'Confirma a suspensão da cirurgia?';
                 break;
-            case 'cancelar':
-                evento = 'dthrsuspensao';
-                message = 'Confirma o cancelamento da cirurgia?';
+            case 'trocar':
+                evento = 'dthrtroca';
+                message = 'Confirma a troca do paciente?';
                 break;
             default:
-                message = 'Confirma a exclusão da cirurgia?';
+                message = '';
                 break;
         }
 

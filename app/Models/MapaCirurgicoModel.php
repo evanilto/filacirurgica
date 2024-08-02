@@ -15,10 +15,10 @@ class MapaCirurgicoModel extends Model
     protected $allowedFields    = [
         'idlistaespera',
         'dthrnocentrocirurgico',
-        'dthrcirurgia',
+        'dthremcirurgia',
         'dthrsaidasala',
         'dthrsuspensao',
-        'dthrcirurgiaestimada',
+        'dthrcirurgia',
         'idcentrocirurgico',
         'idsala',
         'idposoperatorio',

@@ -230,7 +230,8 @@ class MapaCirurgico extends ResourceController
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtinicio'] = date('d/m/Y');
         $data['dtfim'] = date('d/m/Y');
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
@@ -354,7 +355,7 @@ class MapaCirurgico extends ResourceController
     } else {
 
         // Adicionando a cláusula WHERE para o intervalo de datas
-        $builder->where("vw_mapacirurgico.dthrcirurgiaestimada BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
+        $builder->where("vw_mapacirurgico.dthrcirurgia BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
 
         // Condicional para prontuario
         if (!empty($data['prontuario'])) {
@@ -1535,6 +1536,224 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function atualizarHorariosCirurgia(int $id)
+    {
+       
+        HUAP_Functions::limpa_msgs_flash();
+
+        $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
+
+        //die(var_dump($mapa));
+
+        $data = [];
+        $data['idmapa'] = $mapa->id;
+        $data['ordem_fila'] = $mapa->ordem_fila;
+        $data['prontuario'] = $mapa->prontuario;
+        $data['especialidade'] = $mapa->idespecialidade;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['fila'] = $mapa->idfila;
+        $data['filas'] = $this->selectfila;
+        $data['procedimento'] = $mapa->idprocedimento;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+
+        $data['dthrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
+        $data['hrnocentrocirurgico'] = $mapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrnocentrocirurgico)->format('H:i') : '';
+        $data['hremcirurgia'] = $mapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthremcirurgia)->format('H:i') : '';
+        $data['hrsaidasala'] = $mapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsaidasala)->format('H:i') : '';
+        $data['hrsaidacentrocirurgico'] = $mapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsaidacentrocirurgico)->format('H:i') : '';
+        //$data['hrsuspensao'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-s H:i:s', $mapa->dthrsuspensao)->format('H:i') : '';
+        //$data['hrtroca'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-s H:i:s', $mapa->dthrsuspensao)->format('H:i') : '';
+             
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                            'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function atualizarHorarios()
+    {
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $data = [];
+
+        $data = $this->request->getVar();
+
+        //die(var_dump($this->data));
+
+        $rules = [
+            'hrnocentrocirurgico' => 'permit_empty|valid_date[H:i]',
+            'hremcirurgia' => 'permit_empty|valid_date[H:i]',
+            'hrsaidasala' => 'permit_empty|valid_date[H:i]',
+            'hrsaidacentrocirurgico' => 'permit_empty|valid_date[H:i]',
+            //'hrsuspensao' => 'permit_empty|valid_date[H:i]',
+        ];
+
+        if ($this->validate($rules)) {
+
+            $mapa = [
+                'dthrnocentrocirurgico'  => !empty($data['hrnocentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrnocentrocirurgico'] : NULL,
+                'dthremcirurgia'  => !empty($data['hremcirurgia']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hremcirurgia'] : NULL,
+                'dthrsaidasala' => !empty($data['hrsaidasala']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidasala'] : NULL,
+                'dthrsaidacentrocirurgico' => !empty($data['hrsaidacentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidacentrocirurgico'] : NULL,
+                //'dthrsuspensao' => $data['hrsuspensao'],
+                ];
+
+               //die(var_dump(DateTime::createFromFormat('Y-m-d H:i', $mapa['dthremcirurgia'])));
+               $erro = false;
+
+                $dthrEntrada = $this->createDateTime($mapa['dthrnocentrocirurgico']);
+                $dthrInicioCirurgia = $this->createDateTime($mapa['dthremcirurgia']);
+                $dthrSaidaSala = $this->createDateTime($mapa['dthrsaidasala']);
+                $dthrSaidaCentroCirurgico = $this->createDateTime($mapa['dthrsaidacentrocirurgico']);
+
+                // Lista de campos com a ordem esperada
+                $campos = [
+                    'hrnocentrocirurgico' => $dthrEntrada,
+                    'hremcirurgia' => $dthrInicioCirurgia,
+                    'hrsaidasala' => $dthrSaidaSala,
+                    'hrsaidacentrocirurgico' => $dthrSaidaCentroCirurgico
+                ];
+
+                // Lista organizada de mensagens de erro
+                $mensagensErro = [
+                    'hremcirurgia' => 'A hora de início da cirurgia não pode ser menor que a hora de entrada no centro cirúrgico!',
+                    'hrsaidasala' => 'A hora de saída da sala tem que ser maior que a hora de início de cirurgia!',
+                    'hrsaidacentrocirurgico' => 'A hora de saída do centro cirúrgico não pode ser menor que a hora de saída da sala!'
+                ];
+
+                // Verificações das datas preenchidas quanto à ordem temporal
+                foreach ($campos as $key => $value) {
+                    if ($value) {
+                        if ($key === 'hremcirurgia' && $dthrEntrada && $dthrInicioCirurgia < $dthrEntrada) {
+                            $this->validator->setError('hremcirurgia', $mensagensErro['hremcirurgia']);
+                            $erro = true;
+                            break;
+                        }
+                        if ($key === 'hrsaidasala' && $dthrInicioCirurgia && $dthrSaidaSala <= $dthrInicioCirurgia) {
+                            $this->validator->setError('hrsaidasala', $mensagensErro['hrsaidasala']);
+                            $erro = true;
+                            break;
+                        }
+                        if ($key === 'hrsaidacentrocirurgico' && $dthrSaidaSala && $dthrSaidaCentroCirurgico < $dthrSaidaSala) {
+                            $this->validator->setError('hrsaidacentrocirurgico', $mensagensErro['hrsaidacentrocirurgico']);
+                            $erro = true;
+                            break;
+                        }
+                    }
+                }
+
+                // Verificações de presença de datas intermediárias
+                foreach ($campos as $key => $value) {
+                    if (!$value) {
+                        $next_non_empty = false;
+                        foreach ($campos as $key_check => $value_check) {
+                            if ($key_check === $key) {
+                                $next_non_empty = true;
+                                continue;
+                            }
+
+                            if ($next_non_empty && $value_check) {
+                                // Define o erro para a primeira data intermediária vazia quando há subsequentes preenchidas
+                                $this->validator->setError($key, 'Existem tempos intermediários obrigatórios não preenchidos.');
+                                $erro = true;
+                                break 2; // Encerra ambos os loops
+                            }
+                        }
+                    }
+                }
+               
+               if ($erro) {
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['filas'] = $this->selectfila;
+                $data['procedimentos'] = $this->selectitensprocedhospit;
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+               }
+
+            $db = \Config\Database::connect('default');
+
+            $db->transStart();
+
+            try {
+
+                $this->mapacirurgicomodel->update($data['idmapa'], $mapa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar Mapa [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar Horários do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');
+
+                $this->validator->reset();
+                
+            } catch (\Exception $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('Exception - Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('DatabaseException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('DataException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            }
+
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['filas'] = $this->selectfila;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                                'data' => $data]);
+
+        } else {
+
+            session()->setFlashdata('error', $this->validator);
+
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['filas'] = $this->selectfila;
+            $data['procedimentos'] = $this->selectitensprocedhospit;
+
+            //die(var_dump($this->validator->getErrors()));
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
     public function tratarEventoCirurgico()
     {
         try {
@@ -1602,6 +1821,10 @@ class MapaCirurgico extends ResourceController
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+    // Helper para criar objeto DateTime só se a data não estiver vazia
+    function createDateTime($dateString) {
+        return empty($dateString) ? null : DateTime::createFromFormat('Y-m-d H:i', $dateString);
     }
    
 }
