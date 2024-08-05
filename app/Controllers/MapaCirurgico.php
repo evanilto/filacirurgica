@@ -933,7 +933,7 @@ class MapaCirurgico extends ResourceController
 
                 $mapa = [
                     'idlistaespera' => $this->data['id'],
-                    'dthragendacirurgia' => $this->data['dtcirurgia'],
+                    'dthrcirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
@@ -1325,7 +1325,7 @@ class MapaCirurgico extends ResourceController
 
                 $mapa = [
                     'idlistaespera' => $this->data['idlistaespera'],
-                    'dthragendacirurgia' => $this->data['dtcirurgia'],
+                    'dthrcirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
@@ -1530,6 +1530,306 @@ class MapaCirurgico extends ResourceController
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
                                             'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function trocarPaciente()
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $pac1 = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        $mapapac1 = $this->mapacirurgicomodel->find($pac1['idmapa']);
+
+        //die(var_dump($mapapac1));
+        //$listapac1 = $this->listaesperamodel->find($mapapac1['idlistaespera']);
+
+        $data = [];
+        $data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $pac1['idfila'])
+                                                       ->where('idespecialidade', $pac1['idespecialidade'])->findAll();
+        $data['idlistapac1'] = $mapapac1['idlistaespera'];
+        $data['idmapapac1'] = $mapapac1['id'];
+        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
+        $data['candidato'] = '';
+        $data['especialidade'] = $pac1['idespecialidade'];
+        $data['risco'] = '';
+        $data['dtrisco'] = '';
+        $data['cid'] = '';
+        $data['complexidade'] = '';
+        $data['fila'] = $pac1['idfila'];
+        $data['origem'] = '';
+        $data['congelacao'] = '';
+        $data['procedimento'] = '';
+        $data['proced_adic'] = [];
+        $data['lateralidade'] = '';
+        $data['posoperatorio'] = null;
+        $data['info'] = '';
+        $data['nec_proced'] = '';
+        $data['profissional'] = [];
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['posoperatorios'] = $this->selectposoperatorio;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+
+        //$codToRemove = $mapapac1['idprocedimento'];
+        //$procedimentos = $data['procedimentos'];
+        //$data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+            //return $procedimento->cod_tabela !== $codToRemove;
+        //});
+        $data['procedimentos_adicionais'] = $data['procedimentos'];
+
+       //var_dump($data);die();
+
+        $codToRemove = $pac1['prontuario'];
+        $candidatos = $data['candidatos'];
+        $data['candidatos'] = array_filter($candidatos, function($candidato) use ($codToRemove) {
+            return $candidato['prontuario'] !== $codToRemove;
+        });
+
+        //var_dump($data['candidatos']);die();
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                            'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function trocar()
+    {
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $this->data = [];
+
+        $this->data = $this->request->getVar();
+
+        //die(var_dump($this->data));
+
+        $rules = [
+            'especialidade' => 'required',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
+            'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
+            'fila' => 'required',
+            'procedimento' => 'required',
+            'posoperatorio' => 'required',
+            'profissional' => 'required',
+            'lateralidade' => 'required',
+            'info' => 'max_length[250]|min_length[0]',
+            'nec_proced' => 'required|max_length[250]|min_length[3]',
+        ];
+
+        if ($this->validate($rules)) {
+
+            $db = \Config\Database::connect('default');
+
+            if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['idlistapac2'])->where('deleted_at', null)->findAll()) {
+                session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
+
+                $this->carregaMapa();
+
+                $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
+                                                       ->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                                    'data' => $this->data]);
+            }
+
+
+            $db->transStart();
+
+            try {
+
+                $lista = [
+                        'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                        'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
+                        'nmcomplexidade' => $this->data['complexidade'],
+                        'indcongelacao' => $this->data['congelacao'],
+                        'nmlateralidade' => $this->data['lateralidade'],
+                        'txtinfoadicionais' => $this->data['info'],
+                        ];
+
+                $this->listaesperamodel->update($this->data['idlistapac2'], $lista);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $mapa = [
+                    'idlistaespera' => $this->data['idlistapac2'],
+                    'dthrcirurgia' => $this->data['dtcirurgia'],
+                    'idposoperatorio' => $this->data['posoperatorio'],
+                    'indhemoderivados' => $this->data['hemoderivados'],
+                    'txtnecessidadesproced' => $this->data['nec_proced']
+                    ];
+
+                $idmapa = $this->mapacirurgicomodel->insert($mapa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                if (isset($this->data['proced_adic'])) {
+
+                    foreach ($this->data['proced_adic'] as $key => $procedimento) {
+
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['codtabela'] = (int) $procedimento;
+
+                        $this->procedimentosadicionaismodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
+                if (isset($this->data['profissional'])) {
+
+                    foreach ($this->data['profissional'] as $key => $profissional) {
+
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['codpessoa'] = (int) $profissional;
+
+                        $this->equipemedicamodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir equipe médica [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
+                $this->listaesperamodel->delete($this->data['idlistapac2']);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $this->mapacirurgicomodel->update($this->data['idmapapac1'], ['dthrtroca' => date('Y-m-d H:I:s')]);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $this->mapacirurgicomodel->delete($this->data['idmapapac1']);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir paciente do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $this->listaesperamodel->where('id', $this->data['idlistapac1'])->set('deleted_at', NULL)->update();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                session()->setFlashdata('success', 'Paciente trocado com sucesso!');
+
+                $this->validator->reset();
+                
+            } catch (\Exception $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('Exception - Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('DatabaseException -  Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = sprintf('DataException -  FFalha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+            }
+
+            $this->carregaMapa();
+
+            $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
+            ->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                                'data' => $this->data]);
+
+        } else {
+            session()->setFlashdata('error', $this->validator);
+
+            $this->carregaMapa();
+
+            $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
+                                                       ->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                                'validation' => $this->validator,
+                                                'data' => $this->data]);
+        }
     }
     /**
      * Return the editable properties of a resource object

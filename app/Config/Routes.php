@@ -38,6 +38,8 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->post('tratareventocirurgico', 'MapaCirurgico::tratarEventoCirurgico');
     $routes->get('atualizarhorarioscirurgia/(:num)', 'MapaCirurgico::atualizarHorariosCirurgia/$1');
     $routes->post('atualizarhorarios', 'MapaCirurgico::atualizarHorarios');
+    $routes->get('trocarpaciente', 'MapaCirurgico::trocarPaciente');
+    $routes->post('trocar', 'MapaCirurgico::trocar');
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
 });
 

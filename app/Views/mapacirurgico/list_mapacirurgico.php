@@ -168,7 +168,15 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo '<a href="#" id="trocar" title="Trocar Paciente" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-people-arrows" style="color: '.$corTrocaPaciente.';"></i></a>';
+                            $params = array(
+                                'idmapa' => $itemmapa->id,
+                                'idfila' => $itemmapa->idfila,
+                                'idespecialidade' => $itemmapa->idespecialidade,
+                                'prontuario' => $itemmapa->prontuario,
+                            );
+                            $queryString = http_build_query($params);
+                            
+                            echo anchor('mapacirurgico/trocarpaciente?' . $queryString, '<i class="fa-solid fa-people-arrows" style="color: '.$corTrocaPaciente.';"></i>', array('title' => 'Trocar Paciente', 'onclick' => 'mostrarAguarde(event, this.href)'));
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-people-arrows" style="color: gray;"></i></span>';
                         }
