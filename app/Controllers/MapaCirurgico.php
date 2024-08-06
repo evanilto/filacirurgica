@@ -1550,8 +1550,9 @@ class MapaCirurgico extends ResourceController
         //$listapac1 = $this->listaesperamodel->find($mapapac1['idlistaespera']);
 
         $data = [];
-        $data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $pac1['idfila'])
-                                                       ->where('idespecialidade', $pac1['idespecialidade'])->findAll();
+        $data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $pac1['idfila'])
+                                                               ->where('idespecialidade', $pac1['idespecialidade'])->findAll();
+        //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
         $data['idlistapac1'] = $mapapac1['idlistaespera'];
         $data['idmapapac1'] = $mapapac1['id'];
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
@@ -1593,11 +1594,12 @@ class MapaCirurgico extends ResourceController
 
         $codToRemove = $pac1['prontuario'];
         $candidatos = $data['candidatos'];
+        //die(var_dump($candidatos));
         $data['candidatos'] = array_filter($candidatos, function($candidato) use ($codToRemove) {
             return $candidato['prontuario'] !== $codToRemove;
         });
 
-        //var_dump($data['candidatos']);die();
+        //var_dump($data['procedimentos']);die();
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                             'data' => $data]);
@@ -1637,11 +1639,12 @@ class MapaCirurgico extends ResourceController
             $db = \Config\Database::connect('default');
 
             if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['idlistapac2'])->where('deleted_at', null)->findAll()) {
+
                 session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
 
                 $this->carregaMapa();
 
-                $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
+                $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idtipoprocedimento', $this->data['fila'])
                                                        ->where('idespecialidade', $this->data['especialidade'])->findAll();
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
@@ -1699,6 +1702,7 @@ class MapaCirurgico extends ResourceController
 
                     foreach ($this->data['proced_adic'] as $key => $procedimento) {
 
+                        $array = [];
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['codtabela'] = (int) $procedimento;
 
@@ -1721,6 +1725,7 @@ class MapaCirurgico extends ResourceController
 
                     foreach ($this->data['profissional'] as $key => $profissional) {
 
+                        $array = [];
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['codpessoa'] = (int) $profissional;
 
@@ -1739,6 +1744,8 @@ class MapaCirurgico extends ResourceController
                     }
                 }
 
+                //die(var_dump(($this->data['idlistapac2'])));
+
                 $this->listaesperamodel->delete($this->data['idlistapac2']);
 
                 if ($db->transStatus() === false) {
@@ -1751,7 +1758,11 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
-                $this->mapacirurgicomodel->update($this->data['idmapapac1'], ['dthrtroca' => date('Y-m-d H:I:s')]);
+                $array = [];
+                $array['dthrtroca'] = date('Y-m-d H:I:s');
+                $array['idlistatroca'] = $this->data['idlistapac2'];
+
+                $this->mapacirurgicomodel->update($this->data['idmapapac1'], $array);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1812,8 +1823,8 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
-            ->where('idespecialidade', $this->data['especialidade'])->findAll();
+            $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
+                                                                 ->where('idespecialidade', $this->data['especialidade'])->findAll();
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                 'data' => $this->data]);
@@ -1823,8 +1834,10 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            $this->data['candidatos'] = $this->vwlistaesperamodel->Where('idtipoprocedimento', $this->data['fila'])
-                                                       ->where('idespecialidade', $this->data['especialidade'])->findAll();
+            $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
+                                                                 ->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+            //die(var_dump($this->data));
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                 'validation' => $this->validator,

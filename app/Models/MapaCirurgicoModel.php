@@ -21,6 +21,7 @@ class MapaCirurgicoModel extends Model
         'dthrcirurgia',
         'dthrsaidacentrocirurgico',
         'dthrtroca',
+        'idlistatroca',
         'idcentrocirurgico',
         'idsala',
         'idposoperatorio',

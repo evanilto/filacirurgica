@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class VwStatusFilaCirurgicaModel extends Model
 {
-    protected $table            = 'vw_listaespera';
+    protected $table            = 'vw_statusfilacirurgica';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
@@ -38,4 +38,17 @@ class VwStatusFilaCirurgicaModel extends Model
     protected $afterFind      = [];
     protected $beforeDelete   = [];
     protected $afterDelete    = [];
+
+    public function getPacientesDaFila($filaId, $especialidadeId) {
+        // Use aliases para as tabelas para garantir que não haverá ambiguidades
+        $builder = $this->db->table('public.vw_statusfilacirurgica AS v');
+        $builder->select('v.*, p.nome AS nome_paciente');
+        $builder->join('remoto.aip_pacientes AS p', 'p.prontuario = v.prontuario', 'left');
+        $builder->where('v.idfila', $filaId);
+        $builder->where('v.idespecialidade', $especialidadeId);
+        $query = $builder->get();
+    
+        return $query->getResultArray();
+    }
+
 }

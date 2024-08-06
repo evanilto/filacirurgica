@@ -178,7 +178,8 @@ class Aghu extends ResourceController
     * @return mixed
     */
     public function getItensProcedimentosHospitalares(array $itensproc = null) {
-        $sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A' AND ind_internacao = 'S'";
+        //$sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A' AND ind_internacao = 'S'";
+        $sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A'";
     
         if ($itensproc) {
             $placeholders = array_fill(0, count($itensproc), '?');

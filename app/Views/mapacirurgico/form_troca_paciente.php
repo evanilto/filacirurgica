@@ -22,7 +22,7 @@
                                             <?php
                                             foreach ($data['candidatos'] as $key => $candidato) {
                                                 $selected = ($data['candidato'] == $candidato['prontuario']) ? 'selected' : '';
-                                                echo '<option value="'.$candidato['prontuario'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['id'].'" data-procedimento="'.$candidato['idprocedimento'].'" '.$selected.'> No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome_paciente'].'</option>';
+                                                echo '<option value="'.$candidato['prontuario'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].'" data-procedimento="'.$candidato['idprocedimento'].'" '.$selected.'> No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -395,7 +395,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-people-arrows"></i> Trocar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="javascript:history.go(-2)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -404,8 +404,8 @@
                         <input type="hidden" name="idmapapac1" value="<?= $data['idmapapac1'] ?>" />
                         <input type="hidden" name="idlistapac1" value="<?= $data['idlistapac1'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $candidato['prontuario'] ?>" />
-                        <input type="hidden" name="idlistapac2" value="<?= $candidato['id'] ?>" />
-                        <input type="hidden" name="ordem" id='ordem' value="<?= $data['candidatos'][0]['ordem_fila'] ?>" />
+                        <input type="hidden" name="idlistapac2" value="<?= $candidato['idlistaespera'] ?>" />
+                        <input type="hidden" name="ordem" id='ordem' value="<?= $candidato['ordem_fila'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
@@ -581,19 +581,31 @@
             //var procedimentoValue = $(this).find('option:selected').data('procedimento');
             var procedimentoValue = $(this).find('option:selected').data('procedimento');
 
-            $('input[name="procedimento"]').val(procedimentoValue); // Define o valor do hidden
-            $('input[name="prontuario"]').val(prontuarioValue); // Define o valor do hidden
-            $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
+            //if (prontuarioValue) { // Verifica se prontuarioValue não está vazio
 
-            loadAsideContent(prontuarioValue, ordemValue);
+                $('input[name="procedimento"]').val(procedimentoValue); // Define o valor do hidden
+                $('input[name="prontuario"]').val(prontuarioValue); // Define o valor do hidden
+                $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
 
-            //document.getElementById('procedimento').value = procedimentoValue;
+                loadAsideContent(prontuarioValue, ordemValue);
 
-            $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
+                //document.getElementById('procedimento').value = procedimentoValue;
 
-            $('#proced_adic option[value="' + procedimentoValue + '"]').remove();
+                $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
+
+                $('#proced_adic option[value="' + procedimentoValue + '"]').remove();
+            /* } else {
+                // Limpa os valores dos campos ocultos se não houver candidato selecionado
+                $('input[name="prontuario"]').val('');
+                $('input[name="idlistapac2"]').val('');
+                $('input[name="procedimento"]').val('');
+                $('#aside').html(''); // Limpa o conteúdo do aside
+            } */
         });
 
+        if ($('#candidato').val()) {
+            $('#candidato').trigger('change');
+        }
 
     });
 </script>
