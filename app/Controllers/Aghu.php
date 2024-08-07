@@ -31,7 +31,10 @@ class Aghu extends ResourceController
      */
     public function getSetores() {
 
-        $sql = "SELECT seq, descricao FROM  AGH.AGH_UNIDADES_FUNCIONAIS uf WHERE ind_sit_unid_func = 'A'";
+        $sql = "SELECT
+         seq, descricao 
+         FROM  AGH.AGH_UNIDADES_FUNCIONAIS uf
+         WHERE ind_sit_unid_func = 'A'";
 
         $query = $this->db->query($sql);
 
@@ -132,7 +135,12 @@ class Aghu extends ResourceController
      * @return mixed
      */
     public function getEspecialidades(array $especialidades = null) {
-        $sql = "SELECT * FROM agh.agh_especialidades WHERE ind_situacao = 'A'";
+        $sql = "SELECT 
+                seq,
+                sigla,
+                nome_especialidade,
+                nome_reduzido
+                 FROM agh.agh_especialidades WHERE ind_situacao = 'A'";
     
         if ($especialidades) {
             $placeholders = array_fill(0, count($especialidades), '?');
@@ -155,7 +163,12 @@ class Aghu extends ResourceController
     * @return mixed
     */
    public function getCIDs(array $cids = null) {
-       $sql = "SELECT * FROM agh.agh_cids WHERE ind_situacao = 'A'";
+       $sql = "SELECT
+                seq,
+                codigo,
+                descricao
+                FROM agh.agh_cids
+                 WHERE ind_situacao = 'A'";
    
        if ($cids) {
            $placeholders = array_fill(0, count($cids), '?');
@@ -179,7 +192,14 @@ class Aghu extends ResourceController
     */
     public function getItensProcedimentosHospitalares(array $itensproc = null) {
         //$sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A' AND ind_internacao = 'S'";
-        $sql = "SELECT * FROM agh.fat_itens_proced_hospitalar WHERE ind_situacao = 'A'";
+        $sql = "SELECT
+                pho_seq,
+                seq,
+                cod_tabela,
+                descricao
+                FROM
+                agh.fat_itens_proced_hospitalar
+                WHERE ind_situacao = 'A'";
     
         if ($itensproc) {
             $placeholders = array_fill(0, count($itensproc), '?');
@@ -337,7 +357,9 @@ class Aghu extends ResourceController
     */
    public function getCentroCirurgico(array $cc = null) {
         $sql = "
-                select * 
+                select
+                seq,
+                descricao 
                 from AGH.AGH_UNIDADES_FUNCIONAIS uf
                 inner join AGH.AGH_CARACT_UNID_FUNCIONAIS cuf on cuf.unf_seq = uf.seq 
                 where uf.ind_sit_unid_func = 'A'
@@ -368,7 +390,7 @@ class Aghu extends ResourceController
         $sql = "
                 select 
                 seqp AS seq,
-                *
+                unf_seq
                 from AGH.mbc_sala_cirurgicas MSC
                 where MSC.situacao = 'A'
               ";

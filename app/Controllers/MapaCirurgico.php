@@ -400,7 +400,7 @@ class MapaCirurgico extends ResourceController
      */
     public function getPacienteNaLista ($data) 
     {
-        //die(var_dump($data));
+        die(var_dump($data));
 
         $db = \Config\Database::connect('default');
 
@@ -434,375 +434,6 @@ class MapaCirurgico extends ResourceController
         //var_dump($builder->getCompiledSelect());die();
 
         return $builder->get()->getResult();
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function incluirPacienteNaLista(string $idlistaespera = null)
-    {
-        HUAP_Functions::limpa_msgs_flash();
-
-        $data['dtinclusao'] = date('d/m/Y H:i:s');
-        $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectrisco;
-        $data['origens'] = $this->selectorigempaciente;
-        $data['lateralidades'] = $this->selectlateralidade;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
-        $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
-
-        //die(var_dump($data));
-
-        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                            'data' => $data]);
-
-    }
-/**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function incluir()
-    {
-
-        helper(['form', 'url', 'session']);
-
-        helper('array');
-
-        \Config\Services::session();
-
-        $prontuario = null;
-
-        $data = $this->request->getVar();
-
-        //die(var_dump($data));
-
-        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
-
-            if(!empty($resultAGHUX[0])) {
-                $prontuario = $data['prontuario'];
-            }
-        }
-
-        $dataform['dtinclusao'] = date('d/m/Y H:i:s');
-        $dataform['dtrisco'] = null;
-        $dataform['filas'] = $this->selectfila;
-        $dataform['riscos'] = $this->selectrisco;
-        $dataform['origens'] = $this->selectorigempaciente;
-        $dataform['lateralidades'] = $this->selectlateralidade;
-        $dataform['especialidades'] = $this->selectespecialidadeaghu;
-        $dataform['cids'] = $this->selectcids;
-        $dataform['procedimentos'] = $this->selectitensprocedhospit;
-
-        //die(var_dump($dataform['lateralidade']));
-
-        $rules = [
-            'especialidade' => 'required',
-            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
-            'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
-            'fila' => 'required',
-            'procedimento' => 'required',
-            'origem' => 'required',
-            'lateralidade' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
-        ];
-
-        if ($this->validate($rules)) {
-
-            $this->validator->reset();
-
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
-                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
-            } else {
-                if ($this->getPacienteNaLista($data)) {
-                    session()->setFlashdata('failed', 'Paciente já tem cirurgia cadastrada na mesma especialidade, fila e procedimento!');
-                } else {
-
-                    $db = \Config\Database::connect('default');
-
-                    $db->transStart();
-
-                    try {
-
-                        $paciente = [
-                            'numprontuario' => $data['prontuario'],
-                            'idespecialidade' => $data['especialidade'],
-                            'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                            'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
-                            'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                            'nmcomplexidade' => $data['complexidade'],
-                            'idtipoprocedimento' => $data['fila'],
-                            'idorigempaciente' => $data['origem'],
-                            'indcongelacao' => $data['congelacao'],
-                            'idprocedimento' => $data['procedimento'],
-                            'nmlateralidade' => $data['lateralidade'],
-                            /* 'indsituacao' => 'A', */
-                            'txtinfoadicionais' => $data['info'],
-                            'txtorigemjustificativa' => $data['justorig']
-                        ];
-                        
-                        $this->listaesperamodel->insert($paciente);
-
-                        $db->transComplete();
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
-
-                        session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
-
-                        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                                            'data' => $dataform]);     
-
-                    /*  $response = service('response');
-                        $response->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
-                        $response->setHeader('Pragma', 'no-cache'); // HTTP 1.0.
-                        $response->setHeader('Expires', '0'); // Proxies.
-                                                            
-                        $data_le['prontuario'] = $data['prontuario'];
-                        $data_le['dtinicio'] = date('Y-m-d');
-                        $data_le['dtfim'] = date('Y-m-d') . ' ' .date('H:i:s');
-                
-                        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                                            'listaespera' => $this->getListaEspera($data_le),
-                                                            'data' => $data_le]); */
-
-                    } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                        $errorMessage = $e->getMessage();
-                        $errorCode = $e->getCode();
-                        
-                        throw new \CodeIgniter\Database\Exceptions\DataException(
-                            sprintf('Erro ao incluir um paciente da Lista! [%d] %s', (int) $errorCode, $errorMessage), (int) $errorCode, $e);
-
-                    } catch (\CodeIgniter\Database\Exceptions\DatabaseException $databaseException) {
-                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DatabaseException: ' . $databaseException->getMessage());
-
-                    } catch (\CodeIgniter\Database\Exceptions\DataException $databaseException) {
-                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DataException: ' . $databaseException->getMessage());
-
-                    } catch (\Exception $e) {
-                        throw new \Exception('Erro de Exception: ' . $e->getMessage());
-                    }
-                }
-            }
-        } 
-
-        //die(var_dump($this->validator));
-
-        if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            //die(var_dump($this->validator));
-            $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
-        }
-
-       /*  if ($this->validator->hasError('procedimento')) {
-            die(var_dump($this->validator->getError('procedimento')));
-        } */
-              
-        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                            'validation' => $this->validator,
-                                            'data' => $dataform]);
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function editarLista(int $id)
-    {
-        HUAP_Functions::limpa_msgs_flash();
-
-        //$data = $this->request->getVar();
-
-        $lista = $this->listaesperamodel->find($id);
-
-        //die(var_dump($lista['id']));
-
-        $data = [];
-        $data['id'] = $lista['id'];
-        $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
-        $data['prontuario'] = $lista['numprontuario'];
-        $data['especialidade'] = $lista['idespecialidade'];
-        $data['risco'] = $lista['idriscocirurgico'];
-        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
-        $data['cid'] = $lista['numcid'];
-        $data['complexidade'] = $lista['nmcomplexidade'];
-        $data['fila'] = $lista['idtipoprocedimento'];
-        $data['origem'] = $lista['idorigempaciente'];
-        $data['congelacao'] = $lista['indcongelacao'];
-        $data['procedimento'] = $lista['idprocedimento'];
-        $data['lateralidade'] = $lista['nmlateralidade'];
-        $data['info'] = $lista['txtinfoadicionais'];
-        $data['justorig'] = $lista['txtorigemjustificativa'];
-        $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectrisco;
-        $data['origens'] = $this->selectorigempaciente;
-        $data['lateralidades'] = $this->selectlateralidade;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
-        $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
-
-        //var_dump($data['id']);die();
-
-        return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
-                                            'data' => $data]);
-
-    }
-    /**
-     * Return the editable properties of a resource object
-     *
-     * @return mixed
-     */
-    public function editar()
-    {
-        \Config\Services::session();
-
-        helper(['form', 'url', 'session']);
-
-        $data = $this->request->getVar();
-
-        //die(var_dump($data));
-
-        $rules = [
-            'especialidade' => 'required',
-            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
-            'fila' => 'required',
-            'procedimento' => 'required',
-            'origem' => 'required',
-            'lateralidade' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
-        ];
-
-        if ($this->validate($rules)) {
-
-            try {
-
-                $lista = [
-                        'idespecialidade' => $data['especialidade'],
-                        'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                        'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
-                        'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                        'nmcomplexidade' => $data['complexidade'],
-                        'idtipoprocedimento' => $data['fila'],
-                        'idorigempaciente' => $data['origem'],
-                        'indcongelacao' => $data['congelacao'],
-                        'idprocedimento' => $data['procedimento'],
-                        'nmlateralidade' => $data['lateralidade'],
-                        'txtinfoadicionais' => $data['info'],
-                        'txtorigemjustificativa' => $data['justorig']
-                        ];
-
-                $this->listaesperamodel->update($data['id'], $lista);
-
-                if ($this->vwlistaesperamodel->affectedRows() > 0) {
-                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
-                    
-                } else {
-                    session()->setFlashdata('nochange', 'Sem dados para atualizar!');
-                }
-
-                $this->validator->reset();
-                
-            } catch (\Exception $e) {
-                $msg = sprintf('Exception - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = sprintf('DatabaseException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $msg = sprintf('DataException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            }
-
-            $data['filas'] = $this->selectfila;
-            $data['riscos'] = $this->selectrisco;
-            $data['origens'] = $this->selectorigempaciente;
-            $data['lateralidades'] = $this->selectlateralidade;
-            $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['cids'] = $this->selectcids;
-            $data['procedimentos'] = $this->selectitensprocedhospit;
-
-            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
-                                                'data' => $data]);
-        } else {
-            session()->setFlashdata('error', $this->validator);
-
-            $data['filas'] = $this->selectfila;
-            $data['riscos'] = $this->selectrisco;
-            $data['origens'] = $this->selectorigempaciente;
-            $data['lateralidades'] = $this->selectlateralidade;
-            $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['cids'] = $this->selectcids;
-            $data['procedimentos'] = $this->selectitensprocedhospit;
-
-            //die(var_dump($data));
-
-            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
-                                                'data' => $data]);
-        }
-    }
-    /**
-     * Return the editable properties of a resource object
-     *
-     * @return mixed
-     */
-    public function excluirPacienteDaLista(int $id)
-    {
-        $data = session()->get('parametros_consulta_mapa');
-        session()->remove('parametros_consulta_mapa');
-
-        //die(var_dump($data));
-
-        $db = \Config\Database::connect('default');
-
-        $db->transStart();
-
-        try {
-            $this->listaesperamodel->delete(['id' => $id]);
-    
-            $db->transComplete(); // Completa a transação
-    
-            if ($db->transStatus() === false) {
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao excluir um paciente da Lista!');
-            }
-    
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-            $db->transRollback(); // Reverte a transação em caso de erro
-            $msg = 'Erro na exclusão do paciente da Lista';
-            $msg .= ' - '.$e->getMessage();
-            log_message('error', $msg.': ' . $e->getMessage());
-            session()->setFlashdata('failed', $msg);
-        }
-
-        session()->setFlashdata('success', 'Paciente excluído da Lista de Espera com sucesso!');
-
-        $result = $this->getListaEspera($data);
-
-        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                            'listaespera' => $result,
-                                            'data' => $data]);
-
-       //$client = Services::curlrequest();
-        
-        //$response = $client->request('POST', base_url('listaespera/exibir'), ['data' => $data]);
-        
-        // Obter o corpo da resposta
-        //$resposta = $response->getBody();
-
-  
     }
     /**
      * Return the editable properties of a resource object
@@ -1164,6 +795,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+
     }
     /**
      * 
@@ -1551,6 +1183,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $pac1['idfila'])
+                                                               ->where('(campos_mapa).status', 'Programada')
                                                                ->where('idespecialidade', $pac1['idespecialidade'])->findAll();
         //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
         $data['idlistapac1'] = $mapapac1['idlistaespera'];
@@ -1843,6 +1476,332 @@ class MapaCirurgico extends ResourceController
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
         }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function incluirUrgencia()
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $pac1 = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        //$mapapac1 = $this->mapacirurgicomodel->find($pac1['idmapa']);
+
+        //die(var_dump($mapapac1));
+        $data = [];
+        //$data['listaespera'] = $this->vwlistaesperamodel->Where('prontuario', $prontuario)->findAll();
+        $data['listaesperas'] = [];
+        $data['candidatos'] = null;
+        $data['idlistapac1'] = null;
+        $data['idmapapac1'] = null;
+        $data['ordem'] = null;
+        $data['dtcirurgia'] = date('d/m/Y');
+        //DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
+        $data['especialidade'] = null;
+        $data['risco'] = '';
+        $data['dtrisco'] = '';
+        $data['cid'] = '';
+        $data['complexidade'] = '';
+        $data['fila'] = null;
+        $data['origem'] = '';
+        $data['congelacao'] = '';
+        $data['procedimento'] = '';
+        $data['proced_adic'] = [];
+        $data['lateralidade'] = '';
+        $data['posoperatorio'] = null;
+        $data['info'] = '';
+        $data['nec_proced'] = '';
+        $data['profissional'] = [];
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['posoperatorios'] = $this->selectposoperatorio;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['procedimentos_adicionais'] = $data['procedimentos'];
+
+        //$codToRemove = $pac1['prontuario'];
+        //$candidatos = $data['candidatos'];
+        //die(var_dump($candidatos));
+        /* $data['candidatos'] = array_filter($candidatos, function($candidato) use ($codToRemove) {
+            return $candidato['prontuario'] !== $codToRemove;
+        }); */
+
+        //var_dump($data['procedimentos']);die();
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                            'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function incluir()
+    {
+        ini_set('memory_limit', '1024M');
+
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $prontuario = null;
+
+        $this->data = [];
+
+        $this->data = $this->request->getVar();
+
+        //die(var_dump($this->data));
+
+        if(!empty($this->data['prontuario']) && is_numeric($this->data['prontuario'])) {
+            $resultAGHUX = $this->aghucontroller->getPaciente($this->data['prontuario']);
+
+            if(!empty($resultAGHUX[0])) {
+                $prontuario = $this->data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
+            'especialidade' => 'required',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
+            'dtcirurgia' => 'required|valid_date[d/m/Y]',
+            'fila' => 'required',
+            'procedimento' => 'required',
+            'posoperatorio' => 'required',
+            'profissional' => 'required',
+            'lateralidade' => 'required',
+            'origem' => 'required',
+            'info' => 'max_length[250]|min_length[0]',
+            'nec_proced' => 'required|max_length[250]|min_length[3]',
+            'justorig' => 'max_length[250]|min_length[0]',
+            'justurgencia' => 'required|max_length[250]|min_length[3]',
+        ];
+
+        //die(var_dump($this->data));
+
+        if ($this->validate($rules)) {
+
+            $db = \Config\Database::connect('default');
+
+            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            } else {
+                if (false) { //($this->mapacirurgicomodel->where('idlistaespera', $this->data['idlistapac2'])->where('deleted_at', null)->findAll()) {
+                    session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
+                } else {
+
+                    $this->validator->reset();
+
+                    $result = $this->getPacienteNaLista($this->data);
+
+                    if ($result) {
+
+                        die(var_dump($result));
+
+                        $db->transStart();
+                    
+                        try {
+
+                            $lista = [
+                                    'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                                    'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                                    'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
+                                    'nmcomplexidade' => $this->data['complexidade'],
+                                    'indcongelacao' => $this->data['congelacao'],
+                                    'nmlateralidade' => $this->data['lateralidade'],
+                                    'txtinfoadicionais' => $this->data['info'],
+                                    ];
+
+                            $this->listaesperamodel->update($result, $lista);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $mapa = [
+                                'idlistaespera' => $this->data['idlistapac2'],
+                                'dthrcirurgia' => $this->data['dtcirurgia'],
+                                'idposoperatorio' => $this->data['posoperatorio'],
+                                'indhemoderivados' => $this->data['hemoderivados'],
+                                'txtnecessidadesproced' => $this->data['nec_proced']
+                                ];
+
+                            $idmapa = $this->mapacirurgicomodel->insert($mapa);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            if (isset($this->data['proced_adic'])) {
+
+                                foreach ($this->data['proced_adic'] as $key => $procedimento) {
+
+                                    $array = [];
+                                    $array['idmapacirurgico'] = (int) $idmapa;
+                                    $array['codtabela'] = (int) $procedimento;
+
+                                    $this->procedimentosadicionaismodel->insert($array);
+
+                                    if ($db->transStatus() === false) {
+                                        $error = $db->error();
+                                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                    
+                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                            sprintf('Erro ao inserir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                                        );
+                                    }
+
+                                }
+                            }
+
+                            if (isset($this->data['profissional'])) {
+
+                                foreach ($this->data['profissional'] as $key => $profissional) {
+
+                                    $array = [];
+                                    $array['idmapacirurgico'] = (int) $idmapa;
+                                    $array['codpessoa'] = (int) $profissional;
+
+                                    $this->equipemedicamodel->insert($array);
+
+                                    if ($db->transStatus() === false) {
+                                        $error = $db->error();
+                                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                    
+                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                            sprintf('Erro ao inserir equipe médica [%d] %s', $errorCode, $errorMessage)
+                                        );
+                                    }
+
+                                }
+                            }
+
+                            //die(var_dump(($this->data['idlistapac2'])));
+
+                            $this->listaesperamodel->delete($this->data['idlistapac2']);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $array = [];
+                            $array['dthrtroca'] = date('Y-m-d H:I:s');
+                            $array['idlistatroca'] = $this->data['idlistapac2'];
+
+                            $this->mapacirurgicomodel->update($this->data['idmapapac1'], $array);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao atualizar o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $this->mapacirurgicomodel->delete($this->data['idmapapac1']);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao excluir paciente do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $this->listaesperamodel->where('id', $this->data['idlistapac1'])->set('deleted_at', NULL)->update();
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $db->transComplete();
+
+                            session()->setFlashdata('success', 'Paciente trocado com sucesso!');
+
+                            $this->validator->reset();
+                            
+                        } catch (\Exception $e) {
+                            $db->transRollback(); // Reverte a transação em caso de erro
+                            $msg = sprintf('Exception - Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                            log_message('error', 'Exception: ' . $msg);
+                            session()->setFlashdata('exception', $msg);
+                        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                            $db->transRollback(); // Reverte a transação em caso de erro
+                            $msg = sprintf('DatabaseException -  Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                            log_message('error', 'Exception: ' . $msg);
+                            session()->setFlashdata('exception', $msg);
+                        } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+                            $db->transRollback(); // Reverte a transação em caso de erro
+                            $msg = sprintf('DataException -  FFalha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                            log_message('error', 'Exception: ' . $msg);
+                            session()->setFlashdata('exception', $msg);
+                        }
+
+                    }
+
+                    $this->carregaMapa();
+
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                                'data' => $this->data]);
+                }
+            }
+
+        } 
+
+        session()->setFlashdata('error', $this->validator);
+
+        if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            //die(var_dump($this->validator));
+            $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+        }
+        
+        $this->carregaMapa();
+
+        //die(var_dump($this->data));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                            'validation' => $this->validator,
+                                            'data' => $this->data]);
     }
     /**
      * Return the editable properties of a resource object

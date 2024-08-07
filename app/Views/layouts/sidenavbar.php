@@ -36,6 +36,11 @@
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
+                        <li>
+                            <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

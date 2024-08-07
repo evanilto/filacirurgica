@@ -119,6 +119,8 @@ class ListaEspera extends ResourceController
      */
     public function getNomePaciente($numProntuario)
 {
+    //return $this->response->setJSON(['error' => $numProntuario], 404);
+
     $paciente = $this->aghucontroller->getPaciente($numProntuario);
 
     if ($paciente && isset($paciente[0]->nome)) {
@@ -1045,6 +1047,21 @@ class ListaEspera extends ResourceController
         $this->data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
             return $procedimento->cod_tabela !== $codToRemove;
         });
+    }
+    /**
+     * 
+     * @return mixed
+     */
+    public function getListaPaciente() {
+
+        $prontuario = $this->request->getPost('prontuario');
+
+        $db = Database::connect('default');
+
+        $listaesperas = $this->vwlistaesperamodel->where('prontuario', $prontuario)->findAll();
+        
+        return $this->response->setJSON($listaesperas);
+
     }
    
 }

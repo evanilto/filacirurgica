@@ -27,6 +27,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
     $routes->post('enviar', 'ListaEspera::enviar');
+    $routes->post('getlista', 'ListaEspera::getListaPaciente');
 });
 
 $routes->group('mapacirurgico', function ($routes) {
@@ -40,6 +41,8 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->post('atualizarhorarios', 'MapaCirurgico::atualizarHorarios');
     $routes->get('trocarpaciente', 'MapaCirurgico::trocarPaciente');
     $routes->post('trocar', 'MapaCirurgico::trocar');
+    $routes->get('urgencia', 'MapaCirurgico::incluirUrgencia');
+    $routes->post('incluir', 'MapaCirurgico::incluir');
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
 });
 
