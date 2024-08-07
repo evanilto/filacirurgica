@@ -1573,6 +1573,7 @@ class MapaCirurgico extends ResourceController
         $rules = [
             'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
             'especialidade' => 'required',
+            'listapaciente' => 'required',
             'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y]',
             'fila' => 'required',

@@ -58,19 +58,13 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="listapaciente" class="form-label">Lista de Espera do Paciente<b class="text-danger">*</b></label>
-                                    <select class="form-select select2-dropdown <?php if($validation->getError('listapaciente')): ?>is-invalid<?php endif ?>" 
-                                    id="listapaciente" name="listapaciente">
+                                    <label for="listapaciente" class="form-label">Lista de Espera do Paciente</label>
+                                    <select class="form-select" id="listapaciente" name="listapaciente">
                                         <option value="">Selecione uma opção</option>
                                         <!-- As opções serão preenchidas dinamicamente -->
                                     </select>
-                                    <?php if ($validation->getError('listapaciente')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('listapaciente') ?>
-                                            </div>
-                                        <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -570,40 +564,22 @@
 
         function updatelistapaciente(prontuario) {
 
-            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
-
             if (prontuario) {
-
-                $('#janelaAguarde').show();
-
                 $.ajax({
                     url: '<?= base_url('listaespera/getlista') ?>',
                     type: 'POST',
                     data: {prontuario: prontuario},
                     dataType: 'json',
                     success: function(data) {
-                        //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
-                        const option = document.createElement("option"); // Usando createElement para criar uma nova opção
-                        option.value = 0; // ID que será usado como valor da opção
-                        option.text = `Inluir uma novo item (cirurgia) na lista`;
-                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
+                        listapacienteSelect.innerHTML = '<option value="">Selecione uma opçãoo</option>'; // Adiciona o placeholder
 
                         // Preencher o select com os dados recebidos
                         data.forEach(item => {
-                            const option = document.createElement("option");
+                            const option = document.createElement("option"); // Usando createElement para criar uma nova opção
                             option.value = item.id; // ID que será usado como valor da opção
-                            option.text = `Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_descricao}`;
-                            
-                            // Adicionando atributos data para os IDs
-                            option.setAttribute('data-especialidade-id', item.idespecialidade);
-                            option.setAttribute('data-fila-id', item.idtipoprocedimento);
-                            option.setAttribute('data-procedimento-id', item.idprocedimento);
-
+                            option.text = `Especialidade: ${item.especialidade_descricao} - Fila: ${item.fila} - Procedimento: ${item.procedimento_descricao}`;
                             listapacienteSelect.add(option); // Adiciona a nova opção ao select
                         });
-
-                        $('#janelaAguarde').hide();
-
                     },
                     error: function(xhr, status, error) {
                         console.error('Erro ao buscar lista de espera:', error);
@@ -614,9 +590,21 @@
                 // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
                 listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
             }
-
         }
-     
+        
+       /*  $('#prontuario').on('blur', function() {
+       
+        }); */
+
+        $('#listapaciente').on('change', function() {
+            // Usando this para acessar o elemento diretamente
+            //console.log("Novo valor selecionado:", this.value); // "this" refere-se ao select
+            var selectElement = document.getElementById('listapaciente');
+            var optionsArray = Array.from(selectElement.options);
+            console.table(optionsArray.map(option => ({ value: option.value, text: option.text })));
+        });
+
+
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------
         function updateProfEspecialidades(selectedFilter) {
             // Mantenha as opções selecionadas
@@ -731,46 +719,11 @@
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
         const listapacienteSelect = document.getElementById('listapaciente');
-
+        console.log(listapacienteSelect); 
         prontuarioInput.addEventListener('change', function() {
             //alert(prontuarioInput.value);
             fetchPacienteNome(prontuarioInput.value, ordemInput.value);
             updatelistapaciente(prontuarioInput.value);
         });
-
-        $('#listapaciente').on('change', function() {
-            const selectedValue = this.value;
-
-            if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
-                // Encontrar a opção correspondente que foi selecionada
-                const selectedOption = this.options[this.selectedIndex];
-
-                // Obter os IDs armazenados nos atributos data
-                const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
-                const filaId = selectedOption.getAttribute('data-fila-id');
-                const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
-
-                // Preencher os campos do formulário com os IDs
-                $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
-                $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
-                $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
-
-                // Desabilitar os campos após preencher
-                $('#especialidade').prop('disabled', true);
-                $('#fila').prop('disabled', true);
-                $('#procedimento').prop('disabled', true);
-            } else {
-                // Limpar os campos se a opção selecionada não for válida
-                $('#especialidade').val('').trigger('change');
-                $('#fila').val('').trigger('change');
-                $('#procedimento').val('').trigger('change');
-
-                // Habilitar os campos para nova seleção
-                $('#especialidade').prop('disabled', false);
-                $('#fila').prop('disabled', false);
-                $('#procedimento').prop('disabled', false);
-            }
-        });
-
     });
 </script>
