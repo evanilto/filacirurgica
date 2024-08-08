@@ -476,12 +476,12 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="idmapapac1" value="<?= $data['idmapapac1'] ?>" />
-                        <input type="hidden" name="idlistapac1" value="<?= $data['idlistapac1'] ?>" />
-                        <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
+                      <!--   <input type="hidden" name="idlista" value="<--?= $data['id'] ?>" />
+                        <input type="hidden" id="hiddenDataIdField" name="hiddenDataIdField" value=""> -->
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
+                        <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
-
+                        <input type="hidden" id="listapacienteSelect" name="listapacienteSelect">
                     </form>
                 </div>
             </div>
@@ -548,15 +548,107 @@
         });
     }
 
+    function updatelistapaciente(prontuario) {
+
+        const listapacienteSelect = document.getElementById('listapaciente');
+
+        listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
+
+        if (prontuario) {
+
+            $('#janelaAguarde').show();
+
+            $.ajax({
+                url: '<?= base_url('listaespera/getlista') ?>',
+                type: 'POST',
+                data: {prontuario: prontuario},
+                dataType: 'json',
+                success: function(data) {
+                    //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
+                    const option = document.createElement("option"); // Usando createElement para criar uma nova opção
+                    option.value = 0; // ID que será usado como valor da opção
+                    option.text = `Inluir uma novo item (cirurgia) na lista`;
+                    listapacienteSelect.add(option); // Adiciona a nova opção ao select
+
+                    // Preencher o select com os dados recebidos
+                    data.forEach(item => {
+                        const option = document.createElement("option");
+                        option.value = item.id; // ID que será usado como valor da opção
+                        option.text = `Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_descricao}`;
+                        
+                        // Adicionando atributos data para os IDs
+                        //option.setAttribute('data-id', item.id);
+                        option.setAttribute('data-especialidade-id', item.idespecialidade);
+                        option.setAttribute('data-fila-id', item.idtipoprocedimento);
+                        option.setAttribute('data-procedimento-id', item.idprocedimento);
+
+                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
+                    });
+
+                    $('#janelaAguarde').hide();
+
+                },
+                error: function(xhr, status, error) {
+                    console.error('Erro ao buscar lista de espera:', error);
+                }
+            });
+
+        } else {
+            // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
+            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
+        }
+
+    }
+
+    function preencherSelectListaPaciente(dadosServidor) {
+        const lista = document.getElementById('listapaciente');
+
+        // Limpar o select antes de adicionar novas opções
+        lista.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
+
+        alert(dadosServidor);
+        // Preencher o select com os dados recebidos do servidor
+
+        if (Array.isArray(dadosServidor) && dadosServidor.length > 0) {
+            dadosServidor.forEach(item => {
+                // Dividir a string 'valor:texto'
+                const [valor, texto] = item.split(':');
+                
+                if (valor && texto) { // Verificar se ambos valor e texto estão definidos
+                    // Criar e adicionar nova opção
+                    const option = document.createElement('option');
+                    option.value = valor.trim(); // Atribuir o valor ao option e remover espaços em branco
+                    option.text = texto.trim(); // Atribuir o texto ao option e remover espaços em branco
+
+                    lista.add(option); // Adicionar a nova opção ao select
+                }
+            });
+        } else {
+            console.warn("Nenhum dado disponível para preencher o select.");
+        }
+    }
+
     function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
-        alert(prontuarioInput);
+
+        //const listapacienteSelect = <?php echo json_encode(!empty($data['listapacienteSelect']) ? $data['listapacienteSelect'] : ''); ?>;
+        //preencherSelectListaPaciente(listapacienteSelect);
+
         fetchPacienteNome(prontuarioInput.value, ordemInput.value);
-        //fetchPacienteNome(prontuarioInput.value);
+        //updatelistapaciente(prontuarioInput.value);
     }
 
-    //fetchPacienteNomeOnLoad();
+    fetchPacienteNomeOnLoad();
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const prontuarioInput = document.getElementById('prontuario');
+        const prontuario = prontuarioInput.value;
+
+        if (prontuario) {
+            updatelistapaciente(prontuario);
+        }
+    });
 
     // Função para atualizar o select da lista de espera
 
@@ -568,55 +660,6 @@
             width: 'resolve' // Corrigir a largura
         });
 
-        function updatelistapaciente(prontuario) {
-
-            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
-
-            if (prontuario) {
-
-                $('#janelaAguarde').show();
-
-                $.ajax({
-                    url: '<?= base_url('listaespera/getlista') ?>',
-                    type: 'POST',
-                    data: {prontuario: prontuario},
-                    dataType: 'json',
-                    success: function(data) {
-                        //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
-                        const option = document.createElement("option"); // Usando createElement para criar uma nova opção
-                        option.value = 0; // ID que será usado como valor da opção
-                        option.text = `Inluir uma novo item (cirurgia) na lista`;
-                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
-
-                        // Preencher o select com os dados recebidos
-                        data.forEach(item => {
-                            const option = document.createElement("option");
-                            option.value = item.id; // ID que será usado como valor da opção
-                            option.text = `Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_descricao}`;
-                            
-                            // Adicionando atributos data para os IDs
-                            option.setAttribute('data-especialidade-id', item.idespecialidade);
-                            option.setAttribute('data-fila-id', item.idtipoprocedimento);
-                            option.setAttribute('data-procedimento-id', item.idprocedimento);
-
-                            listapacienteSelect.add(option); // Adiciona a nova opção ao select
-                        });
-
-                        $('#janelaAguarde').hide();
-
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Erro ao buscar lista de espera:', error);
-                    }
-                });
-
-            } else {
-                // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
-                listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
-            }
-
-        }
-     
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------
         function updateProfEspecialidades(selectedFilter) {
             // Mantenha as opções selecionadas
@@ -683,54 +726,15 @@
         
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
-        $('#idForm').submit(function() {
+       /*  $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
                 window.location.href = href;
             }, 1000);
-        });
+        }); */
         
-        /* $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
-            allowClear: true
-        }); */
-
-        /* $('#candidato').on('change', function() {
-            var prontuarioValue = $(this).val();
-            var ordemValue = $(this).find('option:selected').data('ordem');
-            var idlistaValue = $(this).find('option:selected').data('id');
-
-            //var procedimentoValue = $(this).find('option:selected').data('procedimento');
-            var procedimentoValue = $(this).find('option:selected').data('procedimento');
-
-            //if (prontuarioValue) { // Verifica se prontuarioValue não está vazio
-
-                $('input[name="procedimento"]').val(procedimentoValue); // Define o valor do hidden
-                $('input[name="prontuario"]').val(prontuarioValue); // Define o valor do hidden
-                $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
-
-                loadAsideContent(prontuarioValue, ordemValue);
-
-                //document.getElementById('procedimento').value = procedimentoValue;
-
-                $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
-
-                $('#proced_adic option[value="' + procedimentoValue + '"]').remove();
-            /* } else {
-                // Limpa os valores dos campos ocultos se não houver candidato selecionado
-                $('input[name="prontuario"]').val('');
-                $('input[name="idlistapac2"]').val('');
-                $('input[name="procedimento"]').val('');
-                $('#aside').html(''); // Limpa o conteúdo do aside
-            } 
-        }); */
-
-        /* if ($('#candidato').val()) {
-            $('#candidato').trigger('change');
-        } */
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
-        const listapacienteSelect = document.getElementById('listapaciente');
 
         prontuarioInput.addEventListener('change', function() {
             //alert(prontuarioInput.value);
@@ -749,6 +753,9 @@
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
+                //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
+                //alert("ID do item selecionado:", dataId);
+                //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
 
                 // Preencher os campos do formulário com os IDs
                 $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
@@ -770,6 +777,28 @@
                 $('#fila').prop('disabled', false);
                 $('#procedimento').prop('disabled', false);
             }
+        });
+
+        document.getElementById('idForm').addEventListener('submit', function(event) {
+            $('#janelaAguarde').show();
+
+            // Prevenir o envio padrão para preparar os dados
+            //event.preventDefault(); // Apenas para depuração; remova isso em produção para envio normal
+
+            // Capturar os valores do select
+            const listaEsperaSelect = document.getElementById('listapaciente');
+            const valoresTextos = Array.from(listaEsperaSelect.options)
+                .filter(option => option.value)  // Ignora opções sem valor
+                .map(option => {
+                    // Retorna uma string para cada opção no formato: valor:texto
+                    return `${option.value}:${option.text}`;
+                });
+
+            // Atribuir valores ao campo oculto
+            document.getElementById('listapacienteSelect').value = JSON.stringify(valoresTextos);
+
+            // Opcionalmente envie o formulário agora
+            // event.currentTarget.submit(); // Descomente para executar envio padrão após processamento
         });
 
     });
