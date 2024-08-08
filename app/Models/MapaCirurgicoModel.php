@@ -30,7 +30,8 @@ class MapaCirurgicoModel extends Model
         'txtjustificativaenvio',
         'txtjustificativasuspensao',
         'txtnecessidadesproced',
-        'numordem'
+        'numordem',
+        'indurgencia'
     ];
 
     // Dates

@@ -482,6 +482,10 @@
                         <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" id="listapacienteSelect" name="listapacienteSelect">
+                        <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" />
+                        <input type="hidden" name="fila_hidden" id="fila_hidden" />
+                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
+
                     </form>
                 </div>
             </div>
@@ -761,6 +765,10 @@
                 $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
                 $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
                 $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
+
+                $('#especialidade_hidden').val(especialidadeId);
+                $('#fila_hidden').val(filaId);
+                $('#procedimento_hidden').val(procedimentoId);
 
                 // Desabilitar os campos após preencher
                 $('#especialidade').prop('disabled', true);

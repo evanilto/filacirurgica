@@ -32,13 +32,13 @@
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
                         <li>
-                            <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Consultar
+                            <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
                             </a>
                         </li>
                         <li>
-                            <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
+                            <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
                     </ul>

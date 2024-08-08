@@ -258,6 +258,12 @@ class MapaCirurgico extends ResourceController
 
         $data = $this->request->getVar();
 
+        $dataflash = session()->getFlashdata('dataflash');
+
+        if ($dataflash) {
+            $data = $dataflash;
+        }
+
         //die(var_dump($data));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
@@ -269,11 +275,16 @@ class MapaCirurgico extends ResourceController
         }
 
         $rules = [
-            'dtinicio' => 'required|valid_date[d/m/Y]',
-            'dtfim' => 'required|valid_date[d/m/Y]',
             'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
             'nome' => 'permit_empty|min_length[3]',
         ];
+
+        if (!$dataflash) {
+            $rules = $rules + [
+                'dtinicio' => 'required|valid_date[d/m/Y]',
+                'dtfim' => 'required|valid_date[d/m/Y]',
+            ];
+        }
 
         if ($this->validate($rules)) {
 
@@ -428,9 +439,9 @@ class MapaCirurgico extends ResourceController
         $builder = $db->table('vw_mapacirurgico');
 
         $builder->where('idlista', $data['listapaciente']);
-        $builder->where('idespecialidade', $data['especialidade']);
-        $builder->where('idfila', $data['fila']);
-        $builder->where('dthrcirurgia', $data['dtcirurgia']);
+        $builder->where('idespecialidade', $data['especialidade'] ?? $data['especialidade_hidden']);
+        $builder->where('idfila', $data['fila'] ?? $data['fila_hidden']);
+        $builder->where('DATE(dthrcirurgia)', $data['dtcirurgia']);
         //$builder->where('nmlateralidade', $data['lateralidade']);
 
         //var_dump($builder->getCompiledSelect());die();
@@ -756,43 +767,15 @@ class MapaCirurgico extends ResourceController
             return $this->fail($msg.' ('.$e->getCode().')');
         }
     }
-
-    /**
-     * Delete the designated resource object from the model
-     *
-     * @return mixed
-     */
-    public function delete($id = null)
-    {
-      
-        $data = $this->vwlistaesperamodel->find($id);
-        
-        if($data){
-            try {
-                $this->vwlistaesperamodel->delete($id);
-                $response = [
-                    'status'   => 200,
-                    'error'    => null,
-                    'messages' => [
-                        'success' => 'setor removido com sucesso!'
-                    ]
-                ];
-                return $this->respondDeleted($response);
-
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = 'Erro na exclusão do setor';
-                log_message('error', $msg.': ' . $e->getMessage());
-                return $this->fail($msg.' ('.$e->getCode().')');
-            }
-        }
-        
-        return $this->failNotFound('Nenhum setor encontrado com id '.$id);    
-    }
-    /**
+     /**
      * 
      * @return mixed
      */
     private function carregaMapa() {
+
+        $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
+        $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
+        $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
 
         $this->data['filas'] = $this->selectfila;
         $this->data['riscos'] = $this->selectrisco;
@@ -1518,8 +1501,6 @@ class MapaCirurgico extends ResourceController
         //$data['listaespera'] = $this->vwlistaesperamodel->Where('prontuario', $prontuario)->findAll();
         $data['listaesperas'] = [];
         $data['candidatos'] = null;
-        $data['idlistapac1'] = null;
-        $data['idmapapac1'] = null;
         $data['ordem'] = null;
         $data['dtcirurgia'] = date('d/m/Y');
         //DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
@@ -1594,12 +1575,9 @@ class MapaCirurgico extends ResourceController
 
         $rules = [
             'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
-            'especialidade' => 'required',
             'listapaciente' => 'required',
             'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y]',
-            'fila' => 'required',
-            'procedimento' => 'required',
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
@@ -1609,6 +1587,14 @@ class MapaCirurgico extends ResourceController
             'justorig' => 'max_length[250]|min_length[0]',
             'justurgencia' => 'required|max_length[250]|min_length[3]',
         ];
+
+        if ($this->data['listapaciente'] == 0) {
+            $rules = $rules + [
+                'fila' => 'required',
+                'especialidade' => 'required',
+                'procedimento' => 'required'
+            ];
+         }
 
         //die(var_dump($this->data));
 
@@ -1646,12 +1632,15 @@ class MapaCirurgico extends ResourceController
                                 ];
 
                             if ($this->data['listapaciente'] != 0) {
-                                $this->listaesperamodel->update($this->data['idlista'], $lista);
+                                $idlista = $this->data['listapaciente'];
+                                $this->listaesperamodel->update($this->data['listapaciente'], $lista);
                             } else {
-                                $lista = [
-                                    'idrespecie' => $this->data['idespecie'],
-                                    'idtipoprocedimento' => $this->data['idfila'],
-                                    'idprocedimento' => $this->data['idprocedimento'],
+                                $lista = $lista + [
+                                    'idespecialidade' => $this->data['especialidade'],
+                                    'idtipoprocedimento' => $this->data['fila'],
+                                    'idprocedimento' => $this->data['procedimento'],
+                                    'numprontuario' => $this->data['prontuario'],
+                                    'idorigempaciente' => $this->data['origem'],
                                     'indsituacao' => 'A',
                                     'indurgencia' => 'S'
                                     ];
@@ -1669,7 +1658,7 @@ class MapaCirurgico extends ResourceController
                             }
 
                             $mapa = [
-                                'idlistaespera' => $this->data['idlista'],
+                                'idlistaespera' => $idlista,
                                 'dthrcirurgia' => $this->data['dtcirurgia'],
                                 'idposoperatorio' => $this->data['posoperatorio'],
                                 'indhemoderivados' => $this->data['hemoderivados'],
@@ -1690,6 +1679,19 @@ class MapaCirurgico extends ResourceController
                             }
 
                             if (isset($this->data['proced_adic'])) {
+
+                                $this->procedimentosadicionaismodel->where('id', $idlista)->delete();
+
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
+
 
                                 foreach ($this->data['proced_adic'] as $key => $procedimento) {
 
@@ -1714,6 +1716,18 @@ class MapaCirurgico extends ResourceController
 
                             if (isset($this->data['profissional'])) {
 
+                                $this->equipemedicamodel->where('id', $idlista)->delete();
+
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
+
                                 foreach ($this->data['profissional'] as $key => $profissional) {
 
                                     $array = [];
@@ -1737,7 +1751,8 @@ class MapaCirurgico extends ResourceController
 
                             //die(var_dump(($this->data['idlistapac2'])));
 
-                            $this->listaesperamodel->delete($this->data['idlista']);
+                            //$this->listaesperamodel->delete($this->data['listapaciente']);
+                            $this->listaesperamodel->where('id', $idlista)->delete();
 
                             if ($db->transStatus() === false) {
                                 $error = $db->error();
@@ -1751,7 +1766,7 @@ class MapaCirurgico extends ResourceController
 
                             $db->transComplete();
 
-                            session()->setFlashdata('success', 'Paciente trocado com sucesso!');
+                            session()->setFlashdata('success', 'Cirurgia urgente incluída com sucesso!');
 
                             $this->validator->reset();
                             
@@ -1776,8 +1791,20 @@ class MapaCirurgico extends ResourceController
 
                     $this->carregaMapa();
 
-                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
-                                                'data' => $this->data]);
+                    $dados = $this->request->getPost();
+
+                    //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
+
+                    $dataflash['dtinicio'] = date('d/m/Y');
+                    $dataflash['dtfim'] = date('d/m/Y');
+                
+                    session()->setFlashdata('dataflash', $dataflash);
+
+                    //session()->setFlashdata('dados', $this->request->getPost());
+                    return redirect()->to(base_url('mapacirurgico/exibir'));
+
+                   /*  return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                                'data' => $this->data]); */
                 }
             }
 

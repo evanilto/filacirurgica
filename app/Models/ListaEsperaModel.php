@@ -25,6 +25,7 @@ class ListaEsperaModel extends Model
         'nmlateralidade',
         'indsituacao',
         'indcongelacao',
+        'indurgencia',
         'txtinfoadicionais',
         'txtorigemjustificativa',
         'txtinfoadicionais',
