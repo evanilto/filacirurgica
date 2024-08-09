@@ -27,8 +27,7 @@
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
-            <tr data-ordem="<?= $itemlista->ordem_fila ?>">
-
+            <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
                 <td><?php echo $itemlista->ordem_lista ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
@@ -108,9 +107,9 @@
         var table = $('#table').DataTable();
         var firstRecordId;
 
-        function loadAsideContent(recordId, idOrdemFila) {
+        function loadAsideContent(prontuario, ordem, fila) {
             $.ajax({
-                url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + idOrdemFila,
+                url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
                 method: 'GET',
                 beforeSend: function() {
                     $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -134,10 +133,11 @@
             $(this).addClass('lineselected'); */
 
             var ordemFila = $(this).data('ordem');
+            var fila = $(this).data('fila');
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
             var recordId = data[2];
 
-            loadAsideContent(recordId, ordemFila); 
+            loadAsideContent(recordId, ordemFila, fila); 
 
         });
 
@@ -153,12 +153,13 @@
             $('#table tbody tr').removeClass('lineselected');
             $firstRecordRow.addClass('lineselected');
 
-            var ordemFila = $firstRecordRow.data('ordem');  // Acessando o atributo data-ordem_fila
+            var ordemFila = $firstRecordRow.data('ordem'); 
+            var fila = $firstRecordRow.data('fila'); 
 
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
             var recordId = data[2];
-            loadAsideContent(recordId, ordemFila);
+            loadAsideContent(recordId, ordemFila, fila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela

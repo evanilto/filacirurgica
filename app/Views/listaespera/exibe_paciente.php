@@ -7,7 +7,11 @@
                 <td><b><?= $ordemfila ?></b></td>
             </tr>
             <tr>
-                <td width="40%"><i class="fa-solid fa-user"></i> Prontuário:</td>
+                <td width="40%"><i class="fa-solid fa-users-line"></i> Fila:</td>
+                <td><b><?= $fila ?></b></td>
+            </tr>
+            <tr>
+                <td width="40%"><i class="fa-solid fa-folder"></i> Prontuário:</td>
                 <td><b><?= $paciente[0]->prontuario ?></b></td>
             </tr>
             <tr>

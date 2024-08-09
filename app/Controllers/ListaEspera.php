@@ -95,20 +95,33 @@ class ListaEspera extends ResourceController
         
         return $this->listaesperamodel->orderBy('created_at', 'ASC')->first();;
     }
+    /**
+     * Return the properties of a resource object
+     *
+     * @return mixed
+     */
+    public function getOrdemFila($numProntuario)
+    {
+       
+        //die(var_dump($data['ordemfila']));
+
+       // return $this->vwstatuslista getDetalhesPaciente($numProntuario);
+    }
      /**
      * Return the properties of a resource object
      *
      * @return mixed
      */
-    public function getDetailsAside($numProntuario, $ordemFila = 'A Definir')
+    public function getDetailsAside($numProntuario, $ordemFila = 'A Definir', $fila = 'A Definir')
     {
         // Pegue o registro pelos $id e passe os dados para a view
         $data = [
             'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario),
-            'ordemfila' => $ordemFila
+            'ordemfila' => $ordemFila,
+            'fila' => $fila
         ];
 
-        //die(var_dump($data));
+        //die(var_dump($data['ordemfila']));
 
         return view('listaespera/exibe_paciente', $data);
     }
@@ -327,6 +340,7 @@ class ListaEspera extends ResourceController
         HUAP_Functions::limpa_msgs_flash();
 
         $data['dtinclusao'] = date('d/m/Y H:i:s');
+        $data['ordem'] = '';
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -371,6 +385,7 @@ class ListaEspera extends ResourceController
 
         $dataform['dtinclusao'] = date('d/m/Y H:i:s');
         $dataform['dtrisco'] = null;
+        $dataform['ordem'] = null;
         $dataform['filas'] = $this->selectfila;
         $dataform['riscos'] = $this->selectrisco;
         $dataform['origens'] = $this->selectorigempaciente;
@@ -401,7 +416,7 @@ class ListaEspera extends ResourceController
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             } else {
                 if ($this->getPacienteNaLista($data)) {
-                    session()->setFlashdata('failed', 'Paciente já tem cirurgia cadastrada na mesma especialidade, fila e procedimento!');
+                    session()->setFlashdata('failed', 'Paciente já tem cirurgia cadastrada nesse dia para a mesma especialidade, fila e procedimento!');
                 } else {
 
                     $db = \Config\Database::connect('default');
@@ -442,6 +457,8 @@ class ListaEspera extends ResourceController
                         }
 
                         session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
+
+                        $dataform['ordem'] = '1000';
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                             'data' => $dataform]);     

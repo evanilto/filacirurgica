@@ -421,6 +421,7 @@ class MapaCirurgico extends ResourceController
         $builder->where('idespecialidade', $data['especialidade']);
         $builder->where('idtipoprocedimento', $data['fila']);
         $builder->where('idprocedimento', $data['procedimento']);
+        $builder->where('DATE(dthrcirurgia)', $data['dtcirurgia']);
         //$builder->where('nmlateralidade', $data['lateralidade']);
 
         //var_dump($builder->getCompiledSelect());die();

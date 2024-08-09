@@ -40,6 +40,21 @@
         <script src="<?= base_url('/assets/js/jquery.maskMoney.min.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/HUAP_ready_jquery.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/HUAP_jquery.js') ?>" crossorigin="anonymous"></script>
+
+        <script>
+            function disableEnter(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // Previne o comportamento padrão da tecla Enter
+                    
+                    const focusableElements = Array.from(document.querySelectorAll('input, textarea, select, .form-check-input'));
+                    const currentIndex = focusableElements.indexOf(document.activeElement);
+
+                    // Mover o foco para o próximo elemento
+                    const nextIndex = (currentIndex + 1) % focusableElements.length; 
+                    focusableElements[nextIndex].focus();
+                }
+            }
+        </script>
     </head>
     <body>
         <header class="header">

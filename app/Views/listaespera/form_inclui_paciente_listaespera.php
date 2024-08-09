@@ -46,7 +46,7 @@
                                 <div class="mb-3">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
-                                        <input type="text" id="nome" minlength="3" disabled
+                                        <input type="text" id="nome" minlength="3" readonly
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
                                         name="nome" value="" />
                                         <?php if ($validation->getError('nome')): ?>
@@ -309,11 +309,14 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-save"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('home_index') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
                         </div>
+
+                        <input type="hidden" name="ordem_hidden" id="ordem_hidden" value="<?= $data['ordem'] ?>" />
+
                     </form>
                 </div>
             </div>
@@ -322,6 +325,33 @@
 </div>
 
 <script>
+    window.onload = function() {
+        // Adiciona o listener de "keydown" a todos os elementos de entrada
+        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        inputs.forEach(input => {
+            input.addEventListener('keydown', disableEnter);
+        });
+    };
+
+    function loadAsideContent(prontuario, ordem, fila) {
+        $.ajax({
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
+            method: 'GET',
+            beforeSend: function() {
+                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
+            },
+            success: function(response) {
+                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
+                console.error(errorMessage);
+                console.error(xhr.responseText);
+                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
+            }
+        });
+    }
+
     function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
@@ -339,7 +369,13 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
-            loadAsideContent(prontuarioValue);
+
+            var ordemValue = document.getElementById('ordem_hidden').value;
+            var selectElement = document.getElementById('fila');
+            var filaText = selectElement.options[selectElement.selectedIndex].text;
+
+            loadAsideContent(prontuarioValue, ordemValue, filaText);
+
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -355,25 +391,6 @@
       }
     }
     
-    function loadAsideContent(recordId) {
-        $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId,
-            method: 'GET',
-            beforeSend: function() {
-                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
-            },
-            success: function(response) {
-                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
-            },
-            error: function(xhr, status, error) {
-                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
-                console.error(errorMessage);
-                console.error(xhr.responseText);
-                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
-            }
-        });
-    }
-
     function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
         fetchPacienteNome(prontuarioInput.value);
