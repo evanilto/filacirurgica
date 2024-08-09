@@ -64,7 +64,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
                                             id="especialidade" name="especialidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
                                         <option value="" <?php echo set_select('especialidade', '', TRUE); ?>></option>
                                         <?php
                                         foreach ($data['especialidades'] as $especialidade) {
@@ -85,9 +85,9 @@
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown select2-disabled <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['filas'] as $key => $fila) {
@@ -321,7 +321,8 @@
                         <input type="hidden" name="ordemfila" id="ordemfila" value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="dtinclusao" value="<?= $data['dtinclusao'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
-                    </form>
+                        <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
+                        <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
                 </div>
             </div>
         </div>
@@ -329,6 +330,20 @@
 </div>
 
 <script>
+    window.onload = function() {
+        // Adiciona o listener de "keydown" a todos os elementos de entrada
+        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        inputs.forEach(input => {
+            input.addEventListener('keydown', disableEnter);
+        });
+    };
+    /* $('#especialidade').on('select2:opening', function(e) {
+        e.preventDefault();  // Impede a abertura do dropdown
+    }); */
+    /* $('#fila').on('select2:opening', function(e) {
+        e.preventDefault();  // Impede a abertura do dropdown
+    }); */
+
     function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
@@ -346,9 +361,12 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
-            const ordemfila = document.getElementById('ordemfila');
-            loadAsideContent(prontuarioValue, ordemfila.value);
-          } else {
+            const ordemfila = document.getElementById('ordemfila').value;
+            var selectElement = document.getElementById('fila');
+            var filaText = selectElement.options[selectElement.selectedIndex].text;
+
+            loadAsideContent(prontuarioValue, ordemfila, filaText);
+        } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
             $('#sidebar').html('<p>'+data.error+'</p>'); 
@@ -363,9 +381,9 @@
       }
     }
     
-    function loadAsideContent(recordId, ordemFila) {
+    function loadAsideContent(prontuario, ordem, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -405,6 +423,10 @@
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
+        });
+
+        document.getElementById('idForm').addEventListener('submit', function(event) {
+            $('#janelaAguarde').show();
         });
     });
 </script>

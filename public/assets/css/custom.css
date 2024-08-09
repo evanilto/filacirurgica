@@ -263,6 +263,13 @@ tfoot {
     padding-top: 0px !important; /* Ajuste de padding para centralização do texto */
 }
 
+.select2-disabled{
+    background-color: #f0f0f0; /* Cinza claro */
+    border: 1px solid #ccc; /* Borda padrão */
+    color: #6c757d; /* Texto cinza */
+    cursor: not-allowed; /* Cursor que indica não interativo */
+}
+
 .form-control {
     padding: 2px;
     padding-left: 4px;

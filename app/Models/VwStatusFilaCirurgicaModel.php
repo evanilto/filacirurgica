@@ -7,7 +7,7 @@ use CodeIgniter\Model;
 class VwStatusFilaCirurgicaModel extends Model
 {
     protected $table            = 'vw_statusfilacirurgica';
-    protected $primaryKey       = 'id';
+    protected $primaryKey       = 'idlistaespera';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;

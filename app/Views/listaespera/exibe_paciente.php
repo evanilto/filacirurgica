@@ -3,7 +3,7 @@
     <table class="table table-left-aligned table-smaller-font">
         <tbody>
             <tr>
-                <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
+                <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem:</td>
                 <td><b><?= $ordemfila ?></b></td>
             </tr>
             <tr>

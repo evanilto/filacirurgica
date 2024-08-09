@@ -5,6 +5,7 @@ use CodeIgniter\RESTful\ResourceController;
 use App\Libraries\HUAP_Functions;
 use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
+use App\Models\VwStatusFilaCirurgicaModel;
 use App\Models\MapaCirurgicoModel;
 use App\Models\FilaModel;
 use App\Models\RiscoModel;
@@ -25,6 +26,8 @@ class ListaEspera extends ResourceController
 {
     private $listaesperamodel;
     private $vwlistaesperamodel;
+
+    private $vwstatusfilacirurgicamodel;
     private $mapacirurgicomodel;
     private $filamodel;
     private $riscomodel;
@@ -53,6 +56,7 @@ class ListaEspera extends ResourceController
     {
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
+        $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
         $this->mapacirurgicomodel = new MapaCirurgicoModel();
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
@@ -100,12 +104,13 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getOrdemFila($numProntuario)
+    public function getOrdemFila($idlista)
     {
-       
-        //die(var_dump($data['ordemfila']));
+        $statusfila = $this->vwstatusfilacirurgicamodel->find($idlista);
 
-       // return $this->vwstatuslista getDetalhesPaciente($numProntuario);
+        //die(var_dump($statusfila));
+
+        return $statusfila['ordem_fila'] ?? null;
     }
      /**
      * Return the properties of a resource object
@@ -186,7 +191,13 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($data));
+        $dataflash = session()->getFlashdata('dataflash');
+
+        if ($dataflash) {
+            $data = $dataflash;
+        }
+
+        //die(var_dump($dataflash));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -197,27 +208,36 @@ class ListaEspera extends ResourceController
         }
 
         $rules = [
-            'dtinicio' => 'required|valid_date[d/m/Y]',
-            'dtfim' => 'required|valid_date[d/m/Y]',
-            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
             'nome' => 'permit_empty|min_length[3]',
-        ];
+         ];
+
+        if (!$dataflash) {
+            $rules = $rules + [
+                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+                'dtinicio' => 'required|valid_date[d/m/Y]',
+                'dtfim' => 'required|valid_date[d/m/Y]',
+            ];
+        }
 
         if ($this->validate($rules)) {
 
-            if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
-                $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+            //die(var_dump($dataflash));
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
-                                                    'validation' => $this->validator,
-                                                    'data' => $data]);
-            }
+            if (!$dataflash) {
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+
+                    session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
+                    return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
             
-            $this->validator->reset();
+                $horaAtual = date('H:i:s');
+                $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
+            }
 
-            $horaAtual = date('H:i:s');
-            $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
+            $this->validator->reset();
 
             $result = $this->getListaEspera($data);
 
@@ -238,8 +258,7 @@ class ListaEspera extends ResourceController
 
             return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
                                                'listaespera' => $result,
-                                               'data' => $data]);
-
+                                            'data' => $data]);
         } else {
             if(isset($resultAGHUX) && empty($resultAGHUX)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
@@ -250,7 +269,7 @@ class ListaEspera extends ResourceController
             $data['especialidades'] = $this->aghucontroller->getEspecialidades();
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
-                                                'validation' => $this->validator,
+                                               'validation' => $this->validator,
                                                 'data' => $data]);
         }
     }
@@ -265,47 +284,53 @@ class ListaEspera extends ResourceController
 
         $db = \Config\Database::connect('default');
 
-        $builder = $db->table('vw_listaespera');
+        $builder = $db->table('vw_listaespera as vl');
+        $builder->join('vw_statusfilacirurgica as vs', 'vl.id = vs.idlistaespera', 'inner');
+
+        $builder->select('vl.*, vs.ordem_fila');
+
+        //die(var_dump($data));
 
         if (!empty($data['idlista'])) {
-            //die(var_dump($data['idlista']));
         
-            $builder->where('id', $data['idlista']);
+            $builder->where('vl.id', $data['idlista']);
     
         } else {
 
             //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
-            $builder->where("created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+            $builder->where("vl.created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
 
             if (!empty($data['prontuario'])) {
                 //$clausula_where .= " AND prontuario = $data[prontuario]";
-                $builder->where('prontuario', $data['prontuario']);
+                $builder->where('vl.prontuario', $data['prontuario']);
             };
             if (!empty($data['nome'])) {
                 //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
-                $builder->where('nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+                $builder->where('vl.nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
             };
             if (!empty($data['especialidade'])) {
                 //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
-                $builder->where('idespecialidade', $data['especialidade']);
+                $builder->where('vl.idespecialidade', $data['especialidade']);
             };
             if (!empty($data['fila'])) {
                 //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
-                $builder->where('idtipoprocedimento', $data['fila']);
+                $builder->where('vl.idtipoprocedimento', $data['fila']);
             };
             if (!empty($data['risco'])) {
                 //$clausula_where .= " AND  idrisco = $data[risco]";
-                $builder->where('idriscocirurgico',  $data['risco']);
+                $builder->where('vl.idriscocirurgico',  $data['risco']);
             };
             if (!empty($data['complexidades'])) {
                 //$clausula_where .= " AND  idrisco = $data[risco]";
-                $builder->whereIn('complexidade',  $data['complexidades']);
+                $builder->whereIn('vl.complexidade',  $data['complexidades']);
             };
         }
 
         //var_dump($builder->getCompiledSelect());die();
 
         return $builder->get()->getResult();
+
+        //die(var_dump($builder->get()->getResult()));
     }
     /**
      * Return a new resource object, with default properties
@@ -338,6 +363,8 @@ class ListaEspera extends ResourceController
     public function incluirPacienteNaLista(string $idlistaespera = null)
     {
         HUAP_Functions::limpa_msgs_flash();
+
+        //die(var_dump($this->vwstatusfilacirurgicamodel->find(7267)));
 
         $data['dtinclusao'] = date('d/m/Y H:i:s');
         $data['ordem'] = '';
@@ -385,7 +412,7 @@ class ListaEspera extends ResourceController
 
         $dataform['dtinclusao'] = date('d/m/Y H:i:s');
         $dataform['dtrisco'] = null;
-        $dataform['ordem'] = null;
+        $dataform['ordem'] = 'A definir';
         $dataform['filas'] = $this->selectfila;
         $dataform['riscos'] = $this->selectrisco;
         $dataform['origens'] = $this->selectorigempaciente;
@@ -442,7 +469,7 @@ class ListaEspera extends ResourceController
                             'txtorigemjustificativa' => $data['justorig']
                         ];
                         
-                        $this->listaesperamodel->insert($paciente);
+                        $idlista = $this->listaesperamodel->insert($paciente);
 
                         $db->transComplete();
 
@@ -458,7 +485,8 @@ class ListaEspera extends ResourceController
 
                         session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
 
-                        $dataform['ordem'] = '1000';
+                        $ordemfila = $this->getOrdemFila($idlista);
+                        $dataform['ordem'] = $ordemfila ?? 'A Definir';
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                             'data' => $dataform]);     
@@ -570,7 +598,7 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //die(var_dump($dataflash));
 
         $rules = [
             'especialidade' => 'required',
@@ -606,7 +634,6 @@ class ListaEspera extends ResourceController
 
                 if ($this->vwlistaesperamodel->affectedRows() > 0) {
                     session()->setFlashdata('success', 'Operação concluída com sucesso!');
-                    
                 } else {
                     session()->setFlashdata('nochange', 'Sem dados para atualizar!');
                 }
@@ -635,8 +662,18 @@ class ListaEspera extends ResourceController
             $data['cids'] = $this->selectcids;
             $data['procedimentos'] = $this->selectitensprocedhospit;
 
-            return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
-                                                'data' => $data]);
+            $dados = $this->request->getPost();
+
+            $dataflash['idlista'] = $data['id'];
+
+            session()->setFlashdata('dataflash', $dataflash);
+
+            //die(var_dump($dataflash));
+
+            return redirect()->to(base_url('listaespera/exibir'));
+
+            /* return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                'data' => $data]); */
         } else {
             session()->setFlashdata('error', $this->validator);
 
@@ -647,8 +684,6 @@ class ListaEspera extends ResourceController
             $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['cids'] = $this->selectcids;
             $data['procedimentos'] = $this->selectitensprocedhospit;
-
-            //die(var_dump($data));
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                 'data' => $data]);
