@@ -264,7 +264,7 @@ class MapaCirurgico extends ResourceController
             $data = $dataflash;
         }
 
-        //die(var_dump($data));
+        //die(var_dump($dataflash));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -313,7 +313,7 @@ class MapaCirurgico extends ResourceController
                 $data['especialidades'] = $this->aghucontroller->getEspecialidades();
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_mapacirurgico',
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
             
@@ -435,6 +435,8 @@ class MapaCirurgico extends ResourceController
      */
     public function getPacienteNoMapa ($data) 
     {
+        //die(var_dump($data));
+        
         $db = Database::connect('default');
 
         $builder = $db->table('vw_mapacirurgico');
@@ -446,6 +448,8 @@ class MapaCirurgico extends ResourceController
         //$builder->where('nmlateralidade', $data['lateralidade']);
 
         //var_dump($builder->getCompiledSelect());die();
+
+        //die(var_dump($builder->get()->getResult()));
 
         return $builder->get()->getResult();
     }
@@ -520,7 +524,7 @@ class MapaCirurgico extends ResourceController
 
         //var_dump($data['prof_especialidades']);die();
 
-        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+        return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                             'data' => $data]);
     }
     /**
@@ -563,7 +567,7 @@ class MapaCirurgico extends ResourceController
 
                 $this->carregaMapa();
 
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                     'data' => $this->data]);
             }
 
@@ -707,7 +711,7 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                 'data' => $this->data]);
 
         } else {
@@ -715,7 +719,7 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
         }

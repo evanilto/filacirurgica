@@ -104,3 +104,4 @@ defined('HUAP_APPNAME') || define('HUAP_APPNAME', 'Fila Cirúrgica');
 defined('HUAP_MSG_ERROR') || define('HUAP_MSG_ERROR', '<i class="fa-solid fa-exclamation-circle"></i> ERRO <i class="fa-solid fa-exclamation-circle"></i> Verifique os campos abaixo.');
 defined('HUAP_MSG_ALERT') || define('HUAP_MSG_ALERT', 'Fila Cirúrgica');
 defined('HUAP_MSG_SUCCESS') || define('HUAP_MSG_SUCCESS', 'Fila Cirúrgica');
+defined('DIAS_AGENDA_CIRURGICA') || define('DIAS_AGENDA_CIRURGICA', '3');

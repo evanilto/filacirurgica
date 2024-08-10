@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 use CodeIgniter\RESTful\ResourceController;
+use App\Controllers\MapaCirurgico;
 use App\Libraries\HUAP_Functions;
 use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
@@ -37,7 +38,7 @@ class ListaEspera extends ResourceController
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
     private $usuariocontroller;
-    //private $mapacirurgicocontroller;
+    private $mapacirurgicocontroller;
     private $aghucontroller;
     private $selectfila;
     private $selectrisco;
@@ -66,7 +67,7 @@ class ListaEspera extends ResourceController
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
         $this->usuariocontroller = new Usuarios();
-        //$this->mapacirurgicocontroller = new MapaCirurgico();
+        $this->mapacirurgicocontroller = new MapaCirurgico();
         $this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -196,8 +197,6 @@ class ListaEspera extends ResourceController
         if ($dataflash) {
             $data = $dataflash;
         }
-
-        //die(var_dump($dataflash));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -706,13 +705,19 @@ class ListaEspera extends ResourceController
         $db->transStart();
 
         try {
+            $this->listaesperamodel->update($id, ['indsituacao' => 'I']);
+
+            if ($db->transStatus() === false) {
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao inativar paciente da Lista!');
+            }
+
             $this->listaesperamodel->delete(['id' => $id]);
     
-            $db->transComplete(); // Completa a transação
-    
-            if ($db->transStatus() === false) {
+                if ($db->transStatus() === false) {
                 throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao excluir um paciente da Lista!');
             }
+
+            $db->transComplete();
     
         } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
             $db->transRollback(); // Reverte a transação em caso de erro
@@ -722,22 +727,25 @@ class ListaEspera extends ResourceController
             session()->setFlashdata('failed', $msg);
         }
 
+        if ($db->transStatus() === false) {
+            $dados = $this->request->getPost();
+            $dataflash['idlista'] = $id;
+            session()->setFlashdata('dataflash', $dataflash);
+
+            return redirect()->to(base_url('listaespera/exibir'));
+        }
+
         session()->setFlashdata('success', 'Paciente excluído da Lista de Espera com sucesso!');
+
+        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+        'listaespera' => []]);
+
 
         $result = $this->getListaEspera($data);
 
         return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
                                             'listaespera' => $result,
                                             'data' => $data]);
-
-       //$client = Services::curlrequest();
-        
-        //$response = $client->request('POST', base_url('listaespera/exibir'), ['data' => $data]);
-        
-        // Obter o corpo da resposta
-        //$resposta = $response->getBody();
-
-  
     }
     /**
      * Return the editable properties of a resource object
@@ -754,7 +762,7 @@ class ListaEspera extends ResourceController
         //die(var_dump($id));
 
         $data = [];
-        $data['ordem_fila'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
+        $data['ordem'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
         $data['id'] = $lista['id'];
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $lista['numprontuario'];
@@ -794,7 +802,7 @@ class ListaEspera extends ResourceController
 
         //var_dump($data['ordem_fila']);die();
 
-        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+        return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                             'data' => $data]);
     }
     /**
@@ -812,7 +820,7 @@ class ListaEspera extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //die(var_dump($this->data));
 
         $rules = [
             'especialidade' => 'required',
@@ -832,15 +840,26 @@ class ListaEspera extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['id'])->where('deleted_at', null)->findAll()) {
-                session()->setFlashdata('failed', 'Lista com esse paciente já foi enviada ao Mapa Cirúrgico');
+            if (DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->getTimestamp() < strtotime(date('Y-m-d H:i') . ' +'.DIAS_AGENDA_CIRURGICA.' days')) {
+                $this->validator->setError('dtcirurgia', 'O tempo mínimo para agendar uma cirurgia eletiva é de '.DIAS_AGENDA_CIRURGICA.' dias!');
 
                 $this->carregaMapa();
 
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                     'data' => $this->data]);
             }
 
+            $data_clone = $this->data;
+            $data_clone['listapaciente'] = $this->data['id'];
+            $data_clone['dtcirurgia'] = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d');
+            if ($this->mapacirurgicocontroller->getPacienteNoMapa($data_clone)) {
+                session()->setFlashdata('failed', 'Esse paciente já tem uma cirurgia programada para esse dia!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
 
             $db->transStart();
 
@@ -871,7 +890,7 @@ class ListaEspera extends ResourceController
 
                 $mapa = [
                     'idlistaespera' => $this->data['id'],
-                    'dthragendacirurgia' => $this->data['dtcirurgia'],
+                    'dthrcirurgia' => $this->data['dtcirurgia'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
@@ -981,7 +1000,7 @@ class ListaEspera extends ResourceController
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                 'data' => $this->data]);
 
         } else {
@@ -989,7 +1008,7 @@ class ListaEspera extends ResourceController
 
             $this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_envia_mapacirurgico',
+            return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
         }

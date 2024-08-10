@@ -46,7 +46,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('listaespera/editarlista/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
                 </td> <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico')) ?>
+                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
                 </td>
                 <?=  session()->set('parametros_consulta_lista', $data); ?>
                 <td style="text-align: center; vertical-align: middle;">
@@ -73,7 +73,7 @@
   }
 
   function confirma_excluir () {
-        if (!confirm('Confirma a exclusão do Volume?')) {
+        if (!confirm('Confirma a exclusão desse paciente da lista de espera?')) {
             return false;
         };
         

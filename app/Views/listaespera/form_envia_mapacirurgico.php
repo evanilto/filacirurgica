@@ -15,7 +15,7 @@
                                 <div class="mb-3">
                                     <label for="dtcirurgia" class="form-label">Data/Hora da Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM:SS"
+                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM"
                                             class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
@@ -455,14 +455,14 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-paper-plane"></i> Enviar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
                         </div>
 
                         <input type="hidden" name="id" value="<?= $data['id'] ?>" />
-                        <input type="hidden" name="ordem" id='ordem' value="<?= $data['ordem_fila'] ?>" />
+                        <input type="hidden" name="ordem" id='ordem' value="<?= $data['ordem'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
@@ -479,6 +479,13 @@
 </div>
 
 <script>
+     window.onload = function() {
+        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        inputs.forEach(input => {
+            input.addEventListener('keydown', disableEnter);
+        });
+    };
+
     function fetchPacienteNome(prontuarioValue, ordemValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
