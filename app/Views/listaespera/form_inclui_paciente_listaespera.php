@@ -93,7 +93,9 @@
                                             <?php
                                             foreach ($data['filas'] as $key => $fila) {
                                                 $selected = (set_value('fila') == $fila['id']) ? 'selected' : '';
-                                                echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                                echo '<option value="'.$fila['id'].'" data-especialidade="'.$fila['idespecialidade'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                                echo "<!-- id: {$fila['id']}, idespecialidade: {$fila['idespecialidade']}, nmtipoprocedimento: {$fila['nmtipoprocedimento']} -->";
+
                                             }
                                             ?>
                                         </select>
@@ -244,11 +246,11 @@
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="NÃO" checked>
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N" checked>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="SIM">
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S">
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
@@ -406,13 +408,46 @@
         });
         
         $('.select2-dropdown').select2({
+            placeholder: "",
+            allowClear: true,
             dropdownCssClass: 'custom-dropdown',
-            allowClear: true
+            width: 'resolve' // Corrigir a largura
         });
 
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
+        });
+
+        $('#especialidade').change(function() {
+           var selectedEspecialidade = $(this).val();
+           
+           /*  $('#fila option').each(function() {
+                var especialidadeOption = $(this).data('especialidade');
+                alert($(this).attr('data-especialidade'));
+                if (selectedEspecialidade === especialidadeOption.toString() || selectedEspecialidade === "") {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            }); */
+            var addedOptions = [];
+
+            <?php foreach ($data['filas'] as $fila): ?>
+            var value = '<?= $fila['id'] ?>';
+            var text = '<?= $fila['nmtipoprocedimento']?>';
+            var especie = '<?= $fila['idespecialidade'] ?>';
+            if ((!selectedEspecialidade || selectedEspecialidade === especie)) {
+                var option = new Option(text, value, false, false);
+                $("#fila").append(option);
+                addedOptions.push(value);
+            }
+            <?php endforeach; ?>
+
+            // Atualiza o Select2 após mostrar/ocultar opções
+            //$('#fila').val(selectedEspecialidade).trigger('change');
+
+            $('#fila').val('').trigger('change'); // Reset e atualiza o componente Select2
         });
     });
 </script>

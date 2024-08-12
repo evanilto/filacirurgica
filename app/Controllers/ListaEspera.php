@@ -375,7 +375,7 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
-        //die(var_dump($data));
+        //var_dump($data['filas']);die();
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                             'data' => $data]);
@@ -430,6 +430,7 @@ class ListaEspera extends ResourceController
             'procedimento' => 'required',
             'origem' => 'required',
             'lateralidade' => 'required',
+            'congelacao' => 'required',
             'justorig' => 'max_length[250]|min_length[0]',
             'info' => 'max_length[250]|min_length[0]',
         ];
@@ -800,7 +801,7 @@ class ListaEspera extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['ordem_fila']);die();
+        //var_dump($data['filas']);die();
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                             'data' => $data]);
@@ -831,6 +832,8 @@ class ListaEspera extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
+            'hemoderivados' => 'required',
+            'congelacao' => 'required',
             'justorig' => 'max_length[250]|min_length[0]',
             'info' => 'max_length[250]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',

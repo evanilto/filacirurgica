@@ -378,16 +378,16 @@
                         <td><b>${paciente.ordem}</b></td>
                     </tr>
                     <tr>
-                        <td width="40%"><i class="fa-solid fa-user"></i> Prontuário:</td>
+                        <td width="40%"><i class="fa-solid fa-users-line"></i> Fila:</td>
+                        <td><b>${paciente.fila}</b></td>
+                    </tr>
+                    <tr>
+                        <td width="40%"><i class="fa-solid fa-folder"></i> Prontuário:</td>
                         <td><b>${paciente.prontuario}</b></td>
                     </tr>
                     <tr>
                         <td width="40%"><i class="fa-solid fa-user"></i> Nome:</td>
                         <td><b>${paciente.nome}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Fila:</td>
-                        <td><b>${paciente.fila}</b></td>
                     </tr>
                     <tr>
                         <td width="40%"><i class="fa-solid fa-list"></i> Especialidade:</td>

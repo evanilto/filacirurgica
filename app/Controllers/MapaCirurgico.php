@@ -875,7 +875,7 @@ class MapaCirurgico extends ResourceController
         $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
-        $data['sala'] =  $mapa->idsala;
+        $data['sala'] =  $mapa->idsala ?? '';
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
         $data['filas'] = $this->selectfila;
@@ -896,7 +896,7 @@ class MapaCirurgico extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['salas_cirurgicas'][0]['salas']);die();
+       //var_dump($data['sala']);die();
         //var_dump($data['salas_cirurgicas']);die();
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
@@ -1101,7 +1101,7 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            //die(var_dump($this->validator->getErrors()));
+            //die(var_dump($this->data));
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'validation' => $this->validator,

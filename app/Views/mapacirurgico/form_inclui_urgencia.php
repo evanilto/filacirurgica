@@ -422,7 +422,7 @@
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="filtro_especialidades" class="form-label">Especialidade</label>
+                                            <label for="filtro_especialidades" class="form-label">Especialidades de Profissionais Auxiliares</label>
                                             <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades">
                                                 <option value="">Todas</option>
                                                 <?php foreach ($data['especialidades_med'] as $filtro): ?>
@@ -439,7 +439,6 @@
                                                 <?php
                                                 // Certifique-se de que $data['profissional'] está definido como um array
                                                 $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
-
                                                 // Certifique-se de que o array não tenha valores vazios
                                                 $data['profissional'] = array_filter($data['profissional']);
 

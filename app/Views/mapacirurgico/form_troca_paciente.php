@@ -403,9 +403,9 @@
 
                         <input type="hidden" name="idmapapac1" value="<?= $data['idmapapac1'] ?>" />
                         <input type="hidden" name="idlistapac1" value="<?= $data['idlistapac1'] ?>" />
-                        <input type="hidden" name="prontuario" value="<?= $candidato['prontuario'] ?>" />
-                        <input type="hidden" name="idlistapac2" value="<?= $candidato['idlistaespera'] ?>" />
-                        <input type="hidden" name="ordem" id='ordem' value="<?= $candidato['ordem_fila'] ?>" />
+                        <!-- <input type="hidden" name="prontuario" value="<--?= $candidato['prontuario'] ?>" />
+                        <input type="hidden" name="idlistapac2" value="<--?= $candidato['idlistaespera'] ?>" />
+                        <input type="hidden" name="ordem" id='ordem' value="<--?= $candidato['ordem_fila'] ?>" / -->>
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />

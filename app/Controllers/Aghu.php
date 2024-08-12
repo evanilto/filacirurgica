@@ -390,7 +390,8 @@ class Aghu extends ResourceController
         $sql = "
                 select 
                 seqp AS seq,
-                unf_seq
+                unf_seq,
+                nome
                 from AGH.mbc_sala_cirurgicas MSC
                 where MSC.situacao = 'A'
               ";
