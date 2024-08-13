@@ -145,15 +145,15 @@
                                     <label class="form-label">Complexidade<b class="text-danger"></b></label>
                                     <div class="input-group bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeA" value="ALTA">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeA" value="A">
                                             <label class="form-check-label" for="complexidadeA">&nbsp;Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeM" value="MÉDIA">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeM" value="M">
                                             <label class="form-check-label" for="complexidadeM">&nbsp;Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeB" value="BAIXA">
+                                            <input class="form-check-input" type="checkbox" name="complexidades[]" id="complexidadeB" value="B">
                                             <label class="form-check-label" for="complexidadeB">&nbsp;Baixa</label>
                                         </div>
                                     </div>

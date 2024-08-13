@@ -15,6 +15,7 @@ use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
+use App\Models\JustificativasModel;
 //use App\Controllers\MapaCirurgico;
 use DateTime;
 use CodeIgniter\Config\Services;
@@ -35,6 +36,8 @@ class ListaEspera extends ResourceController
     private $origempacientemodel;
     private $lateralidademodel;
     private $posoperatoriomodel;
+    private $justificativasmodel;
+
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
     private $usuariocontroller;
@@ -63,6 +66,7 @@ class ListaEspera extends ResourceController
         $this->riscomodel = new RiscoModel();
         $this->origempacientemodel = new OrigemPacienteModel();
         $this->lateralidademodel = new LateralidadeModel();
+        $this->justificativasmodel = new JustificativasModel();
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
@@ -456,14 +460,14 @@ class ListaEspera extends ResourceController
                             'numprontuario' => $data['prontuario'],
                             'idespecialidade' => $data['especialidade'],
                             'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                            'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                            'dtriscocirurgico' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
                             'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                            'nmcomplexidade' => $data['complexidade'],
+                            'idcomplexidade' => $data['complexidade'],
                             'idtipoprocedimento' => $data['fila'],
                             'idorigempaciente' => $data['origem'],
                             'indcongelacao' => $data['congelacao'],
                             'idprocedimento' => $data['procedimento'],
-                            'nmlateralidade' => $data['lateralidade'],
+                            'idlateralidade' => $data['lateralidade'],
                             /* 'indsituacao' => 'A', */
                             'txtinfoadicionais' => $data['info'],
                             'txtorigemjustificativa' => $data['justorig']
@@ -561,14 +565,14 @@ class ListaEspera extends ResourceController
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
-        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
+        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
         $data['cid'] = $lista['numcid'];
-        $data['complexidade'] = $lista['nmcomplexidade'];
+        $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['procedimento'] = $lista['idprocedimento'];
-        $data['lateralidade'] = $lista['nmlateralidade'];
+        $data['lateralidade'] = $lista['idlateralidade'];
         $data['info'] = $lista['txtinfoadicionais'];
         $data['justorig'] = $lista['txtorigemjustificativa'];
         $data['filas'] = $this->selectfila;
@@ -618,14 +622,14 @@ class ListaEspera extends ResourceController
                 $lista = [
                         'idespecialidade' => $data['especialidade'],
                         'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                        'dtavaliacao' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                        'dtriscocirurgico' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
                         'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                        'nmcomplexidade' => $data['complexidade'],
+                        'idcomplexidade' => $data['complexidade'],
                         'idtipoprocedimento' => $data['fila'],
                         'idorigempaciente' => $data['origem'],
                         'indcongelacao' => $data['congelacao'],
                         'idprocedimento' => $data['procedimento'],
-                        'nmlateralidade' => $data['lateralidade'],
+                        'idlateralidade' => $data['lateralidade'],
                         'txtinfoadicionais' => $data['info'],
                         'txtorigemjustificativa' => $data['justorig']
                         ];
@@ -769,15 +773,15 @@ class ListaEspera extends ResourceController
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
-        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
+        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
         $data['cid'] = $lista['numcid'];
-        $data['complexidade'] = $lista['nmcomplexidade'];
+        $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['proced_adic'] = [];
-        $data['lateralidade'] = $lista['nmlateralidade'];
+        $data['lateralidade'] = $lista['idlateralidade'];
         $data['posoperatorio'] = null;
         $data['info'] = $lista['txtinfoadicionais'];
         $data['nec_proced'] = '';
@@ -870,11 +874,11 @@ class ListaEspera extends ResourceController
 
                 $lista = [
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                        'nmcomplexidade' => $this->data['complexidade'],
+                        'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
-                        'nmlateralidade' => $this->data['lateralidade'],
+                        'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig']
                         ];
@@ -1137,5 +1141,132 @@ class ListaEspera extends ResourceController
         return $this->response->setJSON($listaesperas);
 
     }
-   
-}
+    /**
+     * 
+     * @return mixed
+     */
+    private function migrarLista() {
+
+        $db = \Config\Database::connect('default');
+
+        $sql = "
+            SELECT
+                cl.idlistacirurgica,
+                cl.prontuario,
+                CAST(cl.datainclusao || ' ' || cl.horainclusao AS TIMESTAMP) AS data_inclusao,
+                cl.especialidade,
+                cl.dataavaliacao,
+                cl.cid,
+                CASE
+                    WHEN cl.complexidade = 1 THEN 'A'
+                    WHEN cl.complexidade = 2 THEN 'M'
+                    WHEN cl.complexidade = 3 THEN 'B'
+                END AS complexidade,
+                cl.tipoprocedimento,
+                cl.riscocirurgico,
+                cl.origempaciente,
+                cl.procedimento,
+                cl.lateralidade,
+                cl.idlistacirurgica,
+                CASE 
+                    WHEN cc.congelacao = 0 THEN 'N'
+                    WHEN cc.congelacao = 1 THEN 'S'
+                END AS congelacao,
+                ci.informacoesadicionais,
+                cn.necessidadesprocedimento,
+                CASE 
+                    WHEN cl.situacao = 0 THEN 'A'
+                    WHEN cl.situacao = 1 THEN 'I'
+                END AS situacao,
+                cj.justificativa
+            FROM cirurgias_listacirurgica cl
+            LEFT JOIN cirurgias_congelacao cc ON cc.idlistacirurgica = cl.idlistacirurgica
+            LEFT JOIN cirurgias_necessidadesprocedimento cn ON cn.idlistacirurgica = cl.idlistacirurgica
+            LEFT JOIN cirurgias_informacoesadicionais ci ON ci.idlistacirurgica = cl.idlistacirurgica
+            LEFT JOIN cirurgias_justificativas cj on cj.idlistacirurgica = cl.idlistacirurgica
+            ;";
+
+        $query = $db->query($sql);
+
+        $result = $query->getResult();
+
+        $db = \Config\Database::connect('default');
+
+        foreach ($result as $reg) {
+
+                $lista = [];
+                $lista['id'] = $reg['idlistacirurgica'];
+                $lista['numprontuario'] = $reg['prontuario'];
+                $lista['idespecialidade'] = $reg['especialidade'];
+                $lista['dtriscocirurgico'] = $reg['dtavaliacao'];
+                $lista['numcid'] = $reg['cid'];
+                $lista['idcomplexidade'] = $reg['complexidade'];
+                $lista['idtipoprocedimento'] = $reg['tipoprocedimento'];
+                $lista['idriscocirurgico'] = $reg['riscocirurgico'];
+                $lista['idorigempaciente'] = $reg['origempaciente'];
+                $lista['idprocedimento'] = $reg['procedimento'];
+                $lista['idlateralidade'] = $reg['lateralidade'];
+                $lista['indsituacao'] = $reg['situacao'];
+                $lista['txtinfoadicionais'] = $reg['informacoesadicionais'];
+                $lista['indcongelacao'] = $reg['congelacao'];
+                $lista['created_at'] = $reg['data_inclusao'];
+                $lista['updated_at'] = $reg['data_inclusao'];
+                $lista['indurgencia'] = 'N';
+
+                try {
+
+                    $db->transStart();
+
+                    $this->listaesperamodel->insert($lista);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    if ($reg['situacao'] == 'I') {
+                        $this->listaesperamodel->delete($reg['idlistacirurgica']);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao excluir lista de espera! [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+                    }
+
+                    $lista['idlista'] = $reg['idlistacirurgica'];
+                    $lista['txtjustificativa'] = $reg['justificativas'];
+                    $lista['idtipojustificativa'] = 1;
+
+                    $this->justificativasmodel->insert();
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir justificativa! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $db->transComplete();
+
+                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                    $msg = 'Erro na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
+                    log_message('error', $msg.': ' . $e->getMessage());
+                    throw $e;
+                }
+            }
+        }
+    
+    }

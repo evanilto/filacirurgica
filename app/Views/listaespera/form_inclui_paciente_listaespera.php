@@ -228,8 +228,8 @@
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = (set_value('lateralidade') == $lateralidade['descricao']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['descricao'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                                $selected = (set_value('lateralidade') == $lateralidade['id']) ? 'selected' : '';
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -261,15 +261,15 @@
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="ALTA" checked>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" checked>
                                             <label class="form-check-label" for="complexidadeN" style="margin-right: 10px;">&nbsp;Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="MÉDIA">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M">
                                             <label class="form-check-label" for="complexidadeS" style="margin-right: 10px;">&nbsp;Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="BAIXA">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B">
                                             <label class="form-check-label" for="complexidadeS" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>

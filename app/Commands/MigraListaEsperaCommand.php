@@ -7,25 +7,25 @@ use CodeIgniter\CLI\CLI;
 
 class InsertProntuariosAGHUCommand extends BaseCommand
 {
-    protected $group       = 'Prontuarios';
-    protected $name        = 'prontuarios:criar';
-    protected $description = 'Cria prontuários oriundos da base do AGHU.';
+    protected $group       = 'lista_espera';
+    protected $name        = 'listaespera:criar';
+    protected $description = 'Cria lista_espera a partir da lista cirurgica do Gafree.';
 
     public function run(array $params)
     {
-        $inicio = $params[0] ?? null;
+        /* $inicio = $params[0] ?? null;
         $fim = $params[1] ?? null;
 
         if (empty($inicio) || empty($fim)) {
             CLI::error("Você precisa especificar os parâmetros de início e fim.");
             return;
-        }
+        } */
 
         // Instancia seu controller ou o que for necessário
-        $controller = new \App\Controllers\Prontuarios();
+        $controller = new \App\Controllers\ListaEspera();
 
         // Chame a função desejada
-        $controller->criar_prontuarios_aghu((int) $inicio, (int) $fim);
+        $controller->migrarLista();
 
         CLI::write("Término OK!");
     }

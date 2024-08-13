@@ -492,13 +492,13 @@ class MapaCirurgico extends ResourceController
         $data['risco'] = $lista['idriscocirurgico'];
         $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
         $data['cid'] = $lista['numcid'];
-        $data['complexidade'] = $lista['nmcomplexidade'];
+        $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['proced_adic'] = [];
-        $data['lateralidade'] = $lista['nmlateralidade'];
+        $data['lateralidade'] = $lista['idlateralidade'];
         $data['posoperatorio'] = null;
         $data['info'] = $lista['txtinfoadicionais'];
         $data['nec_proced'] = '';
@@ -580,9 +580,9 @@ class MapaCirurgico extends ResourceController
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
                         'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                        'nmcomplexidade' => $this->data['complexidade'],
+                        'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
-                        'nmlateralidade' => $this->data['lateralidade'],
+                        'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig']
                         ];
@@ -946,9 +946,9 @@ class MapaCirurgico extends ResourceController
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
                         'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                        'nmcomplexidade' => $this->data['complexidade'],
+                        'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
-                        'nmlateralidade' => $this->data['lateralidade'],
+                        'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info']
                         ];
 
@@ -1302,9 +1302,9 @@ class MapaCirurgico extends ResourceController
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
                         'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                        'nmcomplexidade' => $this->data['complexidade'],
+                        'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
-                        'nmlateralidade' => $this->data['lateralidade'],
+                        'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         ];
 
@@ -1630,9 +1630,9 @@ class MapaCirurgico extends ResourceController
                                 'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
                                 'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                                 'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                                'nmcomplexidade' => $this->data['complexidade'],
+                                'idcomplexidade' => $this->data['complexidade'],
                                 'indcongelacao' => $this->data['congelacao'],
-                                'nmlateralidade' => $this->data['lateralidade'],
+                                'idlateralidade' => $this->data['lateralidade'],
                                 'txtinfoadicionais' => $this->data['info'],
                                 ];
 
@@ -2125,5 +2125,106 @@ class MapaCirurgico extends ResourceController
     function createDateTime($dateString) {
         return empty($dateString) ? null : DateTime::createFromFormat('Y-m-d H:i', $dateString);
     }
+    /**
+     * 
+     * @return mixed
+     */
+    private function migrarMapa() {
+
+        $db = \Config\Database::connect('default');
+
+        $sql = "
+            select
+                idmapacirurgico,
+                idlistacirurgica,
+                aguardando,
+                nocentrocirurgico,
+                cirurgia,
+                saida,
+                suspensa,
+                cancelada,
+                datacirurgia,
+                idcentrocirurgico,
+                idsala,
+                CASE 
+                    WHEN cm.posoperatorio = 'UTIAD' THEN 1
+                    WHEN cm.posoperatorio = 'UTINEO' THEN 2
+                    WHEN cm.posoperatorio = 'UCO' THEN 3
+                    WHEN cm.posoperatorio = 'UTINEOHOSPITAL DIA' THEN 4
+                    WHEN cm.posoperatorio = 'ENFERMARIA' THEN 5
+                    WHEN cm.posoperatorio = 'UUE' THEN 6
+                    WHEN cm.posoperatorio = 'DIP' THEN 7
+                END AS posoperatorio,
+                ordem
+            from public.cirurgias_mapacirurgico cm
+            ;";
+
+        $query = $db->query($sql);
+
+        $result = $query->getResult();
+
+        $db = \Config\Database::connect('default');
+
+        foreach ($result as $reg) {
+
+                $mapa = [];
+                $mapa['id'] = $reg['idmapacirurgico'];
+                $mapa['idlistaespera'] = $reg['idlistacirurgica'];
+                $mapa['dthrnocentrocirurgico'] = $reg['nocentrocirurgico'];
+                $mapa['dthremcirurgia'] = $reg['cirurgia'];
+                $mapa['dthrsaidasala'] = $reg['saida'];
+                $mapa['dthrsaidacentrocirurgico'] = $reg['saidacentrocirurgico'];
+                $mapa['dthrsuspensao'] = $reg['cancelada'];
+                $mapa['dthrtroca'] = $reg['suspensa'];
+                $mapa['dthrcirurgia'] = $reg['aguardando'];
+                $mapa['idcentrocirurgico'] = $reg['idcentrocirurgico'];
+                $mapa['idsala'] = $reg['idsala'];
+                $mapa['idposoperatorio'] = $reg['posoperatorio'];
+                $mapa['indhemoderivados'] = $reg[''];
+                $mapa['txtinfoadicionais'] = $reg[''];
+                $mapa['txtnecessidadesproced'] = $reg[''];
+                $mapa['indurgencia'] = 'N';
+
+                try {
+
+                    $db->transStart();
+
+                    $this->listaesperamodel->insert($mapa);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $mapa['idlista'] = $reg['idlistacirurgica'];
+                    $mapa['txtjustificativa'] = $reg['justificativas'];
+                    $mapa['idtipojustificativa'] = 1;
+
+                    $this->justificativasmodel->insert();
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir justificativa! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $db->transComplete();
+
+                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                    $msg = 'Erro na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
+                    log_message('error', $msg.': ' . $e->getMessage());
+                    throw $e;
+                }
+            }
+        }
    
 }

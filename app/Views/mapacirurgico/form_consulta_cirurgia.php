@@ -246,18 +246,18 @@
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="ALTA"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'ALTA') ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="MÉDIA"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'MÉDIA') ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="BAIXA"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'BAIXA') ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>
@@ -275,8 +275,8 @@
                                             <option value="" <?php echo set_select('posoperatorio', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['posoperatorios'] as $key => $posoperatorio) {
-                                                $selected = ($data['posoperatorio'] == $posoperatorio['descricao']) ? 'selected' : '';
-                                                echo '<option value="'.$posoperatorio['descricao'].'" '.$selected.'>'.$posoperatorio['descricao'].'</option>';
+                                                $selected = ($data['posoperatorio'] == $posoperatorio['id']) ? 'selected' : '';
+                                                echo '<option value="'.$posoperatorio['id'].'" '.$selected.'>'.$posoperatorio['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -298,8 +298,8 @@
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = ($data['lateralidade'] == $lateralidade['descricao']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['descricao'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>

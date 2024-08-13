@@ -4,32 +4,19 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ListaEsperaModel extends Model
+class JustificativasModel extends Model
 {
-    protected $table            = 'lista_espera';
+    protected $table            = 'justificativas';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'numprontuario',
-        'idespecialidade',
-        'dtriscocirurgico',
-        'numcid',
-        'idcomplexidade',
-        'idtipoprocedimento',
-        'idriscocirurgico',
-        'idorigempaciente',
-        'idprocedimento',
-        'idlateralidade',
-        'indsituacao',
-        'indcongelacao',
-        'indurgencia',
-        'txtinfoadicionais',
-        'txtorigemjustificativa',
-        'txtinfoadicionais',
-        'deleted_at'
+        'idlista',
+	    'idmapa',
+        'txtjustificativa',
+        'idtipojustificativa'
     ];
 
     // Dates
@@ -37,7 +24,6 @@ class ListaEsperaModel extends Model
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
-    protected $deletedField  = 'deleted_at';
 
     // Validation
     protected $validationRules      = [];
