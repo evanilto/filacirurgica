@@ -5,10 +5,10 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class InsertProntuariosAGHUCommand extends BaseCommand
+class MigraListaEsperaCommand extends BaseCommand
 {
     protected $group       = 'lista_espera';
-    protected $name        = 'listaespera:criar';
+    protected $name        = 'listaespera:criarlista';
     protected $description = 'Cria lista_espera a partir da lista cirurgica do Gafree.';
 
     public function run(array $params)

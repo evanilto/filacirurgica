@@ -2135,17 +2135,17 @@ class MapaCirurgico extends ResourceController
 
         $sql = "
             select
-                idmapacirurgico,
-                idlistacirurgica,
-                aguardando,
-                nocentrocirurgico,
-                cirurgia,
-                saida,
-                suspensa,
-                cancelada,
-                datacirurgia,
-                idcentrocirurgico,
-                idsala,
+                cm.idmapacirurgico,
+                cm.idlistacirurgica,
+                cm.aguardando,
+                cm.nocentrocirurgico,
+                cm.cirurgia,
+                cm.saida,
+                cm.suspensa,
+                cm.cancelada,
+                cm.datacirurgia,
+                cm.idcentrocirurgico,
+                cm.idsala,
                 CASE 
                     WHEN cm.posoperatorio = 'UTIAD' THEN 1
                     WHEN cm.posoperatorio = 'UTINEO' THEN 2
@@ -2155,76 +2155,111 @@ class MapaCirurgico extends ResourceController
                     WHEN cm.posoperatorio = 'UUE' THEN 6
                     WHEN cm.posoperatorio = 'DIP' THEN 7
                 END AS posoperatorio,
-                ordem
-            from public.cirurgias_mapacirurgico cm
-            ;";
+                cm.saidacentrocirurgico,
+                CASE 
+                    WHEN ch.hemoderivado = 0 THEN 'N'
+                    WHEN ch.hemoderivado = 1 THEN 'S'
+                END AS hemoderivado,
+                cjm.justificativa as justificativa_envio,
+                cjs.justificativa as justificativa_suspensao,
+                cnp.necessidadesprocedimento
+            FROM cirurgias_mapacirurgico cm
+            LEFT JOIN cirurgias_hemoderivado ch ON ch.idmapacirurgico = cm.idmapacirurgico
+            LEFT JOIN cirurgias_justificativas_mapa cjm ON cjm.idmapacirurgico = cm.idmapacirurgico
+            LEFT JOIN cirurgias_justificativas_suspensao cjs ON cjs.idmapacirurgico = cm.idmapacirurgico
+            LEFT JOIN cirurgias_necessidadesprocedimento cnp ON cnp.idmapacirurgico = cm.idmapacirurgico
+            ";
 
         $query = $db->query($sql);
 
         $result = $query->getResult();
 
-        $db = \Config\Database::connect('default');
-
         foreach ($result as $reg) {
 
-                $mapa = [];
-                $mapa['id'] = $reg['idmapacirurgico'];
-                $mapa['idlistaespera'] = $reg['idlistacirurgica'];
-                $mapa['dthrnocentrocirurgico'] = $reg['nocentrocirurgico'];
-                $mapa['dthremcirurgia'] = $reg['cirurgia'];
-                $mapa['dthrsaidasala'] = $reg['saida'];
-                $mapa['dthrsaidacentrocirurgico'] = $reg['saidacentrocirurgico'];
-                $mapa['dthrsuspensao'] = $reg['cancelada'];
-                $mapa['dthrtroca'] = $reg['suspensa'];
-                $mapa['dthrcirurgia'] = $reg['aguardando'];
-                $mapa['idcentrocirurgico'] = $reg['idcentrocirurgico'];
-                $mapa['idsala'] = $reg['idsala'];
-                $mapa['idposoperatorio'] = $reg['posoperatorio'];
-                $mapa['indhemoderivados'] = $reg[''];
-                $mapa['txtinfoadicionais'] = $reg[''];
-                $mapa['txtnecessidadesproced'] = $reg[''];
-                $mapa['indurgencia'] = 'N';
+            $mapa = [];
+            $mapa['id'] = $reg['idmapacirurgico'];
+            $mapa['idlistaespera'] = $reg['idlistacirurgica'];
+            $mapa['dthrnocentrocirurgico'] = $reg['nocentrocirurgico'];
+            $mapa['dthremcirurgia'] = $reg['cirurgia'];
+            $mapa['dthrsaidasala'] = $reg['saida'];
+            $mapa['dthrsaidacentrocirurgico'] = $reg['saidacentrocirurgico'];
+            $mapa['dthrsuspensao'] = $reg['cancelada'];
+            $mapa['dthrtroca'] = $reg['suspensa'];
+            $mapa['dthrcirurgia'] = $reg['aguardando'];
+            $mapa['idcentrocirurgico'] = $reg['idcentrocirurgico'];
+            $mapa['idsala'] = $reg['idsala'];
+            $mapa['idposoperatorio'] = $reg['posoperatorio'];
+            $mapa['indhemoderivados'] = $reg['hemoderivado'];
+            $mapa['txtjustificativaenvio'] = $reg['justificativa_envio'];
+            $mapa['dtxtjustificativasuspensao'] = $reg['justificativa_suspensao'];
+            $mapa['txtnecessidadesproced'] = $reg['necessidadesprocedimento'];
+            $mapa['indurgencia'] = 'N';
 
-                try {
+            try {
 
-                    $db->transStart();
+                $db->transStart();
 
-                    $this->listaesperamodel->insert($mapa);
+                $this->mapacirurgicomodel->insert($mapa);
 
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
 
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-
-                    $mapa['idlista'] = $reg['idlistacirurgica'];
-                    $mapa['txtjustificativa'] = $reg['justificativas'];
-                    $mapa['idtipojustificativa'] = 1;
-
-                    $this->justificativasmodel->insert();
-
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir justificativa! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-
-                    $db->transComplete();
-
-                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                    $msg = 'Erro na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
-                    log_message('error', $msg.': ' . $e->getMessage());
-                    throw $e;
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir Mapa! [%d] %s', $errorCode, $errorMessage)
+                    );
                 }
+
+                $sql = "
+                    select *
+                    FROM cirurgias_equipemedica ce
+                    WHERE ce.idmapacirurgico = $reg[idmapacirurgico]
+                    ";
+
+                $query = $db->query($sql);
+
+                $result_eqpmed = $query->getResult();
+
+                foreach ($result_eqpmed as $reg) {
+
+                    $mapa = [];
+                    $mapa['id'] = $reg['idlistacirurgica'];
+                    $mapa['idmapacirurgico'] = $reg['idmapacirurgico'];
+                    $mapa['idprofissional'] = $reg['idprofissional'];
+                    $mapa['codpessoa'] = $reg['idpessoa'];
+
+                    $this->equipemedicamodel->insert($mapa);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir equipe médica! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                }
+
+                $db->transComplete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro na criação do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                $msg = 'Falha na criação do Mapa Cirúrgico - '. $reg['prontuario'] .' ==> '.$e->getMessage();
+                log_message('error', $msg.': ' . $e->getMessage());
+                throw $e;
             }
         }
+    }
    
 }

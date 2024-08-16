@@ -1208,6 +1208,7 @@ class ListaEspera extends ResourceController
                 $lista['idlateralidade'] = $reg['lateralidade'];
                 $lista['indsituacao'] = $reg['situacao'];
                 $lista['txtinfoadicionais'] = $reg['informacoesadicionais'];
+                $lista['txtorigemjustificativa'] = $reg['justificativa'];
                 $lista['indcongelacao'] = $reg['congelacao'];
                 $lista['created_at'] = $reg['data_inclusao'];
                 $lista['updated_at'] = $reg['data_inclusao'];
@@ -1243,11 +1244,7 @@ class ListaEspera extends ResourceController
                         }
                     }
 
-                    $lista['idlista'] = $reg['idlistacirurgica'];
-                    $lista['txtjustificativa'] = $reg['justificativas'];
-                    $lista['idtipojustificativa'] = 1;
-
-                    $this->justificativasmodel->insert();
+                    $db->transComplete();
 
                     if ($db->transStatus() === false) {
                         $error = $db->error();
@@ -1255,14 +1252,12 @@ class ListaEspera extends ResourceController
                         $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir justificativa! [%d] %s', $errorCode, $errorMessage)
+                            sprintf('Erro na criação da lista de espera! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
 
-                    $db->transComplete();
-
                 } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                    $msg = 'Erro na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
+                    $msg = 'Falha na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
                     log_message('error', $msg.': ' . $e->getMessage());
                     throw $e;
                 }
