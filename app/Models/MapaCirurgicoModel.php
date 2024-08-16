@@ -8,11 +8,12 @@ class MapaCirurgicoModel extends Model
 {
     protected $table            = 'mapa_cirurgico';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = true; // false for migration
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        //'id', // include for migration
         'idlistaespera',
         'dthrnocentrocirurgico',
         'dthremcirurgia',

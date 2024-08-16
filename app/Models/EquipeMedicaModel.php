@@ -14,6 +14,7 @@ class EquipeMedicaModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'codpessoa',
+        'idprofissional',
 	    'idmapacirurgico',
     ];
 

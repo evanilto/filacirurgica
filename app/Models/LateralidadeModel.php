@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class LateralidadeModel extends Model
 {
-    protected $table            = 'lateralidade';
+    protected $table            = 'lateralidades';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';

@@ -1145,106 +1145,103 @@ class ListaEspera extends ResourceController
      * 
      * @return mixed
      */
-    private function migrarLista() {
+    public function migrarLista() {
 
-        $db = \Config\Database::connect('default');
+        try {
 
-        $sql = "
-            SELECT
-                cl.idlistacirurgica,
-                cl.prontuario,
-                CAST(cl.datainclusao || ' ' || cl.horainclusao AS TIMESTAMP) AS data_inclusao,
-                cl.especialidade,
-                cl.dataavaliacao,
-                cl.cid,
-                CASE
-                    WHEN cl.complexidade = 1 THEN 'A'
-                    WHEN cl.complexidade = 2 THEN 'M'
-                    WHEN cl.complexidade = 3 THEN 'B'
-                END AS complexidade,
-                cl.tipoprocedimento,
-                cl.riscocirurgico,
-                cl.origempaciente,
-                cl.procedimento,
-                cl.lateralidade,
-                cl.idlistacirurgica,
-                CASE 
-                    WHEN cc.congelacao = 0 THEN 'N'
-                    WHEN cc.congelacao = 1 THEN 'S'
-                END AS congelacao,
-                ci.informacoesadicionais,
-                cn.necessidadesprocedimento,
-                CASE 
-                    WHEN cl.situacao = 0 THEN 'A'
-                    WHEN cl.situacao = 1 THEN 'I'
-                END AS situacao,
-                cj.justificativa
-            FROM cirurgias_listacirurgica cl
-            LEFT JOIN cirurgias_congelacao cc ON cc.idlistacirurgica = cl.idlistacirurgica
-            LEFT JOIN cirurgias_necessidadesprocedimento cn ON cn.idlistacirurgica = cl.idlistacirurgica
-            LEFT JOIN cirurgias_informacoesadicionais ci ON ci.idlistacirurgica = cl.idlistacirurgica
-            LEFT JOIN cirurgias_justificativas cj on cj.idlistacirurgica = cl.idlistacirurgica
-            ;";
+            $db = \Config\Database::connect('default');
 
-        $query = $db->query($sql);
+            $sqlTruncate = "truncate lista_espera RESTART IDENTITY;";
+            $sqlDropDefault = "ALTER TABLE lista_espera ALTER COLUMN id DROP DEFAULT;";
+            $sqlSetVal = "SELECT setval('lista_espera_seq', (SELECT MAX(id) FROM lista_espera le));";
+            $sqlSetDefault = "ALTER TABLE lista_espera ALTER COLUMN id SET DEFAULT nextval('lista_espera_seq');";
 
-        $result = $query->getResult();
+            $sql = "
+                SELECT
+                    cl.idlistacirurgica,
+                    cl.prontuario,
+                    CAST(cl.datainclusao || ' ' || cl.horainclusao AS TIMESTAMP) AS data_inclusao,
+                    cl.especialidade,
+                    cl.dataavaliacao,
+                    cl.cid,
+                    CASE
+                        WHEN cl.complexidade = 1 THEN 'A'
+                        WHEN cl.complexidade = 2 THEN 'M'
+                        WHEN cl.complexidade = 3 THEN 'B'
+                    END AS complexidade,
+                    cl.tipoprocedimento,
+                    cl.riscocirurgico,
+                    cl.origempaciente,
+                    cl.procedimento,
+                    cl.lateralidade,
+                    cl.idlistacirurgica,
+                    CASE 
+                        WHEN cc.congelacao = 0 THEN 'N'
+                        WHEN cc.congelacao = 1 THEN 'S'
+                    END AS congelacao,
+                    ci.informacoesadicionais,
+                    cn.necessidadesprocedimento,
+                    CASE 
+                        WHEN cl.situacao = 0 THEN 'A'
+                        WHEN cl.situacao = 1 THEN 'I'
+                    END AS situacao,
+                    cj.justificativa,
+                    cje.justificativa as justificativa_exclusao
+                FROM cirurgias_listacirurgica cl
+                LEFT JOIN cirurgias_congelacao cc ON cc.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_necessidadesprocedimento cn ON cn.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_informacoesadicionais ci ON ci.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativas cj on cj.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativa_exclusao cje on cje.idlistacirurgica = cl.idlistacirurgica
+                ;";
 
-        $db = \Config\Database::connect('default');
+            $query = $db->query($sql);
 
-        foreach ($result as $reg) {
+            $result = $query->getResult();
+
+            $query = $db->query($sqlTruncate);
+
+            $query = $db->query($sqlDropDefault);
+
+            $db->transStart();
+
+            foreach ($result as $reg) {
 
                 $lista = [];
-                $lista['id'] = $reg['idlistacirurgica'];
-                $lista['numprontuario'] = $reg['prontuario'];
-                $lista['idespecialidade'] = $reg['especialidade'];
-                $lista['dtriscocirurgico'] = $reg['dtavaliacao'];
-                $lista['numcid'] = $reg['cid'];
-                $lista['idcomplexidade'] = $reg['complexidade'];
-                $lista['idtipoprocedimento'] = $reg['tipoprocedimento'];
-                $lista['idriscocirurgico'] = $reg['riscocirurgico'];
-                $lista['idorigempaciente'] = $reg['origempaciente'];
-                $lista['idprocedimento'] = $reg['procedimento'];
-                $lista['idlateralidade'] = $reg['lateralidade'];
-                $lista['indsituacao'] = $reg['situacao'];
-                $lista['txtinfoadicionais'] = $reg['informacoesadicionais'];
-                $lista['txtorigemjustificativa'] = $reg['justificativa'];
-                $lista['indcongelacao'] = $reg['congelacao'];
-                $lista['created_at'] = $reg['data_inclusao'];
-                $lista['updated_at'] = $reg['data_inclusao'];
+                $lista['id'] = $reg->idlistacirurgica;
+                $lista['numprontuario'] = $reg->prontuario;
+                $lista['idespecialidade'] = $reg->especialidade;
+                $lista['dtriscocirurgico'] = $reg->dataavaliacao;
+                $lista['numcid'] = $reg->cid;
+                $lista['idcomplexidade'] = $reg->complexidade;
+                $lista['idtipoprocedimento'] = $reg->tipoprocedimento;
+                $lista['idriscocirurgico'] = $reg->riscocirurgico;
+                $lista['idorigempaciente'] = $reg->origempaciente;
+                $lista['idprocedimento'] = $reg->procedimento;
+                $lista['idlateralidade'] = $reg->lateralidade;
+                $lista['indsituacao'] = $reg->situacao;
+                $lista['txtinfoadicionais'] = $reg->informacoesadicionais;
+                $lista['txtorigemjustificativa'] = $reg->justificativa;
+                $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
+                $lista['indcongelacao'] = $reg->congelacao;
+                $lista['created_at'] = $reg->data_inclusao;
+                $lista['updated_at'] = $reg->data_inclusao;
                 $lista['indurgencia'] = 'N';
 
-                try {
+                $this->listaesperamodel->insert($lista);
 
-                    $db->transStart();
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
 
-                    $this->listaesperamodel->insert($lista);
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
 
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-
-                    if ($reg['situacao'] == 'I') {
-                        $this->listaesperamodel->delete($reg['idlistacirurgica']);
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = isset($error['code']) ? $error['code'] : 0;
-    
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao excluir lista de espera! [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
-                    }
-
-                    $db->transComplete();
+                if ($reg->situacao == 'I') {
+                    $this->listaesperamodel->delete($reg->idlistacirurgica);
 
                     if ($db->transStatus() === false) {
                         $error = $db->error();
@@ -1252,16 +1249,34 @@ class ListaEspera extends ResourceController
                         $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro na criação da lista de espera! [%d] %s', $errorCode, $errorMessage)
+                            sprintf('Erro ao excluir lista de espera! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
-
-                } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                    $msg = 'Falha na criação da lista de espera - '. $reg['prontuario'] .' ==> '.$e->getMessage();
-                    log_message('error', $msg.': ' . $e->getMessage());
-                    throw $e;
                 }
             }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro na criação da lista de espera! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+
+            $query = $db->query($sqlSetDefault);
+
+        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+            $msg = 'Falha na criação da lista de espera - '. $reg->prontuario .' ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
         }
-    
+
     }
+
+}

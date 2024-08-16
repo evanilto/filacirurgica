@@ -8,11 +8,12 @@ class ListaEsperaModel extends Model
 {
     protected $table            = 'lista_espera';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
+    protected $useAutoIncrement = true; //false for migration
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        //'id', // for migration
         'numprontuario',
         'idespecialidade',
         'dtriscocirurgico',
@@ -28,8 +29,8 @@ class ListaEsperaModel extends Model
         'indurgencia',
         'txtinfoadicionais',
         'txtorigemjustificativa',
-        'txtinfoadicionais',
-        'deleted_at'
+        'txtjustificativaexclusao',
+        'txtinfoadicionais'
     ];
 
     // Dates

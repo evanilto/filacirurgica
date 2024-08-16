@@ -490,7 +490,7 @@ class MapaCirurgico extends ResourceController
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
-        $data['dtrisco'] = $lista['dtavaliacao'] ? DateTime::createFromFormat('Y-m-d', $lista['dtavaliacao'])->format('d/m/Y') : NULL;
+        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
         $data['cid'] = $lista['numcid'];
         $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
@@ -578,7 +578,7 @@ class MapaCirurgico extends ResourceController
 
                 $lista = [
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
@@ -944,7 +944,7 @@ class MapaCirurgico extends ResourceController
 
                 $lista = [
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
@@ -1300,7 +1300,7 @@ class MapaCirurgico extends ResourceController
 
                 $lista = [
                         'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
@@ -1628,7 +1628,7 @@ class MapaCirurgico extends ResourceController
 
                             $lista = [
                                 'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                                'dtavaliacao' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                                'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                                 'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                                 'idcomplexidade' => $this->data['complexidade'],
                                 'indcongelacao' => $this->data['congelacao'],
@@ -2129,14 +2129,25 @@ class MapaCirurgico extends ResourceController
      * 
      * @return mixed
      */
-    private function migrarMapa() {
+    public function migrarMapa() {
 
-        $db = \Config\Database::connect('default');
+        try {
 
-        $sql = "
-            select
-                cm.idmapacirurgico,
-                cm.idlistacirurgica,
+            $db = \Config\Database::connect('default');
+
+            $sqlTruncate = "truncate mapa_cirurgico RESTART IDENTITY;";
+            $sqlDropDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id DROP DEFAULT;";
+            $sqlSetVal = "SELECT setval('mapa_cirurgico_seq', (SELECT MAX(id) FROM mapa_cirurgico mc));";
+            $sqlSetDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id SET DEFAULT nextval('mapa_cirurgico_seq');";
+            $sqlTruncateEqpMed = "truncate equipe_medica;";
+            $sqlDropDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id DROP DEFAULT;";
+            $sqlSetValEqpMed = "SELECT setval('equipe_medica_seq', 1);";
+            $sqlSetDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id SET DEFAULT nextval('equipe_medica_seq');";
+
+            $sql = "
+                SELECT
+                    cm.idmapacirurgico,
+                    cm.idlistacirurgica,
                 cm.aguardando,
                 cm.nocentrocirurgico,
                 cm.cirurgia,
@@ -2159,45 +2170,52 @@ class MapaCirurgico extends ResourceController
                 CASE 
                     WHEN ch.hemoderivado = 0 THEN 'N'
                     WHEN ch.hemoderivado = 1 THEN 'S'
-                END AS hemoderivado,
-                cjm.justificativa as justificativa_envio,
-                cjs.justificativa as justificativa_suspensao,
-                cnp.necessidadesprocedimento
-            FROM cirurgias_mapacirurgico cm
-            LEFT JOIN cirurgias_hemoderivado ch ON ch.idmapacirurgico = cm.idmapacirurgico
-            LEFT JOIN cirurgias_justificativas_mapa cjm ON cjm.idmapacirurgico = cm.idmapacirurgico
-            LEFT JOIN cirurgias_justificativas_suspensao cjs ON cjs.idmapacirurgico = cm.idmapacirurgico
-            LEFT JOIN cirurgias_necessidadesprocedimento cnp ON cnp.idmapacirurgico = cm.idmapacirurgico
+                    END AS hemoderivado,
+                    cjm.justificativa as justificativa_envio,
+                    cjs.justificativa as justificativa_suspensao,
+                    cnp.necessidadesprocedimento
+                FROM cirurgias_mapacirurgico cm
+                INNER JOIN cirurgias_listacirurgica cl ON cl.idlistacirurgica = cm.idlistacirurgica 
+                LEFT JOIN cirurgias_hemoderivado ch ON ch.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativas_mapa cjm ON cjm.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativa_suspensao cjs ON cjs.idmapacirurgico = cm.idmapacirurgico
+                LEFT JOIN cirurgias_necessidadesprocedimento cnp ON cnp.idlistacirurgica = cl.idlistacirurgica
             ";
 
-        $query = $db->query($sql);
+            $query = $db->query($sql);
 
-        $result = $query->getResult();
+            $result = $query->getResult();
 
-        foreach ($result as $reg) {
+            $query = $db->query($sqlTruncateEqpMed);
+            $query = $db->query($sqlDropDefaultEqpMed);
+            $query = $db->query($sqlSetValEqpMed);
+            $query = $db->query($sqlSetDefaultEqpMed);
 
-            $mapa = [];
-            $mapa['id'] = $reg['idmapacirurgico'];
-            $mapa['idlistaespera'] = $reg['idlistacirurgica'];
-            $mapa['dthrnocentrocirurgico'] = $reg['nocentrocirurgico'];
-            $mapa['dthremcirurgia'] = $reg['cirurgia'];
-            $mapa['dthrsaidasala'] = $reg['saida'];
-            $mapa['dthrsaidacentrocirurgico'] = $reg['saidacentrocirurgico'];
-            $mapa['dthrsuspensao'] = $reg['cancelada'];
-            $mapa['dthrtroca'] = $reg['suspensa'];
-            $mapa['dthrcirurgia'] = $reg['aguardando'];
-            $mapa['idcentrocirurgico'] = $reg['idcentrocirurgico'];
-            $mapa['idsala'] = $reg['idsala'];
-            $mapa['idposoperatorio'] = $reg['posoperatorio'];
-            $mapa['indhemoderivados'] = $reg['hemoderivado'];
-            $mapa['txtjustificativaenvio'] = $reg['justificativa_envio'];
-            $mapa['dtxtjustificativasuspensao'] = $reg['justificativa_suspensao'];
-            $mapa['txtnecessidadesproced'] = $reg['necessidadesprocedimento'];
-            $mapa['indurgencia'] = 'N';
+            $query = $db->query($sqlTruncate);
+            $query = $db->query($sqlDropDefault);
 
-            try {
+            $db->transStart();
 
-                $db->transStart();
+            foreach ($result as $reg) {
+
+                $mapa = [];
+                $mapa['id'] = $reg->idmapacirurgico;
+                $mapa['idlistaespera'] = $reg->idlistacirurgica;
+                $mapa['dthrnocentrocirurgico'] = $reg->nocentrocirurgico;
+                $mapa['dthremcirurgia'] = $reg->cirurgia;
+                $mapa['dthrsaidasala'] = $reg->saida;
+                $mapa['dthrsaidacentrocirurgico'] = $reg->saidacentrocirurgico;
+                $mapa['dthrsuspensao'] = $reg->cancelada;
+                $mapa['dthrtroca'] = $reg->suspensa;
+                $mapa['dthrcirurgia'] = $reg->aguardando;
+                $mapa['idcentrocirurgico'] = $reg->idcentrocirurgico;
+                $mapa['idsala'] = $reg->idsala;
+                $mapa['idposoperatorio'] = $reg->posoperatorio;
+                $mapa['indhemoderivados'] = $reg->hemoderivado;
+                $mapa['txtjustificativaenvio'] = $reg->justificativa_envio;
+                $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
+                $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
+                $mapa['indurgencia'] = 'N';
 
                 $this->mapacirurgicomodel->insert($mapa);
 
@@ -2214,20 +2232,19 @@ class MapaCirurgico extends ResourceController
                 $sql = "
                     select *
                     FROM cirurgias_equipemedica ce
-                    WHERE ce.idmapacirurgico = $reg[idmapacirurgico]
+                    WHERE ce.idmapacirurgico = $reg->idmapacirurgico
                     ";
 
                 $query = $db->query($sql);
 
                 $result_eqpmed = $query->getResult();
 
-                foreach ($result_eqpmed as $reg) {
+                foreach ($result_eqpmed as $reg_eqpmed) {
 
                     $mapa = [];
-                    $mapa['id'] = $reg['idlistacirurgica'];
-                    $mapa['idmapacirurgico'] = $reg['idmapacirurgico'];
-                    $mapa['idprofissional'] = $reg['idprofissional'];
-                    $mapa['codpessoa'] = $reg['idpessoa'];
+                    $mapa['idmapacirurgico'] = $reg_eqpmed->idmapacirurgico;
+                    $mapa['idprofissional'] = $reg_eqpmed->idprofissional;
+                    $mapa['codpessoa'] = $reg_eqpmed->idpessoa;
 
                     $this->equipemedicamodel->insert($mapa);
 
@@ -2241,24 +2258,27 @@ class MapaCirurgico extends ResourceController
                         );
                     }
                 }
-
-                $db->transComplete();
-
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro na criação do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
-                    );
-                }
-
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = 'Falha na criação do Mapa Cirúrgico - '. $reg['prontuario'] .' ==> '.$e->getMessage();
-                log_message('error', $msg.': ' . $e->getMessage());
-                throw $e;
             }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro na criação do mapa cirurgico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+            $query = $db->query($sqlSetDefault);
+
+        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+            $msg = 'Falha na criação do Mapa Cirúrgico ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
         }
     }
    
