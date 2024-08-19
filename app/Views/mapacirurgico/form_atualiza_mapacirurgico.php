@@ -475,10 +475,10 @@
 
                         <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
                         <input type="hidden" name="idlistaespera" value="<?= $data['idlistaespera'] ?>" />
-                        <input type="hidden" name="ordem_fila" id='ordem' value="<?= $data['ordem_fila'] ?>" />
+                        <input type="hidden" name="ordemfila" id='ordemfila' value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
-                        <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
+                        <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
@@ -510,8 +510,11 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
+            const ordemfila = document.getElementById('ordemfila').value;
+            var selectElement = document.getElementById('fila');
+            var filaText = selectElement.options[selectElement.selectedIndex].text;
             
-            loadAsideContent(prontuarioValue, ordemValue);
+            loadAsideContent(prontuarioValue, ordemValue, filaText);
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -527,9 +530,9 @@
       }
     }
     
-    function loadAsideContent(recordId, ordemFila) {
+    function loadAsideContent(recordId, ordemFila, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -548,8 +551,7 @@
 
     function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
-        fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+        fetchPacienteNome(prontuarioInput.value);
     }
 
     fetchPacienteNomeOnLoad();

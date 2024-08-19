@@ -10,11 +10,25 @@
     $corCirurgiaSuspensa = '#B54398';
     $corCirurgiaCancelada = 'red';
 ?>
-
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="19" class="bg-light text-start"><h5><strong>Mapa Cirúrgico</strong></h5></th>
+            <th scope="row" colspan="3" class="bg-light text-start"  style="border-right: none;"><h5><strong>Mapa Cirúrgico</strong></h5>
+            </th>
+            <th scope="row" colspan="16" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
+                <table class="legend-table">
+                    <tr>
+                        <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
+                        <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
+                        <td class="legend-cell" style="background-color: <?= $corEmCirurgia ?>;">Em Cirurgia</td>
+                        <td class="legend-cell" style="background-color: <?= $corSaídaDaSala ?>; color: black;">Saída da Sala</td>
+                        <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
+                        <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
+                        <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
+                        <!--td class="legend-cell" style="background-color: <-?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
+                    </tr>
+                </table>
+            </th>
         </tr>
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
@@ -107,7 +121,7 @@
                 data-ordem="<?= $itemmapa->ordem_fila ?>"
                 data-complexidade="<?= $itemmapa->complexidade ?>">
 
-                <td><?php echo $itemmapa->id ?></td>
+                <td><?php echo $itemmapa->dthrcirurgia ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?> "  title="<?= $title?>"></i>
                 </td>
@@ -211,19 +225,19 @@
     <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
-    <table class="legend-table">
+    <!--table class="legend-table">
         <tr>
-            <!--td class="legend-cell">Legenda:</td-->
-            <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
-            <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
-            <td class="legend-cell" style="background-color: <?= $corEmCirurgia ?>;">Em Cirurgia</td>
-            <td class="legend-cell" style="background-color: <?= $corSaídaDaSala ?>; color: black;">Saída da Sala</td>
-            <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
-            <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
-            <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
+            <-!--td class="legend-cell">Legenda:</td-->
+            <!-- <td class="legend-cell" style="background-color: <-?= $corProgramada ?>; color: black;">Aguardando</td>
+            <td class="legend-cell" style="background-color: -?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
+            <td class="legend-cell" style="background-color: <-?= $corEmCirurgia ?>;">Em Cirurgia</td>
+            <td class="legend-cell" style="background-color: <-?= $corSaídaDaSala ?>; color: black;">Saída da Sala</td>
+            <td class="legend-cell" style="background-color: <-?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
+            <td class="legend-cell" style="background-color: <-?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
+            <td class="legend-cell" style="background-color: <-?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td> -->
             <!--td class="legend-cell" style="background-color: <-?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
-        </tr>
-    </table>
+        <!--/tr>
+    </table--> 
 </div>
 <script>
     function mostrarAguarde(event, href) {
@@ -343,7 +357,7 @@
 
   $(document).ready(function() {
     $('#table').DataTable({
-        "order": [[4, 'asc']],
+        "order": [[0, 'asc']],
         "lengthChange": true,
         "pageLength": 15,
         "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
@@ -353,7 +367,7 @@
         "autoWidth": false,
         "scrollX": true,
         "columnDefs": [
-            { "orderable": false, "targets": [1, 2, 3, 4, 5, 6, 7, 8, 10,  11, 12, 13, 14, 15, 16, 17] },
+            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: { buttons: [

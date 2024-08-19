@@ -1193,6 +1193,8 @@ class ListaEspera extends ResourceController
                 LEFT JOIN cirurgias_informacoesadicionais ci ON ci.idlistacirurgica = cl.idlistacirurgica
                 LEFT JOIN cirurgias_justificativas cj on cj.idlistacirurgica = cl.idlistacirurgica
                 LEFT JOIN cirurgias_justificativa_exclusao cje on cje.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN remoto.aip_pacientes pac ON pac.prontuario = cl.prontuario
+                INNER JOIN remoto.aip_pacientes pac ON pac.prontuario = cl.prontuario
                 ;";
 
             $query = $db->query($sql);
@@ -1224,8 +1226,8 @@ class ListaEspera extends ResourceController
                 $lista['txtorigemjustificativa'] = $reg->justificativa;
                 $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
                 $lista['indcongelacao'] = $reg->congelacao;
-                $lista['created_at'] = $reg->data_inclusao;
-                $lista['updated_at'] = $reg->data_inclusao;
+                $lista['created_at'] = $reg->data_inclusao.' '.$reg->hora_inclusao;
+                $lista['updated_at'] = $reg->data_inclusao.' '.$reg->hora_inclusao;
                 $lista['indurgencia'] = 'N';
 
                 $this->listaesperamodel->insert($lista);

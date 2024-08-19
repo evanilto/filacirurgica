@@ -398,7 +398,7 @@ class MapaCirurgico extends ResourceController
             $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
         }
 
-       //$builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
+       $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
     }
     
@@ -856,7 +856,7 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($mapa));
 
         $data = [];
-        $data['ordem_fila'] = $mapa->ordem_fila;
+        $data['ordemfila'] = $mapa->ordem_fila;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));

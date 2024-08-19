@@ -275,25 +275,27 @@ tfoot {
     padding-left: 4px;
 }
 
-.container-legend {
+.legend-container {
     display: flex;
     justify-content: space-between; /* espaços iguais entre os itens */
     align-items: center;
+    border-right: none; /* Remove a borda à direita do primeiro cabeçalho */
 }
 
 .legend-table {
     border-collapse: collapse; /* Para garantir que as bordas não se sobreponham */
     border: none; /* Remove a borda da tabela */
-    vertical-align: bottom;
-    max-width: 80%
+    vertical-align: middle;
+    max-width: 90%
 }
 
 .legend-cell {
     width: 100px;  
-    height: 30px; 
-    text-align: center;
-    vertical-align: middle;
-    font-size: 0.75rem; /* diminuir tamanho da fonte */
+    height: 20px; 
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 0.75rem !important;
+    font-weight: normal; /* Remove o negrito */
     padding: 0px;  /* reduzir espaço interno */
     color: #fff;
     border: none; /* Remove a borda das células */
