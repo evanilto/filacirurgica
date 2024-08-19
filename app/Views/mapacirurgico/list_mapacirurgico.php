@@ -343,7 +343,7 @@
 
   $(document).ready(function() {
     $('#table').DataTable({
-        "order": [[0, 'asc']],
+        "order": [[4, 'asc']],
         "lengthChange": true,
         "pageLength": 15,
         "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
@@ -369,6 +369,23 @@
 
     // Função para exibir os dados na seção aside
     function displayAsideContent(paciente) {
+        let complexidadeDescricao;
+
+        switch (paciente.complexidade) {
+            case 'A':
+                complexidadeDescricao = 'ALTA';
+                break;
+            case 'B':
+                complexidadeDescricao = 'BAIXA';
+                break;
+            case 'M':
+                complexidadeDescricao = 'MÉDIA';
+                break;
+            default:
+                complexidadeDescricao = 'Indefinida'; // Valor padrão para casos inesperados
+                break;
+        }
+
         var htmlContent = `
             <h6><strong>Paciente</strong></h6>
             <table class="table table-left-aligned table-smaller-font">
@@ -403,7 +420,7 @@
                     </tr>
                     <tr>
                         <td width="40%"><i class="fa-solid fa-list"></i> Complexidade:</td>
-                        <td><b>${paciente.complexidade}</b></td>
+                        <td><b>${complexidadeDescricao}</b></td>
                     </tr>
                 </tbody>
             </table>
@@ -435,8 +452,6 @@
     function markFirstRecordSelected() {
         // Obter o índice do primeiro registro na página
         var firstRecordIndex = table.page.info().start;
-
-        // Selecionar a linha correspondente ao índice
         var $firstRecordRow = $(table.row(firstRecordIndex).node());
 
         // Remover a classe 'lineselected' de todas as linhas e adicionar ao primeiro registro da página
@@ -459,7 +474,6 @@
         displayAsideContent(paciente);
     }
     
-
     // Marcar o primeiro registro como selecionado ao inicializar a DataTable
     markFirstRecordSelected();
 

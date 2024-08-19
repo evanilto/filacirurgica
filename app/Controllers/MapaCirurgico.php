@@ -397,6 +397,9 @@ class MapaCirurgico extends ResourceController
         if (!empty($data['complexidades'])) {
             $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
         }
+
+       //$builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
+
     }
     
     //var_dump($builder->getCompiledSelect());die();

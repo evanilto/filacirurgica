@@ -4,7 +4,7 @@
             <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
-            <th scope="col" class="col-0" data-field="id" >Ord.</th>
+            <th scope="col" class="col-0" data-field="id" >Seq.</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
@@ -38,9 +38,26 @@
                 <td><?php echo $itemlista->procedimento_descricao ?></td>
                 <td><?php echo $itemlista->cid ?></td>
                 <td><?php echo $itemlista->cid_descricao ?></td>
-                <td><?php echo $itemlista->complexidade ?></td>
-                <td><?php echo $itemlista->lateralidade ?></td>
-                <td><?php echo $itemlista->indcongelacao ?></td>
+                <td>
+                    <?php 
+                    switch ($itemlista->complexidade) {
+                        case 'A':
+                            echo 'ALTA';
+                            break;
+                        case 'B':
+                            echo 'BAIXA';
+                            break;
+                        case 'M':
+                            echo 'MÉDIA';
+                            break;
+                        default:
+                            echo 'Indefinida'; // caso o valor não seja esperado
+                            break;
+                    }
+                    ?>
+                </td>
+                <td><?php echo $itemlista->nmlateralidade ?></td>
+                <td><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
                 <td><?php echo $itemlista->risco_descricao ?></td>
                 <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
