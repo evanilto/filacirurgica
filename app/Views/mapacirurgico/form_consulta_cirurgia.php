@@ -529,7 +529,7 @@
     
     function loadAsideContent(recordId, ordemFila, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -695,35 +695,32 @@
             }, 1000);
         });
         
-        $('.select2-dropdown').select2({
+      /*   $('.select2-dropdown').select2({
             dropdownCssClass: 'custom-dropdown',
             allowClear: true
+        }); */
+
+        /*  document.addEventListener('DOMContentLoaded', function() {
+        // Desabilitar todos os campos do formulário
+        var form = document.getElementById('idForm');
+        var elements = form.querySelectorAll('input, select, textarea, button');
+        elements.forEach(function(element) {
+            element.disabled = true;
+        }); */
+
+        // Continuar com outras inicializações de plugins e eventos
+        $('.select2-dropdown').select2({
+            placeholder: "",
+            allowClear: true,
+            width: 'resolve'  // Corrigir a largura
         });
 
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {
-            fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+            fetchPacienteNome(prontuarioInput.value);
         });
 
+        // Código existente para carregamento inicial
+        //fetchPacienteNomeOnLoad();
     });
-
-    document.addEventListener('DOMContentLoaded', function() {
-    // Desabilitar todos os campos do formulário
-    var form = document.getElementById('idForm');
-    var elements = form.querySelectorAll('input, select, textarea, button');
-    elements.forEach(function(element) {
-        element.disabled = true;
-    });
-
-    // Continuar com outras inicializações de plugins e eventos
-    $('.select2-dropdown').select2({
-        placeholder: "",
-        allowClear: true,
-        width: 'resolve'  // Corrigir a largura
-    });
-
-    // Código existente para carregamento inicial
-    //fetchPacienteNomeOnLoad();
-
-});
 </script>

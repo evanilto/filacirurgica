@@ -195,7 +195,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                 <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/mostrarmapa') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -203,7 +203,7 @@
 
                         <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
                         <input type="hidden" name="dthrcirurgia" id='dthrcirurgia' value="<?= $data['dthrcirurgia'] ?>" />
-                        <input type="hidden" name="ordemfila" id='ordemfila'  value="<?= $data['ordem_fila'] ?>" />
+                        <input type="hidden" name="ordemfila" id='ordemfila'  value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />

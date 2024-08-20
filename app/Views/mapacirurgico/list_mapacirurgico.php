@@ -1,5 +1,5 @@
 <?php
-    session()->set('parametros_consulta_mapa', $data); 
+    //session()->set('parametros_consulta_mapa', $data); 
 
     $corProgramada = 'yellow';
     $corNoCentroCirúrgico = '#97DA4B';
@@ -15,7 +15,7 @@
         <tr>
             <th scope="row" colspan="3" class="bg-light text-start"  style="border-right: none;"><h5><strong>Mapa Cirúrgico</strong></h5>
             </th>
-            <th scope="row" colspan="16" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
+            <th scope="row" colspan="15" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
                 <table class="legend-table">
                     <tr>
                         <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -49,7 +49,7 @@
                     <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
             </th>
             <th scope="col" data-field="nome" >Nome do Paciente</th>
-            <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
+            <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -137,7 +137,6 @@
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
                             echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
-
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -207,16 +206,12 @@
                 </td>         
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
-                        } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';
-                        }
+                        echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id,
+                        ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") ? '<i class="fas fa-pencil-alt"></i>' :  '<i class="fa-solid fa-magnifying-glass"></i>',
+                        array('title' => ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") ? 'Atualizar Cirurgia' : 'Consultar Cirurgia',
+                        'onclick' => 'mostrarAguarde(event, this.href)'));
                     ?>
                 </td>        
-                <td style="text-align: center; vertical-align: middle;">
-                   <?php echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar detalhes da cirurgia','onclick' => 'mostrarAguarde(event, this.href)')); ?>
-                </td>
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -367,7 +362,7 @@
         "autoWidth": false,
         "scrollX": true,
         "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] },
+            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: { buttons: [

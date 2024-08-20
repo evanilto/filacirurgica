@@ -130,6 +130,15 @@
         <?php } ?>
     </ul>
     <ul class="nav flex-column">
+        <?php if(true) { ?>
+            <li>
+                <a href="<?= base_url('listaespera/situacaocirurgica') ?>" class="nav-link text-white p-2" aria-current="page">
+                    <i class="fa-solid fa-user-nurse"></i> Situação Cirúrgica
+                </a>
+            </li>
+        <?php } ?>
+    </ul>
+    <ul class="nav flex-column">
         <li>
             <a href="<?= base_url('home_index') ?>" class="nav-link text-white p-2" aria-current="page">
             <i class="fa-solid fa-backward-step"></i> Início

@@ -29,11 +29,13 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
     $routes->post('enviar', 'ListaEspera::enviar');
     $routes->post('getlista', 'ListaEspera::getListaPaciente');
+    $routes->get('situacaocirurgica', 'ListaEspera::consultarSituacaoCirurgica');
 });
 
 $routes->group('mapacirurgico', function ($routes) {
     $routes->get('consultar', 'MapaCirurgico::consultarMapaCirurgico');
     $routes->add('exibir', 'MapaCirurgico::exibirMapaCirurgico');
+    $routes->add('mostrarmapa', 'MapaCirurgico::mostrarMapaCirurgicoSalvo');
     $routes->get('atualizarcirurgia/(:num)', 'MapaCirurgico::atualizarCirurgia/$1');
     $routes->get('consultarcirurgia/(:num)', 'MapaCirurgico::consultarCirurgia/$1');
     $routes->post('atualizar', 'MapaCirurgico::atualizar');

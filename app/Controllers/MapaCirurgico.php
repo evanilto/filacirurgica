@@ -21,6 +21,7 @@ use CodeIgniter\Config\Services;
 use Config\Database;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use PHPUnit\Framework\Constraint\IsNull;
+use CodeIgniter\HTTP\ResponseInterface;
 
 
 class MapaCirurgico extends ResourceController
@@ -318,6 +319,13 @@ class MapaCirurgico extends ResourceController
                                                     'data' => $data]);
             
             }
+
+            //die(var_dump($result));
+
+            session()->set('mapa_cirurgico_resultados', $result);
+
+            /* $result = session()->get('mapa_cirurgico_resultados');
+            die(var_dump($result)); */
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/list_mapacirurgico',
                                                'mapacirurgico' => $result,
@@ -859,6 +867,7 @@ class MapaCirurgico extends ResourceController
         $data['ordemfila'] = $mapa->ordem_fila;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
+        $data['status_fila'] = ($mapa->status_fila != "Suspensa" && $mapa->status_fila != "Cancelada" && $mapa->status_fila != "Realizada") ? 'enabled' : 'disabled';
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
@@ -1849,7 +1858,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['idmapa'] = $mapa->id;
-        $data['ordem_fila'] = $mapa->ordem_fila;
+        $data['ordemfila'] = $mapa->ordem_fila;
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
@@ -2122,6 +2131,35 @@ class MapaCirurgico extends ResourceController
         } catch (\Exception $e) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function mostrarMapaCirurgicoSalvo()
+    {
+        \Config\Services::session();
+
+        $result = session()->get('mapa_cirurgico_resultados');
+
+        foreach ($result as &$row) {
+            if (isset($row->created_at)) {
+                $row->created_at = \DateTime::createFromFormat('d/m/Y H:i', $row->created_at)->format('Y-m-d H:i:s');
+            }
+        }
+
+       //die(var_dump($result));
+
+        if ($result) {
+            return view('layouts/sub_content', [
+                'view' => 'mapacirurgico/list_mapacirurgico',
+                'mapacirurgico' => $result
+            ]);
+        } else {
+            session()->setFlashdata('warning_message', 'Nenhum mapa cirúrgico encontrado na sessão.');
+            return redirect()->to('mapacirurgico/mostrarmapa');
         }
     }
     // Helper para criar objeto DateTime só se a data não estiver vazia

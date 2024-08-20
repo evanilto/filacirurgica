@@ -152,7 +152,6 @@ class ListaEspera extends ResourceController
 
     return $this->response->setJSON(['error' => 'Paciente não encontrado na base do AGHU'], 404);
 }
-
     /**
      * Return a new resource object, with default properties
      *
@@ -1140,6 +1139,34 @@ class ListaEspera extends ResourceController
         $listaesperas = $this->vwlistaesperamodel->where('prontuario', $prontuario)->findAll();
         
         return $this->response->setJSON($listaesperas);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function consultarSituacaoCirurgica(string $idlistaespera = null)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtfim'] = date('d/m/Y');
+        /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+        $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
+        $data['especialidades'] = $this->aghucontroller->getEspecialidades($especialidades);
+        $data['origens'] = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll(); */
+
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        //$data['origens'] = $this->selectorigempaciente;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
+                                            'data' => $data]);
 
     }
     /**

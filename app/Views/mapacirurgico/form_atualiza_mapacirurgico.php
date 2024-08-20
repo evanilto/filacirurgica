@@ -17,7 +17,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM:SS"
                                             class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
-                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
+                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" <?= $data['status_fila'] ?> />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtcirurgia') ?>
@@ -134,7 +134,7 @@
                                     <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
-                                                id="proced_adic" name="proced_adic[]" multiple="multiple"
+                                                id="proced_adic" name="proced_adic[]" multiple="multiple" <?= $data['status_fila']  ?>
                                                 data-placeholder="" data-allow-clear="1">
                                             <?php
                                             // Certifique-se de que $data['proced_adic'] está definido como um array
@@ -160,7 +160,7 @@
                                     <label for="cid" class="form-label">CID</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
-                                            id="cid" name="cid"
+                                            id="cid" name="cid" <?= $data['status_fila'] ?>
                                             data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
@@ -185,7 +185,7 @@
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco" onchange="verificarPerfil()"
+                                            id="risco" name="risco" onchange="verificarPerfil()" <?= $data['status_fila'] ?>
                                             data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
@@ -207,7 +207,7 @@
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
-                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA" <?= $data['status_fila'] ?>
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
                                             name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco'])?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
@@ -246,17 +246,17 @@
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
@@ -271,7 +271,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>"
                                             id="posoperatorio" name="posoperatorio"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                             <option value="" <?php echo set_select('posoperatorio', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['posoperatorios'] as $key => $posoperatorio) {
@@ -294,7 +294,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
                                             id="lateralidade" name="lateralidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
@@ -316,12 +316,12 @@
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="NÃO"
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="NÃO" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'NÃO') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="SIM"
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="SIM" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'SIM') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
@@ -333,12 +333,12 @@
                                     <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosN" value="N"
+                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosN" value="N" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="hemoderivadosN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S"
+                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S" <?= $data['status_fila'] ?>
                                                 <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
@@ -350,7 +350,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="2"
+                                    <textarea id="info" maxlength="255" rows="2" <?= $data['status_fila'] ?>
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -363,7 +363,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="2"
+                                    <textarea id="nec_proced" maxlength="255" rows="2" <?= $data['status_fila'] ?>
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -380,7 +380,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="filtro_especialidades" class="form-label">Especialidade</label>
-                                            <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades">
+                                            <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades" <?= $data['status_fila'] ?>>
                                                 <option value="">Todas</option>
                                                 <?php foreach ($data['especialidades_med'] as $filtro): ?>
                                                     <option value="<?= $filtro->seq ?>"><?= $filtro->nome_especialidade ?></option>
@@ -392,7 +392,7 @@
                                         <div class="mb-3">
                                             <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
-                                                    id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
+                                                    id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                                 <?php
                                                 // Certifique-se de que $data['profissional'] está definido como um array
                                                 $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
@@ -428,7 +428,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="centrocirurgico" class="form-label">Centro Cirúrgico<b class="text-danger">*</b></label>
-                                            <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>"
+                                            <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>" <?= $data['status_fila'] ?>
                                                  id="centrocirurgico" name="centrocirurgico">
                                                 <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
                                                 <?php 
@@ -448,7 +448,7 @@
                                     <div class="col-md-6">
                                         <div class="mb-3">
                                         <label for="sala" class="form-label">Salas<b class="text-danger">*</b></label>
-                                            <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>"
+                                            <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>" <?= $data['status_fila'] ?>
                                                     id="sala" name="sala" data-placeholder="" data-allow-clear="1">
                                                 <!-- As salas irão aparecer aqui dinamicamente -->
                                             </select>
@@ -467,7 +467,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                 <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/mostrarmapa') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -484,7 +484,7 @@
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="sala_hidden" id="sala_adic_hidden" />
-
+                        <input type="hidden" name="status_fila" value="<?= $data['status_fila'] ?>" />
                     </form>
                 </div>
             </div>
