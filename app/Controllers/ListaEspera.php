@@ -288,9 +288,9 @@ class ListaEspera extends ResourceController
         $db = \Config\Database::connect('default');
 
         $builder = $db->table('vw_listaespera as vl');
-        $builder->join('vw_statusfilacirurgica as vs', 'vl.id = vs.idlistaespera', 'inner');
+        //$builder->join('vw_statusfilacirurgica as vs', 'vl.id = vs.idlistaespera', 'inner');
 
-        $builder->select('vl.*, vs.ordem_fila');
+        $builder->select('vl.*, vl.ordem_fila');
 
         //die(var_dump($data));
 
@@ -435,8 +435,8 @@ class ListaEspera extends ResourceController
             'origem' => 'required',
             'lateralidade' => 'required',
             'congelacao' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
+            'justorig' => 'max_length[1024]|min_length[0]',
+            'info' => 'max_length[1024]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
@@ -611,8 +611,8 @@ class ListaEspera extends ResourceController
             'procedimento' => 'required',
             'origem' => 'required',
             'lateralidade' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
+            'justorig' => 'max_length[1024]|min_length[0]',
+            'info' => 'max_length[1024]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
@@ -838,8 +838,8 @@ class ListaEspera extends ResourceController
             'lateralidade' => 'required',
             'hemoderivados' => 'required',
             'congelacao' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
+            'justorig' => 'max_length[1024]|min_length[0]',
+            'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
         ];
 
@@ -901,7 +901,8 @@ class ListaEspera extends ResourceController
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
-                    'txtjustificativaenvio' => $this->data['justenvio']
+                    'txtjustificativaenvio' => $this->data['justenvio'],
+                    'numordem' => $this->data['ordem']
                     ];
 
                 $idmapa = $this->mapacirurgicomodel->insert($mapa);
@@ -1193,8 +1194,7 @@ class ListaEspera extends ResourceController
                 LEFT JOIN cirurgias_informacoesadicionais ci ON ci.idlistacirurgica = cl.idlistacirurgica
                 LEFT JOIN cirurgias_justificativas cj on cj.idlistacirurgica = cl.idlistacirurgica
                 LEFT JOIN cirurgias_justificativa_exclusao cje on cje.idlistacirurgica = cl.idlistacirurgica
-                LEFT JOIN remoto.aip_pacientes pac ON pac.prontuario = cl.prontuario
-                INNER JOIN remoto.aip_pacientes pac ON pac.prontuario = cl.prontuario
+                --INNER JOIN remoto.aip_pacientes pac ON pac.prontuario = cl.prontuario
                 ;";
 
             $query = $db->query($sql);
@@ -1226,8 +1226,8 @@ class ListaEspera extends ResourceController
                 $lista['txtorigemjustificativa'] = $reg->justificativa;
                 $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
                 $lista['indcongelacao'] = $reg->congelacao;
-                $lista['created_at'] = $reg->data_inclusao.' '.$reg->hora_inclusao;
-                $lista['updated_at'] = $reg->data_inclusao.' '.$reg->hora_inclusao;
+                $lista['created_at'] = $reg->data_inclusao;
+                $lista['updated_at'] = $reg->data_inclusao;
                 $lista['indurgencia'] = 'N';
 
                 $this->listaesperamodel->insert($lista);

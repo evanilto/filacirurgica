@@ -358,7 +358,7 @@ class MapaCirurgico extends ResourceController
         vw_mapacirurgico.*,
         (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
     ');
-
+   
     if (!empty($data['idmapa'])) {
     
         $builder->where('id', $data['idmapa']);
@@ -556,9 +556,9 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'justorig' => 'max_length[250]|min_length[0]',
-            'info' => 'max_length[250]|min_length[0]',
-            'nec_proced' => 'required|max_length[250]|min_length[3]',
+            'justorig' => 'max_length[1024]|min_length[0]',
+            'info' => 'max_length[1024]|min_length[0]',
+            'nec_proced' => 'required|max_length[500]|min_length[3]',
         ];
 
         if ($this->validate($rules)) {
@@ -931,8 +931,8 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'info' => 'max_length[250]|min_length[3]',
-            'nec_proced' => 'required|max_length[250]|min_length[3]',
+            'info' => 'max_length[1024]|min_length[3]',
+            'nec_proced' => 'required|max_length[500]|min_length[3]',
             'centrocirurgico' => 'required',
             'sala' => 'required'
         ];
@@ -1275,8 +1275,8 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'info' => 'max_length[250]|min_length[0]',
-            'nec_proced' => 'required|max_length[250]|min_length[3]',
+            'info' => 'max_length[1024]|min_length[0]',
+            'nec_proced' => 'required|max_length[500]|min_length[3]',
         ];
 
         if ($this->validate($rules)) {
@@ -1590,9 +1590,9 @@ class MapaCirurgico extends ResourceController
             'profissional' => 'required',
             'lateralidade' => 'required',
             'origem' => 'required',
-            'info' => 'max_length[250]|min_length[0]',
-            'nec_proced' => 'required|max_length[250]|min_length[3]',
-            'justorig' => 'max_length[250]|min_length[0]',
+            'info' => 'max_length[1024]|min_length[0]',
+            'nec_proced' => 'required|max_length[500]|min_length[3]',
+            'justorig' => 'max_length[1024]|min_length[0]',
             'justurgencia' => 'required|max_length[250]|min_length[3]',
         ];
 
@@ -2176,7 +2176,8 @@ class MapaCirurgico extends ResourceController
                     END AS hemoderivado,
                     cjm.justificativa as justificativa_envio,
                     cjs.justificativa as justificativa_suspensao,
-                    cnp.necessidadesprocedimento
+                    cnp.necessidadesprocedimento,
+                    cm.ordem
                 FROM cirurgias_mapacirurgico cm
                 INNER JOIN cirurgias_listacirurgica cl ON cl.idlistacirurgica = cm.idlistacirurgica 
                 LEFT JOIN cirurgias_hemoderivado ch ON ch.idlistacirurgica = cl.idlistacirurgica
@@ -2219,6 +2220,7 @@ class MapaCirurgico extends ResourceController
                 $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
                 $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
                 $mapa['indurgencia'] = 'N';
+                $mapa['numordem'] = $reg->ordem;
 
                 $this->mapacirurgicomodel->insert($mapa);
 

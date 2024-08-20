@@ -405,8 +405,8 @@
             <table class="table table-left-aligned table-smaller-font">
                 <tbody>
                     <tr>
-                        <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
-                        <td><b>${paciente.ordem}</b></td>
+                        <td title="Ordem na Fila antes de ser enviado ao Mapa" width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
+                        <td title="Ordem na Fila antes de ser enviado ao Mapa"><b>${paciente.ordem}</b></td>
                     </tr>
                     <tr>
                         <td width="40%"><i class="fa-solid fa-users-line"></i> Fila:</td>

@@ -203,10 +203,10 @@
 
                         <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
                         <input type="hidden" name="dthrcirurgia" id='dthrcirurgia' value="<?= $data['dthrcirurgia'] ?>" />
-                        <input type="hidden" name="ordem_fila" id='ordem' value="<?= $data['ordem_fila'] ?>" />
+                        <input type="hidden" name="ordemfila" id='ordemfila'  value="<?= $data['ordem_fila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
-                        <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
+                        <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
                        
                     </form>
@@ -216,7 +216,7 @@
     </div>
 </div>
 <script>
-    function fetchPacienteNome(prontuarioValue, ordemValue) {
+    function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
           method: 'POST',
@@ -233,8 +233,11 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
+            const ordemValue = document.getElementById('ordemfila').value;
+            var selectElement = document.getElementById('fila');
+            var filaText = selectElement.options[selectElement.selectedIndex].text;
             
-            loadAsideContent(prontuarioValue, ordemValue);
+            loadAsideContent(prontuarioValue, ordemValue, filaText);
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -250,9 +253,9 @@
       }
     }
     
-    function loadAsideContent(recordId, ordemFila) {
+    function loadAsideContent(recordId, ordemFila, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -271,8 +274,7 @@
 
     function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
-        fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+        fetchPacienteNome(prontuarioInput.value);
     }
 
     fetchPacienteNomeOnLoad();
@@ -297,9 +299,8 @@
         });
 
         const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
         prontuarioInput.addEventListener('change', function() {
-            fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+            fetchPacienteNome(prontuarioInput.value);
         });
 
     });

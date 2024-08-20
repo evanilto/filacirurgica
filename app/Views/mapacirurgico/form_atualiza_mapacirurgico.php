@@ -493,7 +493,7 @@
 </div>
 
 <script>
-    function fetchPacienteNome(prontuarioValue, ordemValue) {
+    function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
           method: 'POST',
@@ -510,7 +510,7 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
-            const ordemfila = document.getElementById('ordemfila').value;
+            const ordemValue = document.getElementById('ordemfila').value;
             var selectElement = document.getElementById('fila');
             var filaText = selectElement.options[selectElement.selectedIndex].text;
             
@@ -704,9 +704,8 @@
         });
 
         const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
         prontuarioInput.addEventListener('change', function() {
-            fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+            fetchPacienteNome(prontuarioInput.value);
         });
 
     });
