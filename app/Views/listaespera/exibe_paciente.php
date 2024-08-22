@@ -1,4 +1,4 @@
-<?php if(isset($paciente)): ?>
+<?php if(isset($paciente) && !empty($paciente)): ?>
     <h6><strong>Paciente</strong></h6>
     <table class="table table-left-aligned table-smaller-font">
         <tbody>
@@ -74,5 +74,5 @@
         </tbody>
     </table>
 <?php else: ?>
-    <p>Nenhum registro encontrado.</p>
+    <p>Paciente não localizado na base do sistema AGHUX</p>
 <?php endif; ?>

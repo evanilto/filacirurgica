@@ -369,18 +369,20 @@ class ListaEspera extends ResourceController
         $db = \Config\Database::connect('default');
 
         $builder = $db->table('vw_statusfilacirurgica as vs');
-        $builder->join('vw_mapacirurgico as vm', 'vs.idlistaespera = vm.idlista', 'left');
+        $builder->join('vw_ordem_paciente as vo', 'vo.id = vs.idlistaespera', 'left');
+        //$builder->join('vw_mapacirurgico as vm', 'vs.idlistaespera = vm.idlista', 'left');
 
         $builder->select('(vs.campos_mapa).status,
                           (vs.campos_mapa).datacirurgia,
+                          (vs.campos_mapa).idmapacirurgico,
                           vs.dthrinclusao,
                           vs.idlistaespera,
                           vs.prontuario,
                           vs.nome,
                           vs.especialidade,
                           vs.fila,
-                          vm.ordem_lista,
-                          vm.ordem_fila');
+                          vo.ordem_lista,
+                          vo.ordem_fila');
 
         //die(var_dump($data));
 

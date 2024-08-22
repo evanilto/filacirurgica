@@ -1,9 +1,12 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="10" class="bg-light text-start"><h5><strong>Situação Cirúrgica</strong></h5></th>
+            <th scope="col" colspan="13" class="bg-light text-start"><h5><strong>Situação Cirúrgica</strong></h5></th>
         </tr>
         <tr>
+            <th scope="col" data-field="" ></th>
+            <th scope="col" data-field="prontuarioaghu" >idLista</th>
+            <th scope="col" data-field="prontuarioaghu" >idMapa</th>
             <th scope="col" class="col-0" data-field="id" title="Ordem de entrada na Lista Cirúrgica">Ordem Lista</th>
             <th scope="col" class="col-0" data-field="id" title="Ordem de entrada na Lista Cirúrgica">Ordem Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
@@ -22,8 +25,11 @@
             $itemlista->dthrcirurgia = $itemlista->datacirurgia ? \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->datacirurgia)->format('d/m/Y') : '';
         ?>
             <tr>
-                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?></td>
-                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
+                <td><?php echo "" ?></td>
+                <td><?php echo $itemlista->idlistaespera ?></td>
+                <td><?php echo $itemlista->idmapacirurgico ?? '-' ?></td>
+                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? 0 ?></td>
+                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? 0 ?></td>
                 <td><?php echo $itemlista->dthrinclusao ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome ?></td>
@@ -40,7 +46,7 @@
     </tbody>
 </table>
 <div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
+    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/situacaocirurgica') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
 </div>
@@ -75,8 +81,8 @@
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
             "columnDefs": [
-            { "orderable": false, "targets": [9] },
-            /*{ "visible": false, "targets": [0] } */
+            /* { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] }, */
+            { "visible": false, "targets": [0] }
             ],
             layout: { topStart: { buttons: [
                 'copy',
@@ -116,9 +122,9 @@
             $(this).addClass('lineselected'); */
 
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var ordemFila = data[0];
-            var fila = data[6];
-            var recordId = data[3];
+            var ordemFila = data[3];
+            var fila = data[9];
+            var recordId = data[6];
 
             loadAsideContent(recordId, ordemFila, fila); 
 
@@ -136,9 +142,9 @@
 
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
-            var recordId = data[3];
-            var ordemFila = data[0]; 
-            var fila = data[6] 
+            var recordId = data[6];
+            var ordemFila = data[3]; 
+            var fila = data[9] 
             
             loadAsideContent(recordId, ordemFila, fila);
         }
