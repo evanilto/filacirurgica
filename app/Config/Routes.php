@@ -30,6 +30,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('enviar', 'ListaEspera::enviar');
     $routes->post('getlista', 'ListaEspera::getListaPaciente');
     $routes->get('situacaocirurgica', 'ListaEspera::consultarSituacaoCirurgica');
+    $routes->add('exibirsituacao', 'ListaEspera::exibirSituacaoCirurgica');
 });
 
 $routes->group('mapacirurgico', function ($routes) {

@@ -287,9 +287,9 @@ class ListaEspera extends ResourceController
         $db = \Config\Database::connect('default');
 
         $builder = $db->table('vw_listaespera as vl');
-        //$builder->join('vw_statusfilacirurgica as vs', 'vl.id = vs.idlistaespera', 'inner');
+        $builder->join('vw_mapacirurgico as vm', 'vl.id = vm.idlista', 'inner');
 
-        $builder->select('vl.*, vl.ordem_fila');
+        $builder->select('vl.*, vm.ordem_lista, vm.ordem_fila');
 
         //die(var_dump($data));
 
@@ -356,6 +356,59 @@ class ListaEspera extends ResourceController
         //var_dump($builder->getCompiledSelect());die();
 
         return $builder->get()->getResult();
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getSituacaoCirurgica ($data) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('vw_statusfilacirurgica as vs');
+        $builder->join('vw_mapacirurgico as vm', 'vs.idlistaespera = vm.idlista', 'left');
+
+        $builder->select('(vs.campos_mapa).status,
+                          (vs.campos_mapa).datacirurgia,
+                          vs.dthrinclusao,
+                          vs.idlistaespera,
+                          vs.prontuario,
+                          vs.nome,
+                          vs.especialidade,
+                          vs.fila,
+                          vm.ordem_lista,
+                          vm.ordem_fila');
+
+        //die(var_dump($data));
+
+        if (!empty($data['idlista'])) {
+        
+            $builder->where('vs.id', $data['idlista']);
+    
+        } else {
+
+            if (!empty($data['prontuario'])) {
+                //$clausula_where .= " AND prontuario = $data[prontuario]";
+                $builder->where('vs.prontuario', $data['prontuario']);
+            };
+            if (!empty($data['nome'])) {
+                //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
+                $builder->where('vs.nome LIKE', '%'.strtoupper($data['nome']).'%');
+            };
+            if (!empty($data['fila'])) {
+                //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
+                $builder->where('vs.idfila', $data['fila']);
+            };
+        }
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+
+        //die(var_dump($builder->get()->getResult()));
     }
     /**
      * Return a new resource object, with default properties
@@ -1150,24 +1203,90 @@ class ListaEspera extends ResourceController
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
-        $data['dtfim'] = date('d/m/Y');
-        /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-        $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-        $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        $data['especialidades'] = $this->aghucontroller->getEspecialidades($especialidades);
-        $data['origens'] = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll(); */
+        $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
 
         $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectrisco;
-        //$data['origens'] = $this->selectorigempaciente;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
 
         //die(var_dump($data));
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
                                             'data' => $data]);
 
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirSituacaoCirurgica()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $data = $this->request->getVar();
+
+        $dataflash = session()->getFlashdata('dataflash');
+
+        if ($dataflash) {
+            $data = $dataflash;
+        }
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+
+            if(!empty($resultAGHUX[0])) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'nome' => 'permit_empty|min_length[3]',
+         ];
+
+        if (!$dataflash) {
+            $rules = $rules + [
+                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            ];
+        }
+
+        if ($this->validate($rules)) {
+
+            //die(var_dump($dataflash));
+
+            $this->validator->reset();
+
+            $result = $this->getSituacaoCirurgica($data);
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            //die(var_dump($result));
+
+            return view('layouts/sub_content', ['view' => 'listaespera/list_listasituacaocirurgica',
+                                               'listaespera' => $result,
+                                                'data' => $data]);
+        } else {
+            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
+                                               'validation' => $this->validator,
+                                                'data' => $data]);
+        }
     }
     /**
      * 

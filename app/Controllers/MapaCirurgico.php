@@ -359,7 +359,7 @@ class MapaCirurgico extends ResourceController
     $builder = $db->table('vw_mapacirurgico');
 
     // Adicionando o JOIN com vw_statusfilacirurgica
-    $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'left');
+    $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
 
     // Selecionando campos específicos com aliases
     $builder->select('
