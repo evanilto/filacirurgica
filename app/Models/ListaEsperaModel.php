@@ -10,10 +10,12 @@ class ListaEsperaModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true; //false for migration
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true;
+    protected $useSoftDeletes   = true; //false for migration
     protected $protectFields    = true;
     protected $allowedFields    = [
         //'id', // for migration
+        //'created_at', // for migration
+        //'updated_at', // for migration
         'numprontuario',
         'idespecialidade',
         'dtriscocirurgico',

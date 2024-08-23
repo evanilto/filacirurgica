@@ -4,46 +4,28 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MapaCirurgicoModel extends Model
+class HistoricoModel extends Model
 {
-    protected $table            = 'mapa_cirurgico';
+    protected $table            = 'historico';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true; // false for migration
+    protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true; // false for migration
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        //'id', // include for migration
-        //'created_at', // for migration
-        //'updated_at', // for migration
         'idlistaespera',
-        'dthrnocentrocirurgico',
-        'dthremcirurgia',
-        'dthrsaidasala',
-        'dthrsuspensao',
-        'dthrcirurgia',
-        'dthrsaidacentrocirurgico',
-        'dthrtroca',
-        'idlistatroca',
-        'idcentrocirurgico',
-        'idsala',
-        'idposoperatorio',
-        'indhemoderivados',
-        'txtnecessidadesproced',
-        'txtjustificativaenvio',
-        'txtjustificativasuspensao',
-        'txtnecessidadesproced',
-        'numordem',
-        'indurgencia'
+        'dthrevento',
+        'idevento',
+        'idlogin'
     ];
 
     // Dates
-    protected $useTimestamps = true;
+    protected $useTimestamps = false;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
-
+       
     // Validation
     protected $validationRules      = [];
     protected $validationMessages   = [];

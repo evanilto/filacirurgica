@@ -22,14 +22,15 @@
     <tbody>
         <?php foreach($listaespera as $itemlista): 
             $itemlista->created_at = $itemlista->dthrinclusao ? \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->dthrinclusao)->format('d/m/Y H:i') : '';
-            $itemlista->dthrcirurgia = $itemlista->datacirurgia ? \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->datacirurgia)->format('d/m/Y') : '';
+            $itemlista->dthrinclusao = $itemlista->dthrinclusao ? \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->dthrinclusao)->format('d/m/Y H:i') : '';
+            $itemlista->datacirurgia = $itemlista->datacirurgia ? \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->datacirurgia)->format('d/m/Y') : '';
         ?>
             <tr>
                 <td><?php echo "" ?></td>
                 <td><?php echo $itemlista->idlistaespera ?></td>
                 <td><?php echo $itemlista->idmapacirurgico ?? '-' ?></td>
-                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? 0 ?></td>
-                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? 0 ?></td>
+                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? '-' ?></td>
+                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? '-' ?></td>
                 <td><?php echo $itemlista->dthrinclusao ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome ?></td>
@@ -38,7 +39,7 @@
                 <td><?php echo $itemlista->datacirurgia ?></td>
                 <td><?php echo $itemlista->status ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->idlistaespera, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
+                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->idlistaespera, '<i class="fa-solid fa-timeline"></i>', array('title' => 'Histórico de Atividades', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
                 </td>
                 <?=  session()->set('parametros_consulta_lista', $data); ?>
             </tr>
@@ -122,7 +123,7 @@
             $(this).addClass('lineselected'); */
 
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var ordemFila = data[3];
+            var ordemFila = data[4];
             var fila = data[9];
             var recordId = data[6];
 
@@ -143,7 +144,7 @@
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
             var recordId = data[6];
-            var ordemFila = data[3]; 
+            var ordemFila = data[4]; 
             var fila = data[9] 
             
             loadAsideContent(recordId, ordemFila, fila);

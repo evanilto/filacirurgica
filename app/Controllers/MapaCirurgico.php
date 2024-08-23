@@ -16,13 +16,13 @@ use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
+use App\Models\HistoricoModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use PHPUnit\Framework\Constraint\IsNull;
 use CodeIgniter\HTTP\ResponseInterface;
-
 
 class MapaCirurgico extends ResourceController
 {
@@ -39,6 +39,7 @@ class MapaCirurgico extends ResourceController
     private $posoperatoriomodel;
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
+    private $historicomodel;
     private $usuariocontroller;
     private $aghucontroller;
     private $selectfila;
@@ -71,6 +72,7 @@ class MapaCirurgico extends ResourceController
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
+        $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
         $this->aghucontroller = new Aghu();
 
@@ -2320,6 +2322,84 @@ class MapaCirurgico extends ResourceController
 
         } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
             $msg = 'Falha na criação do Mapa Cirúrgico ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+    /**
+     * 
+     * @return mixed
+     */
+    public function migrarHistorico() {
+
+        $sqlTruncate = "truncate historico;";
+        $sqlDropDefault = "ALTER TABLE historico ALTER COLUMN id DROP DEFAULT;";
+        $sqlSetVal = "SELECT setval('historico_seq', (SELECT max(id) FROM historico));";
+        $sqlRestartVal = "ALTER SEQUENCE historico_seq RESTART WITH 1;";
+        $sqlSetDefault = "ALTER TABLE historico ALTER COLUMN id SET DEFAULT nextval('historico_seq');";
+
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $sql = "
+                SELECT
+                    ch.data,
+                    ch.idlistacirurgica,
+                    ch.idevento,
+                    ch.usuario
+                FROM cirurgias_historico ch
+            ";
+
+            $query = $db->query($sql);
+
+            $result = $query->getResult();
+
+            $query = $db->query($sqlTruncate);
+            $query = $db->query($sqlRestartVal);
+            //$query = $db->query($sqlDropDefault);
+
+            $db->transStart();
+
+            foreach ($result as $reg) {
+
+                $historico = [];
+                $historico['dthrevento'] = $reg->data;
+                $historico['idlistaespera'] = $reg->idlistacirurgica;
+                $historico['idevento'] = $reg->idevento;
+                $historico['idlogin'] = $reg->usuario;
+
+                $this->historicomodel->insert($historico);
+                
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \Exception(
+                        sprintf('Erro ao incluir historico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \Exception(
+                    sprintf('Erro na criação do histórico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+            $query = $db->query($sqlSetDefault);
+
+        } catch (\Throwable $e) {
+            $msg = 'Falha na criação do histórico ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;
         }
