@@ -1,10 +1,12 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="18" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+            <th scope="col" colspan="20" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
-            <th scope="col" class="col-0" data-field="id" title="Ordem de entrada na Lista Cirúrgica">Ordem</th>
+            <th scope="col" data-field="" ></th>
+            <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
+            <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
@@ -28,7 +30,9 @@
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
             <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>" title="Ordem de entrada na Lista Cirúrgica">
+                <td><?php echo "" ?></td>
                 <td><?php echo $itemlista->ordem_lista ?></td>
+                <td><?php echo $itemlista->ordem_fila ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome_paciente ?></td>
@@ -109,8 +113,8 @@
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
             "columnDefs": [
-            { "orderable": false, "targets": [14] },
-            /*{ "visible": false, "targets": [0] } */
+            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
+            { "visible": false, "targets": [0] }
             ],
             layout: { topStart: { buttons: [
                 'copy',
@@ -152,7 +156,7 @@
             var ordemFila = $(this).data('ordem');
             var fila = $(this).data('fila');
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var recordId = data[2];
+            var recordId = data[4];
 
             loadAsideContent(recordId, ordemFila, fila); 
 
@@ -175,7 +179,7 @@
 
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
-            var recordId = data[2];
+            var recordId = data[4];
             loadAsideContent(recordId, ordemFila, fila);
         }
 

@@ -2327,6 +2327,63 @@ class MapaCirurgico extends ResourceController
         }
     }
     /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirHistorico(int $idlista)
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        //die(var_dump($_GET));
+
+        $queryData = $this->request->getGet('dados');
+
+        $result = $this->getHistorico($idlista);
+
+        if (empty($result)) {
+
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+
+            session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_listasituacaocirurgica',
+                                                'validation' => $this->validator]);
+        
+        }
+
+        //die(var_dump($queryData));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/list_listahistorico',
+                                            'historico' => $result,
+                                            'data' => $queryData]);
+    }
+     /**
+     * Return the properties of a resource object
+     *
+     * @return mixed
+     */
+    public function getHistorico(int $idlista)
+    {
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('historico as hist');
+        $builder->join('eventos as even', 'even.id = hist.idevento', 'inner');
+        $builder->where('hist.idlistaespera', $idlista);
+        
+        $builder->select('
+                         hist.dthrevento,
+                         hist.idlogin,
+                         even.nmevento'
+                        );
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+    }
+    /**
      * 
      * @return mixed
      */

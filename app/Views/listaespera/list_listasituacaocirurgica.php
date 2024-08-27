@@ -39,7 +39,14 @@
                 <td><?php echo $itemlista->datacirurgia ?></td>
                 <td><?php echo $itemlista->status ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->idlistaespera, '<i class="fa-solid fa-timeline"></i>', array('title' => 'Histórico de Atividades', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
+                    <?php
+                    $queryString = http_build_query(['dados' => $itemlista]);
+                    $url = base_url('mapacirurgico/exibirhistorico/') . $itemlista->idlistaespera . '?' . $queryString;
+                    echo anchor($url, '<i class="fa-solid fa-timeline"></i>', [
+                        'title' => 'Histórico de Atividades',
+                        'onclick' => 'mostrarAguarde(event, this.href)'
+                    ]);
+                     ?>
                 </td>
                 <?=  session()->set('parametros_consulta_lista', $data); ?>
             </tr>

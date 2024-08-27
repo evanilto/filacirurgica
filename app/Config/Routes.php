@@ -48,6 +48,7 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->get('urgencia', 'MapaCirurgico::incluirUrgencia');
     $routes->post('incluir', 'MapaCirurgico::incluir');
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
+    $routes->add('exibirhistorico/(:num)', 'MapaCirurgico::exibirHistorico/$1');
 });
 
 $routes->group('usuarios', function ($routes) {
