@@ -32,7 +32,7 @@
         </tr>
         <tr>
             <th scope="col" class="col-0" >idMapa</th>
-            <th scope="col" class="col-0" >Sit.</th>
+            <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
             <th scope="col" class="col-0" >Centro Cirúrgico</th>
             <th scope="col" class="col-0" >Sala</th>
             <th scope="col" data-field="fila" >Dt/Hr Estimada</th>
@@ -136,7 +136,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
-                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -145,7 +145,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "NoCentroCirurgico") {
-                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
+                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -154,7 +154,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "EmCirurgia") {
-                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
+                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -163,7 +163,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "SaídaDaSala") {
-                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
                         }
@@ -172,7 +172,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
-                            echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
+                            echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" style="color: gray;"></i></span>';
                         }
@@ -235,6 +235,19 @@
     </table--> 
 </div>
 <script>
+
+    /* window.addEventListener('load', function() {
+        // Verifica se a página já foi carregada uma vez nesta sessão
+        if (!sessionStorage.getItem('reloaded')) {
+            // Marca que a página foi carregada uma vez
+            sessionStorage.setItem('reloaded', 'true');
+        } else {
+            // Se recarregado, remova a flag e execute a ação de recarregar
+            sessionStorage.removeItem('reloaded');
+            location.reload(true); // força o reload do servidor
+        }
+    }); */
+    
     function mostrarAguarde(event, href) {
         event.preventDefault(); // Prevenir o comportamento padrão do link
         $('#janelaAguarde').show();
@@ -287,9 +300,11 @@
             }
         //}
 
+        $('#janelaAguarde').show();
+
         tratarLink(link, evento);
 
-        return false; 
+        return true; 
     }
 
     function tratarLink(link, evento) {

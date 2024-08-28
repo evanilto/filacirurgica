@@ -328,6 +328,8 @@ class ListaEspera extends ResourceController
             };
         }
 
+        $builder->orderBy('vl.id', 'ASC');
+
         //var_dump($builder->getCompiledSelect());die();
 
         return $builder->get()->getResult();
@@ -1303,8 +1305,8 @@ class ListaEspera extends ResourceController
                     ci.informacoesadicionais,
                     cn.necessidadesprocedimento,
                     CASE 
-                        WHEN cl.situacao = 0 THEN 'A'
-                        WHEN cl.situacao = 1 THEN 'I'
+                        WHEN cl.situacao = 0 THEN 'I'
+                        WHEN cl.situacao = 1 THEN 'A'
                     END AS situacao,
                     cj.justificativa,
                     cje.justificativa as justificativa_exclusao
@@ -1330,6 +1332,7 @@ class ListaEspera extends ResourceController
             foreach ($result as $reg) {
 
                 $lista = [];
+
                 $lista['id'] = $reg->idlistacirurgica;
                 $lista['numprontuario'] = $reg->prontuario;
                 $lista['idespecialidade'] = $reg->especialidade;
@@ -1341,13 +1344,15 @@ class ListaEspera extends ResourceController
                 $lista['idorigempaciente'] = $reg->origempaciente;
                 $lista['idprocedimento'] = $reg->procedimento;
                 $lista['idlateralidade'] = $reg->lateralidade;
-                $lista['indsituacao'] = $reg->situacao;
+                //$lista['indsituacao'] = $reg->situacao;
+                $lista['indsituacao'] = 'A';
                 $lista['txtinfoadicionais'] = $reg->informacoesadicionais;
                 $lista['txtorigemjustificativa'] = $reg->justificativa;
                 $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
                 $lista['indcongelacao'] = $reg->congelacao;
                 $lista['created_at'] = $reg->data_inclusao;
                 $lista['updated_at'] = $reg->data_inclusao;
+                $lista['deleted_at'] = ($reg->situacao === "I") ? $reg->data_inclusao : NULL;
                 $lista['indurgencia'] = 'N';
 
                 $this->listaesperamodel->insert($lista);
@@ -1362,7 +1367,7 @@ class ListaEspera extends ResourceController
                     );
                 }
 
-                if ($reg->situacao == 'I') {
+                /* if ($reg->situacao == 'I') {
                     $this->listaesperamodel->delete($reg->idlistacirurgica);
 
                     if ($db->transStatus() === false) {
@@ -1374,7 +1379,7 @@ class ListaEspera extends ResourceController
                             sprintf('Erro ao excluir lista de espera! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
-                }
+                } */
             }
 
             $db->transComplete();

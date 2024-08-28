@@ -43,30 +43,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label for="fila" class="form-label">Fila Cirúrgica</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
-                                            id="fila" name="fila"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
-                                            <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['filas'] as $key => $fila) {
-                                                $selected = ($data['fila'] == $fila['id']) ? 'selected' : '';
-                                                echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('fila')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('fila') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
@@ -89,7 +66,32 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-8">
+                                <div class="mb-3">
+                                    <label for="fila" class="form-label">Fila Cirúrgica</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                            id="fila" name="fila"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['filas'] as $key => $fila) {
+                                                $selected = ($data['fila'] == $fila['id']) ? 'selected' : '';
+                                                echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('fila')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('fila') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="procedimento" class="form-label">Procedimento Principal</label>
                                     <div class="input-group">

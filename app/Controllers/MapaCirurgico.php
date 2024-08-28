@@ -2070,36 +2070,28 @@ class MapaCirurgico extends ResourceController
             //$this->mapacirurgicomodel->update($idMapa, $evento);
             $this->mapacirurgicomodel->update($arrayid['idMapa'], $evento);
 
+            if (isset($evento['dthrsuspensao']) /*|| $evento['dthrcancelamento']*/) {
+                //$this->listaesperamodel->withDeleted()->update($arrayid['idLista'], ['deleted_at' => '']);
+                $this->listaesperamodel->withDeleted()->where('id', $arrayid['idLista'])->set('deleted_at', NULL)->update();
+            }
+
+            $db->transComplete();
+
             if ($db->transStatus() === false) {
                 $db->transRollback(); 
                 $error = $db->error();
                 $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
                 $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
-                throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
+                throw new DatabaseException(sprintf('Erro ao atualizar Lista de Espera! [%d] %s', $errorCode, $errorMessage));
             }
-
-            if ($evento['dthrsuspensao'] /*|| $evento['dthrcancelamento']*/) {
-                //$this->listaesperamodel->update($arrayid['idLista'], ['delete_at' => '']);
-                $this->listaesperamodel->where('id', $arrayid['idLista'])->set('deleted_at', NULL)->update();
-
-                if ($db->transStatus() === false) {
-                    $db->transRollback(); 
-                    $error = $db->error();
-                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
-    
-                    throw new DatabaseException(sprintf('Erro ao atualizar Lista de Espera! [%d] %s', $errorCode, $errorMessage));
-                }
-            }
-
-            $db->transComplete();
 
             session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');
 
             return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!']);
 
         } catch (\Throwable $e) {
+
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -2133,167 +2125,13 @@ class MapaCirurgico extends ResourceController
             return redirect()->to('mapacirurgico/mostrarmapa');
         }
     }
-    // Helper para criar objeto DateTime só se a data não estiver vazia
-    function createDateTime($dateString) {
-        return empty($dateString) ? null : DateTime::createFromFormat('Y-m-d H:i', $dateString);
-    }
     /**
-     * 
+     * Helper para criar objeto DateTime só se a data não estiver vaziat
+     *
      * @return mixed
      */
-    public function migrarMapa() {
-
-        try {
-
-            $db = \Config\Database::connect('default');
-
-            $sqlTruncate = "truncate mapa_cirurgico RESTART IDENTITY;";
-            $sqlDropDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id DROP DEFAULT;";
-            $sqlSetVal = "SELECT setval('mapa_cirurgico_seq', (SELECT MAX(id) FROM mapa_cirurgico mc));";
-            $sqlSetDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id SET DEFAULT nextval('mapa_cirurgico_seq');";
-            $sqlTruncateEqpMed = "truncate equipe_medica;";
-            $sqlDropDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id DROP DEFAULT;";
-            $sqlSetValEqpMed = "SELECT setval('equipe_medica_seq', 1);";
-            $sqlSetDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id SET DEFAULT nextval('equipe_medica_seq');";
-
-            $sql = "
-                SELECT
-                    cm.idmapacirurgico,
-                    cm.idlistacirurgica,
-                cm.aguardando,
-                cm.nocentrocirurgico,
-                cm.cirurgia,
-                cm.saida,
-                cm.suspensa,
-                cm.cancelada,
-                cm.datacirurgia,
-                cm.idcentrocirurgico,
-                cm.idsala,
-                CASE 
-                    WHEN cm.posoperatorio = 'UTIAD' THEN 1
-                    WHEN cm.posoperatorio = 'UTINEO' THEN 2
-                    WHEN cm.posoperatorio = 'UCO' THEN 3
-                    WHEN cm.posoperatorio = 'UTINEOHOSPITAL DIA' THEN 4
-                    WHEN cm.posoperatorio = 'ENFERMARIA' THEN 5
-                    WHEN cm.posoperatorio = 'UUE' THEN 6
-                    WHEN cm.posoperatorio = 'DIP' THEN 7
-                END AS posoperatorio,
-                cm.saidacentrocirurgico,
-                CASE 
-                    WHEN ch.hemoderivado = 0 THEN 'N'
-                    WHEN ch.hemoderivado = 1 THEN 'S'
-                    END AS hemoderivado,
-                    cjm.justificativa as justificativa_envio,
-                    cjs.justificativa as justificativa_suspensao,
-                    cnp.necessidadesprocedimento,
-                    cm.ordem
-                FROM cirurgias_mapacirurgico cm
-                INNER JOIN cirurgias_listacirurgica cl ON cl.idlistacirurgica = cm.idlistacirurgica 
-                LEFT JOIN cirurgias_hemoderivado ch ON ch.idlistacirurgica = cl.idlistacirurgica
-                LEFT JOIN cirurgias_justificativas_mapa cjm ON cjm.idlistacirurgica = cl.idlistacirurgica
-                LEFT JOIN cirurgias_justificativa_suspensao cjs ON cjs.idmapacirurgico = cm.idmapacirurgico
-                LEFT JOIN cirurgias_necessidadesprocedimento cnp ON cnp.idlistacirurgica = cl.idlistacirurgica
-            ";
-
-            $query = $db->query($sql);
-
-            $result = $query->getResult();
-
-            $query = $db->query($sqlTruncateEqpMed);
-            $query = $db->query($sqlDropDefaultEqpMed);
-            $query = $db->query($sqlSetValEqpMed);
-            $query = $db->query($sqlSetDefaultEqpMed);
-
-            $query = $db->query($sqlTruncate);
-            $query = $db->query($sqlDropDefault);
-
-            $db->transStart();
-
-            foreach ($result as $reg) {
-
-                $mapa = [];
-                $mapa['id'] = $reg->idmapacirurgico;
-                $mapa['idlistaespera'] = $reg->idlistacirurgica;
-                $mapa['dthrnocentrocirurgico'] = $reg->nocentrocirurgico;
-                $mapa['dthremcirurgia'] = $reg->cirurgia;
-                $mapa['dthrsaidasala'] = $reg->saida;
-                $mapa['dthrsaidacentrocirurgico'] = $reg->saidacentrocirurgico;
-                $mapa['dthrsuspensao'] = $reg->cancelada;
-                $mapa['dthrtroca'] = $reg->suspensa;
-                $mapa['dthrcirurgia'] = $reg->aguardando;
-                $mapa['idcentrocirurgico'] = $reg->idcentrocirurgico;
-                $mapa['idsala'] = $reg->idsala;
-                $mapa['idposoperatorio'] = $reg->posoperatorio;
-                $mapa['indhemoderivados'] = $reg->hemoderivado;
-                $mapa['txtjustificativaenvio'] = $reg->justificativa_envio;
-                $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
-                $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
-                $mapa['indurgencia'] = 'N';
-                $mapa['numordem'] = $reg->ordem;
-
-                $this->mapacirurgicomodel->insert($mapa);
-
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao incluir Mapa! [%d] %s', $errorCode, $errorMessage)
-                    );
-                }
-
-                $sql = "
-                    select *
-                    FROM cirurgias_equipemedica ce
-                    WHERE ce.idmapacirurgico = $reg->idmapacirurgico
-                    ";
-
-                $query = $db->query($sql);
-
-                $result_eqpmed = $query->getResult();
-
-                foreach ($result_eqpmed as $reg_eqpmed) {
-
-                    $mapa = [];
-                    $mapa['idmapacirurgico'] = $reg_eqpmed->idmapacirurgico;
-                    $mapa['idprofissional'] = $reg_eqpmed->idprofissional;
-                    $mapa['codpessoa'] = $reg_eqpmed->idpessoa;
-
-                    $this->equipemedicamodel->insert($mapa);
-
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao incluir equipe médica! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-                }
-            }
-
-            $db->transComplete();
-
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro na criação do mapa cirurgico! [%d] %s', $errorCode, $errorMessage)
-                );
-            }
-
-            $query = $db->query($sqlSetVal);
-            $query = $db->query($sqlSetDefault);
-
-        } catch (\Throwable $e) {
-            $msg = 'Falha na criação do Mapa Cirúrgico ==> '.$e->getMessage();
-            log_message('error', $msg.': ' . $e->getMessage());
-            throw $e;
-        }
+    function createDateTime($dateString) {
+        return empty($dateString) ? null : DateTime::createFromFormat('Y-m-d H:i', $dateString);
     }
     /**
      * Create a new resource object, from "posted" parameters
@@ -2426,6 +2264,164 @@ class MapaCirurgico extends ResourceController
 
         } catch (\Throwable $e) {
             $msg = 'Falha na criação do histórico ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+    /**
+     * 
+     * @return mixed
+     */
+    public function migrarMapa() {
+
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $sqlTruncate = "truncate mapa_cirurgico RESTART IDENTITY;";
+            $sqlDropDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id DROP DEFAULT;";
+            $sqlSetVal = "SELECT setval('mapa_cirurgico_seq', (SELECT MAX(id) FROM mapa_cirurgico mc));";
+            $sqlSetDefault = "ALTER TABLE mapa_cirurgico ALTER COLUMN id SET DEFAULT nextval('mapa_cirurgico_seq');";
+            $sqlTruncateEqpMed = "truncate equipe_medica;";
+            $sqlDropDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id DROP DEFAULT;";
+            $sqlSetValEqpMed = "SELECT setval('equipe_medica_seq', 1);";
+            $sqlSetDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id SET DEFAULT nextval('equipe_medica_seq');";
+
+            $sql = "
+                SELECT
+                cm.idmapacirurgico,
+                cm.idlistacirurgica,
+                cm.aguardando,
+                cm.nocentrocirurgico,
+                cm.cirurgia,
+                cm.saida,
+                cm.suspensa,
+                cm.cancelada,
+                cm.datacirurgia,
+                cm.idcentrocirurgico,
+                cm.idsala,
+                CASE 
+                    WHEN cm.posoperatorio = 'UTIAD' THEN 1
+                    WHEN cm.posoperatorio = 'UTINEO' THEN 2
+                    WHEN cm.posoperatorio = 'UCO' THEN 3
+                    WHEN cm.posoperatorio = 'UTINEOHOSPITAL DIA' THEN 4
+                    WHEN cm.posoperatorio = 'ENFERMARIA' THEN 5
+                    WHEN cm.posoperatorio = 'UUE' THEN 6
+                    WHEN cm.posoperatorio = 'DIP' THEN 7
+                END AS posoperatorio,
+                cm.saidacentrocirurgico,
+                CASE 
+                    WHEN ch.hemoderivado = 0 THEN 'N'
+                    WHEN ch.hemoderivado = 1 THEN 'S'
+                    END AS hemoderivado,
+                    cjm.justificativa as justificativa_envio,
+                    cjs.justificativa as justificativa_suspensao,
+                    cnp.necessidadesprocedimento,
+                    cm.ordem
+                FROM cirurgias_mapacirurgico cm
+                INNER JOIN cirurgias_listacirurgica cl ON cl.idlistacirurgica = cm.idlistacirurgica 
+                LEFT JOIN cirurgias_hemoderivado ch ON ch.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativas_mapa cjm ON cjm.idlistacirurgica = cl.idlistacirurgica
+                LEFT JOIN cirurgias_justificativa_suspensao cjs ON cjs.idmapacirurgico = cm.idmapacirurgico
+                LEFT JOIN cirurgias_necessidadesprocedimento cnp ON cnp.idlistacirurgica = cl.idlistacirurgica
+            ";
+
+            $query = $db->query($sql);
+
+            $result = $query->getResult();
+
+            $query = $db->query($sqlTruncateEqpMed);
+            $query = $db->query($sqlDropDefaultEqpMed);
+            $query = $db->query($sqlSetValEqpMed);
+            $query = $db->query($sqlSetDefaultEqpMed);
+
+            $query = $db->query($sqlTruncate);
+            $query = $db->query($sqlDropDefault);
+
+            $db->transStart();
+
+            foreach ($result as $reg) {
+
+                $mapa = [];
+                $mapa['id'] = $reg->idmapacirurgico;
+                $mapa['idlistaespera'] = $reg->idlistacirurgica;
+                $mapa['dthrnocentrocirurgico'] = $reg->nocentrocirurgico;
+                $mapa['dthremcirurgia'] = $reg->cirurgia;
+                $mapa['dthrsaidasala'] = $reg->saida;
+                $mapa['dthrsaidacentrocirurgico'] = $reg->saidacentrocirurgico;
+                $mapa['dthrsuspensao'] = $reg->cancelada;
+                $mapa['dthrtroca'] = $reg->suspensa;
+                $mapa['dthrcirurgia'] = $reg->aguardando;
+                $mapa['idcentrocirurgico'] = $reg->idcentrocirurgico;
+                $mapa['idsala'] = $reg->idsala;
+                $mapa['idposoperatorio'] = $reg->posoperatorio;
+                $mapa['indhemoderivados'] = $reg->hemoderivado;
+                $mapa['txtjustificativaenvio'] = $reg->justificativa_envio;
+                $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
+                $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
+                $mapa['indurgencia'] = 'N';
+                $mapa['numordem'] = $reg->ordem;
+
+                $this->mapacirurgicomodel->insert($mapa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir Mapa! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $sql = "
+                    select *
+                    FROM cirurgias_equipemedica ce
+                    WHERE ce.idmapacirurgico = $reg->idmapacirurgico
+                    ";
+
+                $query = $db->query($sql);
+
+                $result_eqpmed = $query->getResult();
+
+                foreach ($result_eqpmed as $reg_eqpmed) {
+
+                    $mapa = [];
+                    $mapa['idmapacirurgico'] = $reg_eqpmed->idmapacirurgico;
+                    $mapa['idprofissional'] = $reg_eqpmed->idprofissional;
+                    $mapa['codpessoa'] = $reg_eqpmed->idpessoa;
+
+                    $this->equipemedicamodel->insert($mapa);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao incluir equipe médica! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                }
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro na criação do mapa cirurgico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+            $query = $db->query($sqlSetDefault);
+
+        } catch (\Throwable $e) {
+            $msg = 'Falha na criação do Mapa Cirúrgico ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;
         }
