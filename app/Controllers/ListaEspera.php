@@ -562,21 +562,11 @@ class ListaEspera extends ResourceController
                                                             'listaespera' => $this->getListaEspera($data_le),
                                                             'data' => $data_le]); */
 
-                    } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                        $errorMessage = $e->getMessage();
-                        $errorCode = $e->getCode();
-                        
-                        throw new \CodeIgniter\Database\Exceptions\DataException(
-                            sprintf('Erro ao incluir um paciente da Lista! [%d] %s', (int) $errorCode, $errorMessage), (int) $errorCode, $e);
-
-                    } catch (\CodeIgniter\Database\Exceptions\DatabaseException $databaseException) {
-                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DatabaseException: ' . $databaseException->getMessage());
-
-                    } catch (\CodeIgniter\Database\Exceptions\DataException $databaseException) {
-                        throw new \CodeIgniter\Database\Exceptions\DataException('Erro de DataException: ' . $databaseException->getMessage());
-
-                    } catch (\Exception $e) {
-                        throw new \Exception('Erro de Exception: ' . $e->getMessage());
+                    } catch (\Throwable $e) {
+                        $db->transRollback(); // Reverte a transação em caso de erro
+                        $msg = sprintf('Erro ao incluir um paciente da Lista! - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                        log_message('error', 'Exception: ' . $msg);
+                        session()->setFlashdata('exception', $msg);
                     }
                 }
             }
@@ -698,15 +688,7 @@ class ListaEspera extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
-                $msg = sprintf('Exception - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = sprintf('DatabaseException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
+            } catch (\Throwable $e) {
                 $msg = sprintf('DataException - Falha na alteração da Lista - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
@@ -778,7 +760,7 @@ class ListaEspera extends ResourceController
 
             $db->transComplete();
     
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+        } catch (\Throwable $e) {
             $db->transRollback(); // Reverte a transação em caso de erro
             $msg = 'Erro na exclusão do paciente da Lista';
             $msg .= ' - '.$e->getMessage();
@@ -821,7 +803,7 @@ class ListaEspera extends ResourceController
         //die(var_dump($id));
 
         $data = [];
-        $data['ordem'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
+        $data['ordemfila'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
         $data['id'] = $lista['id'];
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['prontuario'] = $lista['numprontuario'];
@@ -956,7 +938,7 @@ class ListaEspera extends ResourceController
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'txtjustificativaenvio' => $this->data['justenvio'],
-                    'numordem' => $this->data['ordem']
+                    'numordem' => $this->data['ordemfila']
                     ];
 
                 $idmapa = $this->mapacirurgicomodel->insert($mapa);
@@ -1043,19 +1025,9 @@ class ListaEspera extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('Exception - Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                $msg = sprintf('Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
@@ -1117,7 +1089,7 @@ class ListaEspera extends ResourceController
 
             return $this->respond($response);
 
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+        } catch (\Throwable $e) {
             $msg = 'Erro na alteração do setor';
             log_message('error', $msg.': ' . $e->getMessage());
             return $this->fail($msg.' ('.$e->getCode().')');
@@ -1146,7 +1118,7 @@ class ListaEspera extends ResourceController
                 ];
                 return $this->respondDeleted($response);
 
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+            } catch (\Throwable $e) {
                 $msg = 'Erro na exclusão do setor';
                 log_message('error', $msg.': ' . $e->getMessage());
                 return $this->fail($msg.' ('.$e->getCode().')');
@@ -1421,7 +1393,7 @@ class ListaEspera extends ResourceController
 
             $query = $db->query($sqlSetDefault);
 
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+        } catch (\Throwable $e) {
             $msg = 'Falha na criação da lista de espera - '. $reg->prontuario .' ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;

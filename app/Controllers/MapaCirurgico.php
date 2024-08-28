@@ -302,8 +302,8 @@ class MapaCirurgico extends ResourceController
             
             $this->validator->reset();
 
-            $horaAtual = date('H:i:s');
-            $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
+            /* $horaAtual = date('H:i:s');
+            $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual; */
 
             $result = $this->getMapaCirurgico($data);
 
@@ -376,7 +376,12 @@ class MapaCirurgico extends ResourceController
     } else {
 
         // Adicionando a cláusula WHERE para o intervalo de datas
-        $builder->where("vw_mapacirurgico.dthrcirurgia BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
+        //$builder->where("vw_mapacirurgico.dthrcirurgia BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
+        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+        $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
+        $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
 
         // Condicional para prontuario
         if (!empty($data['prontuario'])) {
@@ -705,19 +710,9 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
                 $msg = sprintf('Exception - Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  Falha no envio do paciente para o Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
@@ -779,7 +774,7 @@ class MapaCirurgico extends ResourceController
 
             return $this->respond($response);
 
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+        } catch (\Throwable $e) {
             $msg = 'Erro na alteração do setor';
             log_message('error', $msg.': ' . $e->getMessage());
             return $this->fail($msg.' ('.$e->getCode().')');
@@ -870,7 +865,8 @@ class MapaCirurgico extends ResourceController
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         $data['status_fila'] = ($mapa->status_fila != "Suspensa" && $mapa->status_fila != "Cancelada" && $mapa->status_fila != "Realizada") ? 'enabled' : 'disabled';
-        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['risco'] = $mapa->idriscocirurgico;
@@ -949,6 +945,18 @@ class MapaCirurgico extends ResourceController
         ];
 
         if ($this->validate($rules)) {
+
+            if (DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d H:i') < date('Y-m-d H:i')) {
+                $this->validator->setError('dtcirurgia', 'A data/hora da cirurgia não pode ser menor que a data/hora atual!');
+
+                session()->setFlashdata('error', $this->validator);
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                    'validation' => $this->validator,
+                                                    'data' => $this->data]);
+            }
 
             $db = \Config\Database::connect('default');
 
@@ -1087,19 +1095,9 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
                 $msg = sprintf('Exception - Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
@@ -1140,7 +1138,8 @@ class MapaCirurgico extends ResourceController
         $data['ordem_fila'] = $mapa->ordem_fila;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
-        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['risco'] = $mapa->idriscocirurgico;
@@ -1460,19 +1459,9 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
                 $msg = sprintf('Exception - Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  FFalha na troca de paciente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
@@ -1570,7 +1559,7 @@ class MapaCirurgico extends ResourceController
      */
     public function incluir()
     {
-        ini_set('memory_limit', '1024M');
+        //ini_set('memory_limit', '1024M');
 
         \Config\Services::session();
 
@@ -1789,19 +1778,9 @@ class MapaCirurgico extends ResourceController
 
                             $this->validator->reset();
                             
-                        } catch (\Exception $e) {
+                        } catch (\Throwable $e) {
                             $db->transRollback(); // Reverte a transação em caso de erro
                             $msg = sprintf('Exception - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                            log_message('error', 'Exception: ' . $msg);
-                            session()->setFlashdata('exception', $msg);
-                        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                            $db->transRollback(); // Reverte a transação em caso de erro
-                            $msg = sprintf('DatabaseException - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                            log_message('error', 'Exception: ' . $msg);
-                            session()->setFlashdata('exception', $msg);
-                        } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                            $db->transRollback(); // Reverte a transação em caso de erro
-                            $msg = sprintf('DataException - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                             log_message('error', 'Exception: ' . $msg);
                             session()->setFlashdata('exception', $msg);
                         }
@@ -2023,19 +2002,9 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
                 
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
                 $msg = sprintf('Exception - Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DatabaseException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                log_message('error', 'Exception: ' . $msg);
-                session()->setFlashdata('exception', $msg);
-            } catch (\CodeIgniter\Database\Exceptions\DataException $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = sprintf('DataException -  Falha na atualização do Mapa Cirúrgico - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
@@ -2130,7 +2099,7 @@ class MapaCirurgico extends ResourceController
 
             return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!']);
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
@@ -2320,7 +2289,7 @@ class MapaCirurgico extends ResourceController
             $query = $db->query($sqlSetVal);
             $query = $db->query($sqlSetDefault);
 
-        } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+        } catch (\Throwable $e) {
             $msg = 'Falha na criação do Mapa Cirúrgico ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;
