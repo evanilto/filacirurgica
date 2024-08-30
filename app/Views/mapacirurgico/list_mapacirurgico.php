@@ -136,36 +136,36 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "Programada") {
-                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corNoCentroCirúrgico.'; background-color: '.$corNoCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corNoCentroCirúrgico.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "NoCentroCirurgico") {
-                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corEmCirurgia.'; background-color: '.$corEmCirurgia.'"></i></a>';
+                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corEmCirurgia.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "EmCirurgia") {
-                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaDaSala.'; background-color: '.$corSaídaDaSala.'"></i></a>';
+                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaDaSala.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($itemmapa->status_fila == "SaídaDaSala") {
-                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-regular fa-square-check" style="color: '.$corSaídaCentroCirúrgico.'; background-color: '.$corSaídaCentroCirúrgico.'"></i></a>';
+                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaCentroCirúrgico.';"></i></a>';
                         } else {
-                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-square-check" style="color: gray;"></i></span>';
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
                     ?>
                 </td>
@@ -182,10 +182,14 @@
                     <?php
                         if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
                             $params = array(
+                                'idlista' => $itemmapa->idlista,
                                 'idmapa' => $itemmapa->id,
                                 'idfila' => $itemmapa->idfila,
+                                'fila' => $itemmapa->fila,
+                                'ordemfila' =>$itemmapa->ordem_fila,
                                 'idespecialidade' => $itemmapa->idespecialidade,
                                 'prontuario' => $itemmapa->prontuario,
+                                'dthrcirurgia' => $itemmapa->dthrcirurgia
                             );
                             $queryString = http_build_query($params);
                             

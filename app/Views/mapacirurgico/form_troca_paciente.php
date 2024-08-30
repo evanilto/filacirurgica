@@ -401,19 +401,22 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="idmapapac1" value="<?= $data['idmapapac1'] ?>" />
-                        <input type="hidden" name="idlistapac1" value="<?= $data['idlistapac1'] ?>" />
-                        <!-- <input type="hidden" name="prontuario" value="<--?= $candidato['prontuario'] ?>" />
-                        <input type="hidden" name="idlistapac2" value="<--?= $candidato['idlistaespera'] ?>" />
-                        <input type="hidden" name="ordem" id='ordem' value="<--?= $candidato['ordem_fila'] ?>" / -->>
+                        <!-- <input type="hidden" name="idmapapacatrocar" value="<--?= $data['idmapapacatrocar'] ?>" />
+                        <input type="hidden" name="idlistapacatrocar" value="<--?= $data['idlistapacatrocar'] ?>" /> -->
+                        <input type="hidden" name="idlistapacatrocar" id="idlistapacatrocar" value="<?= $data['idlistapacatrocar'] ?>" />
+                        <input type="hidden" name="idmapapacatrocar" id="idmapapacatrocar" value="<?= $data['idmapapacatrocar'] ?>" />
+                        <input type="hidden" name="prontuario_pacatrocar" id="prontuario_pacatrocar" value="<?= $pacatrocar['prontuario'] ?>" />
+                        <input type="hidden" name="prontuario_pacatrocar" id="prontuario_pacatrocar" value="<?= $pacatrocar['prontuario'] ?>" />
+                        <input type="hidden" name="ordemfila_pacatrocar" id="ordemfila_pacatrocar" value="<?= $pacatrocar['ordemfila'] ?>" />
+                        <input type="hidden" name="fila_pacatrocar" id="fila_pacatrocar" value="<?= $pacatrocar['fila'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
-                        <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
+                        <input type="hidden" name="fila" id="fila" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
-
+                        <input type="hidden" name="idlistapac2"  />
                     </form>
                 </div>
             </div>
@@ -422,9 +425,9 @@
 </div>
 
 <script>
-    function fetchPacienteNome(prontuarioValue, ordemValue) {
+    /* function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
-        fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
+        fetch('<--?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -439,8 +442,11 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
+            const ordemValue = document.getElementById('ordemfila').value;
+            var selectElement = document.getElementById('fila');
+            var filaText = selectElement.options[selectElement.selectedIndex].text;
             
-            loadAsideContent(prontuarioValue, ordemValue);
+            loadAsideContent(prontuarioValue, ordemValue, filaText);
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -454,17 +460,17 @@
       } else {
         document.getElementById('nome').value = '';
       }
-    }
+    } */
     
-    function loadAsideContent(recordId, ordemFila) {
+    function loadAsideContent(recordId, ordemFila, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila,
+            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
             method: 'GET',
             beforeSend: function() {
-                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
+                $('#sidebar').html('<p>Carregando...</p>'); 
             },
             success: function(response) {
-                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
+                $('#sidebar').html(response);
             },
             error: function(xhr, status, error) {
                 var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
@@ -475,13 +481,17 @@
         });
     }
 
-    function fetchPacienteNomeOnLoad() {
+    /* function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
-        fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+        fetchPacienteNome(prontuarioInput.value);
     }
 
-    //fetchPacienteNomeOnLoad();
+    fetchPacienteNomeOnLoad(); */
+
+    const prontuarioValue = document.getElementById('prontuario_pacatrocar').value;
+    const ordemValue = document.getElementById('ordemfila_pacatrocar').value;
+    const filaText = document.getElementById('fila_pacatrocar').value;
+    loadAsideContent(prontuarioValue, ordemValue, filaText);
 
     $(document).ready(function() {
         $('.select2-dropdown').select2({
@@ -587,7 +597,7 @@
                 $('input[name="prontuario"]').val(prontuarioValue); // Define o valor do hidden
                 $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
 
-                loadAsideContent(prontuarioValue, ordemValue);
+                loadAsideContent(prontuarioValue, ordemValue, filaText);
 
                 //document.getElementById('procedimento').value = procedimentoValue;
 

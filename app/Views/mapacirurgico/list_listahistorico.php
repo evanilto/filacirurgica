@@ -109,7 +109,7 @@
 
             // Remover a classe 'selected' de todas as linhas e adicionar ao primeiro registro da página
             $('#table tbody tr').removeClass('lineselected');
-            $firstRecordRow.addClass('lineselected');
+            //$firstRecordRow.addClass('lineselected');
 
            /*  var data = table.row(firstRecordIndex).data();
             var ordemFila = data.ordem_fila;

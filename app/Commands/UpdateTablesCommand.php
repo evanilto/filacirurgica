@@ -25,8 +25,7 @@ class UpdateTablesCommand extends BaseCommand
         $db->table('local_fat_itens_proced_hospitalar')->truncate();
         $db->table('local_mbc_sala_cirurgicas')->truncate();
 
-
-        // Inserir dados na tabela local a partir da tabela remota
+        $insertStatus = 'starting';
         $insertStatus = $db->query('INSERT INTO local_agh_cids SELECT * FROM remoto.agh_cids');
         $insertStatus = $db->query('INSERT INTO local_agh_especialidades SELECT * FROM remoto.agh_especialidades');
         $insertStatus = $db->query('INSERT INTO local_agh_unidades_funcionais SELECT * FROM remoto.agh_unidades_funcionais');
@@ -38,7 +37,7 @@ class UpdateTablesCommand extends BaseCommand
         if ($db->transStatus() === FALSE) {
             // Obter a mensagem de erro
             $error = $db->error();
-            echo 'Erro na atualização da tabela local_agh_cids: ' . $error['message'] . PHP_EOL;
+            echo 'Erro na atualização das tabelas: ' . $error['message'] . PHP_EOL;
             echo 'InsertStatus: ' . $insertStatus . PHP_EOL;
         } else {
             echo 'Tabelas locais atualizadas com sucesso!' . PHP_EOL;
