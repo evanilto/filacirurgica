@@ -24,6 +24,8 @@ class UpdateTablesCommand extends BaseCommand
         $db->table('local_agh_unidades_funcionais')->truncate();
         $db->table('local_fat_itens_proced_hospitalar')->truncate();
         $db->table('local_mbc_sala_cirurgicas')->truncate();
+        $db->table('local_aip_pacientes')->truncate();
+        $db->table('local_prof_especialidades')->truncate();
 
         $insertStatus = 'starting';
         $insertStatus = $db->query('INSERT INTO local_agh_cids SELECT * FROM remoto.agh_cids');
@@ -31,6 +33,8 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_agh_unidades_funcionais SELECT * FROM remoto.agh_unidades_funcionais');
         $insertStatus = $db->query('INSERT INTO local_fat_itens_proced_hospitalar SELECT * FROM remoto.fat_itens_proced_hospitalar');
         $insertStatus = $db->query('INSERT INTO local_mbc_sala_cirurgicas SELECT * FROM remoto.mbc_sala_cirurgicas');
+        $insertStatus = $db->query('INSERT INTO local_prof_especialidades SELECT * FROM remoto.vw_prof_especialidades');
+        $insertStatus = $db->query('INSERT INTO local_aip_pacientes SELECT * FROM remoto.vw_detalhes_pacientes');
 
         $db->transComplete(); // Completa a transação
 

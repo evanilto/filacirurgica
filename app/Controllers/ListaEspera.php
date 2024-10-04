@@ -16,6 +16,11 @@ use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
 use App\Models\JustificativasModel;
+use App\Models\LocalFatItensProcedHospitalarModel;
+use App\Models\LocalAghCidsModel;
+use App\Models\LocalAghEspecialidadesModel;
+use App\Models\LocalAipPacientesModel;
+use App\Models\LocalProfEspecialidadesModel;
 //use App\Controllers\MapaCirurgico;
 use DateTime;
 use CodeIgniter\Config\Services;
@@ -37,6 +42,11 @@ class ListaEspera extends ResourceController
     private $lateralidademodel;
     private $posoperatoriomodel;
     private $justificativasmodel;
+    private $localfatitensprocedhospitalarmodel;
+    private $localaghcidsmodel;
+    private $localaghespecialidadesmodel;
+    private $localprofespecialidadesmodel;
+    private $localaippacientesmodel;
 
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
@@ -70,9 +80,14 @@ class ListaEspera extends ResourceController
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
+        $this->localfatitensprocedhospitalarmodel = new LocalFatItensProcedHospitalarModel();
+        $this->localaghcidsmodel = new LocalAghCidsModel();
+        $this->localaghespecialidadesmodel = new LocalAghEspecialidadesModel();
+        $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
+        $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->usuariocontroller = new Usuarios();
         $this->mapacirurgicocontroller = new MapaCirurgico();
-        $this->aghucontroller = new Aghu();
+        //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
@@ -80,11 +95,18 @@ class ListaEspera extends ResourceController
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        $this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
+        //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
+        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
+                                                                           ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
-        $this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
-        $this->selectcids = $this->aghucontroller->getCIDs();
-        $this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
+        //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
+        $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                               ->orderBy('nome', 'ASC')->findAll();
+        //$this->selectcids = $this->aghucontroller->getCIDs();
+        $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
+        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
     }
 
     /**
@@ -126,7 +148,8 @@ class ListaEspera extends ResourceController
     {
         // Pegue o registro pelos $id e passe os dados para a view
         $data = [
-            'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario),
+            //'paciente' => $this->aghucontroller->getDetalhesPaciente($numProntuario),
+            'paciente' => $this->localaippacientesmodel->find($numProntuario),
             'ordemfila' => $ordemFila,
             'fila' => $fila
         ];
@@ -144,9 +167,11 @@ class ListaEspera extends ResourceController
 {
     //return $this->response->setJSON(['error' => $numProntuario], 404);
 
-    $paciente = $this->aghucontroller->getPaciente($numProntuario);
+    //$paciente = $this->aghucontroller->getPaciente($numProntuario);
+    $paciente = $this->localaippacientesmodel->find($numProntuario);
 
-    if ($paciente && isset($paciente[0]->nome)) {
+    //if ($paciente && isset($paciente[0]->nome)) {
+    if ($paciente && isset($paciente->nome)) {
         return $this->response->setJSON(['nome' => $paciente[0]->nome]);
     }
 
@@ -202,9 +227,11 @@ class ListaEspera extends ResourceController
         }
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
 
-            if(!empty($resultAGHUX[0])) {
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
                 $prontuario = $data['prontuario'];
             }
         }
@@ -247,7 +274,8 @@ class ListaEspera extends ResourceController
 
                 $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
                 $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-                $data['especialidades'] = $this->aghucontroller->getEspecialidades();
+                //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
@@ -268,7 +296,8 @@ class ListaEspera extends ResourceController
             
             $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
             $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-            $data['especialidades'] = $this->aghucontroller->getEspecialidades();
+            //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
                                                'validation' => $this->validator,
@@ -462,9 +491,11 @@ class ListaEspera extends ResourceController
         //die(var_dump($data));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
 
-            if(!empty($resultAGHUX[0])) {
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
                 $prontuario = $data['prontuario'];
             }
         }
@@ -1211,9 +1242,11 @@ class ListaEspera extends ResourceController
         }
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
 
-            if(!empty($resultAGHUX[0])) {
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
                 $prontuario = $data['prontuario'];
             }
         }
