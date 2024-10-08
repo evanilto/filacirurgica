@@ -169,10 +169,12 @@ class ListaEspera extends ResourceController
 
     //$paciente = $this->aghucontroller->getPaciente($numProntuario);
     $paciente = $this->localaippacientesmodel->find($numProntuario);
+    //die(var_dump($paciente));
 
     //if ($paciente && isset($paciente[0]->nome)) {
     if ($paciente && isset($paciente->nome)) {
-        return $this->response->setJSON(['nome' => $paciente[0]->nome]);
+        //return $this->response->setJSON(['nome' => $paciente[0]->nome]);
+        return $this->response->setJSON(['nome' => $paciente->nome]);
     }
 
     return $this->response->setJSON(['error' => 'Paciente não encontrado na base do AGHU'], 404);

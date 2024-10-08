@@ -18,6 +18,13 @@ use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
 use App\Models\HistoricoModel;
 use App\Models\VwOrdemPacienteModel;
+use App\Models\LocalFatItensProcedHospitalarModel;
+use App\Models\LocalAghCidsModel;
+use App\Models\LocalAghEspecialidadesModel;
+use App\Models\LocalAipPacientesModel;
+use App\Models\LocalCentrosCirurgicosModel;
+use App\Models\LocalMbcSalasCirurgicasModel;
+use App\Models\LocalProfEspecialidadesModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
@@ -42,6 +49,13 @@ class MapaCirurgico extends ResourceController
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
     private $historicomodel;
+    private $localfatitensprocedhospitalarmodel;
+    private $localaghcidsmodel;
+    private $localaghespecialidadesmodel;
+    private $localprofespecialidadesmodel;
+    private $localmbcsalascirurgicasmodel;
+    private $localcentroscirurgicosmodel;
+    private $localaippacientesmodel;
     private $usuariocontroller;
     private $aghucontroller;
     private $selectfila;
@@ -76,8 +90,15 @@ class MapaCirurgico extends ResourceController
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
         $this->historicomodel = new HistoricoModel();
+        $this->localfatitensprocedhospitalarmodel = new LocalFatItensProcedHospitalarModel();
+        $this->localaghcidsmodel = new LocalAghCidsModel();
+        $this->localaghespecialidadesmodel = new LocalAghEspecialidadesModel();
+        $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
+        $this->localmbcsalascirurgicasmodel = new LocalMbcSalasCirurgicasModel();
+        $this->localcentroscirurgicosmodel = new LocalCentrosCirurgicosModel();
+        $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->usuariocontroller = new Usuarios();
-        $this->aghucontroller = new Aghu();
+        //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
@@ -85,14 +106,23 @@ class MapaCirurgico extends ResourceController
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        $this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
+        //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
+        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
+                                                                           ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
-        $this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
-        $this->selectcids = $this->aghucontroller->getCIDs();
-        $this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
+        //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
+        $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                               ->orderBy('nome', 'ASC')->findAll();
+        //$this->selectcids = $this->aghucontroller->getCIDs();
+        $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
+        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
-        $this->selectcentroscirurgicosaghu = $this->aghucontroller->getCentroCirurgico();
-        $this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
+        //$this->selectcentroscirurgicosaghu = $this->aghucontroller->getCentroCirurgico();
+        $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->findAll();
+        //$this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
+        $this->selectsalascirurgicasaghu = $this->localmbcsalascirurgicasmodel->Where('situacao', 'A')->orderBy('nome', 'ASC')->findAll();
 
     }
 
@@ -118,7 +148,7 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function getDetailsAside($idmapa)
+   /*  public function getDetailsAside($idmapa)
     {
 
         //$cirurgia = $this->vwmapacirurgicomodel->where(['idmapa' => $idmapa])->find();
@@ -134,13 +164,13 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($data));
 
         return view('listaespera/exibe_paciente', $data);
-    }
+    } */
     /**
      * Retorna o prontuario cadastrado no aghu
      *
      * @return mixed
      */
-    public function getDetalhesCirurgia(int $prontuario) 
+    /* public function getDetalhesCirurgia(int $prontuario) 
     {
 
         $paciente = $this->aghucontroller->getPaciente($prontuario);
@@ -210,7 +240,7 @@ class MapaCirurgico extends ResourceController
 
         return $result;
 
-    }
+    } */
     /**
      * Return the properties of a resource object
      *
@@ -218,7 +248,8 @@ class MapaCirurgico extends ResourceController
      */
     public function getNomePaciente($numProntuario)
 {
-    $paciente = $this->aghucontroller->getPaciente($numProntuario);
+    //$paciente = $this->aghucontroller->getPaciente($numProntuario);
+    $paciente = $this->localaippacientesmodel->find($numProntuario);
 
     if ($paciente && isset($paciente[0]->nome)) {
         return $this->response->setJSON(['nome' => $paciente[0]->nome]);
@@ -273,9 +304,11 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($dataflash));
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
-            $resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
 
-            if(!empty($resultAGHUX[0])) {
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
                 $prontuario = $data['prontuario'];
             }
         }
@@ -316,7 +349,8 @@ class MapaCirurgico extends ResourceController
 
                 $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
                 $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-                $data['especialidades'] = $this->aghucontroller->getEspecialidades();
+                //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
@@ -343,7 +377,8 @@ class MapaCirurgico extends ResourceController
             
             $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
             $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-            $data['especialidades'] = $this->aghucontroller->getEspecialidades();
+            //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                                 'validation' => $this->validator,
@@ -1208,12 +1243,19 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $pacatrocar['idfila'])
+                                                               ->where('idlistaespera', 2113)
                                                                ->where('(campos_mapa).status', 'Aguardando')
                                                                ->where('idespecialidade', $pacatrocar['idespecialidade'])->findAll();
         //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
-        foreach ($data['candidatos'] as &$candidato) {
-            $ordempaciente = $this->vwordempacientemodel->find($candidato['idlistaespera']);
-            $candidato['ordem_fila'] = $ordempaciente['ordem_fila'];
+
+        if (!$data['candidatos']) {
+            session()->setFlashdata('failed', 'Não existem candidatos a troca nessa Fila!');
+            return redirect()->to(base_url('mapacirurgico/mostrarmapa'));
+        } else {
+            foreach ($data['candidatos'] as &$candidato) {
+                $ordempaciente = $this->vwordempacientemodel->find($candidato['idlistaespera']);
+                $candidato['ordem_fila'] = $ordempaciente['ordem_fila'];
+            }
         }
         unset($candidato);
 
@@ -1584,10 +1626,20 @@ class MapaCirurgico extends ResourceController
 
         //die(var_dump($this->data));
 
-        if(!empty($this->data['prontuario']) && is_numeric($this->data['prontuario'])) {
+        /* if(!empty($this->data['prontuario']) && is_numeric($this->data['prontuario'])) {
             $resultAGHUX = $this->aghucontroller->getPaciente($this->data['prontuario']);
 
             if(!empty($resultAGHUX[0])) {
+                $prontuario = $this->data['prontuario'];
+            }
+        } */
+
+        if(!empty($this->data['prontuario']) && is_numeric($this->data['prontuario'])) {
+            //$resultAGHUX = $this->aghucontroller->getPaciente($this->data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($this->data['prontuario']);
+
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
                 $prontuario = $this->data['prontuario'];
             }
         }
