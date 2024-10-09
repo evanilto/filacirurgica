@@ -438,7 +438,7 @@ class MapaCirurgico extends ResourceController
 
         // Condicional para fila
         if (!empty($data['fila'])) {
-            $builder->where('vw_mapacirurgico.idtipoprocedimento', $data['fila']);
+            $builder->where('vw_mapacirurgico.idfila', $data['fila']);
         }
 
         // Condicional para risco
@@ -899,7 +899,9 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($mapa));
 
         $data = [];
-        $data['ordemfila'] = $mapa->ordem_fila;
+        //$data['ordemfila'] = $mapa->ordem_fila;
+        $array = $this->vwordempacientemodel->select('ordem_fila')->where('id', $mapa->idlista)->first();
+        $data['ordemfila'] = $array['ordem_fila'];
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         $data['status_fila'] = ($mapa->status_fila != "Suspensa" && $mapa->status_fila != "Cancelada" && $mapa->status_fila != "Realizada") ? 'enabled' : 'disabled';
@@ -945,7 +947,7 @@ class MapaCirurgico extends ResourceController
         });
 
        //var_dump($data['sala']);die();
-        //var_dump($data['salas_cirurgicas']);die();
+       //var_dump($data['salas_cirurgicas']);die();
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                             'data' => $data]);
@@ -1243,7 +1245,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $pacatrocar['idfila'])
-                                                               ->where('idlistaespera', 2113)
+                                                               //->where('idlistaespera', 2113)
                                                                ->where('(campos_mapa).status', 'Aguardando')
                                                                ->where('idespecialidade', $pacatrocar['idespecialidade'])->findAll();
         //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
@@ -1257,6 +1259,8 @@ class MapaCirurgico extends ResourceController
                 $candidato['ordem_fila'] = $ordempaciente['ordem_fila'];
             }
         }
+        array_multisort(array_column($data['candidatos'], 'ordem_fila'), SORT_ASC, $data['candidatos']);
+
         unset($candidato);
 
         $data['idlistapacatrocar'] = $pacatrocar['idlista'];

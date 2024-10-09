@@ -49,7 +49,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">

@@ -576,21 +576,21 @@
             var addedOptions = [];
             
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
-                var value = '<?= $sala->seq ?>';
+                var value = '<?= $sala->seqp ?>';
                 var text = '<?= $sala->nome  ?>';
                 var centrocirurgico = '<?= $sala->unf_seq ?>';
                 
-                // Se a sala já está selecionada, adicione-a ao dropdown
+                /* // Se a sala já está selecionada, adicione-a ao dropdown
                 if (selectedValues.includes(value) && !addedOptions.includes(value)) {
                     var option = new Option(text, value, true, true);
                     $("#sala").append(option);
                     addedOptions.push(value);
-                }
+                } */
             <?php endforeach; ?>
 
             // Adicione as opções que correspondem ao filtro (mas não estão selecionadas)
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
-                var value = '<?= $sala->seq ?>';
+                var value = '<?= $sala->seqp ?>';
                 var text = '<?= $sala->nome ?>';
                 var centrocirurgico = '<?= $sala->unf_seq ?>';
                 
