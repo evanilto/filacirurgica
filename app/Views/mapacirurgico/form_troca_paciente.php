@@ -392,7 +392,10 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                <!-- <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                    <i class="fa-solid fa-people-arrows"></i> Trocar
+                                </button> -->
+                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="button" onclick="trocarpaciente()">
                                     <i class="fa-solid fa-people-arrows"></i> Trocar
                                 </button>
                                 <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/mostrarmapa') ?>">
@@ -461,6 +464,45 @@
         document.getElementById('nome').value = '';
       }
     } */
+
+    
+    function trocarpaciente() {
+        const formulario = document.getElementById('idForm');
+
+        const formData = new FormData(formulario);
+        
+        // Para converter FormData em um objeto simples (opcional)
+       /*  const dados = {};
+        formData.forEach((value, key) => {
+            dados[key] = value;
+        }); */
+
+        //console.log(dados); // Para verificar os dados no console (opcional)
+
+        fetch('<?=base_url('mapacirurgico/trocar')?>', {
+            method: 'POST',
+            body: formData // ou pode usar JSON.stringify(dados) se necessário
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                    throw new Error('Erro na resposta da rede');
+            }
+
+            return response.text(); // ou response.text() dependendo do que o servidor retorna
+        })
+        .then(data => {
+            console.log('Success:', data); 
+            setTimeout(() => {
+                window.history.back(3);
+              //  window.location.href = '<?=base_url('mapacirurgico/resultado')?>'; // Mude para a URL que deseja acessar
+                window.location.reload(); // Recarregar a página após 1 segundo
+    }, 1000);
+        })
+        .catch((error) => {
+            console.error('Error:', error); 
+        });
+    }
     
     function loadAsideContent(recordId, ordemFila, fila) {
         $.ajax({

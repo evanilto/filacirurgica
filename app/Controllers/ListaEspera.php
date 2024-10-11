@@ -21,6 +21,7 @@ use App\Models\LocalAghCidsModel;
 use App\Models\LocalAghEspecialidadesModel;
 use App\Models\LocalAipPacientesModel;
 use App\Models\LocalProfEspecialidadesModel;
+use App\Models\VwOrdemPacienteModel;
 //use App\Controllers\MapaCirurgico;
 use DateTime;
 use CodeIgniter\Config\Services;
@@ -35,6 +36,7 @@ class ListaEspera extends ResourceController
     private $vwlistaesperamodel;
 
     private $vwstatusfilacirurgicamodel;
+    private $vwordempacientemodel;
     private $mapacirurgicomodel;
     private $filamodel;
     private $riscomodel;
@@ -71,6 +73,7 @@ class ListaEspera extends ResourceController
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
+        $this->vwordempacientemodel = new VwOrdemPacienteModel();
         $this->mapacirurgicomodel = new MapaCirurgicoModel();
         $this->filamodel = new FilaModel();
         $this->riscomodel = new RiscoModel();
@@ -133,11 +136,11 @@ class ListaEspera extends ResourceController
      */
     public function getOrdemFila($idlista)
     {
-        $statusfila = $this->vwstatusfilacirurgicamodel->find($idlista);
+        $ordemfila = $this->vwordempacientemodel->find($idlista);
 
         //die(var_dump($statusfila));
 
-        return $statusfila['ordem_fila'] ?? null;
+        return $ordemfila['ordem_fila'] ?? null;
     }
      /**
      * Return the properties of a resource object
@@ -318,9 +321,9 @@ class ListaEspera extends ResourceController
         $db = \Config\Database::connect('default');
 
         $builder = $db->table('vw_listaespera as vl');
-        $builder->join('vw_mapacirurgico as vm', 'vl.id = vm.idlista', 'inner');
+        $builder->join('vw_ordem_paciente as vo', 'vl.id = vo.id', 'inner');
 
-        $builder->select('vl.*, vm.ordem_lista, vm.ordem_fila');
+        $builder->select('vl.*, vo.ordem_lista, vo.ordem_fila');
 
         //die(var_dump($data));
 
@@ -557,7 +560,7 @@ class ListaEspera extends ResourceController
                             'indcongelacao' => $data['congelacao'],
                             'idprocedimento' => $data['procedimento'],
                             'idlateralidade' => $data['lateralidade'],
-                            /* 'indsituacao' => 'A', */
+                            'indsituacao' => 'A',
                             'txtinfoadicionais' => $data['info'],
                             'txtorigemjustificativa' => $data['justorig']
                         ];
@@ -1387,7 +1390,7 @@ class ListaEspera extends ResourceController
                 $lista['indcongelacao'] = $reg->congelacao;
                 $lista['created_at'] = $reg->data_inclusao;
                 $lista['updated_at'] = $reg->data_inclusao;
-                $lista['deleted_at'] = ($reg->situacao === "I") ? $reg->data_inclusao : NULL;
+                $lista['deleted_at'] = ($reg->situacao = 0) ? $reg->data_inclusao : NULL;
                 $lista['indurgencia'] = 'N';
 
                 $this->listaesperamodel->insert($lista);

@@ -400,11 +400,14 @@ class MapaCirurgico extends ResourceController
 
     // Adicionando o JOIN com vw_statusfilacirurgica
     $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
+    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'inner');
+
 
     // Selecionando campos específicos com aliases
     $builder->select('
         vw_mapacirurgico.*,
         (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+        vw_ordem_paciente.ordem_fila,
     ');
    
     if (!empty($data['idmapa'])) {
@@ -1311,6 +1314,9 @@ class MapaCirurgico extends ResourceController
 
         //var_dump($data['procedimentos']);die();
 
+        $_SESSION['candidatos'] =  $data['candidatos'];
+        $_SESSION['pacatrocar'] = $pacatrocar;
+
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                             'data' => $data,
                                             'pacatrocar' =>$pacatrocar
@@ -1346,6 +1352,8 @@ class MapaCirurgico extends ResourceController
             'nec_proced' => 'required|max_length[500]|min_length[3]',
         ];
 
+        //die(var_dump($_SESSION['candidatos']));
+
         if ($this->validate($rules)) {
 
             $db = \Config\Database::connect('default');
@@ -1356,12 +1364,14 @@ class MapaCirurgico extends ResourceController
 
                 $this->carregaMapa();
 
-                $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idtipoprocedimento', $this->data['fila'])
-                                                       ->where('idespecialidade', $this->data['especialidade'])->findAll();
+                //$this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idtipoprocedimento', $this->data['fila'])
+                                                       //->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+                $this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
-                                                    'data' => $this->data]);
-            }
+                                                    'data' => $this->data,
+                                                    'pacatrocar' => $_SESSION['pacatrocar']]);            }
 
 
             $db->transStart();
@@ -1486,7 +1496,7 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
-                //$this->mapacirurgicomodel->delete($this->data['idmapapacatrocar']);
+                /*$this->mapacirurgicomodel->delete($this->data['idmapapacatrocar']);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1496,25 +1506,37 @@ class MapaCirurgico extends ResourceController
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao excluir paciente do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
                     );
-                }
+                }*/
 
-                $this->listaesperamodel->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)->update();
+                //$mapaprogr = $this->vwstatusfilacirurgicamodel->Where('idlistaespera', $this->data['idlistapacatrocar'])->Where('(campos_mapa).status', 'Programada')->first();
 
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                //$db->transRollback(); 
+                //die(var_dump($mapaprogr));
 
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
-                    );
-                }
+                //if (!$mapaprogr) {
+
+                    $this->listaesperamodel->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)->update();
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                //}
 
                 $db->transComplete();
 
                 session()->setFlashdata('success', 'Paciente trocado com sucesso!');
 
                 $this->validator->reset();
+
+                //return $this->response->setJSON(['success' => true, 'message' => 'Ok!']);
+                $this->response->setHeader('Content-Type', 'text/plain');
+                return $this->response->setBody('ok');
                 
             } catch (\Throwable $e) {
                 $db->transRollback(); 
@@ -1525,25 +1547,27 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
-                                                                 ->where('idespecialidade', $this->data['especialidade'])->findAll();
+            //$this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
+                                                                 //->where('idespecialidade', $this->data['especialidade'])->findAll();
+
+            $this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
-                                                'data' => $this->data]);
-
+                                                'data' => $this->data,
+                                                'pacatrocar' => $_SESSION['pacatrocar']]);
         } else {
             session()->setFlashdata('error', $this->validator);
 
             $this->carregaMapa();
 
-            $this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
-                                                                 ->where('idespecialidade', $this->data['especialidade'])->findAll();
+            //$this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])->where('idespecialidade', $this->data['especialidade'])->findAll();
 
-            //die(var_dump($this->data));
+            $this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                 'validation' => $this->validator,
-                                                'data' => $this->data]);
+                                                'data' => $this->data,
+                                                'pacatrocar' => $_SESSION['pacatrocar']]);
         }
     }
     /**
@@ -1844,7 +1868,7 @@ class MapaCirurgico extends ResourceController
                             session()->setFlashdata('success', 'Cirurgia urgente incluída com sucesso!');
 
                             $this->validator->reset();
-                            
+
                         } catch (\Throwable $e) {
                             $db->transRollback(); // Reverte a transação em caso de erro
                             $msg = sprintf('Exception - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
