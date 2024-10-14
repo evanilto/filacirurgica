@@ -17,6 +17,7 @@ $routes->group('/', function ($routes) {
 $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
+    $routes->add('mostrarlista', 'ListaEspera::mostrarListaEsperaSalva');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:any)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->get('carregaaside/(:num)/(:any)/(:any)', 'ListaEspera::getDetailsAside/$1/$2/$3');

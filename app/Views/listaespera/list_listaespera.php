@@ -26,13 +26,14 @@
     </thead>
     <tbody>
         <?php foreach($listaespera as $itemlista): 
+        //die(var_dump( $itemlista->created_at));
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
-            <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>" title="Ordem de entrada na Lista Cirúrgica">
+            <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
                 <td><?php echo "" ?></td>
-                <td><?php echo $itemlista->ordem_lista ?></td>
-                <td><?php echo $itemlista->ordem_fila ?></td>
+                <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
+                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome_paciente ?></td>
@@ -69,7 +70,7 @@
                 </td> <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
                 </td>
-                <?=  session()->set('parametros_consulta_lista', $data); ?>
+                <!-- <--?=  session()->set('parametros_consulta_lista', $data); ?> -->
                 <td style="text-align: center; vertical-align: middle;">
                     <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
                 </td>
@@ -100,8 +101,16 @@
         
         return true;
     }
+
+    window.onload = function() {
+        sessionStorage.setItem('previousPage', window.location.href);
+    };
     
   $(document).ready(function() {
+
+        var primeiraVez = true;
+        var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
@@ -126,7 +135,19 @@
         });
 
         var table = $('#table').DataTable();
-        var firstRecordId;
+
+        /* var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
+        if (paginaAnterior) {
+            alert('pag anterior: ' + paginaAnterior);
+
+            table.page(parseInt(paginaAnterior)).draw(false);
+        } */
+
+        // Armazena a página atual quando o DataTable é redesenhado
+        /* table.on('draw', function() {
+            var paginaAtual = table.page();
+            sessionStorage.setItem('paginaSelecionada', paginaAtual);
+        }); */
 
         function loadAsideContent(prontuario, ordem, fila) {
             $.ajax({
@@ -185,6 +206,20 @@
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
         table.on('draw.dt', function() {
+
+            if (voltarPaginaAnterior === 'S' && primeiraVez) {
+                var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
+
+                if (paginaAnterior !== null) {
+                    primeiraVez = false;
+                    table.page(parseInt(paginaAnterior)).draw(false);
+                }
+            } 
+            
+            var paginaAtual = table.page();
+            sessionStorage.setItem('paginaSelecionada', paginaAtual);
+
+            // Chama markFirstRecordSelected, que não deve causar recursão
             markFirstRecordSelected();
         });
 

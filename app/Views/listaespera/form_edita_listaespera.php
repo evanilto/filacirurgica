@@ -311,7 +311,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-save"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -337,6 +337,15 @@
             input.addEventListener('keydown', disableEnter);
         });
     };
+
+    function voltarERecarregar() {
+        const previousPage = sessionStorage.getItem('previousPage');
+        if (previousPage) {
+            window.location.href = previousPage; // Redireciona para a página anterior
+        } else {
+            window.history.back(); // Usa o histórico se não houver página armazenada
+        }
+    }
     /* $('#especialidade').on('select2:opening', function(e) {
         e.preventDefault();  // Impede a abertura do dropdown
     }); */

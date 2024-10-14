@@ -267,8 +267,6 @@ class MapaCirurgico extends ResourceController
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        $_SESSION['mapacirurgico'] = NULL;
-
         //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
         $data['dtinicio'] = date('d/m/Y');
         $data['dtfim'] = date('d/m/Y');
@@ -297,9 +295,10 @@ class MapaCirurgico extends ResourceController
 
         $data = $this->request->getVar();
 
-        if ($_SESSION['mapacirurgico']) {
-            //$data = $dataflash;
-            $data = $_SESSION['mapacirurgico'];
+        $dataflash = session()->getFlashdata('dataflash');
+
+        if ($dataflash) {
+            $data = $dataflash;
         }
 
         //die(var_dump($dataflash));
@@ -319,7 +318,7 @@ class MapaCirurgico extends ResourceController
             'nome' => 'permit_empty|min_length[3]',
         ];
 
-        if (!$_SESSION['mapacirurgico']) {
+        if (!$dataflash) {
             $rules = $rules + [
                 'dtinicio' => 'required|valid_date[d/m/Y]',
                 'dtfim' => 'required|valid_date[d/m/Y]',
@@ -362,18 +361,10 @@ class MapaCirurgico extends ResourceController
 
             //die(var_dump($result));
 
-            //session()->set('mapa_cirurgico_resultados', $result);
+            session()->set('mapa_cirurgico_resultados', $result);
 
             /* $result = session()->get('mapa_cirurgico_resultados');
             die(var_dump($result)); */
-
-            if ($_SESSION['mapacirurgico']) {
-                $data['pagina_anterior'] = 'S';
-            } else {
-                $data['pagina_anterior'] = 'N';
-            }
-
-            $_SESSION['mapacirurgico'] = $data;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/list_mapacirurgico',
                                                'mapacirurgico' => $result,

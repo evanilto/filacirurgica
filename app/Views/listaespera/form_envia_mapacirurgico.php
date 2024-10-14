@@ -467,7 +467,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-paper-plane"></i> Enviar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>

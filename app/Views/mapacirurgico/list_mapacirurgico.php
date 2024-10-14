@@ -370,6 +370,10 @@
 
 
   $(document).ready(function() {
+
+    var primeiraVez = true;
+    var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
+    
     $('#table').DataTable({
         "order": [[0, 'asc']],
         "lengthChange": true,
@@ -506,7 +510,22 @@
     markFirstRecordSelected();
 
     table.on('draw.dt', function() {
+
+        if (voltarPaginaAnterior === 'S' && primeiraVez) {
+            var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
+
+            if (paginaAnterior !== null) {
+                primeiraVez = false;
+                table.page(parseInt(paginaAnterior)).draw(false);
+            }
+        } 
+
+        var paginaAtual = table.page();
+        sessionStorage.setItem('paginaSelecionada', paginaAtual);
+
+        // Chama markFirstRecordSelected, que não deve causar recursão
         markFirstRecordSelected();
+
     });
 
 });

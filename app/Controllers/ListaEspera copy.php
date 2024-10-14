@@ -227,13 +227,6 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //$dataflash = session()->getFlashdata('dataflash');
-
-        if ($_SESSION['listaespera']) {
-            //$data = $dataflash;
-            $data = $_SESSION['listaespera'];
-        }
-
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
             $paciente = $this->localaippacientesmodel->find($data['prontuario']);
@@ -246,15 +239,10 @@ class ListaEspera extends ResourceController
 
         $rules = [
             'nome' => 'permit_empty|min_length[3]',
-         ];
-
-        if (!$_SESSION['listaespera']) {
-            $rules = $rules + [
-                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
-                'dtinicio' => 'required|valid_date[d/m/Y]',
-                'dtfim' => 'required|valid_date[d/m/Y]',
-            ];
-        }
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'dtinicio' => 'required|valid_date[d/m/Y]',
+            'dtfim' => 'required|valid_date[d/m/Y]',
+        ];
 
         if ($this->validate($rules)) {
 
@@ -294,13 +282,9 @@ class ListaEspera extends ResourceController
 
             //die(var_dump($result));
 
-            if ($_SESSION['listaespera']) {
-                $data['pagina_anterior'] = 'S';
-            } else {
-                $data['pagina_anterior'] = 'N';
-            }
+            $data['pagina_anterior'] = 'N';
 
-            $_SESSION['listaespera'] = $data;
+            session()->set('lista_espera_resultados', $result);
 
             return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
                                                'listaespera' => $result,
@@ -318,6 +302,46 @@ class ListaEspera extends ResourceController
             return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
                                                'validation' => $this->validator,
                                                 'data' => $data]);
+        }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function mostrarListaEsperaSalva()
+    {
+        \Config\Services::session();
+
+        $res = session()->get('lista_espera_resultados');
+
+        foreach ($res as &$row) {
+            try {
+            if (isset($row->created_at)) {
+                $row->created_at = \DateTime::createFromFormat('d/m/Y H:i', $row->created_at)->format('Y-m-d H:i:s');
+            }
+          /*   if (isset($row->data_risco)) {
+                $row->data_risco = \DateTime::createFromFormat('d/m/Y', $row->data_risco)->format('Y-m-d');
+            } */
+        } catch (\Exception $e) {
+            die(var_dump('ok'));
+        }
+
+        //die(var_dump($res));
+
+        if ($res) {
+
+            //die(var_dump($result));
+
+            $data['pagina_anterior'] = 'S';
+
+            return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+            'listaespera' => $res,
+            'data' => $data]);
+
+        } else {
+            session()->setFlashdata('warning_message', 'Nenhum mapa cirúrgico encontrado na sessão.');
+            return redirect()->to('mapacirurgico/mostrarmapa');
         }
     }
     /**
