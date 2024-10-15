@@ -916,7 +916,7 @@ class MapaCirurgico extends ResourceController
         $data['ordemfila'] = $array['ordem_fila'];
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
-        $data['status_fila'] = ($mapa->status_fila != "Suspensa" && $mapa->status_fila != "Cancelada" && $mapa->status_fila != "Realizada") ? 'enabled' : 'disabled';
+        $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico) ? 'disabled' : 'enabled';
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
         $data['prontuario'] = $mapa->prontuario;
@@ -1154,10 +1154,13 @@ class MapaCirurgico extends ResourceController
                 session()->setFlashdata('exception', $msg);
             }
 
-            $this->carregaMapa();
+            //$this->carregaMapa();
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
-                                                'data' => $this->data]);
+            //return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                //'data' => $this->data]);
+
+            return redirect()->to(base_url('mapacirurgico/exibir'));
+
 
         } else {
 
@@ -1256,9 +1259,8 @@ class MapaCirurgico extends ResourceController
         //$listapac1 = $this->listaesperamodel->find($mapapac1['idlistaespera']);
 
         $data = [];
-        $data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $pacatrocar['idfila'])
-                                                               //->where('idlistaespera', 2113)
-                                                               ->where('(campos_mapa).status', 'Aguardando')
+        $data['candidatos'] = $this->vwstatusfilacirurgicamodel->where('idfila', $pacatrocar['idfila'])
+                                                               ->whereIn('(campos_mapa).status', ['Aguardando', 'Suspensa'])
                                                                ->where('idespecialidade', $pacatrocar['idespecialidade'])->findAll();
         //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
 
@@ -1367,7 +1369,8 @@ class MapaCirurgico extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['idlistapac2'])->where('deleted_at', null)->findAll()) {
+            //if ($this->mapacirurgicomodel->where('idlistaespera', $this->data['idlistapac2'])->where('deleted_at', null)->findAll()) {
+            if ($this->vwstatusfilacirurgicamodel->where('idlistaespera', $this->data['idlistapac2'])->where('(campos_mapa).status', 'Programada')->findAll()) {
 
                 session()->setFlashdata('failed', 'Esse paciente já foi enviada ao Mapa Cirúrgico');
 
@@ -1380,8 +1383,8 @@ class MapaCirurgico extends ResourceController
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                     'data' => $this->data,
-                                                    'pacatrocar' => $_SESSION['pacatrocar']]);            }
-
+                                                    'pacatrocar' => $_SESSION['pacatrocar']]);            
+            }
 
             $db->transStart();
 
@@ -1543,9 +1546,9 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
 
-                //return $this->response->setJSON(['success' => true, 'message' => 'Ok!']);
-                $this->response->setHeader('Content-Type', 'text/plain');
-                return $this->response->setBody('ok');
+                //return $this->response->setJSON(['success' => true, 'message' => 'Paciente trocado com sucesso!']);
+                /* $this->response->setHeader('Content-Type', 'text/plain');
+                return $this->response->setBody('ok'); */
                 
             } catch (\Throwable $e) {
                 $db->transRollback(); 
@@ -1554,16 +1557,19 @@ class MapaCirurgico extends ResourceController
                 session()->setFlashdata('exception', $msg);
             }
 
-            $this->carregaMapa();
+            //$this->carregaMapa();
 
             //$this->data['candidatos'] = $this->vwstatusfilacirurgicamodel->Where('idfila', $this->data['fila'])
                                                                  //->where('idespecialidade', $this->data['especialidade'])->findAll();
 
-            $this->data['candidatos'] = $_SESSION['candidatos'];                                   
+            //$this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+            /* return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                 'data' => $this->data,
-                                                'pacatrocar' => $_SESSION['pacatrocar']]);
+                                                'pacatrocar' => $_SESSION['pacatrocar']]); */
+
+            return redirect()->to(base_url('mapacirurgico/exibir'));
+
         } else {
             session()->setFlashdata('error', $this->validator);
 
@@ -2109,12 +2115,14 @@ class MapaCirurgico extends ResourceController
                 session()->setFlashdata('exception', $msg);
             }
 
-            $data['especialidades'] = $this->selectespecialidadeaghu;
+            /* $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['filas'] = $this->selectfila;
             $data['procedimentos'] = $this->selectitensprocedhospit;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
-                                                'data' => $data]);
+                                                'data' => $data]); */
+
+            return redirect()->to(base_url('mapacirurgico/exibir'));
 
         } else {
 

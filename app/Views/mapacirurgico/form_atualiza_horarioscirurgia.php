@@ -197,7 +197,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                 <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/mostrarmapa') ?>">
+                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>

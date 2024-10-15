@@ -58,57 +58,80 @@
                 $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
                 $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
 
-            switch ($itemmapa->status_fila) {
-                case 'Programada':
-                    $color =$corProgramada;
-                    $background_color = $color;
-                    $title = 'Cirurgia Programada';
-                    break;
-                case 'NoCentroCirurgico':
-                    $color =$corNoCentroCirúrgico;
-                    $background_color = $color;
-                    $title = 'Paciente no Centro Cirúrgico';
-                    break;
-                case 'EmCirurgia':
-                    $color =$corEmCirurgia;
-                    $background_color = $color;
-                    $title = 'Paciente em Cirurgia';
-                    break;
-                case 'SaídaDaSala':
-                    $color =$corSaídaDaSala;
-                    $background_color = $color;
-                    $title = 'Paciente saiu da Sala';
-                    break;
-                case 'SaídaCentroCirúrgico':
-                    $color = $corSaídaCentroCirúrgico;
-                    $background_color = $color;
-                    $title = 'Cirurgia Realizada';
-                    break;
-                case 'TrocaPaciente':
-                    $color =$corTrocaPaciente;
-                    $background_color = $color;
-                    $title = 'Troca de Paciente';
-                    break;
-                case 'Suspensa':
+                if ($itemmapa->dthrsuspensao) {
                     $color =$corCirurgiaSuspensa;
                     $background_color = $color;
+                    $status_cirurgia = 'Suspensa';
                     $title = 'Cirurgia Suspensa';
-                    break;
-                case 'Cancelada':
-                    $color = $corCirurgiaCancelada;
+
+                } elseif ($itemmapa->dthrtroca) {
+                    $color =$corTrocaPaciente;
                     $background_color = $color;
-                    $title = 'Cirurgia Cancelada';
-                    break;
-                case 'Realizada':
+                    $status_cirurgia = 'TrocaPaciente';
+                    $title = 'Troca de Paciente';
+
+                } elseif ($itemmapa->dthrsaidacentrocirurgico) {
                     $color = $corSaídaCentroCirúrgico;
                     $background_color = $color;
+                    $status_cirurgia = 'Realizada';
                     $title = 'Cirurgia Realizada';
-                    break;
-                default:
-                    $color = 'gray';
-                    $background_color = $color;
-                    $title = 'Undefined';
-            }
+                } else {
+
+                    switch ($itemmapa->status_fila) {
+                        case 'Programada':
+                            $color =$corProgramada;
+                            $background_color = $color;
+                            $title = 'Cirurgia Programada';
+                            break;
+                        case 'NoCentroCirurgico':
+                            $color =$corNoCentroCirúrgico;
+                            $background_color = $color;
+                            $title = 'Paciente no Centro Cirúrgico';
+                            break;
+                        case 'EmCirurgia':
+                            $color =$corEmCirurgia;
+                            $background_color = $color;
+                            $title = 'Paciente em Cirurgia';
+                            break;
+                        case 'SaídaDaSala':
+                            $color =$corSaídaDaSala;
+                            $background_color = $color;
+                            $title = 'Paciente saiu da Sala';
+                            break;
+                        case 'SaídaCentroCirúrgico':
+                            $color = $corSaídaCentroCirúrgico;
+                            $background_color = $color;
+                            $title = 'Cirurgia Realizada';
+                            break;
+                        /* case 'TrocaPaciente':
+                            $color =$corTrocaPaciente;
+                            $background_color = $color;
+                            $title = 'Troca de Paciente';
+                            break;
+                        case 'Suspensa':
+                            $color =$corCirurgiaSuspensa;
+                            $background_color = $color;
+                            $title = 'Cirurgia Suspensa';
+                            break; */
+                        case 'Cancelada':
+                            $color = $corCirurgiaCancelada;
+                            $background_color = $color;
+                            $title = 'Cirurgia Cancelada';
+                            break;
+                       /*  case 'Realizada':
+                            $color = $corSaídaCentroCirúrgico;
+                            $background_color = $color;
+                            $title = 'Cirurgia Realizada';
+                            break; */
+                        default:
+                            $color = 'gray';
+                            $background_color = $color;
+                            $title = 'Undefined';
+                    }
+
+                    $status_cirurgia = $itemmapa->status_fila;
+
+                }
             
         ?>
             <tr
@@ -135,7 +158,7 @@
                 <td><?php echo $itemmapa->nome_paciente ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila == "Programada") {
+                        if ($status_cirurgia == "Programada") {
                             echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corNoCentroCirúrgico.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
@@ -144,7 +167,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila == "NoCentroCirurgico") {
+                        if ($status_cirurgia == "NoCentroCirurgico") {
                             echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corEmCirurgia.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
@@ -153,7 +176,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila == "EmCirurgia") {
+                        if ($status_cirurgia == "EmCirurgia") {
                             echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaDaSala.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
@@ -162,7 +185,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila == "SaídaDaSala") {
+                        if ($status_cirurgia == "SaídaDaSala") {
                             echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaCentroCirúrgico.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
@@ -171,7 +194,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                        if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada") {
                             echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" style="color: gray;"></i></span>';
@@ -180,7 +203,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                        if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada") {
                             $params = array(
                                 'idlista' => $itemmapa->idlista,
                                 'idmapa' => $itemmapa->id,
@@ -201,7 +224,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") {
+                        if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada") {
                             echo anchor('mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id, '<i class="fa-regular fa-clock"></i>', array('title' => 'Atualizar Horários', 'onclick' => 'mostrarAguarde(event, this.href)'));
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" style="color: gray;"></i></span>';
@@ -211,8 +234,8 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id,
-                        ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") ? '<i class="fas fa-pencil-alt"></i>' :  '<i class="fa-solid fa-magnifying-glass"></i>',
-                        array('title' => ($itemmapa->status_fila != "Suspensa" && $itemmapa->status_fila != "Cancelada" && $itemmapa->status_fila != "Realizada") ? 'Atualizar Cirurgia' : 'Consultar Cirurgia',
+                        ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada") ? '<i class="fas fa-pencil-alt"></i>' :  '<i class="fa-solid fa-magnifying-glass"></i>',
+                        array('title' => ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada") ? 'Atualizar Cirurgia' : 'Consultar Cirurgia',
                         'onclick' => 'mostrarAguarde(event, this.href)'));
                     ?>
                 </td>        
@@ -348,8 +371,9 @@
 
                 if (response.success) {
                     console.log('Evento registrado com sucesso.');
-                    window.history.back();
-                    window.location.reload();
+                    //window.history.back();
+                    //window.location.reload();
+                    window.location.href = "<?= base_url('mapacirurgico/exibir') ?>";
                 } else {
                     console.error('Erro ao redirecionar.');
                 }

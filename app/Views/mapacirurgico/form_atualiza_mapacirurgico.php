@@ -6,7 +6,12 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
+                <?php if ($data['status_fila'] == 'enabled') { ?>
                     <b><?= 'Atualizar Cirurgia' ?></b>
+                <?php } else { ?>
+                    <b><?= 'Consultar Cirurgia' ?></b>
+                <?php } ?>
+
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
@@ -464,9 +469,11 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
-                                <i class="fa-solid fa-floppy-disk"></i> Salvar
-                                </button>
+                                <?php if ($data['status_fila'] == 'enabled') { ?>
+                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar
+                                    </button>
+                                <?php } ?>
                                 <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>

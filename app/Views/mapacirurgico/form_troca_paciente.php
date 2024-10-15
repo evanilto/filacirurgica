@@ -392,13 +392,13 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <!-- <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
-                                    <i class="fa-solid fa-people-arrows"></i> Trocar
-                                </button> -->
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="button" onclick="trocarpaciente()">
+                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-people-arrows"></i> Trocar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/mostrarmapa') ?>">
+                                <!-- <button class="btn btn-primary mt-3" id="submit" name="submit" type="button" onclick="trocarpaciente()">
+                                    <i class="fa-solid fa-people-arrows"></i> Trocar
+                                </button> -->
+                                <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>
@@ -478,7 +478,6 @@
         }); */
 
         //console.log(dados); // Para verificar os dados no console (opcional)
-
         fetch('<?=base_url('mapacirurgico/trocar')?>', {
             method: 'POST',
             body: formData // ou pode usar JSON.stringify(dados) se necessário
@@ -493,11 +492,14 @@
         })
         .then(data => {
             console.log('Success:', data); 
-            setTimeout(() => {
-                window.history.back(3);
-              //  window.location.href = '<?=base_url('mapacirurgico/resultado')?>'; // Mude para a URL que deseja acessar
-                window.location.reload(); // Recarregar a página após 1 segundo
-    }, 1000);
+            alert('okk');
+
+           /*  setTimeout(() => {
+                //window.history.back(3);
+              //  window.location.href = '<--?=base_url('mapacirurgico/resultado')?>'; // Mude para a URL que deseja acessar
+                //window.location.reload(); // Recarregar a página após 1 segundo
+            }, 1000); */
+            window.location.href = '<?=base_url('mapacirurgico/exibir')?>'; 
         })
         .catch((error) => {
             console.error('Error:', error); 
