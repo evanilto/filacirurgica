@@ -5,8 +5,8 @@
         </tr>
         <tr>
             <th scope="col" data-field="" ></th>
-            <th scope="col" data-field="prontuarioaghu" >idLista</th>
-            <th scope="col" data-field="prontuarioaghu" >idMapa</th>
+            <th scope="col" data-field="acao" colspan="1" style="text-align: center;">Hist.</th>
+            <th scope="col" data-field="prontuarioaghu" >Situação</th>
             <th scope="col" class="col-0" data-field="id" title="Ordem de entrada na Lista Cirúrgica">Ordem Lista</th>
             <th scope="col" class="col-0" data-field="id" title="Ordem de entrada na Lista Cirúrgica">Ordem Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
@@ -15,8 +15,8 @@
             <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
             <th scope="col" data-field="prontuarioaghu" >Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr Cirurgia</th>
-            <th scope="col" data-field="prontuarioaghu" >Situação</th>
-            <th scope="col" data-field="acao" colspan="1" style="text-align: center;">Hist.</th>
+            <th scope="col" data-field="prontuarioaghu" >idLista</th>
+            <th scope="col" data-field="prontuarioaghu" >idMapa</th>
         </tr>
     </thead>
     <tbody>
@@ -27,17 +27,6 @@
         ?>
             <tr>
                 <td><?php echo "" ?></td>
-                <td><?php echo $itemlista->idlistaespera ?></td>
-                <td><?php echo $itemlista->idmapacirurgico ?? '-' ?></td>
-                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? '-' ?></td>
-                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? '-' ?></td>
-                <td><?php echo $itemlista->dthrinclusao ?></td>
-                <td><?php echo $itemlista->prontuario ?></td>
-                <td><?php echo $itemlista->nome ?></td>
-                <td><?php echo $itemlista->especialidade ?></td>
-                <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->datacirurgia ?></td>
-                <td><?php echo $itemlista->status ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                     $queryString = http_build_query(['dados' => $itemlista]);
@@ -48,7 +37,19 @@
                     ]);
                      ?>
                 </td>
-                <?=  session()->set('parametros_consulta_lista', $data); ?>
+                <td><?php echo $itemlista->status ?></td>
+                <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? '-' ?></td>
+                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? '-' ?></td>
+                <td><?php echo $itemlista->dthrinclusao ?></td>
+                <td><?php echo $itemlista->prontuario ?></td>
+                <td><?php echo $itemlista->nome ?></td>
+                <td><?php echo $itemlista->especialidade ?></td>
+                <td><?php echo $itemlista->fila ?></td>
+                <td><?php echo $itemlista->datacirurgia ?></td>
+                <td><?php echo $itemlista->idlistaespera ?></td>
+                <td><?php echo $itemlista->idmapacirurgico ?? '-' ?></td>
+                
+                <!--?=  session()->set('parametros_consulta_lista', $data); ?-->
             </tr>
         <?php endforeach; ?>
     </tbody>
@@ -78,6 +79,10 @@
     }
     
   $(document).ready(function() {
+
+        var primeiraVez = true;
+        var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
@@ -159,6 +164,18 @@
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
         table.on('draw.dt', function() {
+            if (voltarPaginaAnterior === 'S' && primeiraVez) {
+                var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
+
+                if (paginaAnterior !== null) {
+                    primeiraVez = false;
+                    table.page(parseInt(paginaAnterior)).draw(false);
+                }
+            } 
+
+            var paginaAtual = table.page();
+            sessionStorage.setItem('paginaSelecionada', paginaAtual);
+            
             markFirstRecordSelected();
         });
 

@@ -417,6 +417,8 @@ class ListaEspera extends ResourceController
 
         $builder = $db->table('vw_statusfilacirurgica as vs');
         $builder->join('vw_ordem_paciente as vo', 'vo.id = vs.idlistaespera', 'left');
+        $builder->join('local_agh_especialidades as esp', 'esp.seq = vs.idespecialidade', 'left');
+        $builder->join('tipos_procedimentos as fila', 'fila.id = vs.idfila', 'left');
         //$builder->join('vw_mapacirurgico as vm', 'vs.idlistaespera = vm.idlista', 'left');
 
         $builder->select('(vs.campos_mapa).status,
@@ -426,8 +428,8 @@ class ListaEspera extends ResourceController
                           vs.idlistaespera,
                           vs.prontuario,
                           vs.nome,
-                          vs.especialidade,
-                          vs.fila,
+                          esp.nome_especialidade as especialidade,
+                          fila.nmtipoprocedimento as fila,
                           vo.ordem_lista,
                           vo.ordem_fila');
 
@@ -1226,6 +1228,8 @@ class ListaEspera extends ResourceController
     {
         HUAP_Functions::limpa_msgs_flash();
 
+        session()->remove('listsituacaocirurgica');
+
         $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
 
         $data['filas'] = $this->selectfila;
@@ -1249,12 +1253,12 @@ class ListaEspera extends ResourceController
 
         $prontuario = null;
 
-        $data = $this->request->getVar();
+        $listsituacaocirurgica = session()->get('listsituacaocirurgica');
 
-        $dataflash = session()->getFlashdata('dataflash');
-
-        if ($dataflash) {
-            $data = $dataflash;
+        if ($listsituacaocirurgica) {
+            $data = $listsituacaocirurgica;
+        } else {
+            $data = $this->request->getVar();
         }
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
@@ -1271,7 +1275,7 @@ class ListaEspera extends ResourceController
             'nome' => 'permit_empty|min_length[3]',
          ];
 
-        if (!$dataflash) {
+        if (!$listsituacaocirurgica) {
             $rules = $rules + [
                 'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
             ];
@@ -1297,6 +1301,14 @@ class ListaEspera extends ResourceController
             }
 
             //die(var_dump($result));
+
+            if ($listsituacaocirurgica) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $listsituacaocirurgica = session()->set('listsituacaocirurgica', $data);
 
             return view('layouts/sub_content', ['view' => 'listaespera/list_listasituacaocirurgica',
                                                'listaespera' => $result,

@@ -295,9 +295,14 @@ class MapaCirurgico extends ResourceController
 
         $prontuario = null;
 
-        $data = $this->request->getVar();
+        $dataflash = session()->getFlashdata('dataflash');
+        if ($dataflash) {
+            $data = $dataflash;
+        } else {
+            $data = $this->request->getVar();
+        }
 
-        if ($_SESSION['mapacirurgico']) {
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
             //$data = $dataflash;
             $data = $_SESSION['mapacirurgico'];
         }
@@ -319,11 +324,13 @@ class MapaCirurgico extends ResourceController
             'nome' => 'permit_empty|min_length[3]',
         ];
 
-        if (!$_SESSION['mapacirurgico']) {
-            $rules = $rules + [
-                'dtinicio' => 'required|valid_date[d/m/Y]',
-                'dtfim' => 'required|valid_date[d/m/Y]',
-            ];
+        if (!$dataflash) {
+            if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
+                $rules = $rules + [
+                    'dtinicio' => 'required|valid_date[d/m/Y]',
+                    'dtfim' => 'required|valid_date[d/m/Y]',
+                ];
+            }
         }
 
         if ($this->validate($rules)) {
@@ -367,7 +374,7 @@ class MapaCirurgico extends ResourceController
             /* $result = session()->get('mapa_cirurgico_resultados');
             die(var_dump($result)); */
 
-            if ($_SESSION['mapacirurgico']) {
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
                 $data['pagina_anterior'] = 'S';
             } else {
                 $data['pagina_anterior'] = 'N';
@@ -513,6 +520,10 @@ class MapaCirurgico extends ResourceController
         $builder->where('idespecialidade', $data['especialidade'] ?? $data['especialidade_hidden']);
         $builder->where('idfila', $data['fila'] ?? $data['fila_hidden']);
         $builder->where('DATE(dthrcirurgia)', $data['dtcirurgia']);
+        $builder->where('dthrsuspensao', null);
+        $builder->where('dthrtroca', null);
+        $builder->where('dthrsaidacentrocirurgico', null);
+
         //$builder->where('nmlateralidade', $data['lateralidade']);
 
         //var_dump($builder->getCompiledSelect());die();
@@ -1596,6 +1607,10 @@ class MapaCirurgico extends ResourceController
 
         $pacatrocar = $this->request->getVar();
 
+        if (isset($_SESSION['mapacirurgico'])) {
+            unset($_SESSION['mapacirurgico']);
+        }
+
         //die(var_dump($data));
 
         //$mapapac1 = $this->mapacirurgicomodel->find($pac1['idmapa']);
@@ -1895,7 +1910,7 @@ class MapaCirurgico extends ResourceController
 
                     $this->carregaMapa();
 
-                    $dados = $this->request->getPost();
+                    //$dados = $this->request->getPost();
 
                     //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
 
@@ -2262,9 +2277,11 @@ class MapaCirurgico extends ResourceController
 
             $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
 
-            session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_listasituacaocirurgica',
-                                                'validation' => $this->validator]);
+            session()->setFlashdata('warning_message', 'Histórico de Atividades não localizado para este paciente!');
+            /* return view('layouts/sub_content', ['view' => 'listaespera/exibirsituacao',
+                                                'validation' => $this->validator]); */
+            return redirect()->to(base_url('listaespera/exibirsituacao'));
+
         
         }
 

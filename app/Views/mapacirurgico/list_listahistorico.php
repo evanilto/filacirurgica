@@ -24,7 +24,7 @@
     </tbody>
 </table>
 <div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/situacaocirurgica') ?>">
+    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibirsituacao') ?>">
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
 </div>
@@ -91,7 +91,7 @@
             /* $('#table tbody tr').removeClass('lineselected');
             $(this).addClass('lineselected'); */
 
-            var $selectedRow = $('tr.lineselected'); 
+            //var $selectedRow = $('tr.lineselected'); 
             
             var ordemFila = $firstRecordRow.data('ordem'); // 'ordem-fila' se torna 'ordem'
             var fila = $firstRecordRow.data('fila');
