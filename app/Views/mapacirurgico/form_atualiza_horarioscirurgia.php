@@ -204,6 +204,7 @@
                         </div>
 
                         <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
+                        <input type="hidden" name="idlista" value="<?= $data['idlista'] ?>" />
                         <input type="hidden" name="dthrcirurgia" id='dthrcirurgia' value="<?= $data['dthrcirurgia'] ?>" />
                         <input type="hidden" name="ordemfila" id='ordemfila'  value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />

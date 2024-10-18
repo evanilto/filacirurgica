@@ -105,9 +105,8 @@ class Home extends ResourceController
         }  */
 
         unset($v['Senha']); 
-        //$_SESSION['Sessao'] = $usuario;
-        $_SESSION['Sessao'] = [];
-
+        $_SESSION['Sessao']['login'] = $usuario;
+        //$_SESSION['Sessao'] = [];
 
         //var_dump($_SESSION['Sessao']);die();
 

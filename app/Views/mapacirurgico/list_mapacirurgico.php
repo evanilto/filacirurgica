@@ -15,7 +15,7 @@
         <tr>
             <th scope="row" colspan="3" class="bg-light text-start"  style="border-right: none;"><h5><strong>Mapa Cirúrgico</strong></h5>
             </th>
-            <th scope="row" colspan="15" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
+            <th scope="row" colspan="16" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
                 <table class="legend-table">
                     <tr>
                         <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -48,6 +48,7 @@
             <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
                     <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
             </th>
+            <th scope="col" data-field="prontuario" >Prontuario</th>
             <th scope="col" data-field="nome" >Nome do Paciente</th>
             <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
         </tr>
@@ -155,6 +156,7 @@
                 <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
                 <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                <td><?php echo $itemmapa->prontuario ?></td>
                 <td><?php echo $itemmapa->nome_paciente ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php

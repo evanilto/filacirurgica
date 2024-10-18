@@ -1142,6 +1142,25 @@ class MapaCirurgico extends ResourceController
                     }
                 }
 
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $this->data['idlistaespera'],
+                    'idevento' => 8,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+    
+                $this->historicomodel->insert($array);
+    
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
                 $db->transComplete();
 
                 if ($db->transStatus() === false) {
@@ -1443,6 +1462,25 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $this->data['idlistapac2'],
+                    'idevento' => 10,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
                 if (isset($this->data['proced_adic'])) {
 
                     foreach ($this->data['proced_adic'] as $key => $procedimento) {
@@ -1504,7 +1542,7 @@ class MapaCirurgico extends ResourceController
                 }
 
                 $array = [];
-                $array['dthrtroca'] = date('Y-m-d H:I:s');
+                $array['dthrtroca'] = date('Y-m-d H:i:s');
                 $array['idlistatroca'] = $this->data['idlistapac2'];
 
                 $this->mapacirurgicomodel->update($this->data['idmapapacatrocar'], $array);
@@ -1550,6 +1588,25 @@ class MapaCirurgico extends ResourceController
                         );
                     }
                 //}
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $this->data['idlistapacatrocar'],
+                    'idevento' => 3,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
 
                 $db->transComplete();
 
@@ -1705,7 +1762,6 @@ class MapaCirurgico extends ResourceController
         $rules = [
             'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
             'listapaciente' => 'required',
-            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y]',
             'posoperatorio' => 'required',
             'profissional' => 'required',
@@ -1762,7 +1818,39 @@ class MapaCirurgico extends ResourceController
 
                             if ($this->data['listapaciente'] != 0) {
                                 $idlista = $this->data['listapaciente'];
+
                                 $this->listaesperamodel->update($this->data['listapaciente'], $lista);
+
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
+
+                                $array = [
+                                    'dthrevento' => date('Y-m-d H:i:s'),
+                                    'idlistaespera' => $this->data['listapaciente'],
+                                    'idevento' => 6,
+                                    'idlogin' => session()->get('Sessao')['login']
+                                ];
+                    
+                                $this->historicomodel->insert($array);
+                    
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+                    
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
+                    
+
                             } else {
                                 $lista = $lista + [
                                     'idespecialidade' => $this->data['especialidade'],
@@ -1773,17 +1861,37 @@ class MapaCirurgico extends ResourceController
                                     'indsituacao' => 'A',
                                     'indurgencia' => 'S'
                                     ];
+
                                 $idlista = $this->listaesperamodel->insert($lista);
-                            }
 
-                            if ($db->transStatus() === false) {
-                                $error = $db->error();
-                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao incluir paciente na Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
 
-                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                    sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
-                                );
+                                $array = [
+                                    'dthrevento' => date('Y-m-d H:i:s'),
+                                    'idlistaespera' => $idlista,
+                                    'idevento' => 5,
+                                    'idlogin' => session()->get('Sessao')['login']
+                                ];
+                    
+                                $this->historicomodel->insert($array);
+                    
+                                if ($db->transStatus() === false) {
+                                    $error = $db->error();
+                                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+                    
+                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                    );
+                                }
                             }
 
                             $mapa = [
@@ -1804,6 +1912,25 @@ class MapaCirurgico extends ResourceController
 
                                 throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                                     sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $array = [
+                                'dthrevento' => date('Y-m-d H:i:s'),
+                                'idlistaespera' => $idlista,
+                                'idevento' => 1,
+                                'idlogin' => session()->get('Sessao')['login']
+                            ];
+                
+                            $this->historicomodel->insert($array);
+                
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
                                 );
                             }
 
@@ -1960,6 +2087,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['idmapa'] = $mapa->id;
+        $data['idlista'] = $mapa->idlista;
         $data['ordemfila'] = $mapa->ordem_fila;
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
@@ -2107,6 +2235,25 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $data['idlista'],
+                    'idevento' => (is_null($campos['hrsaidacentrocirurgico']) ? 8 : 4),
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
                 $db->transComplete();
 
                 if ($db->transStatus() === false) {
@@ -2193,9 +2340,56 @@ class MapaCirurgico extends ResourceController
             //$this->mapacirurgicomodel->update($idMapa, $evento);
             $this->mapacirurgicomodel->update($arrayid['idMapa'], $evento);
 
+            if ($db->transStatus() === false) {
+                $db->transRollback(); 
+                $error = $db->error();
+                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
+            }
+
             if (isset($evento['dthrsuspensao']) /*|| $evento['dthrcancelamento']*/) {
                 //$this->listaesperamodel->withDeleted()->update($arrayid['idLista'], ['deleted_at' => '']);
                 $this->listaesperamodel->withDeleted()->where('id', $arrayid['idLista'])->set('deleted_at', NULL)->update();
+            }
+
+            if ($db->transStatus() === false) {
+                $db->transRollback(); 
+                $error = $db->error();
+                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
+            }
+
+            if (isset($evento['dthrsaidacentrocirurgico'])) {
+                $hist_evento = 4;
+            } else {
+                if (isset($evento['dthrsuspensao'])) {
+                    $hist_evento = 2;
+                } else {
+                    $hist_evento = 8; // atualização genérica no mapa
+                }
+            }
+
+            $array = [
+                'dthrevento' => date('Y-m-d H:i:s'),
+                'idlistaespera' => $arrayid['idLista'],
+                'idevento' => $hist_evento,
+                'idlogin' => session()->get('Sessao')['login']
+            ];
+
+            $this->historicomodel->insert($array);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                );
             }
 
             $db->transComplete();
@@ -2206,7 +2400,7 @@ class MapaCirurgico extends ResourceController
                 $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
                 $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
-                throw new DatabaseException(sprintf('Erro ao atualizar Lista de Espera! [%d] %s', $errorCode, $errorMessage));
+                throw new DatabaseException(sprintf('Erro ao atualizar Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage));
             }
 
             session()->setFlashdata('success', 'Cirurgia atualizada com sucesso!');

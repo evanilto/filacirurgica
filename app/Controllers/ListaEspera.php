@@ -15,6 +15,7 @@ use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
+use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
 use App\Models\LocalFatItensProcedHospitalarModel;
 use App\Models\LocalAghCidsModel;
@@ -49,9 +50,9 @@ class ListaEspera extends ResourceController
     private $localaghespecialidadesmodel;
     private $localprofespecialidadesmodel;
     private $localaippacientesmodel;
-
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
+    private $historicomodel;
     private $usuariocontroller;
     private $mapacirurgicocontroller;
     private $aghucontroller;
@@ -88,6 +89,7 @@ class ListaEspera extends ResourceController
         $this->localaghespecialidadesmodel = new LocalAghEspecialidadesModel();
         $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
+        $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
         $this->mapacirurgicocontroller = new MapaCirurgico();
         //$this->aghucontroller = new Aghu();
@@ -580,6 +582,35 @@ class ListaEspera extends ResourceController
                         
                         $idlista = $this->listaesperamodel->insert($paciente);
 
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                        $array = [
+                            'dthrevento' => date('Y-m-d H:i:s'),
+                            'idlistaespera' => $idlista,
+                            'idevento' => 5,
+                            'idlogin' => session()->get('Sessao')['login']
+                        ];
+
+                        $this->historicomodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
                         $db->transComplete();
 
                         if ($db->transStatus() === false) {
@@ -614,8 +645,8 @@ class ListaEspera extends ResourceController
                                                             'data' => $data_le]); */
 
                     } catch (\Throwable $e) {
-                        $db->transRollback(); // Reverte a transação em caso de erro
-                        $msg = sprintf('Erro ao incluir um paciente da Lista! - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                        $db->transRollback(); 
+                        $msg = sprintf('Erro ao incluir um paciente da Lista! - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
                         log_message('error', 'Exception: ' . $msg);
                         session()->setFlashdata('exception', $msg);
                     }
@@ -714,6 +745,10 @@ class ListaEspera extends ResourceController
 
             try {
 
+                $db = \Config\Database::connect('default');
+
+                $db->transStart();
+
                 $lista = [
                         'idespecialidade' => $data['especialidade'],
                         'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
@@ -731,11 +766,48 @@ class ListaEspera extends ResourceController
 
                 $this->listaesperamodel->update($data['id'], $lista);
 
-                if ($this->vwlistaesperamodel->affectedRows() > 0) {
-                    session()->setFlashdata('success', 'Operação concluída com sucesso!');
-                } else {
-                    session()->setFlashdata('nochange', 'Sem dados para atualizar!');
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                    );
                 }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $data['id'],
+                    'idevento' => 6,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                session()->setFlashdata('success', 'Paciente alterado na Lista de Espera com sucesso!');
 
                 $this->validator->reset();
                 
@@ -799,13 +871,44 @@ class ListaEspera extends ResourceController
             $this->listaesperamodel->update($id, ['indsituacao' => 'I']);
 
             if ($db->transStatus() === false) {
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao inativar paciente da Lista!');
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao inativar paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                );
             }
 
             $this->listaesperamodel->delete(['id' => $id]);
     
-                if ($db->transStatus() === false) {
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao excluir um paciente da Lista!');
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao excluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $array = [
+                'dthrevento' => date('Y-m-d H:i:s'),
+                'idlistaespera' => $id,
+                'idevento' => 7,
+                'idlogin' => session()->get('Sessao')['login']
+            ];
+
+            $this->historicomodel->insert($array);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                );
             }
 
             $db->transComplete();
@@ -1055,6 +1158,25 @@ class ListaEspera extends ResourceController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $this->data['id'],
+                    'idevento' => 1,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
