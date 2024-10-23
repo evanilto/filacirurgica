@@ -32,6 +32,8 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('getlista', 'ListaEspera::getListaPaciente');
     $routes->get('situacaocirurgica', 'ListaEspera::consultarSituacaoCirurgica');
     $routes->add('exibirsituacao', 'ListaEspera::exibirSituacaoCirurgica');
+    $routes->get('consultarexcluidos', 'ListaEspera::consultarExcluidos');
+    $routes->add('exibirexcluidos', 'ListaEspera::exibirExcluidos');
 });
 
 $routes->group('mapacirurgico', function ($routes) {

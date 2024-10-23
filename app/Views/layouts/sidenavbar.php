@@ -18,6 +18,11 @@
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
+                        <li>
+                            <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Recuperar Excluído
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

@@ -468,6 +468,218 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
+    public function consultarExcluidos(string $idlistaespera = null)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['listaespera'] = NULL;
+
+        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtfim'] = date('d/m/Y');
+        /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+        $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
+        $data['especialidades'] = $this->aghucontroller->getEspecialidades($especialidades);
+        $data['origens'] = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll(); */
+
+        $data['filas'] = $this->selectfila;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirExcluidos()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $data = $this->request->getVar();
+
+        //$dataflash = session()->getFlashdata('dataflash');
+
+        if ($session()->get('excluidos')) {
+            //$data = $dataflash;
+            $data = $session()->get('excluidos');
+        }
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'nome' => 'permit_empty|min_length[3]',
+         ];
+
+        if (!$session()->get('excluidos')) {
+            $rules = $rules + [
+                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+                'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+            ];
+        }
+
+        if ($this->validate($rules)) {
+
+            //die(var_dump($dataflash));
+
+            if (!$session()->get('excluidos')) {
+                if ($data['dtinicio'] || $data['dtinicio']) {
+                    if (!$data['dtinicio']) {
+                        $this->validator->setError('dtinicio', 'Informe a data de início!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }}
+                    if (!$data['dtfim']) {
+                        $this->validator->setError('dtfim', 'Informe a data final!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }}
+                    if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                        $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                                                            'validation' => $this->validator,
+                                                            'data' => $data]);
+                    }
+                
+                    $horaAtual = date('H:i:s');
+                    $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
+                }
+            }
+
+            $this->validator->reset();
+
+            $result = $this->getExcluidos($data);
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente excluído localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            //die(var_dump($result));
+
+            if (session()->get('excluido')) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            session()->set('excluido', $data);
+
+            return view('layouts/sub_content', ['view' => 'listaespera/list_excluidos',
+                                               'listaespera' => $result,
+                                               'data' => $data]);
+
+        } else {
+            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
+                                               'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getExcluidos ($data) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('listaespera as le');
+        $builder->join('vw_ordem_paciente as vo', 'le.id = vo.id', 'inner');
+
+        $builder->select('le.*, vo.ordem_lista, vo.ordem_fila');
+
+        //die(var_dump($data));
+
+        if (!empty($data['idlista'])) {
+        
+            $builder->where('le.id', $data['idlista']);
+    
+        } else {
+
+            //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
+            if (!empty($data['dtinicio'])) {
+                $builder->where("le.created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+            }
+
+            if (!empty($data['prontuario'])) {
+                //$clausula_where .= " AND prontuario = $data[prontuario]";
+                $builder->where('le.prontuario', $data['prontuario']);
+            };
+            if (!empty($data['nome'])) {
+                //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
+                $builder->where('le.nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+            };
+            if (!empty($data['especialidade'])) {
+                //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
+                $builder->where('le.idespecialidade', $data['especialidade']);
+            };
+            if (!empty($data['fila'])) {
+                //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
+                $builder->where('le.idtipoprocedimento', $data['fila']);
+            };
+            if (!empty($data['risco'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->where('le.idriscocirurgico',  $data['risco']);
+            };
+            if (!empty($data['complexidades'])) {
+                //$clausula_where .= " AND  idrisco = $data[risco]";
+                $builder->whereIn('le.complexidade',  $data['complexidades']);
+            };
+        }
+
+        $builder->where('le.ind_situacao', 'I');
+        $builder->where('le.ind_urgencia', 'N');
+        $builder->where('le.dtdeleted', TRUE);
+
+        $builder->orderBy('le.id', 'ASC');
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+
+        //die(var_dump($builder->get()->getResult()));
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function incluirPacienteNaLista(string $idlistaespera = null)
     {
         HUAP_Functions::limpa_msgs_flash();
