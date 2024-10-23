@@ -20,7 +20,7 @@
                         </li>
                         <li>
                             <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Recuperar Excluído
+                                <i class="fa-solid fa-user-nurse"></i> Recuperar Paciente
                             </a>
                         </li>
                     </ul>

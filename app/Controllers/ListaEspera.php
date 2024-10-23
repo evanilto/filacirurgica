@@ -508,9 +508,9 @@ class ListaEspera extends ResourceController
 
         //$dataflash = session()->getFlashdata('dataflash');
 
-        if ($session()->get('excluidos')) {
+        if (session()->get('excluidos')) {
             //$data = $dataflash;
-            $data = $session()->get('excluidos');
+            $data = session()->get('excluidos');
         }
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
@@ -527,7 +527,7 @@ class ListaEspera extends ResourceController
             'nome' => 'permit_empty|min_length[3]',
          ];
 
-        if (!$session()->get('excluidos')) {
+        if (!session()->get('excluidos')) {
             $rules = $rules + [
                 'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
                 'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
@@ -539,20 +539,20 @@ class ListaEspera extends ResourceController
 
             //die(var_dump($dataflash));
 
-            if (!$session()->get('excluidos')) {
+            if (!session()->get('excluidos')) {
                 if ($data['dtinicio'] || $data['dtinicio']) {
                     if (!$data['dtinicio']) {
                         $this->validator->setError('dtinicio', 'Informe a data de início!');
                         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                         'validation' => $this->validator,
                         'data' => $data]);
-                    }}
+                    }
                     if (!$data['dtfim']) {
                         $this->validator->setError('dtfim', 'Informe a data final!');
                         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                         'validation' => $this->validator,
                         'data' => $data]);
-                    }}
+                    }
                     if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
                         $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
                         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
@@ -619,10 +619,10 @@ class ListaEspera extends ResourceController
 
         $db = \Config\Database::connect('default');
 
-        $builder = $db->table('listaespera as le');
-        $builder->join('vw_ordem_paciente as vo', 'le.id = vo.id', 'inner');
-
-        $builder->select('le.*, vo.ordem_lista, vo.ordem_fila');
+        $builder = $db->table('lista_espera as le');
+/*         $builder->join('vw_ordem_paciente as vo', 'le.id = vo.id', 'inner');
+ */
+        $builder->select('le.*');
 
         //die(var_dump($data));
 
@@ -663,9 +663,9 @@ class ListaEspera extends ResourceController
             };
         }
 
-        $builder->where('le.ind_situacao', 'I');
-        $builder->where('le.ind_urgencia', 'N');
-        $builder->where('le.dtdeleted', TRUE);
+        $builder->where('le.indsituacao', 'I');
+        $builder->where('le.indurgencia', 'N');
+        $builder->where('le.deleted_at IS NOT NULL', null, false);
 
         $builder->orderBy('le.id', 'ASC');
 

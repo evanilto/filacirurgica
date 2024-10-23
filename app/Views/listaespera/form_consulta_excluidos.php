@@ -9,7 +9,7 @@
                     <b><?= 'Consultar Lista de Espera' ?></b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="idForm" method="post" action="<?= base_url('listaespera/exibir') ?>">
+                    <form id="idForm" method="post" action="<?= base_url('listaespera/exibirexcluidos') ?>">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
