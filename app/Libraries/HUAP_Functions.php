@@ -1082,6 +1082,8 @@ class HUAP_Functions
 
         \Config\Services::session();
 
+       //die(var_dump(array_intersect($_SESSION['Sessao']['idPerfil'], ['0', '2'])));
+
         switch ($menu) {
             case 'prontuarios':
                 return in_array($_SESSION['Sessao']['idPerfil'], [1, 2, 3]);
@@ -1097,7 +1099,8 @@ class HUAP_Functions
                     return false;
                 };
             case 'cadastros':
-                return in_array($_SESSION['Sessao']['idPerfil'], [1]);
+                //return in_array($_SESSION['Sessao']['idPerfil'], [1]);
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1']));
 
             case 'resgatar':
                 return ($_SESSION['Sessao']['nmSetor'] == 'ARQUIVO MÉDICO');

@@ -473,6 +473,7 @@ class ListaEspera extends ResourceController
         HUAP_Functions::limpa_msgs_flash();
 
         $_SESSION['listaespera'] = NULL;
+        session()->remove('excluidos');
 
         $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
         $data['dtfim'] = date('d/m/Y');
@@ -583,13 +584,15 @@ class ListaEspera extends ResourceController
 
             //die(var_dump($result));
 
-            if (session()->get('excluido')) {
+            if (session()->get('excluidos')) {
                 $data['pagina_anterior'] = 'S';
             } else {
                 $data['pagina_anterior'] = 'N';
             }
 
-            session()->set('excluido', $data);
+            session()->set('excluidos', $data);
+
+            //die(var_dump($result));
 
             return view('layouts/sub_content', ['view' => 'listaespera/list_excluidos',
                                                'listaespera' => $result,
@@ -609,6 +612,82 @@ class ListaEspera extends ResourceController
         }
     }
     /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function recuperarExcluido(int $id)
+    {
+        $data = session()->get('excluidos');
+
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $db->transStart();
+
+        try {
+            $this->listaesperamodel->update($id, ['indsituacao' => 'A', 'deleted_at' => NULL]);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao ativar paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $array = [
+                'dthrevento' => date('Y-m-d H:i:s'),
+                'idlistaespera' => $id,
+                'idevento' => 9,
+                'idlogin' => session()->get('Sessao')['login']
+            ];
+
+            $this->historicomodel->insert($array);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $db->transComplete();
+    
+        } catch (\Throwable $e) {
+            $db->transRollback(); // Reverte a transação em caso de erro
+            $msg = 'Erro na recuperação do paciente da Lista';
+            $msg .= ' - '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            session()->setFlashdata('failed', $msg);
+        }
+
+        if ($db->transStatus() === false) {
+            $dados = $this->request->getPost();
+            $dataflash['idlista'] = $id;
+            session()->setFlashdata('dataflash', $dataflash);
+
+        } else {
+            session()->setFlashdata('success', 'Paciente recuperado com sucesso!');
+        }
+
+        return redirect()->to(base_url('listaespera/exibirexcluidos'));
+
+       /*  return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera', 'listaespera' => []]);
+
+        $result = $this->getListaEspera($data);
+
+        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
+                                            'listaespera' => $result,
+                                            'data' => $data]); */
+    }
+    /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -620,9 +699,18 @@ class ListaEspera extends ResourceController
         $db = \Config\Database::connect('default');
 
         $builder = $db->table('lista_espera as le');
-/*         $builder->join('vw_ordem_paciente as vo', 'le.id = vo.id', 'inner');
- */
-        $builder->select('le.*');
+        $builder->join('local_aip_pacientes pac', 'le.numprontuario = pac.prontuario', 'inner');
+        $builder->join('local_agh_especialidades esp', 'le.idespecialidade = esp.seq', 'inner');
+        $builder->join('tipos_procedimentos as fila', 'le.idtipoprocedimento = fila.id', 'inner');
+
+        $builder->select('
+                          le.id,
+                          le.created_at,
+                          pac.prontuario,
+                          pac.nome as nome_paciente,
+                          esp.nome_especialidade,
+                          fila.nmtipoprocedimento as fila
+                         ');
 
         //die(var_dump($data));
 
@@ -639,11 +727,11 @@ class ListaEspera extends ResourceController
 
             if (!empty($data['prontuario'])) {
                 //$clausula_where .= " AND prontuario = $data[prontuario]";
-                $builder->where('le.prontuario', $data['prontuario']);
+                $builder->where('le.numprontuario', $data['prontuario']);
             };
             if (!empty($data['nome'])) {
                 //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
-                $builder->where('le.nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+                $builder->where('pac.nome LIKE', '%'.strtoupper($data['nome']).'%');
             };
             if (!empty($data['especialidade'])) {
                 //$clausula_where .= " AND  idespecialidade = $data[especialidade]";
@@ -653,14 +741,14 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
                 $builder->where('le.idtipoprocedimento', $data['fila']);
             };
-            if (!empty($data['risco'])) {
+           /*  if (!empty($data['risco'])) {
                 //$clausula_where .= " AND  idrisco = $data[risco]";
                 $builder->where('le.idriscocirurgico',  $data['risco']);
             };
             if (!empty($data['complexidades'])) {
                 //$clausula_where .= " AND  idrisco = $data[risco]";
                 $builder->whereIn('le.complexidade',  $data['complexidades']);
-            };
+            }; */
         }
 
         $builder->where('le.indsituacao', 'I');

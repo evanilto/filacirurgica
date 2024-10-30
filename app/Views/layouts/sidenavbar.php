@@ -1,6 +1,6 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-primary rounded menu-lateral">
-    <ul class="nav ul-first flex-column">
+    <ul class="nav ul-first navbar-nav flex-column">
         <?php if(true) { ?>
             <li>
                 <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
@@ -28,7 +28,7 @@
             </li>
         <?php } ?>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav navbar-nav flex-column">
         <?php if(true) { ?>
             <li>
                 <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
@@ -51,7 +51,7 @@
             </li>
         <?php } ?>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav navbar-nav flex-column">
         <?php if(true) { ?>
             <li>
                 <a href="#relatorios" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
@@ -83,33 +83,14 @@
             </li>
         <?php } ?>
     </ul>
-    <ul class="nav flex-column">
-        <?php if(true) { ?>
+    <ul class="nav navbar-nav flex-column">
+        <?php if(HUAP_Functions::tem_permissao('cadastros')) { ?>
             <li>
-                <a href="#cadastros" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
+                <a href="#cadastros" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Cadastros
                 </a>
                 <div class="collapse" id="cadastros">
                     <ul class="nav flex-column submenu-2">
-                        <li>
-                            <a href="#setores" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                                <i class="fa-solid fa-plus toggle-icon"></i> Setores
-                            </a>
-                            <div class="collapse" id="setores">
-                                <ul class="nav flex-column submenu-3">
-                                    <li>
-                                        <a href="<?= base_url('setores/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Incluir
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="<?= base_url('setores/listar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Listar
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
                         <li>
                             <a href="#usuarios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                                 <i class="fa-solid fa-plus toggle-icon"></i> Usuários
@@ -132,9 +113,10 @@
                     </ul>
                 </div>
             </li>
+            <hr>
         <?php } ?>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav navbar-nav flex-column">
         <?php if(true) { ?>
             <li>
                 <a href="<?= base_url('listaespera/situacaocirurgica') ?>" class="nav-link text-white p-2" aria-current="page">
@@ -143,7 +125,7 @@
             </li>
         <?php } ?>
     </ul>
-    <ul class="nav flex-column">
+    <ul class="nav navbar-nav flex-column">
         <li>
             <a href="<?= base_url('home_index') ?>" class="nav-link text-white p-2" aria-current="page">
             <i class="fa-solid fa-backward-step"></i> Início

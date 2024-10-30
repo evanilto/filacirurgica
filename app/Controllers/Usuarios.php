@@ -9,6 +9,7 @@ use App\Models\SetorTramiteModel;
 use App\Models\PerfilModel;
 use App\Controllers\Setores;
 use App\Controllers\Perfis;
+use App\Models\PerfisUsuarioModel;
 use CodeIgniter\RESTful\ResourceController;
 
 class Usuarios extends ResourceController
@@ -16,6 +17,7 @@ class Usuarios extends ResourceController
     private $usuariomodel;
     private $perfilmodel;
     private $perfilcontroller;
+    private $perfisusuariomodel;
 
 
     public function __construct()
@@ -23,6 +25,7 @@ class Usuarios extends ResourceController
         $this->usuariomodel = new UsuarioModel();
         $this->perfilmodel = new PerfilModel();
         $this->perfilcontroller = new Perfis;
+        $this->perfisusuariomodel = new PerfisUsuarioModel();
 
     }
 
@@ -258,11 +261,9 @@ class Usuarios extends ResourceController
         // Reindexar o array
         $setortramite['Setor'] = array_values($result); */
 
-        echo view('usuarios/incluir_usuario',  ['selectSetor' => $this->setorcontroller->select,
-                                                'selectSetorTramite' => $this->setorcontroller->select,
-                                                'selectPerfil' => $perfis[0]]);
+       //var_dump($perfis[0]);die();
 
-                                               // var_dump($this->setorcontroller->select['Setor']);die();
+        echo view('usuarios/incluir_usuario',  ['selectPerfil' => $perfis[0]]);
 
     }
     /**
@@ -290,7 +291,8 @@ class Usuarios extends ResourceController
         }
 
         $rules = [
-            'login' => 'required|max_length[50]|min_length[3]|equals['.$login.']'
+            'login' => 'required|max_length[50]|min_length[3]|equals['.$login.']',
+            'perfil' => 'required'
         ];
 
         if ($this->validate($rules)) {
@@ -300,87 +302,93 @@ class Usuarios extends ResourceController
             
             try {
 
-                [$idsetor, $nmsetor, $idsetororig] = explode('#', $data["Setor"]);
-                $data['idSetor'] = (int)$idsetor;
-                $data['login'] = mb_strtolower($data['login'], 'UTF-8');
-                $data['nmSetor'] = $nmsetor;
-                $data['idSetorOrig'] = $idsetororig;
-                $data['nmUsuario'] = mb_convert_case($data['nmUsuario'], MB_CASE_TITLE, 'UTF-8');
-                $data['user_ult_atu'] = $_SESSION['Sessao']['login'];
+                $data['idlogin'] = mb_strtolower($data['login'], 'UTF-8');
+                $data['indsituacao'] = $data['indSituacao'];
 
                 $this->usuariomodel->insert($data);
 
                 if ($db->transStatus() === false) {
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir usuário! [%d] %s', $errorCode, $errorMessage)
+                    );
                 }
 
-                if (!isset($data['setorTramite']) && $data['idPerfil'] == '2') {
-                    throw new \Exception('Setores de Tramitação não informados');
-                } else {
+                if (isset($data['perfil'])) {
 
-                    if (isset($data['setorTramite']) && $data['idPerfil'] == '2') {
-                        foreach ($data['setorTramite'] as $key => $setor) {
+                    $array['idlogin'] = $data['login'];
 
-                            [$idsetor, $nmsetor, $idsetororig] = explode('#', $setor);
-                            $array['idSetor'] = (int)$idsetor;
-                            $usuario = $this->getUsuarioPeloLogin($data['login']);
+                    foreach ($data['perfil'] as $key => $perfil) {
 
-                            $array['idUsuario'] = (int)$usuario[0]->id;
+                        [$idperfil, $nmperfil] = explode('#', $perfil);
+                        $array['idperfil'] = (int)$idperfil;
 
-                            //die(var_dump($array));
+                        //die(var_dump($array));
 
-                            $this->setortramitemodel->insert($array);
+                        $this->perfisusuariomodel->insert($array);
 
-                            if ($db->transStatus() === false) {
-                                throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
-                            }
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao incluir perfis do usuário! [%d] %s', $errorCode, $errorMessage)
+                            );
                         }
                     }
                 }
-
-                $db->transComplete(); // Completa a transação
+                
+                $db->transComplete(); 
 
                 if ($db->transStatus() === false) {
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException('Erro ao completar a transação.');
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir usuário! [%d] %s', $errorCode, $errorMessage)
+                    );
                 }
 
                 $this->validator->reset();
 
                 session()->setFlashdata('success', 'Operação concluída com sucesso!');
 
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $db->transRollback();
+                return redirect()->to('usuarios/listar');
 
-                $msg = 'Erro na criação do Usuario';
-                if($e->getCode() == 1062) {
-                    $msg .= ' - Já existe um Usuário com esse Login!';
-                    session()->setFlashdata('failed', $msg);
-                } else {
-                    $msg .= ' - '.$e->getMessage();
-                    session()->setFlashdata('failed', $msg);
-                }
-                log_message('error', $msg);
-
-                return view('usuarios/incluir_usuario', ['validation' => $this->validator,
-                                                     'selectSetor' => $this->setorcontroller->select,
-                                                     'selectSetorTramite' => $this->setorcontroller->select,
-                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]);
+            } catch (\Throwable $e) {
+                $db->transRollback(); 
+                $msg = sprintf('Exception - '.$e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
             }
 
-            return redirect()->to('usuarios/listar');
+            return view('usuarios/incluir_usuario', ['validation' => $this->validator,
+                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]);
 
         } else {
             session()->setFlashdata('error', $this->validator);
 
+            //die(var_dump($this->validator));
+
             if(!is_null($usuario) && is_null($login)) {
                 $this->validator->setError('login', 'Não existe usuário com esse login EBSERH!');
             } else {
-                session()->setFlashdata('error', $this->validator);
+                if( !isset($data['perfil'])) {
+                    session()->setFlashdata('failed', 'Informe ao menos um perfil para o usuário!');
+
+                } else {
+                    session()->setFlashdata('error', $this->validator);
+                }
             }
 
+            //die(var_dump($this->validator->getError('perfil')));
+
             return view('usuarios/incluir_usuario', ['validation' => $this->validator,
-                                                     'selectSetor' => $this->setorcontroller->select,
-                                                     'selectSetorTramite' => $this->setorcontroller->select,
                                                      'selectPerfil' => $this->perfilcontroller->getPerfis()]);
         }
 

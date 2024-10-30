@@ -1,12 +1,12 @@
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="20" class="bg-light text-start"><h5><strong>Pacientes Excluídos</strong></h5></th>
+            <th scope="col" colspan="7" class="bg-light text-start"><h5><strong>Pacientes Excluídos</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" data-field="" ></th>
-            <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
-            <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th>
+            <!-- <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
+            <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th> -->
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
@@ -19,19 +19,21 @@
         <?php foreach($listaespera as $itemlista): 
         //die(var_dump( $itemlista->created_at));
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
-            $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
-        ?>
-            <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
+/*             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
+ */        ?>
+            <!-- <tr data-ordem="<--?= $itemlista->ordem_fila ?>" data-fila="<--?= $itemlista->fila ?>"> -->
+            <tr>
                 <td><?php echo "" ?></td>
-                <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
-                <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
+                <!-- <td title="Ordem de entrada na Lista Cirúrgica">--<--?php echo $itemlista->ordem_lista ?></td>
+                <td title="Ordem na Fila Cirúrgica"><--?php echo $itemlista->ordem_fila ?></td> -->
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
                 <td><?php echo $itemlista->nome_paciente ?></td>
                 <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->especialidade_descricao ?></td>
+                <td><?php echo $itemlista->nome_especialidade ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Recuperar Paciente')) ?>
+                    <!-- <--?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Recuperar Paciente')) ?> -->
+                    <?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id, '<i class="fa-solid fa-arrow-rotate-left"></i>', array('title' => 'Recuperar Paciente')) ?>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -73,7 +75,7 @@
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
             "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
+            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5] },
             { "visible": false, "targets": [0] }
             ],
             layout: { topStart: { buttons: [
@@ -112,10 +114,11 @@
             /* $('#table tbody tr').removeClass('lineselected');
             $(this).addClass('lineselected'); */
 
-            var ordemFila = $(this).data('ordem');
-            var fila = $(this).data('fila');
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var recordId = data[4];
+            //var recordId = data[4];
+            var recordId = data[2];
+            var ordemFila = "Indefinida";
+            var fila = data[4];
 
             loadAsideContent(recordId, ordemFila, fila); 
 
@@ -124,7 +127,7 @@
         function markFirstRecordSelected() {
             // Obter o índice do primeiro registro na página
             var firstRecordIndex = table.page.info().start;
-            var $firstRecordRow = $(table.row(firstRecordIndex).node());
+           // var $firstRecordRow = $(table.row(firstRecordIndex).node());
 
             // Selecionar a linha correspondente ao índice
             var $firstRecordRow = $(table.row(firstRecordIndex).node());
@@ -133,12 +136,14 @@
             $('#table tbody tr').removeClass('lineselected');
             $firstRecordRow.addClass('lineselected');
 
-            var ordemFila = $firstRecordRow.data('ordem'); 
-            var fila = $firstRecordRow.data('fila'); 
-
+            //var ordemFila = $firstRecordRow.data('ordem'); 
+           
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
-            var recordId = data[4];
+
+            var recordId = data[2];
+            var ordemFila = "Indefinida";
+            var fila = data[4];
             loadAsideContent(recordId, ordemFila, fila);
         }
 

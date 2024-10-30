@@ -13,15 +13,11 @@ class UsuarioModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'login',
-        'nmUsuario',
-        'idSetor',
-        'nmSetor',
-        'idSetorOrig',
-        'idPerfil',
-        'indSituacao',
-        'user_ult_atu'
-    ];
+        'idlogin',
+        'nmusuario',
+        'idperfil',
+        'indsituacao'
+        ];
 
     /* protected $allowedFields        = [
         'Inativo',
@@ -63,14 +59,15 @@ class UsuarioModel extends Model
     public function get_user_mysql($data)
     {
         $db = \Config\Database::connect();
-        $query = $db->query('
+        
+        $query = $db->query("
             SELECT
                 *
             FROM
                 usuarios
             WHERE
-                login = "' . $data . '"
-        '); 
+                idlogin = '" . $data . "
+        '"); 
         
         return ($query->getNumRows() > 0) ? $query->getRowArray() : FALSE ;
 

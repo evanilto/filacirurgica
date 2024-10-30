@@ -19,6 +19,7 @@ use App\Models\SolicitacaoModel;
 use CodeIgniter\RESTful\ResourceController;
 use App\Models\UsuarioModel;
 use App\Models\PerfilModel;
+use App\Models\PerfisUsuarioModel;
 use App\Models\AuditoriaAcessoModel;
 use App\Libraries\HUAP_Functions;
 
@@ -58,7 +59,8 @@ class Home extends ResourceController
     {
         $session = \Config\Services::session();
         $usuario = new UsuarioModel();
-        $perfil = new PerfilModel();
+        //$perfil = new PerfilModel();
+        $perfilusu = new PerfisUsuarioModel();
         $acesso = new AuditoriaAcessoModel();
 
         $v = $this->request->getVar(['Usuario', 'Senha']);
@@ -79,10 +81,11 @@ class Home extends ResourceController
 
         $func = new HUAP_Functions();
 
-        $usuario = new UsuarioModel();
-        //$usuario = $usuario->get_user_mysql($v['Usuario']);
+        //$usuario = new UsuarioModel();
+        $usuario = $usuario->get_user_mysql($v['Usuario']);
         $usuario = $v['Usuario'];
-/* 
+
+        /* 
         if (!isset($usuario) || !$usuario) {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Usuário não encontrado ou não autorizado.');
             return view('home/form_login');
@@ -104,11 +107,13 @@ class Home extends ResourceController
             return view('home/form_login');
         }  */
 
+        $perfis = $perfilusu->Where('idlogin', $usuario)->select('idperfil')->findAll();
+        session()->set('Sessao', ['idPerfil' => array_column($perfis, 'idperfil')]);
+
         unset($v['Senha']); 
         $_SESSION['Sessao']['login'] = $usuario;
         //$_SESSION['Sessao'] = [];
 
-        //var_dump($_SESSION['Sessao']);die();
 
      /*    $v['Nome'] = explode(' ', $_SESSION['Sessao']['nmUsuario']);
         $_SESSION['Sessao']['NomeCompleto'] = $_SESSION['Sessao']['nmUsuario'];
