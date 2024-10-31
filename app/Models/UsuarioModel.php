@@ -15,8 +15,8 @@ class UsuarioModel extends Model
     protected $allowedFields    = [
         'idlogin',
         'nmusuario',
-        'idperfil',
-        'indsituacao'
+        'indsituacao',
+        'user_ult_atu'
         ];
 
     /* protected $allowedFields        = [

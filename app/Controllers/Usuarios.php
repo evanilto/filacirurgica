@@ -263,7 +263,10 @@ class Usuarios extends ResourceController
 
        //var_dump($perfis[0]);die();
 
-        echo view('usuarios/incluir_usuario',  ['selectPerfil' => $perfis[0]]);
+        //echo view('usuarios/incluir_usuario',  ['selectPerfil' => $perfis[0]]);
+
+        return view('layouts/sub_content', ['view' => 'usuarios/form_incluir_usuario',
+                                            'selectPerfil' => $perfis[0]]);
 
     }
     /**
@@ -286,7 +289,7 @@ class Usuarios extends ResourceController
         //var_dump($data);die();
 
         if(!is_null($usuario)) {
-            $data['nmUsuario'] = $usuario;
+            //$data['nmUsuario'] = $usuario;
             $login = $data['login'];
         }
 
@@ -297,13 +300,23 @@ class Usuarios extends ResourceController
 
         if ($this->validate($rules)) {
 
+            if(!empty($this->usuariomodel->Where('idlogin', $login)->findAll())) {
+                session()->setFlashdata('failed', 'Usuário já cadastrado!');
+                return view('usuarios/incluir_usuario', ['validation' => $this->validator, 'selectPerfil' => $this->perfilcontroller->getPerfis()]);
+            } 
+
             $db = \Config\Database::connect('default');
             $db->transStart();
             
             try {
 
                 $data['idlogin'] = mb_strtolower($data['login'], 'UTF-8');
+                $data['nmusuario'] = $usuario;
                 $data['indsituacao'] = $data['indSituacao'];
+                $data['user_ult_atu'] = session()->get('Sessao')['Nome'];;
+
+
+                //die(var_dump(($data)));
 
                 $this->usuariomodel->insert($data);
 
@@ -375,7 +388,7 @@ class Usuarios extends ResourceController
 
             //die(var_dump($this->validator));
 
-            if(!is_null($usuario) && is_null($login)) {
+            if(is_null($login)) {
                 $this->validator->setError('login', 'Não existe usuário com esse login EBSERH!');
             } else {
                 if( !isset($data['perfil'])) {
@@ -405,25 +418,14 @@ class Usuarios extends ResourceController
 
         if($usuario){
 
-            //var_dump($usuario);die();
-
-            $setoresTramUsu = [];
-            
-            if ($usuario[0]->idPerfil == 2) {
-                $setoresTramUsu = $this->setortramitemodel->getSetores($id);
-            }
-                        
-             return view('usuarios/editar_usuario',[
-            'id' => $id,
-            'login' => $usuario[0]->login,
-            'nmUsuario' => $usuario[0]->nmUsuario,
-            'indSituacao' => $usuario[0]->indSituacao,
-            'Setor' => $usuario[0]->idSetor.'#'.$usuario[0]->nmSetor.'#'.$usuario[0]->idSetorOrig,
-            'idPerfil' =>  $usuario[0]->idPerfil,
-            'selectSetor' => $this->setorcontroller->select,
-            'selectPerfil' => $this->perfilcontroller->getPerfis(),
-            'selectSetorTramite' => $setoresTramUsu,
-            ]);
+            return view('layouts/sub_content', ['view' => 'usuarios/form_editar_usuario',
+                                                'id' => $id,
+                                                'login' => $usuario[0]->idlogin,
+                                                'indSituacao' => $usuario[0]->indsituacao,
+                                                //'selectPerfisUsuario' => $this->perfisusuariomodel->getWhere(['idlogin' => $usuario[0]->idlogin])->getResult(),
+                                                'selectPerfisUsuario' =>$result = $this->perfisusuariomodel->where('idlogin', $usuario[0]->idlogin)->find(),
+                                                'selectPerfil' => $this->perfilcontroller->getPerfis()
+                                                ]);
         }
         
         session()->setFlashdata('failed', 'Usuario não localizado!');
@@ -436,7 +438,7 @@ class Usuarios extends ResourceController
      *
      * @return mixed
      */
-    public function editar($id = null)
+    public function editar()
     {
         \Config\Services::session();
 
@@ -444,62 +446,82 @@ class Usuarios extends ResourceController
 
         $data = $this->request->getVar();
 
-        //var_dump($data);die();
+        //var_dump(session()->get('Sessao')['Nome']);die();
+
+        if (!isset($data['perfil'])) {
+
+            session()->setFlashdata('failed', 'Informe pelo menos um perfil para o usuário!');
+
+            return view('layouts/sub_content', ['view' => 'usuarios/form_editar_usuario',
+                                                'id' => $data['id'],
+                                                'login' => $data['login'],
+                                                'indSituacao' => $data['indSituacao'],
+                                                'selectPerfisUsuario' =>$result = $this->perfisusuariomodel->where('idlogin', $data['login'])->find(),
+                                                'selectPerfil' => $this->perfilcontroller->getPerfis()
+                                                ]);
+
+        }
 
         try {
             
             $db = \Config\Database::connect('default');
+
             $db->transStart();
 
-            [$idsetor, $nmsetor, $idsetororig] = explode('#', $data["Setor"]);
-            $array['idSetor'] = (int)$idsetor;
-            $array['nmSetor'] = $nmsetor;
-            $array['idSetorOrig'] = $idsetororig;
-            $array['idPerfil'] = $data['idPerfil'];
-            $array['indSituacao'] = $data['indSituacao'];
-            $array['user_ult_atu'] = $_SESSION['Sessao']['login'];
+            $array['indsituacao'] = $data['indSituacao'];
+            $array['user_ult_atu'] = session()->get('Sessao')['Nome'];;
 
-            $this->usuariomodel->update($id, $array);
+            $this->usuariomodel->update($data['id'], $array);
 
             if ($db->transStatus() === false) {
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar usuário! [%d] %s', $errorCode, $errorMessage)
+                );
             }
 
             //$db->query("DELETE FROM setores_tramite WHERE idUsuario = ?", [$id]);
-            $db->query("UPDATE setores_tramite SET deleted_at = CURRENT_TIMESTAMP() WHERE idUsuario = ?", [$id]);
+            $db->query("UPDATE usuarios_perfis SET deleted_at = CURRENT_TIMESTAMP WHERE idlogin = ? AND deleted_at IS NULL", [$data['login']]);
 
-            //var_dump($id);die();
-            
+            //die($db->getLastQuery());
+
             if ($db->transStatus() === false) {
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao alterar permissões do usuário! [%d] %s', $errorCode, $errorMessage)
+                );
             }
 
-            if ($data['idPerfil'] == 2) {
-
+            foreach ($data["perfil"] as $perfil) {
+                [$idperfil, $nmperfil] = explode('#', $perfil);
+                $array['idlogin'] = $data['login'];
+                $array['idperfil'] = (int)$idperfil;
+                $this->perfisusuariomodel->insert($array);   
+                
                 if ($db->transStatus() === false) {
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao alterar permissões do usuário! [%d] %s', $errorCode, $errorMessage)
+                    );
                 }
-
-                foreach ($data["setorTramite"] as $setor) {
-                    [$idsetor, $nmsetor, $idsetororig] = explode('#', $setor);
-                    $array['idUsuario'] = (int)$id;
-                    $array['idSetor'] = (int)$idsetor;
-                    $this->setortramitemodel->insert($array);   
-                    
-                    if ($db->transStatus() === false) {
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException($db->error()["message"], $db->error()["code"]);
-                    }
-                }   
-
-            }
+            }   
 
             $db->transComplete();
 
-            session()->setFlashdata('success', 'Operação concluída com sucesso!');
+            session()->setFlashdata('success', 'Alteração do usuário realizada com sucesso!');
 
             return redirect()->to('usuarios/listar');
             
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $db->transRollback();
             $msg = 'Erro na alteração do Usuario';
             if($e->getCode() == 1062) {
@@ -510,7 +532,7 @@ class Usuarios extends ResourceController
             }
             session()->setFlashdata('failed', $msg);
 
-            return view('usuarios/editar_usuario', ['validation' => $this->validator,
+           /*  return view('usuarios/editar_usuario', ['validation' => $this->validator,
             'id' => $id,
             'login' => $data['login'],
             'nmUsuario' => $data['nmUsuario'],
@@ -519,113 +541,15 @@ class Usuarios extends ResourceController
             'idPerfil' =>  $data['idPerfil'],
             'selectSetor' => $this->setorcontroller->select,
             'selectPerfil' => $this->perfilcontroller->getPerfis(),
-            ]);
-        }
-    }
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function setores_a_tramitar($id = null)
-    {
-        $usuario = $this->usuariomodel->getWhere(['id' => $id])->getResult();
+            ]); */
 
-        if($usuario){
-            
-            //$setor = $this->setorcontroller->select;
-            //var_dump($usuario[0]->idSetor.'#'.$usuario[0]->nmSetor.'#'.$usuario[0]->idSetorOrig);die();
-
-            return view('usuarios/editar_usuario',[
-            'id' => $id,
-            'login' => $usuario[0]->login,
-            'nmUsuario' => $usuario[0]->nmUsuario,
-            'indSituacao' => $usuario[0]->indSituacao,
-            'Setor' => $usuario[0]->idSetor.'#'.$usuario[0]->nmSetor.'#'.$usuario[0]->idSetorOrig,
-            'idPerfil' =>  $usuario[0]->idPerfil,
-            'selectSetor' => $this->setorcontroller->select,
-            'selectPerfil' => $this->perfilcontroller->getPerfis(),
-            ]);
-        }
-        
-        session()->setFlashdata('failed', 'Usuario não localizado!');
-        
-        return redirect()->to('usuarios/listar');
-
-    }
-    /**
-     * Return the editable properties of a resource object
-     *
-     * @return mixed
-     */
-    public function definir_setores($id = null)
-    {
-        \Config\Services::session();
-
-        helper(['form', 'url']);
-
-        $data = $this->request->getVar();
-
-        //var_dump($data);die();
-
-        $array = [
-            'nmUsuario' => mb_convert_case($data['nmUsuario'], MB_CASE_TITLE, 'UTF-8'),
-            'indSituacao' => $data['indSituacao'],
-            //'login' => $data['login'],
-            'idPerfil' => $data['idPerfil'],
-        ];
-
-
-        $rules = [
-            'login' => 'required|max_length[50]|min_length[3]',
-            'nmUsuario' => 'required|max_length[100]|min_length[3]'
-        ];
-
-        if ($this->validate($rules)) {
-
-            try {
-
-                    [$idsetor, $nmsetor, $idsetororig] = explode('#', $data["Setor"]);
-                    $array['idSetor'] = (int)$idsetor;
-                    $array['nmSetor'] = $nmsetor;
-                    $array['idSetorOrig'] = $idsetororig;
-                    $array['nmUsuario'] = mb_convert_case($array['nmUsuario'], MB_CASE_TITLE, 'UTF-8');
-                    $array['user_ult_atu'] = $_SESSION['Sessao']['login'];
-
-                    $this->usuariomodel->update($id, $array);
-                        
-                    if ($array['idPerfil'] == 2) {
-                        return redirect()->to('usuarios/setoresparatramitar/'.$id);
-                    }
-
-                    $this->validator->reset();
-                
-            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
-                $msg = 'Erro na alteração do Usuario';
-                if($e->getCode() == 1062) {
-                    $msg .= ' - Já existe um Usuario com esse Login!';
-                } else {
-                    $msg .= ' - '.$e->getMessage();
-                    log_message('error', $msg.': ' . $e->getMessage());
-                }
-                session()->setFlashdata('failed', $msg);
-            }
-
-            return redirect()->to('usuarios/listar');
-
-        } else {
-            session()->setFlashdata('error', $this->validator);
-
-            return view('usuarios/editar_usuario', ['validation' => $this->validator,
-            'id' => $id,
-            'login' => $data['login'],
-            'nmUsuario' => $data['nmUsuario'],
-            'indSituacao' => $data['indSituacao'],
-            'Setor' => $data['Setor'],
-            'idPerfil' =>  $data['idPerfil'],
-            'selectSetor' => $this->setorcontroller->select,
-            'selectPerfil' => $this->perfilcontroller->getPerfis(),
-            ]);
+            return view('layouts/sub_content', ['view' => 'usuarios/form_editar_usuario',
+                                                'id' => $data['id'],
+                                                'login' => $data['login'],
+                                                'indSituacao' => $data['indSituacao'],
+                                                'selectPerfisUsuario' =>$result = $this->perfisusuariomodel->where('idlogin', $data['login'])->find(),
+                                                'selectPerfil' => $this->perfilcontroller->getPerfis()
+                                                ]);
         }
     }
     /**
@@ -662,24 +586,40 @@ class Usuarios extends ResourceController
      */
     public function listar()
     {
-        $usuarios[] = $this->getUsuarios();
+        //$usuarios[] = $this->getUsuarios();
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('usuarios as usu');
+       /*  $builder->join('usuarios_perfis as uper', 'uper.idlogin = usu.idlogin', 'inner');
+        $builder->join('perfis as per', 'per.id = uper.idperfil', 'inner'); */
+        $builder->orderBy('usu.nmusuario', 'ASC');
+        $builder->select('
+                        usu.id,
+                        usu.idlogin,
+                        usu.nmusuario,
+                        usu.indsituacao
+        ');
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        $usuarios = $builder->get()->getResult();
+
+        //die(var_dump($usuarios));
 
         $options = array();
-        foreach ($usuarios[0] as $usuario) {
+        foreach ($usuarios as $usuario) {
 
             //$setor = $this->setorcontroller->getSetor($usuario['idSetor']);
-            $perfil = $this->perfilmodel->find($usuario['idPerfil']);
-
-            //var_dump($perfil);die();
+            //$perfil = $this->perfilmodel->find($usuario['idPerfil']);
+            //var_dump($usuario);die();
 
             array_push($options, [
-                'id' => $usuario['id'],
-                'login' => $usuario['login'],
-                'nmUsuario' => $usuario['nmUsuario'],
-                'indSituacao' => $usuario['indSituacao'],
-                'idSetor' => $usuario['idSetor'],
-                'nmSetor' => $usuario['nmSetor'],
-                'nmPerfil' => $perfil['nmPerfil']
+                'id' => $usuario->id,
+                'login' => $usuario->idlogin,
+                'nmUsuario' => $usuario->nmusuario,
+                'indSituacao' => $usuario->indsituacao,
+                //'nmPerfil' => $usuario->nmperfil
             ]);
         }
 

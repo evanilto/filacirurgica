@@ -115,15 +115,16 @@ class Home extends ResourceController
         //$_SESSION['Sessao'] = [];
 
 
-     /*    $v['Nome'] = explode(' ', $_SESSION['Sessao']['nmUsuario']);
-        $_SESSION['Sessao']['NomeCompleto'] = $_SESSION['Sessao']['nmUsuario'];
-        $_SESSION['Sessao']['Nome'] = $v['Nome'][0] . ' ' . $v['Nome'][count($v['Nome'])-1];
-         */
+        //$v['Nome'] = explode(' ', $_SESSION['Sessao']['nmUsuario']);
+        //$_SESSION['Sessao']['NomeCompleto'] = $_SESSION['Sessao']['nmUsuario'];
+        //$_SESSION['Sessao']['Nome'] = $v['Nome'][0] . ' ' . $v['Nome'][count($v['Nome'])-1];
+        
         //var_dump( $_SESSION);die();
 
-        $_SESSION['Sessao']['NomeCompleto'] = $v['Usuario'];
+        $_SESSION['Sessao']['NomeCompleto'] = $this->getLDAPUserName($v['Usuario']);
         $_SESSION['Sessao']['Nome'] = $v['Usuario'];
-        //var_dump($_SESSION['Sessao']);die();
+        //die(var_dump($v['Usuario']));
+       // var_dump($_SESSION['Sessao']);die();
 
        /*  $_SESSION['Sessao']['Perfil'] = $perfil;
         $acesso->insert($func->set_acesso('LOGIN'), TRUE); */

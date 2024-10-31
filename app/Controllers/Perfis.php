@@ -37,7 +37,8 @@ class Perfis extends ResourceController
     public function getPerfis() {
 
         //return $this->respond($this->perfilmodel->findAll());
-        return $this->perfilmodel->findAll();
+        //return $this->perfilmodel->findAll();
+        return $this->perfilmodel->Where('indsituacao', 'A')->orderBy('nmperfil', 'asc')->findAll();
 
     }
 
