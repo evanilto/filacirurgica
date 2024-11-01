@@ -1828,15 +1828,15 @@ class ListaEspera extends ResourceController
                 $lista['idprocedimento'] = $reg->procedimento;
                 $lista['idlateralidade'] = $reg->lateralidade;
                 //$lista['indsituacao'] = $reg->situacao;
-                $lista['indsituacao'] = 'A';
+                $lista['indsituacao'] = 'A'; // ver se existe no aghu ???
                 $lista['txtinfoadicionais'] = $reg->informacoesadicionais;
                 $lista['txtorigemjustificativa'] = $reg->justificativa;
                 $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
                 $lista['indcongelacao'] = $reg->congelacao;
                 $lista['created_at'] = $reg->data_inclusao;
                 $lista['updated_at'] = $reg->data_inclusao;
-                $lista['deleted_at'] = ($reg->situacao = 0) ? $reg->data_inclusao : NULL;
-                $lista['indurgencia'] = 'N';
+                $lista['deleted_at'] = ($reg->situacao = 0) ? $reg->data_inclusao : NULL; //pegar data do ultimo evento no histórico
+                $lista['indurgencia'] = 'N'; // comparar data de inclusão com data de envio ao mapa ???
 
                 $this->listaesperamodel->insert($lista);
 

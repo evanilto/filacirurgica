@@ -25,7 +25,7 @@ class MigraHistoricoCommand extends BaseCommand
         $controller = new \App\Controllers\MapaCirurgico();
 
         // Chame a função desejada
-        $controller->migrarHistorico();
+        $controller->migrarHistorico(); // migrar usuarios x permissoes
 
         CLI::write("Término OK!");
     }

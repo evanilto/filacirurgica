@@ -1,3 +1,5 @@
+<?php use App\Libraries\HUAP_Functions; ?>
+
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
@@ -66,13 +68,31 @@
                 <td><?php echo $itemlista->risco_descricao ?></td>
                 <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/editarlista/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista')) ?>
-                </td> <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)')) ?>
-                </td>
-                <!-- <--?=  session()->set('parametros_consulta_lista', $data); ?> -->
+                    <?php 
+                        if(HUAP_Functions::tem_permissao('listaespera-alterar')) { 
+                            echo anchor('listaespera/editarlista/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Lista'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para editar."><i class="fas fa-pencil-alt"></i></span>';
+                        } 
+                    ?>
+                </td> 
                 <td style="text-align: center; vertical-align: middle;">
-                    <?php echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()')) ?>
+                    <?php
+                        if(HUAP_Functions::tem_permissao('listaespera-alterar')) { 
+                            echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para enviar para o mapa cirúrgico."><i class="fas fa-paper-plane"></i></span>';
+                        } 
+                    ?>
+                </td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <?php
+                        if(HUAP_Functions::tem_permissao('listaespera-excluir')) { 
+                            echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para excluir."><i class="fas fa-trash-alt"></i></span>';
+                        } 
+                    ?>
                 </td>
             </tr>
         <?php endforeach; ?>

@@ -1085,28 +1085,56 @@ class HUAP_Functions
        //die(var_dump(array_intersect($_SESSION['Sessao']['idPerfil'], ['0', '2'])));
 
         switch ($menu) {
-            case 'prontuarios':
-                return in_array($_SESSION['Sessao']['idPerfil'], [1, 2, 3]);
-            case 'agendas':
-                if (in_array($_SESSION['Sessao']['idPerfil'], [1, 2])) {
-                    return ($_SESSION['Sessao']['nmSetor'] == 'ARQUIVO MÉDICO' || $_SESSION['Sessao']['idPerfil'] == 1);
-                    /* if ($_SESSION['Sessao']['nmSetor'] == 'ARQUIVO MÉDICO' || $_SESSION['Sessao']['idPerfil'] == 1) {
-                        return true;
-                    } else {
-                        return false;
-                    } */
-                } else {
-                    return false;
-                };
+            case 'listaespera':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','4','5','6','7','20','21','22']));
+
+            case 'listaespera-consultar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','4','6','7','20','21']));
+
+            case 'listaespera-incluir':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','5']));
+
+            case 'listaespera-alterar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','6']));
+
+            case 'listaespera-excluir':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','7']));
+
+            case 'listaespera-enviar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['21']));
+
+            case 'listaespera-recuperar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','22']));
+    
+            case 'mapacirurgico':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','11','13','14','15','19']));
+
+            case 'mapacirurgico-incluirurgencia':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','19']));
+
+            case 'mapacirurgico-consultar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','11','13','14','15']));
+
+            case 'mapacirurgico-alterar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','14']));
+
+            case 'relatorios':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','65']));
+
             case 'cadastros':
-                //return in_array($_SESSION['Sessao']['idPerfil'], [1]);
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
+
+            case 'cadastros-usuario-incluir':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','3']));
+
+            case 'cadastros-usuario-consultar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
 
             case 'resgatar':
                 return ($_SESSION['Sessao']['nmSetor'] == 'ARQUIVO MÉDICO');
 
             default:
-                return true;
+                return false;
         }
     }
     /**

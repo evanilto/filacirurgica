@@ -1,59 +1,69 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-primary rounded menu-lateral">
     <ul class="nav ul-first navbar-nav flex-column">
-        <?php if(true) { ?>
-            <li>
-                <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-plus toggle-icon"></i> Lista de Espera
-                </a>
-                <div class="collapse" id="listaespera">
-                    <ul class="nav flex-column submenu-2">
-                        <li>
-                            <a href="<?= base_url('listaespera/incluirpaciente') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Incluir
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Consultar
-                            </a>
-                        </li>
-                        <li>
-                            <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Recuperar Paciente
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+        <?php if(HUAP_Functions::tem_permissao('listaespera')) { ?>
+        <li>
+            <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                <i class="fa-solid fa-plus toggle-icon"></i> Lista de Espera
+            </a>
+            <div class="collapse" id="listaespera">
+                <ul class="nav flex-column submenu-2">
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-incluir')) { ?>
+                    <li>
+                        <a href="<?= base_url('listaespera/incluirpaciente') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Incluir
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?>
+                    <li>
+                        <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Consultar
+                        </a>
+                    </li>
+                    <?php } ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-recuperar')) { ?>
+                    <li>
+                        <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Recuperar Paciente
+                        </a>
+                    </li>
+                    <?php } ?>
+                </ul>
+            </div>
+        </li>
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(true) { ?>
-            <li>
+        <?php if(HUAP_Functions::tem_permissao('mapacirurgico')) { ?>
+        <li>
                 <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Mapa Cirúrgico
                 </a>
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
                             </a>
+                        <?php } ?>
                         </li>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
+                        <?php } ?>
                     </ul>
                 </div>
             </li>
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(true) { ?>
-            <li>
+        <?php if(HUAP_Functions::tem_permissao('relatorios')) { ?>
+        <li>
                 <a href="#relatorios" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Relatórios
                 </a>
@@ -97,16 +107,20 @@
                             </a>
                             <div class="collapse" id="usuarios">
                                 <ul class="nav flex-column submenu-3">
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-usuario-incluir')) { ?>
                                     <li>
                                         <a href="<?= base_url('usuarios/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
                                             <i class="fa-solid fa-user-nurse"></i> Incluir
                                         </a>
                                     </li>
+                                <?php } ?>
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-usuario-consultar')) { ?>
                                     <li>
                                         <a href="<?= base_url('usuarios/listar') ?>" class="nav-link text-white p-2" aria-current="page">
                                             <i class="fa-solid fa-user-nurse"></i> Listar
                                         </a>
                                     </li>
+                                <?php } ?>
                                 </ul>
                             </div>
                         </li>

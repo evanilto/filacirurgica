@@ -927,7 +927,7 @@ class MapaCirurgico extends ResourceController
         $data['ordemfila'] = $array['ordem_fila'];
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
-        $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico) ? 'disabled' : 'enabled';
+        $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
         $data['prontuario'] = $mapa->prontuario;

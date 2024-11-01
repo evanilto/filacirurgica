@@ -623,8 +623,11 @@ class Usuarios extends ResourceController
             ]);
         }
 
-        return view('usuarios/listar_usuarios', [
-                    'usuarios' => $options]);
+        /* return view('usuarios/listar_usuarios', [
+                    'usuarios' => $options]); */
+
+        return view('layouts/sub_content', ['view' => 'usuarios/list_usuarios',
+                                            'usuarios' => $options]);
 
 
     }
