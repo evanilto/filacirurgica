@@ -641,4 +641,149 @@ class Usuarios extends ResourceController
             echo view('layouts/main_content', ['subcontent' => view($pagina)]);
 
     }
+    /**
+     * 
+     * @return mixed
+     */
+    public function migrarUsuarios() {
+
+        $sqlTruncate = "truncate usuarios;";
+        $sqlDropDefault = "ALTER TABLE usuarios ALTER COLUMN id DROP DEFAULT;";
+        $sqlSetVal = "SELECT setval('usuario_seq', (SELECT max(id) FROM usuarios));";
+        $sqlRestartVal = "ALTER SEQUENCE usuario_seq RESTART WITH 1;";
+        $sqlSetDefault = "ALTER TABLE usuarios ALTER COLUMN id SET DEFAULT nextval('usuario_seq');";
+
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $sql = "
+                    select distinct cp.usuarios 
+                    from cirurgias_permissoesusuarios cp;
+                   ";
+
+            $query = $db->query($sql);
+
+            $result = $query->getResult();
+
+            $query = $db->query($sqlTruncate);
+            $query = $db->query($sqlRestartVal);
+            //$query = $db->query($sqlDropDefault);
+
+            $db->transStart();
+
+            foreach ($result as $reg) {
+
+                $usuario = [];
+                $usuario['idlogin'] = $reg->usuarios;
+                $usuario['indsituacao'] = 'I';
+
+                $this->usuariomodel->insert($usuario);
+                
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \Exception(
+                        sprintf('Erro ao incluir usuário! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \Exception(
+                    sprintf('Erro na criação do usuário! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+            $query = $db->query($sqlSetDefault);
+
+        } catch (\Throwable $e) {
+            $msg = 'Falha na criação do usuário ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+    /**
+     * 
+     * @return mixed
+     */
+    public function migrarPermissoes() {
+
+        $sqlTruncate = "truncate usuarios_perfis;";
+        //$sqlDropDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id DROP DEFAULT;";
+        $sqlSetVal = "SELECT setval('usuarios_perfis_seq', 1, false);";
+        //$sqlRestartVal = "ALTER SEQUENCE usuarios_perfis_seq RESTART WITH 1;";
+        //$sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id SET DEFAULT nextval('usuarios_perfis_seq');";
+
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $sql = "
+                    select *
+                    from cirurgias_permissoesusuarios cp;
+                   ";
+
+            $query = $db->query($sql);
+
+            $result = $query->getResult();
+
+            $query = $db->query($sqlTruncate);
+            //$query = $db->query($sqlRestartVal);
+            //$query = $db->query($sqlDropDefault);
+
+            $db->transStart();
+
+            foreach ($result as $reg) {
+
+                $permissao = [];
+                $permissao['idlogin'] = $reg->usuarios;
+                $permissao['idperfil'] = $reg->id_permissao;
+
+                $this->perfisusuariomodel->insert($permissao);
+                
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \Exception(
+                        sprintf('Erro ao incluir permissão! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+            }
+
+            $db->transComplete();
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \Exception(
+                    sprintf('Erro na criação da permissão! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $query = $db->query($sqlSetVal);
+            //$query = $db->query($sqlSetDefault);
+
+        } catch (\Throwable $e) {
+            $msg = 'Falha na criação da permissão ==> '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            throw $e;
+        }
+    }
+
 }

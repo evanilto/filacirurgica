@@ -91,7 +91,7 @@ class ListaEspera extends ResourceController
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
-        $this->mapacirurgicocontroller = new MapaCirurgico();
+        $this->mapacirurgicocontroller = new MapaCirurgico(); // disable for migration
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -100,14 +100,11 @@ class ListaEspera extends ResourceController
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
-        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
+        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
                                                                            ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
-        //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
-        //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll(); 
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll();
+                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
@@ -1766,7 +1763,8 @@ class ListaEspera extends ResourceController
                 SELECT
                     cl.idlistacirurgica,
                     cl.prontuario,
-                    CAST(cl.datainclusao || ' ' || cl.horainclusao AS TIMESTAMP) AS data_inclusao,
+                    cl.datainclusao,
+                    CAST(cl.datainclusao || ' ' || cl.horainclusao AS TIMESTAMP) AS dthr_inclusao,
                     cl.especialidade,
                     cl.dataavaliacao,
                     cl.cid,
@@ -1788,8 +1786,8 @@ class ListaEspera extends ResourceController
                     ci.informacoesadicionais,
                     cn.necessidadesprocedimento,
                     CASE 
-                        WHEN cl.situacao = 0 THEN 'I'
-                        WHEN cl.situacao = 1 THEN 'A'
+                        WHEN cl.situacao = 0
+                        WHEN cl.situacao = 1
                     END AS situacao,
                     cj.justificativa,
                     cje.justificativa as justificativa_exclusao
@@ -1827,16 +1825,128 @@ class ListaEspera extends ResourceController
                 $lista['idorigempaciente'] = $reg->origempaciente;
                 $lista['idprocedimento'] = $reg->procedimento;
                 $lista['idlateralidade'] = $reg->lateralidade;
-                //$lista['indsituacao'] = $reg->situacao;
-                $lista['indsituacao'] = 'A'; // ver se existe no aghu ???
                 $lista['txtinfoadicionais'] = $reg->informacoesadicionais;
                 $lista['txtorigemjustificativa'] = $reg->justificativa;
                 $lista['txtjustificativaexclusao'] = $reg->justificativa_exclusao;
                 $lista['indcongelacao'] = $reg->congelacao;
-                $lista['created_at'] = $reg->data_inclusao;
-                $lista['updated_at'] = $reg->data_inclusao;
-                $lista['deleted_at'] = ($reg->situacao = 0) ? $reg->data_inclusao : NULL; //pegar data do ultimo evento no histórico
-                $lista['indurgencia'] = 'N'; // comparar data de inclusão com data de envio ao mapa ???
+                $lista['created_at'] = $reg->dthr_inclusao;
+                $lista['updated_at'] = $reg->dthr_inclusao;
+
+                switch ($reg->situacao) {
+                    case 0:
+                        $sql = "
+                                select *
+                                from cirurgias_historico ch 
+                                where idlistacirurgica = $reg->idlistacirurgica
+                                order by ch.data desc 
+                                limit 1;
+                                ";
+        
+                        $query = $db->query($sql);
+            
+                        $result2 = $query->getResult();
+
+                        if ($result2) {
+
+                            switch ($result2[0]->codigo) {
+                                case 1: // envio ao mapa
+                                    $lista['deleted_at'] = $result2[0]->data;
+                                    $lista['indsituacao'] = 'A';
+
+                                    break;
+
+                                case 4: // cirurgia realizada
+
+                                    $sql = "
+                                        select *
+                                        from cirurgias_historico ch 
+                                        where idlistacirurgica = $reg->idlistacirurgica
+                                        and idevento = 1
+                                        order by ch.data desc 
+                                        limit 1;
+                                        ";
+            
+                                    $query = $db->query($sql);
+                        
+                                    $resulthist = $query->getResult();
+
+                                    if ($resulthist) {
+                                        $lista['deleted_at'] = $resulthist[0]->data; // data do ultimo envio ao mapa
+
+                                    } else {
+                                        $lista['deleted_at'] = $result2[0]->data; // pegar a data da realização da cirurgia
+                                    }
+
+                                    $lista['indsituacao'] = 'A';
+
+                                    break;
+
+                                case 7: // exclusão
+                                    $lista['deleted_at'] = $result2[0]->data;
+                                    $lista['indsituacao'] = 'I';
+
+                                    break;
+
+                                default:
+                                    $lista['deleted_at'] = date('Y-m-d H:i:s');
+                                    $lista['indsituacao'] = 'I';
+                            }
+
+                        } else {
+                            $lista['deleted_at'] = date('Y-m-d H:i:s');
+                            $lista['indsituacao'] = 'I';
+                        }
+
+                        break;
+
+                    case 1:
+                        $temaghu = $this->localaippacientesmodel->Where('prontuario', $reg->prontuario)->findAll();
+                        if ($temaghu) {
+                            $lista['indsituacao'] = 'A';
+                            $lista['deleted_at'] = NULL;
+
+                        } else {
+                            $lista['indsituacao'] = 'E'; // Erro
+                            $lista['deleted_at'] = date('Y-m-d H:i:s'); 
+                        }
+                       
+                        break;
+
+                    default:
+                        $lista['indsituacao'] = NULL;
+                        $lista['deleted_at'] = NULL;
+
+                }
+
+                $sql = "
+                    select *
+                    from cirurgias_listacirurgica lista 
+                    inner join cirurgias_mapacirurgico mapa on mapa.idlistacirurgica = lista.idlistacirurgica 
+                    where lista.idlistacirurgica = $reg->idlistacirurgica
+                    order by mapa.idmapacirurgico 
+                    limit 1;
+                ";
+
+                $query = $db->query($sql);
+
+                $result2 = $query->getResult();
+
+                if ($result2) {
+
+                    $dataHoraLista = new DateTime($reg->datainclusao);
+                    $dataHoraMapa = new DateTime($result2[0]->datacirurgia);
+
+                    $diferenca = $dataHoraMapa->diff($dataHoraLista);
+
+                    if ($diferenca->days < 3 ) {
+                        $lista['indurgencia'] = 'S';
+                    } else {
+                        $lista['indurgencia'] = 'N';
+                    }
+                } else {
+
+                    $lista['indurgencia'] = 'N';
+                }
 
                 $this->listaesperamodel->insert($lista);
 
@@ -1850,19 +1960,6 @@ class ListaEspera extends ResourceController
                     );
                 }
 
-                /* if ($reg->situacao == 'I') {
-                    $this->listaesperamodel->delete($reg->idlistacirurgica);
-
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao excluir lista de espera! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-                } */
             }
 
             $db->transComplete();
