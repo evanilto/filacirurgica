@@ -724,6 +724,8 @@ class Usuarios extends ResourceController
         $sqlSetVal = "SELECT setval('usuarios_perfis_seq', 1, false);";
         //$sqlRestartVal = "ALTER SEQUENCE usuarios_perfis_seq RESTART WITH 1;";
         //$sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id SET DEFAULT nextval('usuarios_perfis_seq');";
+        $sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id RESTART WITH 6000";
+
 
         try {
 
@@ -777,7 +779,7 @@ class Usuarios extends ResourceController
             }
 
             $query = $db->query($sqlSetVal);
-            //$query = $db->query($sqlSetDefault);
+            $query = $db->query($sqlSetDefault);
 
         } catch (\Throwable $e) {
             $msg = 'Falha na criação da permissão ==> '.$e->getMessage();

@@ -270,8 +270,10 @@ class MapaCirurgico extends ResourceController
         $_SESSION['mapacirurgico'] = NULL;
 
         //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
-        $data['dtinicio'] = date('d/m/Y');
-        $data['dtfim'] = date('d/m/Y');
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['especialidades'] = $this->selectespecialidadeaghu;
@@ -327,21 +329,41 @@ class MapaCirurgico extends ResourceController
         if (!$dataflash) {
             if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
                 $rules = $rules + [
-                    'dtinicio' => 'required|valid_date[d/m/Y]',
-                    'dtfim' => 'required|valid_date[d/m/Y]',
+                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
                 ];
             }
         }
 
         if ($this->validate($rules)) {
+            if ($data['dtinicio'] || $data['dtfim']) {
 
-            if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
-                $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                $data['filas'] = $this->selectfila;
+                $data['riscos'] = $this->selectrisco;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
-                                                    'validation' => $this->validator,
-                                                    'data' => $data]);
+                if (empty($data['dtinicio'])) {
+                    $this->validator->setError('dtinicio', 'Informe a data de início!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (!$data['dtfim']) {
+                    $this->validator->setError('dtfim', 'Informe a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
+            
+                $hora = '23:59:59';
+                $data['dtfim'] = $data['dtfim'] . ' ' . $hora;
+            
             }
             
             $this->validator->reset();
@@ -416,14 +438,14 @@ class MapaCirurgico extends ResourceController
 
     // Adicionando o JOIN com vw_statusfilacirurgica
     $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
-    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'inner');
+    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
 
 
     // Selecionando campos específicos com aliases
     $builder->select('
         vw_mapacirurgico.*,
         (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
-        vw_ordem_paciente.ordem_fila,
+        COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
     ');
    
     if (!empty($data['idmapa'])) {
@@ -432,13 +454,13 @@ class MapaCirurgico extends ResourceController
 
     } else {
 
-        // Adicionando a cláusula WHERE para o intervalo de datas
-        //$builder->where("vw_mapacirurgico.dthrcirurgia BETWEEN '{$data['dtinicio']}' AND '{$data['dtfim']}'");
-        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
-        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+        if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+            $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+            $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
 
-        $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
-        $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+            $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
+            $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+        }
 
         // Condicional para prontuario
         if (!empty($data['prontuario'])) {
@@ -924,7 +946,7 @@ class MapaCirurgico extends ResourceController
         $data = [];
         //$data['ordemfila'] = $mapa->ordem_fila;
         $array = $this->vwordempacientemodel->select('ordem_fila')->where('id', $mapa->idlista)->first();
-        $data['ordemfila'] = $array['ordem_fila'];
+        $data['ordemfila'] = !is_null($array) ? $array['ordem_fila'] : 0;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';

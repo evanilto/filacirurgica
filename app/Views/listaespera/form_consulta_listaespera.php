@@ -13,7 +13,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="dtinicio" class="form-label">Data Início<b class="text-danger">*</b></label>
+                                    <label for="dtinicio" class="form-label">Data Início</label>
                                     <div class="input-group">
                                         <input type="text" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtinicio')): ?>is-invalid<?php endif ?>"
@@ -28,7 +28,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="dtfim" class="form-label">Data Final<b class="text-danger">*</b></label>
+                                    <label for="dtfim" class="form-label">Data Final</label>
                                     <div class="input-group">
                                         <input type="text" id="dtfim" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtfim')): ?>is-invalid<?php endif ?>"

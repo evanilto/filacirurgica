@@ -83,19 +83,17 @@ class Home extends ResourceController
 
         //$usuario = new UsuarioModel();
         $usuario = $usuario->get_user_mysql($v['Usuario']);
-        $usuario = $v['Usuario'];
-
-        /* 
+        
         if (!isset($usuario) || !$usuario) {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Usuário não encontrado ou não autorizado.');
             return view('home/form_login');
         }
-        if ($usuario['indSituacao'] == 'I') {
+        if ($usuario['indsituacao'] == 'I') {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Usuário inativo.');
             return view('home/form_login');
-        } */
+        }
 
-        /*$perfil = $perfil->list_perfil_bd($usuario['idSishuap_Usuario'], TRUE);
+        /* $perfil = $perfil->list_perfil_bd($usuario['idSishuap_Usuario'], TRUE);
 
         if (!isset($perfil) || !$perfil) {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Usuário não possui nenhum perfil associado.');
@@ -106,6 +104,8 @@ class Home extends ResourceController
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Senha incorreta.');
             return view('home/form_login');
         }  */
+
+        $usuario = $v['Usuario'];
 
         $perfis = $perfilusu->Where('idlogin', $usuario)->select('idperfil')->findAll();
         session()->set('Sessao', ['idPerfil' => array_column($perfis, 'idperfil')]);

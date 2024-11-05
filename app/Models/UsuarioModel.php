@@ -66,9 +66,10 @@ class UsuarioModel extends Model
             FROM
                 usuarios
             WHERE
-                idlogin = '" . $data . "
-        '"); 
-        
+                idlogin = '" . $data . "' 
+            AND indsituacao = 'A'
+            "); 
+        //die(var_dump($query->getNumRows()));
         return ($query->getNumRows() > 0) ? $query->getRowArray() : FALSE ;
 
 /*         return (true);

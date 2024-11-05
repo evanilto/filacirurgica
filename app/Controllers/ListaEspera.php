@@ -104,7 +104,7 @@ class ListaEspera extends ResourceController
                                                                            ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
                                                                            ->orderBy('nome_especialidade', 'ASC')->findAll(); 
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
+                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration */
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
@@ -192,8 +192,11 @@ class ListaEspera extends ResourceController
 
         $_SESSION['listaespera'] = NULL;
 
-        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
-        $data['dtfim'] = date('d/m/Y');
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtinicio'] = NULL;
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtfim'] = NULL;
+
         /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
@@ -250,8 +253,8 @@ class ListaEspera extends ResourceController
         if (!$_SESSION['listaespera']) {
             $rules = $rules + [
                 'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
-                'dtinicio' => 'required|valid_date[d/m/Y]',
-                'dtfim' => 'required|valid_date[d/m/Y]',
+                'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                'dtfim' => 'permit_empty|valid_date[d/m/Y]',
             ];
         }
 
@@ -260,17 +263,41 @@ class ListaEspera extends ResourceController
             //die(var_dump($dataflash));
 
             if (!$_SESSION['listaespera']) {
-                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
-                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                if ($data['dtinicio'] || $data['dtfim']) {
 
-                    session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
-                    return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
-                                                        'validation' => $this->validator,
-                                                        'data' => $data]);
-                }
+                    $data['filas'] = $this->selectfila;
+                    $data['riscos'] = $this->selectrisco;
+                    $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                    if (empty($data['dtinicio'])) {
+                        $this->validator->setError('dtinicio', 'Informe a data de início!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }
+                    if (!$data['dtfim']) {
+                        $this->validator->setError('dtfim', 'Informe a data final!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }
+                    if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                        $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                            'validation' => $this->validator,
+                                                            'data' => $data]);
+                    }
+                
+                    if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                        $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
+                                                            'validation' => $this->validator,
+                                                            'data' => $data]);
+                    }
             
-                $horaAtual = date('H:i:s');
-                $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual;
+                    $hora = '23:59:59';
+                    $data['dtfim'] = $data['dtfim'] . ' ' . $hora;
+                }
             }
 
             $this->validator->reset();
@@ -305,7 +332,8 @@ class ListaEspera extends ResourceController
                                                'listaespera' => $result,
                                                'data' => $data]);
         } else {
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if(is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -343,9 +371,9 @@ class ListaEspera extends ResourceController
     
         } else {
 
-            //$clausula_where = " created_at BETWEEN $dt_ini AND $dt_fim";
-            $builder->where("vl.created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
-
+            if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+                $builder->where("vl.created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+            };
             if (!empty($data['prontuario'])) {
                 //$clausula_where .= " AND prontuario = $data[prontuario]";
                 $builder->where('vl.prontuario', $data['prontuario']);
@@ -419,6 +447,8 @@ class ListaEspera extends ResourceController
         $builder->join('local_agh_especialidades as esp', 'esp.seq = vs.idespecialidade', 'left');
         $builder->join('tipos_procedimentos as fila', 'fila.id = vs.idfila', 'left');
         //$builder->join('vw_mapacirurgico as vm', 'vs.idlistaespera = vm.idlista', 'left');
+        $builder->orderBy('vs.idfila', 'ASC');
+        $builder->orderBy('vo.ordem_fila', 'ASC');
 
         $builder->select('(vs.campos_mapa).status,
                           (vs.campos_mapa).datacirurgia,
@@ -472,8 +502,10 @@ class ListaEspera extends ResourceController
         $_SESSION['listaespera'] = NULL;
         session()->remove('excluidos');
 
-        $data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
-        $data['dtfim'] = date('d/m/Y');
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        $data['dtinicio'] =  NULL;
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtfim'] = NULL;
         /* $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $especialidades = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
@@ -538,8 +570,12 @@ class ListaEspera extends ResourceController
             //die(var_dump($dataflash));
 
             if (!session()->get('excluidos')) {
-                if ($data['dtinicio'] || $data['dtinicio']) {
-                    if (!$data['dtinicio']) {
+                if ($data['dtinicio'] || $data['dtfim']) {
+
+                    $data['filas'] = $this->selectfila;
+                    $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                    if (empty($data['dtinicio'])) {
                         $this->validator->setError('dtinicio', 'Informe a data de início!');
                         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                         'validation' => $this->validator,
@@ -596,7 +632,8 @@ class ListaEspera extends ResourceController
                                                'data' => $data]);
 
         } else {
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if(is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -847,7 +884,8 @@ class ListaEspera extends ResourceController
 
             $this->validator->reset();
 
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if(is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             } else {
                 if ($this->getPacienteNaLista($data)) {
@@ -953,8 +991,8 @@ class ListaEspera extends ResourceController
 
         //die(var_dump($this->validator));
 
-        if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            //die(var_dump($this->validator));
+        //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+        if(is_null($paciente)) {
             $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
         }
 
@@ -1733,7 +1771,9 @@ class ListaEspera extends ResourceController
                                                'listaespera' => $result,
                                                 'data' => $data]);
         } else {
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            //die(var_dump(is_null($paciente)));
+            //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if(is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -1785,10 +1825,11 @@ class ListaEspera extends ResourceController
                     END AS congelacao,
                     ci.informacoesadicionais,
                     cn.necessidadesprocedimento,
-                    CASE 
-                        WHEN cl.situacao = 0
-                        WHEN cl.situacao = 1
-                    END AS situacao,
+                    --CASE 
+                        --WHEN cl.situacao = 0
+                        --WHEN cl.situacao = 1
+                    --END AS situacao,
+                    cl.situacao,
                     cj.justificativa,
                     cje.justificativa as justificativa_exclusao
                 FROM cirurgias_listacirurgica cl
@@ -1848,7 +1889,7 @@ class ListaEspera extends ResourceController
 
                         if ($result2) {
 
-                            switch ($result2[0]->codigo) {
+                            switch ($result2[0]->idevento) {
                                 case 1: // envio ao mapa
                                     $lista['deleted_at'] = $result2[0]->data;
                                     $lista['indsituacao'] = 'A';
@@ -1979,7 +2020,7 @@ class ListaEspera extends ResourceController
             $query = $db->query($sqlSetDefault);
 
         } catch (\Throwable $e) {
-            $msg = 'Falha na criação da lista de espera - '. $reg->prontuario .' ==> '.$e->getMessage();
+            $msg = 'Falha na criação da lista de espera - '. (isset($reg->prontuario) ? $reg->prontuario : '') .' ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;
         }
