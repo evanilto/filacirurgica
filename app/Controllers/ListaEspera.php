@@ -661,7 +661,10 @@ class ListaEspera extends ResourceController
         $db->transStart();
 
         try {
-            $this->listaesperamodel->update($id, ['indsituacao' => 'A', 'deleted_at' => NULL]);
+            //$this->listaesperamodel->update($id, ['indsituacao' => 'A', 'deleted_at' => NULL]);
+            $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
+                                                                                                 ->set('indsituacao', 'A') // Aguardando
+                                                                                                 ->update();
 
             if ($db->transStatus() === false) {
                 $error = $db->error();
@@ -1203,7 +1206,7 @@ class ListaEspera extends ResourceController
         $db->transStart();
 
         try {
-            $this->listaesperamodel->update($id, ['indsituacao' => 'I']);
+            $this->listaesperamodel->update($id, ['indsituacao' => 'E']); // Excluído
 
             if ($db->transStatus() === false) {
                 $error = $db->error();
@@ -1403,7 +1406,8 @@ class ListaEspera extends ResourceController
                         'indcongelacao' => $this->data['congelacao'],
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
-                        'txtorigemjustificativa' => $this->data['justorig']
+                        'txtorigemjustificativa' => $this->data['justorig'],
+                        'indsituacao' => 'P' // Programada
                         ];
 
                 $this->listaesperamodel->update($this->data['id'], $lista);
@@ -1875,67 +1879,97 @@ class ListaEspera extends ResourceController
 
                 switch ($reg->situacao) {
                     case 0:
+
                         $sql = "
-                                select *
-                                from cirurgias_historico ch 
-                                where idlistacirurgica = $reg->idlistacirurgica
-                                order by ch.data desc 
-                                limit 1;
-                                ";
-        
+                        select *
+                        from cirurgias_mapacirurgico cm 
+                        where idlistacirurgica = $reg->idlistacirurgica
+                        ;";
+
                         $query = $db->query($sql);
             
-                        $result2 = $query->getResult();
+                        $result1 = $query->getResult();
 
-                        if ($result2) {
+                        if (!$result1) {
+                            $lista['deleted_at'] = date('Y-m-d H:i:s');
 
-                            switch ($result2[0]->idevento) {
-                                case 1: // envio ao mapa
-                                    $lista['deleted_at'] = $result2[0]->data;
-                                    $lista['indsituacao'] = 'A';
-
-                                    break;
-
-                                case 4: // cirurgia realizada
-
-                                    $sql = "
-                                        select *
-                                        from cirurgias_historico ch 
-                                        where idlistacirurgica = $reg->idlistacirurgica
-                                        and idevento = 1
-                                        order by ch.data desc 
-                                        limit 1;
-                                        ";
-            
-                                    $query = $db->query($sql);
-                        
-                                    $resulthist = $query->getResult();
-
-                                    if ($resulthist) {
-                                        $lista['deleted_at'] = $resulthist[0]->data; // data do ultimo envio ao mapa
-
-                                    } else {
-                                        $lista['deleted_at'] = $result2[0]->data; // pegar a data da realização da cirurgia
-                                    }
-
-                                    $lista['indsituacao'] = 'A';
-
-                                    break;
-
-                                case 7: // exclusão
-                                    $lista['deleted_at'] = $result2[0]->data;
-                                    $lista['indsituacao'] = 'I';
-
-                                    break;
-
-                                default:
-                                    $lista['deleted_at'] = date('Y-m-d H:i:s');
-                                    $lista['indsituacao'] = 'I';
-                            }
+                            $lista['indsituacao'] = 'E'; // Excluído
 
                         } else {
-                            $lista['deleted_at'] = date('Y-m-d H:i:s');
-                            $lista['indsituacao'] = 'I';
+
+                            $sql = "
+                                    select *
+                                    from cirurgias_historico ch 
+                                    where idlistacirurgica = $reg->idlistacirurgica
+                                    order by ch.data desc 
+                                    limit 1;
+                                    ";
+            
+                            $query = $db->query($sql);
+                
+                            $result2 = $query->getResult();
+
+                            if ($result2) {
+
+                                switch ($result2[0]->idevento) {
+                                    case 1: // envio ao mapa
+                                        $lista['deleted_at'] = $result2[0]->data;
+
+                                        $lista['indsituacao'] = 'P'; // Programada
+
+                                        break;
+
+                                    case 2: // cancelamento por suspensão
+                                        $lista['deleted_at'] = $result2[0]->data;
+
+                                        $lista['indsituacao'] = 'E'; // Excluído
+
+                                        break;
+
+                                    case 4: // cirurgia realizada
+
+                                        $sql = "
+                                            select *
+                                            from cirurgias_historico ch 
+                                            where idlistacirurgica = $reg->idlistacirurgica
+                                            and idevento = 1
+                                            order by ch.data desc 
+                                            limit 1;
+                                            ";
+                
+                                        $query = $db->query($sql);
+                            
+                                        $resulthist = $query->getResult();
+
+                                        if ($resulthist) {
+                                            $lista['deleted_at'] = $resulthist[0]->data; // data do ultimo envio ao mapa
+
+                                        } else {
+                                            $lista['deleted_at'] = $result2[0]->data; // pegar a data da realização da cirurgia
+                                        }
+
+                                        $lista['indsituacao'] = 'P'; // Programada
+
+                                        break;
+
+                                    case 7: // exclusão
+                                        $lista['deleted_at'] = $result2[0]->data;
+
+                                        $lista['indsituacao'] = 'E'; // Excluído
+
+                                        break;
+
+                                    default:
+                                        $lista['deleted_at'] = date('Y-m-d H:i:s');
+
+                                        $lista['indsituacao'] = 'P'; // Programado
+                                }
+
+                            } else {
+                                $lista['deleted_at'] = date('Y-m-d H:i:s');
+
+                                $lista['indsituacao'] = 'P'; // Programado
+                            }
                         }
 
                         break;
@@ -1943,19 +1977,23 @@ class ListaEspera extends ResourceController
                     case 1:
                         $temaghu = $this->localaippacientesmodel->Where('prontuario', $reg->prontuario)->findAll();
                         if ($temaghu) {
-                            $lista['indsituacao'] = 'A';
                             $lista['deleted_at'] = NULL;
 
+                            $lista['indsituacao'] = 'A'; // Aguardando
+
+
                         } else {
-                            $lista['indsituacao'] = 'E'; // Erro
                             $lista['deleted_at'] = date('Y-m-d H:i:s'); 
+
+                            $lista['indsituacao'] = 'X'; // Erro
                         }
                        
                         break;
 
                     default:
-                        $lista['indsituacao'] = NULL;
                         $lista['deleted_at'] = NULL;
+
+                        $lista['indsituacao'] = 'I'; // Indefinido
 
                 }
 

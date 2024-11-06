@@ -361,8 +361,9 @@ class MapaCirurgico extends ResourceController
                                                         'data' => $data]);
                 }
             
-                $hora = '23:59:59';
-                $data['dtfim'] = $data['dtfim'] . ' ' . $hora;
+                //$hora = '23:59:59';
+                //$data['dtinicio'] = $data['dtinicio'] . ' ' . '00:00:00';
+                //$data['dtfim'] = $data['dtfim'] . ' ' . '23:59:59';
             
             }
             
@@ -453,6 +454,7 @@ class MapaCirurgico extends ResourceController
         $builder->where('vw_mapacirurgico.id', $data['idmapa']);
 
     } else {
+        //die(var_dump($data));
 
         if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
             $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
@@ -1450,6 +1452,7 @@ class MapaCirurgico extends ResourceController
                         'indcongelacao' => $this->data['congelacao'],
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
+                        'indSituacao' => 'P' // Programada
                         ];
 
                 $this->listaesperamodel->update($this->data['idlistapac2'], $lista);
@@ -1598,7 +1601,9 @@ class MapaCirurgico extends ResourceController
 
                 //if (!$mapaprogr) {
 
-                    $this->listaesperamodel->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)->update();
+                    $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
+                                                                                                         ->set('indsituacao', 'A') // Aguardando
+                                                                                                         ->update();
 
                     if ($db->transStatus() === false) {
                         $error = $db->error();
@@ -2373,8 +2378,10 @@ class MapaCirurgico extends ResourceController
 
             if (isset($evento['dthrsuspensao']) /*|| $evento['dthrcancelamento']*/) {
                 //$this->listaesperamodel->withDeleted()->update($arrayid['idLista'], ['deleted_at' => '']);
-                $this->listaesperamodel->withDeleted()->where('id', $arrayid['idLista'])->set('deleted_at', NULL)->update();
-            }
+                $this->listaesperamodel->withDeleted()->where('id', $arrayid['idLista'])->set('deleted_at', NULL)
+                                                                                        ->set('indsituacao', 'E') // Excluído
+                                                                                        ->update();
+                        }
 
             if ($db->transStatus() === false) {
                 $db->transRollback(); 
@@ -2641,6 +2648,7 @@ class MapaCirurgico extends ResourceController
                 cm.datacirurgia,
                 cm.idcentrocirurgico,
                 cm.idsala,
+                cl.datainclusao,
                 CASE 
                     WHEN cm.posoperatorio = 'UTIAD' THEN 1
                     WHEN cm.posoperatorio = 'UTINEO' THEN 2
@@ -2700,9 +2708,19 @@ class MapaCirurgico extends ResourceController
                 $mapa['txtjustificativaenvio'] = $reg->justificativa_envio;
                 $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
                 $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
-                $mapa['indurgencia'] = 'N';
                 $mapa['numordem'] = $reg->ordem;
 
+                $dataLista = new DateTime($reg->datainclusao);
+                $dataMapa = new DateTime($reg->datacirurgia);
+
+                $diferenca = $dataMapa->diff($dataLista);
+
+                if ($diferenca->days < 3 ) {
+                    $mapa['indurgencia'] = 'S';
+                } else {
+                    $mapa['indurgencia'] = 'N';
+                }
+                
                 $this->mapacirurgicomodel->insert($mapa);
 
                 if ($db->transStatus() === false) {
