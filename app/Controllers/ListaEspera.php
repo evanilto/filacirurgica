@@ -15,6 +15,7 @@ use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
+use App\Models\FilasModel;
 use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
 use App\Models\LocalFatItensProcedHospitalarModel;

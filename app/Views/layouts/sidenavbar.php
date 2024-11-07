@@ -102,19 +102,42 @@
                 <div class="collapse" id="cadastros">
                     <ul class="nav flex-column submenu-2">
                         <li>
+                            <a href="#filas" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                                <i class="fa-solid fa-plus toggle-icon"></i> Filas
+                            </a>
+                            <div class="collapse" id="filas">
+                                <ul class="nav flex-column submenu-3">
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-incluir')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('filas/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Incluir
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-consultar')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('filas/listar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Listar
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
                             <a href="#usuarios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                                 <i class="fa-solid fa-plus toggle-icon"></i> Usuários
                             </a>
                             <div class="collapse" id="usuarios">
                                 <ul class="nav flex-column submenu-3">
-                                <?php if(HUAP_Functions::tem_permissao('cadastros-usuario-incluir')) { ?>
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-incluir')) { ?>
                                     <li>
                                         <a href="<?= base_url('usuarios/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
                                             <i class="fa-solid fa-user-nurse"></i> Incluir
                                         </a>
                                     </li>
                                 <?php } ?>
-                                <?php if(HUAP_Functions::tem_permissao('cadastros-usuario-consultar')) { ?>
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-consultar')) { ?>
                                     <li>
                                         <a href="<?= base_url('usuarios/listar') ?>" class="nav-link text-white p-2" aria-current="page">
                                             <i class="fa-solid fa-user-nurse"></i> Listar

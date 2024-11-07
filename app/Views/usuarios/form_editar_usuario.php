@@ -3,7 +3,7 @@
     
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-6">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
                     <b><?= 'Alterar Usuário' ?></b>
@@ -11,7 +11,7 @@
                 <div class="card-body has-validation">
                     <form id="UsuarioForm" method="post" action="<?= base_url("usuarios/editar/$id") ?>">
                         <div class="row g-3">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="login" class="form-label">Login</label>
                                     <div class="input-group mb-12">
@@ -30,7 +30,7 @@
                         </div>
 
                         <div class="row g-3">
-                            <div class="col-md-8">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="perfis" class="form-label" autofocus>Perfis<b class="text-danger">*</b></label>
                                     <div class="input-group mb-12 bordered-container">
@@ -90,7 +90,7 @@
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-save"></i> Salvar
                                 </button>
-                                <a class="btn btn-warning mt-3" href="<?= base_url('home_index') ?>">
+                                <a class="btn btn-warning mt-3" href="javascript:window.history.back();">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>

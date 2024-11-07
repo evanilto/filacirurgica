@@ -1124,10 +1124,10 @@ class HUAP_Functions
             case 'cadastros':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
 
-            case 'cadastros-usuario-incluir':
+            case 'cadastros-incluir':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','3']));
 
-            case 'cadastros-usuario-consultar':
+            case 'cadastros-consultar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
 
             case 'resgatar':

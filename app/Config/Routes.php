@@ -71,6 +71,14 @@ $routes->group('usuarios', function ($routes) {
     $routes->get('carregarPagina/(:segment)', 'Usuarios::carregarPagina/$1');
 });
 
+$routes->group('filas', function ($routes) {
+    $routes->get('incluir', 'Filas::incluir_fila');
+    $routes->post('incluir', 'Filas::incluir');
+    $routes->get('editar/(:num)', 'Filas::editar_fila/$1');
+    $routes->post('editar/(:num)', 'Filas::editar/$1');
+    $routes->get('listar', 'Filas::listar');
+});
+
 $routes->group('relatorios', function ($routes) {
     $routes->get('agendas', 'Agendas::consultarAgendas');
     $routes->post('consultar', 'Agendas::consultar');
