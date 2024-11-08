@@ -308,9 +308,11 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
-                                    <i class="fa-solid fa-save"></i> Salvar
-                                </button>
+                                <?php if ($data['habilitasalvar'] ) { ?>
+                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                        <i class="fa-solid fa-save"></i> Salvar
+                                    </button>
+                                <?php } ?>
                                 <a class="btn btn-warning mt-3" href="<?= base_url('home_index') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>

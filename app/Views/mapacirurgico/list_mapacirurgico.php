@@ -10,6 +10,7 @@
     $corTrocaPaciente = '#E9967A';
     $corCirurgiaSuspensa = '#B54398';
     $corCirurgiaCancelada = 'red';
+
 ?>
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
@@ -56,9 +57,17 @@
     </thead>
     <tbody>
         <?php
+
             foreach($mapacirurgico as $itemmapa): 
                 $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
                 $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
+
+                //die(var_dump($itemmapa));
+                if (DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('Y-m-d') != date('Y-m-d')) {
+                    $permiteatualizar = false;
+                } else {
+                    $permiteatualizar = true;
+                }
 
                 if ($itemmapa->dthrsuspensao) {
                     $color =$corCirurgiaSuspensa;
@@ -161,8 +170,8 @@
                 <td><?php echo $itemmapa->nome_paciente ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($status_cirurgia == "Programada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
-                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corNoCentroCirúrgico.';"></i></a>';
+                        if ($status_cirurgia == "Programada" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corNoCentroCirúrgico.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
@@ -170,8 +179,8 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($status_cirurgia == "NoCentroCirurgico" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
-                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corEmCirurgia.';"></i></a>';
+                        if ($status_cirurgia == "NoCentroCirurgico" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corEmCirurgia.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
@@ -179,8 +188,8 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($status_cirurgia == "EmCirurgia" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
-                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaDaSala.';"></i></a>';
+                        if ($status_cirurgia == "EmCirurgia" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaDaSala.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
@@ -188,8 +197,8 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($status_cirurgia == "SaídaDaSala" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
-                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaCentroCirúrgico.';"></i></a>';
+                        if ($status_cirurgia == "SaídaDaSala" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaCentroCirúrgico.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
                         }
@@ -198,7 +207,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
-                            echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
+                            echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" style="color: gray;"></i></span>';
                         }
@@ -227,7 +236,7 @@
                 </td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                        if ($status_cirurgia != "Suspensa" && $permiteatualizar && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                             echo anchor('mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id, '<i class="fa-regular fa-clock"></i>', array('title' => 'Atualizar Horários', 'onclick' => 'mostrarAguarde(event, this.href)'));
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" style="color: gray;"></i></span>';
@@ -443,6 +452,10 @@
             default:
                 complexidadeDescricao = 'Indefinida'; // Valor padrão para casos inesperados
                 break;
+        }
+
+        if (paciente.ordem === 0) {
+            paciente.ordem = '-';
         }
 
         var htmlContent = `

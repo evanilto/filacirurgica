@@ -4,7 +4,7 @@
         <tbody>
             <tr>
                 <td width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila</td>
-                <td><b><?= $ordemfila ?></b></td>
+                <td><b><?= $ordemfila == 0 ? '-' : $ordemfila ?></b></td>
             </tr>
             <tr>
                 <td width="40%"><i class="fa-solid fa-users-line"></i> Fila:</td>

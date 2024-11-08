@@ -789,7 +789,7 @@ class ListaEspera extends ResourceController
             }; */
         }
 
-        $builder->where('le.indsituacao', 'I');
+        $builder->where('le.indsituacao', 'E');
         $builder->where('le.indurgencia', 'N');
         $builder->where('le.deleted_at IS NOT NULL', null, false);
 
@@ -821,6 +821,7 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['habilitasalvar'] = true;
 
         //var_dump($data['filas']);die();
 
@@ -966,6 +967,7 @@ class ListaEspera extends ResourceController
 
                         $ordemfila = $this->getOrdemFila($idlista);
                         $dataform['ordem'] = $ordemfila ?? 'A Definir';
+                        $dataform['habilitasalvar'] = false;
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                             'data' => $dataform]);     

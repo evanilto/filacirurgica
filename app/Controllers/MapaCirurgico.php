@@ -972,7 +972,7 @@ class MapaCirurgico extends ResourceController
         $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
-        $data['sala'] =  $mapa->idsala ?? '';
+        $data['sala'] =  $mapa->idsala ?? ' ';
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
         $data['filas'] = $this->selectfila;
@@ -1033,7 +1033,7 @@ class MapaCirurgico extends ResourceController
 
         if ($this->validate($rules)) {
 
-            if (DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d H:i') < date('Y-m-d H:i')) {
+            /* if (DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d H:i') < date('Y-m-d H:i')) {
                 $this->validator->setError('dtcirurgia', 'A data/hora da cirurgia não pode ser menor que a data/hora atual!');
 
                 session()->setFlashdata('error', $this->validator);
@@ -1043,7 +1043,7 @@ class MapaCirurgico extends ResourceController
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                     'validation' => $this->validator,
                                                     'data' => $this->data]);
-            }
+            } */
 
             $db = \Config\Database::connect('default');
 
@@ -2150,7 +2150,7 @@ class MapaCirurgico extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($this->data));
+        //die(var_dump($data));
 
         $rules = [
             'hrnocentrocirurgico' => 'permit_empty|valid_date[H:i]',
@@ -2161,6 +2161,20 @@ class MapaCirurgico extends ResourceController
         ];
 
         if ($this->validate($rules)) {
+
+            if (DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d') != date('Y-m-d')) {
+                $this->validator->setError('dthrcirurgia', 'A cirurgia não pode ser realizada fora da data prevista!');
+
+                session()->setFlashdata('error', $this->validator);
+
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['filas'] = $this->selectfila;
+                $data['procedimentos'] = $this->selectitensprocedhospit;
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            }
 
             $mapa = [
                 'dthrnocentrocirurgico'  => !empty($data['hrnocentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrnocentrocirurgico'] : NULL,
@@ -2358,6 +2372,20 @@ class MapaCirurgico extends ResourceController
                 throw new \Exception('Erro ao decodificar JSON: ' . json_last_error_msg());
             }
 
+            /* if (DateTime::createFromFormat('d/m/Y H:i', $arrayid['idMapa'])->format('Y-m-d') != date('Y-m-d')) {
+                $this->validator->setError('dthrcirurgia', 'A cirurgia não pode ser realizada fora da data prevista!');
+
+                session()->setFlashdata('error', $this->validator);
+
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['filas'] = $this->selectfila;
+                $data['procedimentos'] = $this->selectitensprocedhospit;
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            } */
+
             //return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!'.$evento['dthrsaidasala']]);
 
             $db = Database::connect('default');
@@ -2381,7 +2409,7 @@ class MapaCirurgico extends ResourceController
                 $this->listaesperamodel->withDeleted()->where('id', $arrayid['idLista'])->set('deleted_at', NULL)
                                                                                         ->set('indsituacao', 'E') // Excluído
                                                                                         ->update();
-                        }
+            }
 
             if ($db->transStatus() === false) {
                 $db->transRollback(); 
@@ -2493,6 +2521,12 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($_GET));
 
         $queryData = $this->request->getGet('dados');
+        
+        //die(var_dump(isset($queryData['ordem_fila'])));
+
+        if (!isset($queryData['ordem_fila'])) {
+            $queryData['ordem_fila'] = '-';
+        }
 
         $result = $this->getHistorico($idlista);
 

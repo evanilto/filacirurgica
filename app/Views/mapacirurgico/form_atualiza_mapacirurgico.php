@@ -621,7 +621,11 @@
 
         // Inicializa as salas adicionais já selecionadas
         updateSalasCirurgicas($('#centrocirurgico').val());
-        $('#sala').val('<?= $data['sala'] ?>').trigger('change'); // Adiciona esta linha para garantir que o valor inicial é definido
+        //$('#sala').val('<--?= $data['sala'] ?>').trigger('change'); // Adiciona esta linha para garantir que o valor inicial é definido
+        <?php if (isset($data['sala']) && $data['sala'] !== ''): ?>
+            $('#sala').val('<?= $data['sala'] ?>').trigger('change');
+        <?php endif; ?>
+
 
         $('#sala').on('change', function() {
             $('#sala_hidden').val($(this).val());
