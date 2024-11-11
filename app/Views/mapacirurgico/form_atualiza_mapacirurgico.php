@@ -355,7 +355,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="2" <?= $data['status_fila'] ?>
+                                    <textarea id="info" maxlength="255" rows="2" <?= $data['status_fila'] ?> disabled
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>

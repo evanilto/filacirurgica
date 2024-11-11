@@ -17,7 +17,7 @@
         <tr>
             <th scope="row" colspan="3" class="bg-light text-start"  style="border-right: none;"><h5><strong>Mapa Cirúrgico</strong></h5>
             </th>
-            <th scope="row" colspan="16" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
+            <th scope="row" colspan="17" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
                 <table class="legend-table">
                     <tr>
                         <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -52,7 +52,7 @@
             </th>
             <th scope="col" data-field="prontuario" >Prontuario</th>
             <th scope="col" data-field="nome" >Nome do Paciente</th>
-            <th scope="col" class="col-0" colspan="8" style="text-align: center;">Ações</th>
+            <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -245,12 +245,18 @@
                 </td>         
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
-                        echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id,
-                        ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? '<i class="fas fa-pencil-alt"></i>' :  '<i class="fa-solid fa-magnifying-glass"></i>',
-                        array('title' => ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'Atualizar Cirurgia' : 'Consultar Cirurgia',
-                        'onclick' => 'mostrarAguarde(event, this.href)'));
+                        if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';
+                        }
                     ?>
-                </td>        
+                </td>    
+                <td style="text-align: center; vertical-align: middle;">
+                    <?php
+                        echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                    ?>
+                </td>       
             </tr>
         <?php endforeach; ?>
     </tbody>

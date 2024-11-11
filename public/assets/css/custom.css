@@ -9,7 +9,7 @@ body {
     grid-template-columns: 230px 1fr;
     min-height: 100vh;
     line-height: 1.6;
-    font-size: 16px; /* Adjust the font size as needed */
+    font-size: 14px; /* Adjust the font size as needed */
     font-family: 'Montserrat', sans-serif;
     background-color: #f4f4f4;
     color: #333;
@@ -29,6 +29,10 @@ body {
     color: #fff;
     padding: 1rem;
     text-align: center;
+}
+
+.card-header {
+    font-size: 16px; /* Defina o tamanho da fonte desejado */
 }
 
 .header img {
@@ -78,6 +82,10 @@ section {
 section .content {
     border: none;
     padding: 0;
+}
+
+input, textarea {
+    font-size: 14px; /* Defina o tamanho da fonte desejado */
 }
 
 #content table {
@@ -157,6 +165,18 @@ section .content {
     border-radius: 5px; /* Bordas arredondadas */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
     margin-top: 20px; /* Margem superior */
+}
+.form-check {
+    display: flex; /* Flex para os itens de radio */
+    align-items: center; /* Centraliza verticalmente os radio buttons e suas labels */
+    margin-right: 15px; /* Espaço entre as opções */
+    height: 26px; /* Define a altura do contêiner */
+}
+.form-check-input {
+    margin-top: 0; /* Remove a margem padrão do input */
+}
+.form-check-label {
+    margin-bottom: 0; /* Remove a margem padrão da label */
 }
 
 /* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
@@ -273,6 +293,7 @@ tfoot {
 .form-control {
     padding: 2px;
     padding-left: 4px;
+    font-size: 14px;
 }
 
 .legend-container {

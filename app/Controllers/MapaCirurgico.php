@@ -1244,10 +1244,14 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($mapa));
 
         $data = [];
-        $data['ordem_fila'] = $mapa->ordem_fila;
+        //$data['ordemfila'] = $mapa->ordem_fila;
+        $array = $this->vwordempacientemodel->select('ordem_fila')->where('id', $mapa->idlista)->first();
+        $data['ordemfila'] = !is_null($array) ? $array['ordem_fila'] : 0;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['enable_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
+        $data['status_fila'] = $mapa->status_fila;
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
         $data['prontuario'] = $mapa->prontuario;
         $data['especialidade'] = $mapa->idespecialidade;
@@ -1266,6 +1270,9 @@ class MapaCirurgico extends ResourceController
         $data['nec_proced'] = $mapa->necessidadesproced;
         $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = $mapa->justificativaenvio;
+        $data['justsusp'] = $mapa->justificativasuspensao;
+        $data['justurgencia'] = $mapa->justificativaurgencia;
+        $data['indurgencia'] = $mapa->indurgencia;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
         $data['sala'] =  $mapa->idsala;
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
@@ -1793,6 +1800,7 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
+            'complexidade' => 'required',
             'origem' => 'required',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
@@ -1927,6 +1935,7 @@ class MapaCirurgico extends ResourceController
                                 'idposoperatorio' => $this->data['posoperatorio'],
                                 'indhemoderivados' => $this->data['hemoderivados'],
                                 'txtnecessidadesproced' => $this->data['nec_proced'],
+                                'txtjustificativaurgencia' => $this->data['justurgencia'],
                                 'indurgencia' => 'S'
                                 ];
 

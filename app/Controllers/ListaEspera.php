@@ -869,6 +869,7 @@ class ListaEspera extends ResourceController
         $dataform['especialidades'] = $this->selectespecialidadeaghu;
         $dataform['cids'] = $this->selectcids;
         $dataform['procedimentos'] = $this->selectitensprocedhospit;
+        $dataform['habilitasalvar'] = true;
 
         //die(var_dump($dataform['lateralidade']));
 
@@ -1009,6 +1010,46 @@ class ListaEspera extends ResourceController
         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                             'validation' => $this->validator,
                                             'data' => $dataform]);
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function consultarItemLista(int $id, $ordemfila)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $lista = $this->listaesperamodel->find($id);
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['ordemfila'] = $ordemfila;
+        $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['risco'] = $lista['idriscocirurgico'];
+        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
+        $data['cid'] = $lista['numcid'];
+        $data['complexidade'] = $lista['idcomplexidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['origem'] = $lista['idorigempaciente'];
+        $data['congelacao'] = $lista['indcongelacao'];
+        $data['procedimento'] = $lista['idprocedimento'];
+        $data['lateralidade'] = $lista['idlateralidade'];
+        $data['info'] = $lista['txtinfoadicionais'];
+        $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_itemlista',
+                                            'data' => $data]);
+
     }
     /**
      * Return a new resource object, with default properties
@@ -1383,6 +1424,22 @@ class ListaEspera extends ResourceController
 
                 return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                     'data' => $this->data]);
+            }
+
+            if (empty($this->data['justenvio'])) {
+
+                $tempacfila = $this->vwordempacientemodel->where('idfila', $this->data['fila'])
+                                                         ->where('ordem_fila <', $this->data['ordemfila'])->findAll();
+
+                if ($tempacfila) {
+                    $this->validator->setError('justenvio', 'Informe a justificativa para o envio ao mapa cirúrgico de um paciente fora da ordem da lista!');
+
+                    $this->carregaMapa();
+
+                    return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                        'data' => $this->data]);
+                }
+
             }
 
             $data_clone = $this->data;

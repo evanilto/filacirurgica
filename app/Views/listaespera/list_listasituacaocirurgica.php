@@ -1,3 +1,5 @@
+<?php use App\Libraries\HUAP_Functions; ?>
+
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
@@ -14,9 +16,10 @@
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
             <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
             <th scope="col" data-field="prontuarioaghu" >Fila</th>
-            <th scope="col" data-field="prontuarioaghu" >Dt/Hr Cirurgia</th>
+            <!-- <th scope="col" data-field="prontuarioaghu" >Dt/Hr Cirurgia</th> -->
             <th scope="col" data-field="prontuarioaghu" >idLista</th>
             <th scope="col" data-field="prontuarioaghu" >idMapa</th>
+            <th scope="col" class="col-0" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -45,9 +48,22 @@
                 <td><?php echo $itemlista->nome ?></td>
                 <td><?php echo $itemlista->especialidade ?></td>
                 <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->datacirurgia ?></td>
+                <!-- <td><--?php echo $itemlista->datacirurgia ?></td> -->
                 <td><?php echo $itemlista->idlistaespera ?></td>
                 <td><?php echo $itemlista->idmapacirurgico ?? '-' ?></td>
+                <td style="text-align: center; vertical-align: middle;">
+                    <?php
+                        if (($itemlista->status == 'Aguardando' || $itemlista->status == 'Realizada' || $itemlista->status == 'Programada' || $itemlista->status == 'Suspensa') && HUAP_Functions::tem_permissao('mapacirurgico-consultar')) {
+                            if ($itemlista->idmapacirurgico) {
+                                echo anchor('mapacirurgico/consultarcirurgia/'.$itemlista->idmapacirurgico, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                            } else {
+                                echo anchor('listaespera/consultaritemlista/'.$itemlista->idlistaespera.'/'.$itemlista->ordem_fila, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente na Lista', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                            }
+                        } else {
+                            echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';
+                        }
+                    ?>
+                </td>  
                 
                 <!--?=  session()->set('parametros_consulta_lista', $data); ?-->
             </tr>

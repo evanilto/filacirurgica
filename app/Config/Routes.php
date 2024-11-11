@@ -18,13 +18,14 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
     $routes->add('mostrarlista', 'ListaEspera::mostrarListaEsperaSalva');
+    $routes->get('consultaritemlista/(:num)/(:num)', 'ListaEspera::consultarItemLista/$1/$2');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:any)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->get('carregaaside/(:num)/(:any)/(:any)', 'ListaEspera::getDetailsAside/$1/$2/$3');
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');
-    $routes->get('editarlista/(:num/(:num))', 'ListaEspera::editarLista/$1/$2');
+    $routes->get('editarlista/(:num)/(:num)', 'ListaEspera::editarLista/$1/$2');
     $routes->post('editar', 'ListaEspera::editar');
     $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
