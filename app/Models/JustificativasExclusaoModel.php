@@ -4,39 +4,17 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class MapaCirurgicoModel extends Model
+class JustificativasExclusaoModel extends Model
 {
-    protected $table            = 'mapa_cirurgico';
+    protected $table            = 'justificativas_exclusao';
     protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true; // false for migration
+    protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true; // false for migration
+    protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        /* 'id', // include for migration
-        'created_at', // for migration
-        'updated_at', // for migration */
-        'idlistaespera',
-        'dthrnocentrocirurgico',
-        'dthremcirurgia',
-        'dthrsaidasala',
-        'dthrsuspensao',
-        'dthrcirurgia',
-        'dthrsaidacentrocirurgico',
-        'dthrtroca',
-        'idlistatroca',
-        'idcentrocirurgico',
-        'idsala',
-        'idposoperatorio',
-        'indhemoderivados',
-        'txtnecessidadesproced',
-        'txtjustificativaenvio',
-        'txtjustificativasuspensao',
-        'txtnecessidadesproced',
-        'txtjustificativaurgencia',
-        'txtjustificativatroca',
-        'numordem',
-        'indurgencia'
+        'descricao',
+	    'indsituacao'
     ];
 
     // Dates

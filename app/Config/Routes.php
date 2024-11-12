@@ -19,6 +19,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
     $routes->add('mostrarlista', 'ListaEspera::mostrarListaEsperaSalva');
     $routes->get('consultaritemlista/(:num)/(:num)', 'ListaEspera::consultarItemLista/$1/$2');
+    $routes->get('consultarpacienteexcluido/(:num)', 'ListaEspera::consultarPacienteExcluido/$1');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:any)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->get('carregaaside/(:num)/(:any)/(:any)', 'ListaEspera::getDetailsAside/$1/$2/$3');
@@ -27,7 +28,8 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('incluir', 'ListaEspera::incluir');
     $routes->get('editarlista/(:num)/(:num)', 'ListaEspera::editarLista/$1/$2');
     $routes->post('editar', 'ListaEspera::editar');
-    $routes->get('excluir/(:num)', 'ListaEspera::excluirPacienteDaLista/$1');
+    $routes->get('excluirpaciente/(:num)/(:num)', 'ListaEspera::excluirPaciente/$1/$2');
+    $routes->post('excluir/', 'ListaEspera::excluirPacienteDaLista');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
     $routes->post('enviar', 'ListaEspera::enviar');
     $routes->post('getlista', 'ListaEspera::getListaPaciente');
@@ -35,7 +37,8 @@ $routes->group('listaespera', function ($routes) {
     $routes->add('exibirsituacao', 'ListaEspera::exibirSituacaoCirurgica');
     $routes->get('consultarexcluidos', 'ListaEspera::consultarExcluidos');
     $routes->add('exibirexcluidos', 'ListaEspera::exibirExcluidos');
-    $routes->get('recuperarexcluido/(:num)', 'ListaEspera::recuperarExcluido/$1');
+    $routes->get('recuperarexcluido/(:num)', 'ListaEspera::recuperarPaciente/$1');
+    $routes->post('recuperar', 'ListaEspera::recuperar');
 });
 
 $routes->group('mapacirurgico', function ($routes) {
@@ -54,6 +57,8 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->post('incluir', 'MapaCirurgico::incluir');
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
     $routes->add('exibirhistorico/(:num)', 'MapaCirurgico::exibirHistorico/$1');
+    $routes->get('suspendercirurgia/(:num)', 'MapaCirurgico::SuspenderCirurgia/$1');
+    $routes->post('suspender/', 'MapaCirurgico::suspender');
 });
 
 $routes->group('usuarios', function ($routes) {

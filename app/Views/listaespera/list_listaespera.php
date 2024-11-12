@@ -88,7 +88,7 @@
                 <td style="text-align: center; vertical-align: middle;">
                     <?php
                         if(HUAP_Functions::tem_permissao('listaespera-excluir')) { 
-                            echo anchor('listaespera/excluir/'.$itemlista->id, '<i class="fas fa-trash-alt"></i>', array('title' => 'Excluir Paciente', 'onclick' => 'return confirma_excluir()'));
+                            echo anchor('listaespera/excluirpaciente/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-trash-alt"></i>');
                         } else {
                             echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para excluir."><i class="fas fa-trash-alt"></i></span>';
                         } 

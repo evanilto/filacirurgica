@@ -30,9 +30,11 @@ class ListaEsperaModel extends Model
         'indsituacao',
         'indcongelacao',
         'indurgencia',
+        'indexclusao',
         'txtinfoadicionais',
         'txtorigemjustificativa',
         'txtjustificativaexclusao',
+        'txtjustificativarecuperacao',
         'txtinfoadicionais'
     ];
 

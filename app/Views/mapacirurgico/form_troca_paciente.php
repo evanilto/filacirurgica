@@ -343,6 +343,21 @@
                             </div>
                         </div>
                         <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Justificativa para troca<b class="text-danger">*</b></label>
+                                    <textarea id="justtroca" maxlength="255" rows="2"
+                                            class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
+                                            name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('justtroca')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('justtroca') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="container bordered-container">
                                 <div class="row g-3">
                                     <div class="col-md-6">

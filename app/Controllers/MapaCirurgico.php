@@ -410,7 +410,7 @@ class MapaCirurgico extends ResourceController
                                                'data' => $data]);
 
         } else {
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -1356,6 +1356,7 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorio'] = null;
         $data['info'] = '';
         $data['nec_proced'] = '';
+        $data['justtroca'] = '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
@@ -1422,6 +1423,7 @@ class MapaCirurgico extends ResourceController
             'lateralidade' => 'required',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
+            'justtroca' => 'required|max_length[500]|min_length[3]',
         ];
 
         //die(var_dump($_SESSION['candidatos']));
@@ -1576,6 +1578,7 @@ class MapaCirurgico extends ResourceController
                 $array = [];
                 $array['dthrtroca'] = date('Y-m-d H:i:s');
                 $array['idlistatroca'] = $this->data['idlistapac2'];
+                $array['txtjustificativatroca'] = $this->data['justtroca'];
 
                 $this->mapacirurgicomodel->update($this->data['idmapapacatrocar'], $array);
 
@@ -1589,7 +1592,9 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
-                /*$this->mapacirurgicomodel->delete($this->data['idmapapacatrocar']);
+                $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
+                                                                                                        ->set('indsituacao', 'A') // Aguardando
+                                                                                                        ->update();
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1597,31 +1602,9 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao excluir paciente do Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
                     );
-                }*/
-
-                //$mapaprogr = $this->vwstatusfilacirurgicamodel->Where('idlistaespera', $this->data['idlistapacatrocar'])->Where('(campos_mapa).status', 'Programada')->first();
-
-                //$db->transRollback(); 
-                //die(var_dump($mapaprogr));
-
-                //if (!$mapaprogr) {
-
-                    $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
-                                                                                                         ->set('indsituacao', 'A') // Aguardando
-                                                                                                         ->update();
-
-                    if ($db->transStatus() === false) {
-                        $error = $db->error();
-                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
-                        );
-                    }
-                //}
+                }
 
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
@@ -1686,6 +1669,155 @@ class MapaCirurgico extends ResourceController
                                                 'data' => $this->data,
                                                 'pacatrocar' => $_SESSION['pacatrocar']]);
         }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function suspenderCirurgia(int $id)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        //$data = $this->request->getVar();
+
+        $mapa = $this->vwmapacirurgicomodel->find($id);
+
+        //die(var_dump($lista));
+
+        $data = [];
+        $data['id'] = $mapa['id'];
+        $data['idlista'] = $mapa['idlista'];
+        $data['ordemfila'] = '-';
+        $data['prontuario'] = $mapa['prontuario'];
+        $data['especialidade'] = $mapa['idespecialidade'];
+        $data['fila'] = $mapa['idfila'];
+        $data['justsuspensao'] = '';
+        $data['filas'] = $this->selectfila;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //var_dump($data['id']);die();
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function suspender()
+    {
+        //$data = session()->get('excluidos');
+
+        $data = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        $rules = [
+            'especialidade' => 'required',
+            'fila' => 'required',
+            'justsuspensao' => 'required'
+        ];
+
+        if ($this->validate($rules)) {
+
+            try {
+
+                $db = \Config\Database::connect('default');
+
+                $db->transStart();
+
+                $mapa = [
+                    'dthrsuspensao' => date('Y-m-d H:i:s'),
+                    'txtjustificativasuspensao' => $data['justsuspensao'],
+                    ];
+
+                $this->mapacirurgicomodel->update($data['id'], $mapa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $lista = [
+                    'deleted_at' => NULL,
+                    'indsituacao' => 'A'
+                    ];
+
+                $this->listaesperamodel->withDeleted()->update($data['idlista'], $lista);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $data['idlista'],
+                    'idevento' => 2,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+        
+            } catch (\Throwable $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = 'Erro na recuperação do paciente da Lista';
+                $msg .= ' - '.$e->getMessage();
+                log_message('error', $msg.': ' . $e->getMessage());
+                session()->setFlashdata('failed', $msg);
+            }
+
+            if ($db->transStatus() === false) {
+                $dados = $this->request->getPost();
+                $dataflash['idlista'] = $id;
+                session()->setFlashdata('dataflash', $dataflash);
+
+            } else {
+                session()->setFlashdata('success', 'Cirurgia suspensa com sucesso!');
+            }
+
+            return redirect()->to(base_url('mapacirurgico/exibir'));
+
+        } else {
+            session()->setFlashdata('error', $this->validator);
+
+            $data['filas'] = $this->selectfila;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
+                                                'data' => $data]);
+        }
+
     }
     /**
      * Return the editable properties of a resource object
@@ -1938,6 +2070,8 @@ class MapaCirurgico extends ResourceController
                                 'txtjustificativaurgencia' => $this->data['justurgencia'],
                                 'indurgencia' => 'S'
                                 ];
+
+                                //die(var_dump($mapa));
 
                             $idmapa = $this->mapacirurgicomodel->insert($mapa);
 

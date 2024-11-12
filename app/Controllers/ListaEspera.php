@@ -18,6 +18,7 @@ use App\Models\EquipeMedicaModel;
 use App\Models\FilasModel;
 use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
+use App\Models\JustificativasExclusaoModel;
 use App\Models\LocalFatItensProcedHospitalarModel;
 use App\Models\LocalAghCidsModel;
 use App\Models\LocalAghEspecialidadesModel;
@@ -46,6 +47,7 @@ class ListaEspera extends ResourceController
     private $lateralidademodel;
     private $posoperatoriomodel;
     private $justificativasmodel;
+    private $justificativasexclusaomodel;
     private $localfatitensprocedhospitalarmodel;
     private $localaghcidsmodel;
     private $localaghespecialidadesmodel;
@@ -67,6 +69,7 @@ class ListaEspera extends ResourceController
     private $selectorigempaciente;
     private $selectlateralidade;
     private $selectposoperatorio;
+    private $selectjustificativasexclusao;
     private $data;
 
 
@@ -82,6 +85,7 @@ class ListaEspera extends ResourceController
         $this->origempacientemodel = new OrigemPacienteModel();
         $this->lateralidademodel = new LateralidadeModel();
         $this->justificativasmodel = new JustificativasModel();
+        $this->justificativasexclusaomodel = new JustificativasExclusaoModel();
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
@@ -99,6 +103,7 @@ class ListaEspera extends ResourceController
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
+        $this->selectjustificativasexclusao = $this->justificativasexclusaomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
@@ -253,9 +258,7 @@ class ListaEspera extends ResourceController
 
         if (!$_SESSION['listaespera']) {
             $rules = $rules + [
-                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
-                'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
-                'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']'
             ];
         }
 
@@ -334,7 +337,7 @@ class ListaEspera extends ResourceController
                                                'data' => $data]);
         } else {
             //if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            if(is_null($paciente)) {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -552,7 +555,10 @@ class ListaEspera extends ResourceController
             if($paciente) {
                 $prontuario = $data['prontuario'];
             }
+            
         }
+
+        //die(var_dump(is_null($paciente)));
 
         $rules = [
             'nome' => 'permit_empty|min_length[3]',
@@ -561,17 +567,15 @@ class ListaEspera extends ResourceController
         if (!session()->get('excluidos')) {
             $rules = $rules + [
                 'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
-                'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
-                'dtfim' => 'permit_empty|valid_date[d/m/Y]',
             ];
         }
 
         if ($this->validate($rules)) {
 
-            //die(var_dump($dataflash));
+            //die(var_dump($data['dtfim']));
 
             if (!session()->get('excluidos')) {
-                if ($data['dtinicio'] || $data['dtfim']) {
+                if (!empty($data['dtinicio']) || !empty($data['dtfim'])) {
 
                     $data['filas'] = $this->selectfila;
                     $data['especialidades'] = $this->selectespecialidadeaghu;
@@ -582,7 +586,7 @@ class ListaEspera extends ResourceController
                         'validation' => $this->validator,
                         'data' => $data]);
                     }
-                    if (!$data['dtfim']) {
+                    if (empty($data['dtfim'])) {
                         $this->validator->setError('dtfim', 'Informe a data final!');
                         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                         'validation' => $this->validator,
@@ -634,7 +638,8 @@ class ListaEspera extends ResourceController
 
         } else {
             //if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            if(is_null($paciente)) {
+            //die(var_dump(is_null($paciente)));
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
@@ -647,83 +652,142 @@ class ListaEspera extends ResourceController
         }
     }
     /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function recuperarPaciente(int $id)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        //$data = $this->request->getVar();
+
+        $lista = $this->listaesperamodel->withdeleted()->find($id);
+
+        //die(var_dump($lista));
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['ordemfila'] = '-';
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['justrecuperacao'] = '';
+        $data['filas'] = $this->selectfila;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //var_dump($data['id']);die();
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_recupera_listaespera',
+                                            'data' => $data]);
+
+    }
+    /**
      * Return the editable properties of a resource object
      *
      * @return mixed
      */
-    public function recuperarExcluido(int $id)
+    public function recuperar()
     {
-        $data = session()->get('excluidos');
+        //$data = session()->get('excluidos');
+
+        $data = $this->request->getVar();
 
         //die(var_dump($data));
 
-        $db = \Config\Database::connect('default');
+        $rules = [
+            'especialidade' => 'required',
+            'fila' => 'required',
+            'justrecuperacao' => 'required'
+        ];
 
-        $db->transStart();
+        if ($this->validate($rules)) {
 
-        try {
-            //$this->listaesperamodel->update($id, ['indsituacao' => 'A', 'deleted_at' => NULL]);
-            $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
-                                                                                                 ->set('indsituacao', 'A') // Aguardando
-                                                                                                 ->update();
+            if (!$this->filamodel->Where('indsituacao', 'A')->find($data['fila'])) {
 
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                $this->validator->setError('fila', 'Não é possível recuperar - Fila Inativada!');
 
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro ao ativar paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                );
+                $data['filas'] = $this->selectfila;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_recupera_listaespera',
+                                                    'data' => $data]);
             }
 
-            $array = [
-                'dthrevento' => date('Y-m-d H:i:s'),
-                'idlistaespera' => $id,
-                'idevento' => 9,
-                'idlogin' => session()->get('Sessao')['login']
-            ];
+            try {
 
-            $this->historicomodel->insert($array);
+                $db = \Config\Database::connect('default');
 
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                $db->transStart();
 
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
-                );
+                $lista = [
+                    'txtjustificativarecuperacao' => $data['justrecuperacao'],
+                    'indsituacao' => 'A',
+                    'deleted_at' => NULL
+                    ];
+
+                $this->listaesperamodel->update($data['id'], $lista);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao ativar paciente na Lista! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $data['id'],
+                    'idevento' => 9,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+        
+            } catch (\Throwable $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = 'Erro na recuperação do paciente da Lista';
+                $msg .= ' - '.$e->getMessage();
+                log_message('error', $msg.': ' . $e->getMessage());
+                session()->setFlashdata('failed', $msg);
             }
 
-            $db->transComplete();
-    
-        } catch (\Throwable $e) {
-            $db->transRollback(); // Reverte a transação em caso de erro
-            $msg = 'Erro na recuperação do paciente da Lista';
-            $msg .= ' - '.$e->getMessage();
-            log_message('error', $msg.': ' . $e->getMessage());
-            session()->setFlashdata('failed', $msg);
-        }
+            if ($db->transStatus() === false) {
+                $dados = $this->request->getPost();
+                $dataflash['idlista'] = $id;
+                session()->setFlashdata('dataflash', $dataflash);
 
-        if ($db->transStatus() === false) {
-            $dados = $this->request->getPost();
-            $dataflash['idlista'] = $id;
-            session()->setFlashdata('dataflash', $dataflash);
+            } else {
+                session()->setFlashdata('success', 'Paciente recuperado com sucesso!');
+            }
+
+            return redirect()->to(base_url('listaespera/exibirexcluidos'));
 
         } else {
-            session()->setFlashdata('success', 'Paciente recuperado com sucesso!');
+            session()->setFlashdata('error', $this->validator);
+
+            $data['filas'] = $this->selectfila;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_recupera_listaespera',
+                                                'data' => $data]);
         }
 
-        return redirect()->to(base_url('listaespera/exibirexcluidos'));
-
-       /*  return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera', 'listaespera' => []]);
-
-        $result = $this->getListaEspera($data);
-
-        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                            'listaespera' => $result,
-                                            'data' => $data]); */
     }
     /**
      * Return a new resource object, with default properties
@@ -1056,6 +1120,50 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
+    public function consultarPacienteExcluido(int $id)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $lista = $this->listaesperamodel->withDeleted()->find($id);
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['ordemfila'] = '-';
+        $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
+        $data['dtexclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['deleted_at'])->format('d/m/Y H:i');
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['risco'] = $lista['idriscocirurgico'];
+        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
+        $data['cid'] = $lista['numcid'];
+        $data['complexidade'] = $lista['idcomplexidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['origem'] = $lista['idorigempaciente'];
+        $data['congelacao'] = $lista['indcongelacao'];
+        $data['procedimento'] = $lista['idprocedimento'];
+        $data['lateralidade'] = $lista['idlateralidade'];
+        $data['info'] = $lista['txtinfoadicionais'];
+        $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
+        $data['indexclusao'] = $lista['indexclusao'];
+        $data['justexclusao'] = $lista['txtjustificativaexclusao'];
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_pacienteexcluido',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function editarLista(int $id, $ordemfila)
     {
         HUAP_Functions::limpa_msgs_flash();
@@ -1234,93 +1342,147 @@ class ListaEspera extends ResourceController
         }
     }
     /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function excluirPaciente(int $id, $ordemfila)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        //$data = $this->request->getVar();
+
+        $lista = $this->listaesperamodel->find($id);
+
+        //die(var_dump($lista));
+
+        $data = [];
+        $data['id'] = $lista['id'];
+        $data['ordemfila'] = $ordemfila;
+        $data['prontuario'] = $lista['numprontuario'];
+        $data['especialidade'] = $lista['idespecialidade'];
+        $data['fila'] = $lista['idtipoprocedimento'];
+        $data['indexclusao'] = $lista['indexclusao'];
+        $data['justexclusao'] = $lista['txtjustificativaexclusao'];
+        $data['filas'] = $this->selectfila;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
+
+        //var_dump($data['id']);die();
+
+        return view('layouts/sub_content', ['view' => 'listaespera/form_exclui_listaespera',
+                                            'data' => $data]);
+
+    }
+    /**
      * Return the editable properties of a resource object
      *
      * @return mixed
      */
-    public function excluirPacienteDaLista(int $id)
+    public function excluirPacienteDaLista()
     {
-        $data = session()->get('parametros_consulta_lista');
+        $data_lista = session()->get('parametros_consulta_lista');
         session()->remove('parametros_consulta_lista');
+
+        $data = $this->request->getVar();
 
         //die(var_dump($data));
 
-        $db = \Config\Database::connect('default');
+        $rules = [
+            'especialidade' => 'required',
+            'fila' => 'required',
+            'indexclusao' => 'required'
+        ];
 
-        $db->transStart();
+        if ($this->validate($rules)) {
 
-        try {
-            $this->listaesperamodel->update($id, ['indsituacao' => 'E']); // Excluído
+            try {
 
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                $db = \Config\Database::connect('default');
 
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro ao inativar paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                );
+                $db->transStart();
+
+                $lista = [
+                    'indexclusao' => $data['indexclusao'],
+                    'txtjustificativaexclusao' => $data['justexclusao'],
+                    'indsituacao' => 'E'
+                    ];
+                    
+                $this->listaesperamodel->update($data['id'], $lista);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao inativar paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $this->listaesperamodel->delete(['id' => $data['id']]);
+        
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $data['id'],
+                    'idevento' => 7,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+        
+            } catch (\Throwable $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = 'Erro na exclusão do paciente da Lista';
+                $msg .= ' - '.$e->getMessage();
+                log_message('error', $msg.': ' . $e->getMessage());
+                session()->setFlashdata('failed', $msg);
             }
 
-            $this->listaesperamodel->delete(['id' => $id]);
-    
             if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                $dados = $this->request->getPost();
+                $dataflash['idlista'] = $data['id'];
+                session()->setFlashdata('dataflash', $dataflash);
 
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro ao excluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                );
+            } else {
+                session()->setFlashdata('success', 'Paciente excluído da Lista de Espera com sucesso!');
             }
 
-            $array = [
-                'dthrevento' => date('Y-m-d H:i:s'),
-                'idlistaespera' => $id,
-                'idevento' => 7,
-                'idlogin' => session()->get('Sessao')['login']
-            ];
-
-            $this->historicomodel->insert($array);
-
-            if ($db->transStatus() === false) {
-                $error = $db->error();
-                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
-                );
-            }
-
-            $db->transComplete();
-    
-        } catch (\Throwable $e) {
-            $db->transRollback(); // Reverte a transação em caso de erro
-            $msg = 'Erro na exclusão do paciente da Lista';
-            $msg .= ' - '.$e->getMessage();
-            log_message('error', $msg.': ' . $e->getMessage());
-            session()->setFlashdata('failed', $msg);
-        }
-
-        if ($db->transStatus() === false) {
-            $dados = $this->request->getPost();
-            $dataflash['idlista'] = $id;
-            session()->setFlashdata('dataflash', $dataflash);
+            return redirect()->to(base_url('listaespera/exibir'));
 
         } else {
-            session()->setFlashdata('success', 'Paciente excluído da Lista de Espera com sucesso!');
+            session()->setFlashdata('error', $this->validator);
+
+            $data['filas'] = $this->selectfila;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
+
+            return view('layouts/sub_content', ['view' => 'listaespera/form_exclui_listaespera',
+                                                'data' => $data]);
         }
 
-        return redirect()->to(base_url('listaespera/exibir'));
-
-       /*  return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera', 'listaespera' => []]);
-
-        $result = $this->getListaEspera($data);
-
-        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                            'listaespera' => $result,
-                                            'data' => $data]); */
     }
     /**
      * Return the editable properties of a resource object
@@ -1837,7 +1999,7 @@ class ListaEspera extends ResourceController
         } else {
             //die(var_dump(is_null($paciente)));
             //if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            if(is_null($paciente)) {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
