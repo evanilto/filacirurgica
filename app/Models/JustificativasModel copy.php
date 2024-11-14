@@ -10,16 +10,17 @@ class JustificativasModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = false;
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
+    protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'descricao',
-	    'indsituacao',
-        'tipojustificativa',
+        'idlista',
+	    'idmapa',
+        'txtjustificativa',
+        'idtipojustificativa'
     ];
 
     // Dates
-    protected $useTimestamps = false;
+    protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';

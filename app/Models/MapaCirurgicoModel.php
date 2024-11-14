@@ -13,7 +13,7 @@ class MapaCirurgicoModel extends Model
     protected $useSoftDeletes   = true; // false for migration
     protected $protectFields    = true;
     protected $allowedFields    = [
-        /* 'id', // include for migration
+        /*'id', // include for migration
         'created_at', // for migration
         'updated_at', // for migration */
         'idlistaespera',
@@ -36,7 +36,9 @@ class MapaCirurgicoModel extends Model
         'txtjustificativaurgencia',
         'txtjustificativatroca',
         'numordem',
-        'indurgencia'
+        'indurgencia',
+        'idtroca',
+        'idsuspensao',
     ];
 
     // Dates

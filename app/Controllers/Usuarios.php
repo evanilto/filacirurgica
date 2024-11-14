@@ -720,11 +720,12 @@ class Usuarios extends ResourceController
     public function migrarPermissoes() {
 
         $sqlTruncate = "truncate usuarios_perfis;";
-        //$sqlDropDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id DROP DEFAULT;";
-        $sqlSetVal = "SELECT setval('usuarios_perfis_seq', 1, false);";
-        //$sqlRestartVal = "ALTER SEQUENCE usuarios_perfis_seq RESTART WITH 1;";
-        //$sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id SET DEFAULT nextval('usuarios_perfis_seq');";
-        $sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id RESTART WITH 6000";
+        $sqlDropDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id DROP DEFAULT;";
+        //$sqlSetVal = "SELECT setval('usuarios_perfis_seq', 1, false);";
+        $sqlSetVal = "SELECT setval('usuarios_perfis_seq', (SELECT max(id) FROM usuarios_perfis));";
+        $sqlRestartVal = "ALTER SEQUENCE usuarios_perfis_seq RESTART WITH 1;";
+        $sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id SET DEFAULT nextval('usuarios_perfis_seq');";
+        //$sqlSetDefault = "ALTER TABLE usuarios_perfis ALTER COLUMN id RESTART WITH 6000";
 
 
         try {
@@ -741,7 +742,7 @@ class Usuarios extends ResourceController
             $result = $query->getResult();
 
             $query = $db->query($sqlTruncate);
-            //$query = $db->query($sqlRestartVal);
+            $query = $db->query($sqlRestartVal);
             //$query = $db->query($sqlDropDefault);
 
             $db->transStart();

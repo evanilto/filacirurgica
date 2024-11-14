@@ -5,7 +5,7 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class MigraFilasCommand extends BaseCommand
+class ord2MigraFilasCommand extends BaseCommand
 {
     protected $group       = 'filas';
     protected $name        = 'filas:criarfilas';

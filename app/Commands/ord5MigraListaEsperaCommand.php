@@ -5,7 +5,7 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class MigraListaEsperaCommand extends BaseCommand
+class ord5MigraListaEsperaCommand extends BaseCommand
 {
     protected $group       = 'ListaEspera';
     protected $name        = 'listaespera:criarlista';

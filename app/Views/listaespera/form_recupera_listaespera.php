@@ -93,7 +93,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label class="form-label" for="justrecuperacao">Justificativa para recuperação<b class="text-danger">*</b></label>
+                                    <label class="form-label" for="justrecuperacao">Justificativa<b class="text-danger">*</b></label>
                                     <textarea id="justrecuperacao" maxlength="255" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justrecuperacao') ? 'is-invalid' : '' ?>"
                                             name="justrecuperacao"><?= isset($data['justrecuperacao']) ? $data['justrecuperacao'] : '' ?></textarea>

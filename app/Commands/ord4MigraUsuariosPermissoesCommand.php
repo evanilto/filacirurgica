@@ -5,7 +5,7 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class MigraUsuariosPermissoesCommand extends BaseCommand
+class ord4MigraUsuariosPermissoesCommand extends BaseCommand
 {
     protected $group       = 'usuarios';
     protected $name        = 'usuarios:criarpermissoes';

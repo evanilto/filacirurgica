@@ -93,7 +93,32 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label class="form-label" for="justsuspensao">Justificativa<b class="text-danger">*</b></label>
+                                    <label for="idsuspensao" class="form-label">Justificativa<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('idsuspensao')): ?>is-invalid<?php endif ?>"
+                                            id="idsuspensao" name="idsuspensao"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('idsuspensao', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['justificativassuspensao'] as $key => $idsuspensao) {
+                                                $selected = ($data['idsuspensao'] == $idsuspensao['id']) ? 'selected' : '';
+                                                echo '<option value="'.$idsuspensao['id'].'" '.$selected.'>'.$idsuspensao['descricao'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('idsuspensao')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('idsuspensao') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="justsuspensao">Observações</label>
                                     <textarea id="justsuspensao" maxlength="255" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
                                             name="justsuspensao"><?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>

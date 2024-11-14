@@ -75,7 +75,13 @@
 
                             case 'Excluído':
                                 if (HUAP_Functions::tem_permissao('listaespera-consultar')) {
-                                    echo anchor('listaespera/consultarpacienteexcluido/'.$itemlista->idlistaespera, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente Excluído', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                                    //echo anchor('listaespera/consultarpacienteexcluido/'.$itemlista->idlistaespera, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente Excluído', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                                    if ($itemlista->ordem_fila) {
+                                        echo anchor('listaespera/consultaritemlista/'.$itemlista->idlistaespera.'/'.$itemlista->ordem_fila, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente na Lista', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                                    } else {
+                                        echo anchor('listaespera/consultaritemlista/'.$itemlista->idlistaespera, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente na Lista', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                                    }
+
                                 } else {
                                     echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';
                                 }

@@ -13,13 +13,15 @@ class ListaEsperaModel extends Model
     protected $useSoftDeletes   = true; //false for migration
     protected $protectFields    = true;
     protected $allowedFields    = [
-        /* 'id', // for migration
+        /*'id', // for migration
         'created_at', // for migration
         'updated_at', // for migration */
         'deleted_at',
         'numprontuario',
         'idespecialidade',
         'dtriscocirurgico',
+        'dtexclusao',
+        'dtrecuperacao',
         'numcid',
         'idcomplexidade',
         'idtipoprocedimento',
@@ -30,7 +32,7 @@ class ListaEsperaModel extends Model
         'indsituacao',
         'indcongelacao',
         'indurgencia',
-        'indexclusao',
+        'idexclusao',
         'txtinfoadicionais',
         'txtorigemjustificativa',
         'txtjustificativaexclusao',

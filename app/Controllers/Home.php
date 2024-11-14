@@ -29,6 +29,7 @@ class Home extends ResourceController
 
     public function __construct()
     {
+
         helper(['form', 'url', 'session']);
     }
 

@@ -324,22 +324,22 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="mb-3">
-                                    <label for="indexclusao" class="form-label">Justificativa para exclusão</label>
+                                    <label for="idexclusao" class="form-label">Justificativa para exclusão</label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('indexclusao')): ?>is-invalid<?php endif ?>"
-                                            id="indexclusao" name="indexclusao" disabled
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('idexclusao')): ?>is-invalid<?php endif ?>"
+                                            id="idexclusao" name="idexclusao" disabled
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('indexclusao', '', TRUE); ?> ></option>
+                                            <option value="" <?php echo set_select('idexclusao', '', TRUE); ?> ></option>
                                             <?php
-                                            foreach ($data['justificativasexclusao'] as $key => $indexclusao) {
-                                                $selected = ($data['indexclusao'] == $indexclusao['id']) ? 'selected' : '';
-                                                echo '<option value="'.$indexclusao['id'].'" '.$selected.'>'.$indexclusao['descricao'].'</option>';
+                                            foreach ($data['justificativasexclusao'] as $key => $idexclusao) {
+                                                $selected = ($data['idexclusao'] == $idexclusao['id']) ? 'selected' : '';
+                                                echo '<option value="'.$idexclusao['id'].'" '.$selected.'>'.$idexclusao['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('indexclusao')): ?>
+                                        <?php if ($validation->getError('idexclusao')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('indexclusao') ?>
+                                                <?= $validation->getError('idexclusao') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>

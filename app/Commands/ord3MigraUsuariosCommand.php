@@ -5,7 +5,7 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class MigraUsuariosCommand extends BaseCommand
+class ord3MigraUsuariosCommand extends BaseCommand
 {
     protected $group       = 'usuarios';
     protected $name        = 'usuarios:criarusuarios';

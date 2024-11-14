@@ -18,7 +18,7 @@ use App\Models\EquipeMedicaModel;
 use App\Models\FilasModel;
 use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
-use App\Models\JustificativasExclusaoModel;
+//use App\Models\JustificativasExclusaoModel;
 use App\Models\LocalFatItensProcedHospitalarModel;
 use App\Models\LocalAghCidsModel;
 use App\Models\LocalAghEspecialidadesModel;
@@ -47,7 +47,7 @@ class ListaEspera extends ResourceController
     private $lateralidademodel;
     private $posoperatoriomodel;
     private $justificativasmodel;
-    private $justificativasexclusaomodel;
+    //private $justificativasexclusaomodel;
     private $localfatitensprocedhospitalarmodel;
     private $localaghcidsmodel;
     private $localaghespecialidadesmodel;
@@ -69,12 +69,16 @@ class ListaEspera extends ResourceController
     private $selectorigempaciente;
     private $selectlateralidade;
     private $selectposoperatorio;
+    private $selectjustificativastroca;
+    private $selectjustificativassuspensao;
     private $selectjustificativasexclusao;
     private $data;
 
 
     public function __construct()
     {
+        ini_set('memory_limit', '512M');
+
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
@@ -85,7 +89,7 @@ class ListaEspera extends ResourceController
         $this->origempacientemodel = new OrigemPacienteModel();
         $this->lateralidademodel = new LateralidadeModel();
         $this->justificativasmodel = new JustificativasModel();
-        $this->justificativasexclusaomodel = new JustificativasExclusaoModel();
+        //$this->justificativasexclusaomodel = new JustificativasExclusaoModel();
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
@@ -103,7 +107,9 @@ class ListaEspera extends ResourceController
         $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
         $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
-        $this->selectjustificativasexclusao = $this->justificativasexclusaomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
+        $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectjustificativasexclusao = $this->justificativasmodel->Where('tipojustificativa', 'E')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
@@ -723,6 +729,7 @@ class ListaEspera extends ResourceController
                 $lista = [
                     'txtjustificativarecuperacao' => $data['justrecuperacao'],
                     'indsituacao' => 'A',
+                    'dtrecuperacao' => date('Y-m-d H:i:s'),
                     'deleted_at' => NULL
                     ];
 
@@ -1080,15 +1087,18 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function consultarItemLista(int $id, $ordemfila)
+    public function consultarItemLista($id, $ordemfila = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        $lista = $this->listaesperamodel->find($id);
+        //die(var_dump($id));
+
+        //$lista = $this->listaesperamodel->find($id);
+        $lista = $this->listaesperamodel->withDeleted()->find($id);
 
         $data = [];
         $data['id'] = $lista['id'];
-        $data['ordemfila'] = $ordemfila;
+        $data['ordemfila'] = $ordemfila ?? '-';
         $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
@@ -1103,6 +1113,11 @@ class ListaEspera extends ResourceController
         $data['lateralidade'] = $lista['idlateralidade'];
         $data['info'] = $lista['txtinfoadicionais'];
         $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['idexclusao'] = $lista['idexclusao'];
+        $data['justexclusao'] = $lista['txtjustificativaexclusao'];
+        $data['justrecuperacao'] = $lista['txtjustificativarecuperacao'];
+        $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
+        $data['justorig'] = $lista['txtorigemjustificativa'];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -1110,6 +1125,22 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+
+        /* if ($data['idexclusao']) {
+            $historico = $this->historicomodel->where('idevento', 7)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
+            $data['dtexclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $historico[0]['dthrevento'])->format('d/m/Y H:i');
+        } else {
+            $data['dtexclusao'] = NULL;
+        }
+
+        if ($data['justrecuperacao']) {
+            $historico = $this->historicomodel->where('idevento', 9)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
+            $data['dtrecuperacao'] = DateTime::createFromFormat('Y-m-d H:i:s', $historico[0]['dthrevento'])->format('d/m/Y H:i');
+        } else {
+            $data['dtrecuperacao'] = NULL;
+        } */
+        $data['dtexclusao'] = $lista['dtexclusao'];
+        $data['dtrecuperacao'] = $lista['dtrecuperacao'];
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_itemlista',
                                             'data' => $data]);
@@ -1152,7 +1183,7 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
         $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
-        $data['indexclusao'] = $lista['indexclusao'];
+        $data['idexclusao'] = $lista['idexclusao'];
         $data['justexclusao'] = $lista['txtjustificativaexclusao'];
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_pacienteexcluido',
@@ -1362,7 +1393,7 @@ class ListaEspera extends ResourceController
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
-        $data['indexclusao'] = $lista['indexclusao'];
+        $data['idexclusao'] = $lista['idexclusao'];
         $data['justexclusao'] = $lista['txtjustificativaexclusao'];
         $data['filas'] = $this->selectfila;
         $data['especialidades'] = $this->selectespecialidadeaghu;
@@ -1391,7 +1422,7 @@ class ListaEspera extends ResourceController
         $rules = [
             'especialidade' => 'required',
             'fila' => 'required',
-            'indexclusao' => 'required'
+            'idexclusao' => 'required'
         ];
 
         if ($this->validate($rules)) {
@@ -1403,7 +1434,8 @@ class ListaEspera extends ResourceController
                 $db->transStart();
 
                 $lista = [
-                    'indexclusao' => $data['indexclusao'],
+                    'idexclusao' => $data['idexclusao'],
+                    'dtexclusao' => date('Y-m-d H:i:s'),
                     'txtjustificativaexclusao' => $data['justexclusao'],
                     'indsituacao' => 'E'
                     ];
@@ -2113,13 +2145,18 @@ class ListaEspera extends ResourceController
                         $result1 = $query->getResult();
 
                         if (!$result1) {
-                            $lista['deleted_at'] = date('Y-m-d H:i:s');
+                            $historico = $this->historicomodel->where('idevento', 7)->where('idlistaespera', $reg->idlistacirurgica)->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
+
+
+                            $lista['deleted_at'] = empty($historico[0]) ? date('Y-m-d H:i:s') : $historico[0]['dthrevento'];
+                            $lista['dtexclusao'] =  $lista['deleted_at'];
+                            $lista['idexclusao'] = 48; // SEM IDENTIFICAÇÃO - MIGRAÇÃO SISTEMA LEGADO
 
                             $lista['indsituacao'] = 'E'; // Excluído
 
                         } else {
 
-                            $sql = "
+                            /* $sql = "
                                     select *
                                     from cirurgias_historico ch 
                                     where idlistacirurgica = $reg->idlistacirurgica
@@ -2129,20 +2166,27 @@ class ListaEspera extends ResourceController
             
                             $query = $db->query($sql);
                 
-                            $result2 = $query->getResult();
+                            $result2 = $query->getResult(); */
 
-                            if ($result2) {
+                            $result2 = $this->historicomodel->where('idlistaespera', $reg->idlistacirurgica)->orderby('dthrevento', 'DESC')->find();
 
-                                switch ($result2[0]->idevento) {
+                            if (!empty($result2[0])) {
+
+                                //die(var_dump($result2));
+
+                                switch ($result2[0]['idevento']) {
                                     case 1: // envio ao mapa
-                                        $lista['deleted_at'] = $result2[0]->data;
+                                        $lista['deleted_at'] = $result2[0]['dthrevento'];
+                                        $lista['dtexclusao'] =  $lista['deleted_at'];
 
                                         $lista['indsituacao'] = 'P'; // Programada
 
                                         break;
 
                                     case 2: // cancelamento por suspensão
-                                        $lista['deleted_at'] = $result2[0]->data;
+                                        $lista['deleted_at'] =$result2[0]['dthrevento'];
+                                        $lista['dtexclusao'] =  $lista['deleted_at'];
+                                        $lista['idexclusao'] = 48; // SEM IDENTIFICAÇÃO - MIGRAÇÃO SISTEMA LEGADO
 
                                         $lista['indsituacao'] = 'E'; // Excluído
 
@@ -2150,7 +2194,7 @@ class ListaEspera extends ResourceController
 
                                     case 4: // cirurgia realizada
 
-                                        $sql = "
+                                       /*  $sql = "
                                             select *
                                             from cirurgias_historico ch 
                                             where idlistacirurgica = $reg->idlistacirurgica
@@ -2161,13 +2205,16 @@ class ListaEspera extends ResourceController
                 
                                         $query = $db->query($sql);
                             
-                                        $resulthist = $query->getResult();
+                                        $resulthist = $query->getResult(); */
 
-                                        if ($resulthist) {
-                                            $lista['deleted_at'] = $resulthist[0]->data; // data do ultimo envio ao mapa
+                                        // verifica quando foi enviado ao mapa
+                                        $resulthist = $this->historicomodel->where('idevento', 1)->where('idlistaespera', $reg->idlistacirurgica)->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
+
+                                        if (!empty($resulthist[0])) {
+                                            $lista['deleted_at'] = $resulthist[0]['dthrevento']; // data do ultimo envio ao mapa
 
                                         } else {
-                                            $lista['deleted_at'] = $result2[0]->data; // pegar a data da realização da cirurgia
+                                            $lista['deleted_at'] = $result2[0]['dthrevento']; // pegar a data da realização da cirurgia
                                         }
 
                                         $lista['indsituacao'] = 'P'; // Programada
@@ -2175,7 +2222,9 @@ class ListaEspera extends ResourceController
                                         break;
 
                                     case 7: // exclusão
-                                        $lista['deleted_at'] = $result2[0]->data;
+                                        $lista['deleted_at'] = $result2[0]['dthrevento'];
+                                        $lista['dtexclusao'] =  $lista['deleted_at'];
+                                        $lista['idexclusao'] = 48; // SEM IDENTIFICAÇÃO - MIGRAÇÃO SISTEMA LEGADO
 
                                         $lista['indsituacao'] = 'E'; // Excluído
 
@@ -2198,6 +2247,7 @@ class ListaEspera extends ResourceController
 
                     case 1:
                         $temaghu = $this->localaippacientesmodel->Where('prontuario', $reg->prontuario)->findAll();
+
                         if ($temaghu) {
                             $lista['deleted_at'] = NULL;
 

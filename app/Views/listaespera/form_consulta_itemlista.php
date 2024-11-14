@@ -306,6 +306,93 @@
                                 </div>
                             </div>
                         </div>
+                        <?php if ($data['idexclusao']) { ?>
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="dtexclusao" class="form-label">Data/Hora da Exclusão</label>
+                                        <div class="input-group">
+                                            <input type="text" id="dtexclusao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
+                                                class="form-control<?php if($validation->getError('dtexclusao')): ?>is-invalid<?php endif ?>"
+                                                name="dtexclusao" value="<?= set_value('dtexclusao', $data['dtexclusao']) ?>" disabled/>
+                                            <?php if ($validation->getError('dtexclusao')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('dtexclusao') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="idexclusao" class="form-label">Justificativa para exclusão</label>
+                                        <div class="input-group">
+                                            <select class="form-select select2-dropdown <?php if($validation->getError('idexclusao')): ?>is-invalid<?php endif ?>"
+                                                id="idexclusao" name="idexclusao" disabled
+                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                                <option value="" <?php echo set_select('idexclusao', '', TRUE); ?> ></option>
+                                                <?php
+                                                foreach ($data['justificativasexclusao'] as $key => $idexclusao) {
+                                                    $selected = ($data['idexclusao'] == $idexclusao['id']) ? 'selected' : '';
+                                                    echo '<option value="'.$idexclusao['id'].'" '.$selected.'>'.$idexclusao['descricao'].'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                            <?php if ($validation->getError('idexclusao')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('idexclusao') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="justexclusao">Observações sobre a exclusão</label>
+                                        <textarea id="justexclusao" maxlength="255" rows="3" disabled
+                                                class="form-control <?= isset($validation) && $validation->getError('justexclusao') ? 'is-invalid' : '' ?>"
+                                                name="justexclusao"><?= isset($data['justexclusao']) ? $data['justexclusao'] : '' ?></textarea>
+                                        <?php if (isset($validation) && $validation->getError('justexclusao')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('justexclusao') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
+                        <?php if ($data['justrecuperacao']) { ?>
+                            <div class="row g-3">
+                                <div class="col-md-2">
+                                    <div class="mb-3">
+                                        <label for="dtrecuperacao" class="form-label">Data/Hora da Recuperação</label>
+                                        <div class="input-group">
+                                            <input type="text" id="dtrecuperacao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
+                                                class="form-control<?php if($validation->getError('dtrecuperacao')): ?>is-invalid<?php endif ?>"
+                                                name="dtrecuperacao" value="<?= set_value('dtrecuperacao', $data['dtrecuperacao']) ?>" disabled/>
+                                            <?php if ($validation->getError('dtrecuperacao')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('dtrecuperacao') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-10">
+                                    <div class="mb-3">
+                                        <label class="form-label" for="justrecuperacao">Justificativa para recuperação</label>
+                                        <textarea id="justrecuperacao" maxlength="255" rows="2" disabled
+                                                class="form-control <?= isset($validation) && $validation->getError('justrecuperacao') ? 'is-invalid' : '' ?>"
+                                                name="justrecuperacao"><?= isset($data['justrecuperacao']) ? $data['justrecuperacao'] : '' ?></textarea>
+                                        <?php if (isset($validation) && $validation->getError('justrecuperacao')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('justrecuperacao') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php } ?>
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibirsituacao') ?>">

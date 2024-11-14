@@ -5,11 +5,11 @@ namespace App\Commands;
 use CodeIgniter\CLI\BaseCommand;
 use CodeIgniter\CLI\CLI;
 
-class MigraMapaCirurgicoCommand extends BaseCommand
+class ord1MigraHistoricoCommand extends BaseCommand
 {
     protected $group       = 'mapa_cirurgico';
-    protected $name        = 'mapacirurgico:criarmapa';
-    protected $description = 'Cria Mapa a partir do mapa cirurgico do Gafree.';
+    protected $name        = 'mapacirurgico:criarhistorico';
+    protected $description = 'Cria histórico a partir do sistema do Gafree.';
 
     public function run(array $params)
     {
@@ -25,7 +25,7 @@ class MigraMapaCirurgicoCommand extends BaseCommand
         $controller = new \App\Controllers\MapaCirurgico();
 
         // Chame a função desejada
-        $controller->migrarMapa();
+        $controller->migrarHistorico(); // migrar usuarios x permissoes
 
         CLI::write("Término OK!");
     }

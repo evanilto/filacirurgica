@@ -25,6 +25,7 @@ use App\Models\LocalAipPacientesModel;
 use App\Models\LocalCentrosCirurgicosModel;
 use App\Models\LocalMbcSalasCirurgicasModel;
 use App\Models\LocalProfEspecialidadesModel;
+use App\Models\JustificativasModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
@@ -56,6 +57,7 @@ class MapaCirurgico extends ResourceController
     private $localmbcsalascirurgicasmodel;
     private $localcentroscirurgicosmodel;
     private $localaippacientesmodel;
+    private $justificativasmodel;
     private $usuariocontroller;
     private $aghucontroller;
     private $selectfila;
@@ -70,11 +72,15 @@ class MapaCirurgico extends ResourceController
     private $selectorigempaciente;
     private $selectlateralidade;
     private $selectposoperatorio;
+    private $selectjustificativastroca;
+    private $selectjustificativassuspensao;
     private $data;
 
 
     public function __construct()
     {
+        ini_set('memory_limit', '512M');
+
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->vwmapacirurgicomodel = new vwMapaCirurgicoModel();
@@ -97,6 +103,7 @@ class MapaCirurgico extends ResourceController
         $this->localmbcsalascirurgicasmodel = new LocalMbcSalasCirurgicasModel();
         $this->localcentroscirurgicosmodel = new LocalCentrosCirurgicosModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
+        $this->justificativasmodel = new JustificativasModel();
         $this->usuariocontroller = new Usuarios();
         //$this->aghucontroller = new Aghu();
 
@@ -112,9 +119,12 @@ class MapaCirurgico extends ResourceController
                                                                            ->orderBy('nome_especialidade', 'ASC')->findAll();
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
         //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
+        $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
                                                                                ->orderBy('nome', 'ASC')->findAll();
         //$this->selectcids = $this->aghucontroller->getCIDs();
+        $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -1270,7 +1280,10 @@ class MapaCirurgico extends ResourceController
         $data['nec_proced'] = $mapa->necessidadesproced;
         $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = $mapa->justificativaenvio;
-        $data['justsusp'] = $mapa->justificativasuspensao;
+        $data['idsuspensao'] = $mapa->idsuspensao;
+        $data['dtsuspensao'] = $mapa->dthrsuspensao;
+        $data['justsuspensao'] = $mapa->justificativasuspensao;
+        $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
         $data['justurgencia'] = $mapa->justificativaurgencia;
         $data['indurgencia'] = $mapa->indurgencia;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
@@ -1697,9 +1710,11 @@ class MapaCirurgico extends ResourceController
         $data['prontuario'] = $mapa['prontuario'];
         $data['especialidade'] = $mapa['idespecialidade'];
         $data['fila'] = $mapa['idfila'];
-        $data['justsuspensao'] = '';
         $data['filas'] = $this->selectfila;
         $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+        $data['idsuspensao'] = null;
+        $data['justsuspensao'] = '';
 
         //var_dump($data['id']);die();
 
@@ -1723,7 +1738,7 @@ class MapaCirurgico extends ResourceController
         $rules = [
             'especialidade' => 'required',
             'fila' => 'required',
-            'justsuspensao' => 'required'
+            'idsuspensao' => 'required'
         ];
 
         if ($this->validate($rules)) {
@@ -1735,6 +1750,7 @@ class MapaCirurgico extends ResourceController
                 $db->transStart();
 
                 $mapa = [
+                    'idsuspensao' => $data['idsuspensao'],
                     'dthrsuspensao' => date('Y-m-d H:i:s'),
                     'txtjustificativasuspensao' => $data['justsuspensao'],
                     ];
@@ -2883,9 +2899,21 @@ class MapaCirurgico extends ResourceController
                 $mapa['idposoperatorio'] = $reg->posoperatorio;
                 $mapa['indhemoderivados'] = $reg->hemoderivado;
                 $mapa['txtjustificativaenvio'] = $reg->justificativa_envio;
-                $mapa['dtxtjustificativasuspensao'] = $reg->justificativa_suspensao;
+                $mapa['txtjustificativasuspensao'] =  $reg->justificativa_suspensao;
                 $mapa['txtnecessidadesproced'] = $reg->necessidadesprocedimento;
                 $mapa['numordem'] = $reg->ordem;
+
+                if ($reg->justificativa_suspensao) {
+                    $resultjust = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('descricao', $reg->justificativa_suspensao)->select('id')->find();
+
+                    if (!empty($resultjust[0])) {
+                        $mapa['idsuspensao'] = $resultjust[0]['id'];
+                    } else {
+                        $mapa['idsuspensao'] = 49;
+                    }
+                } else {
+                    $mapa['idsuspensao'] = NULL;
+                }
 
                 $dataLista = new DateTime($reg->datainclusao);
                 $dataMapa = new DateTime($reg->datacirurgia);

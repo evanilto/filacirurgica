@@ -18,8 +18,9 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
     $routes->add('mostrarlista', 'ListaEspera::mostrarListaEsperaSalva');
+    $routes->get('consultaritemlista/(:num)', 'ListaEspera::consultarItemLista/$1');
     $routes->get('consultaritemlista/(:num)/(:num)', 'ListaEspera::consultarItemLista/$1/$2');
-    $routes->get('consultarpacienteexcluido/(:num)', 'ListaEspera::consultarPacienteExcluido/$1');
+    //$routes->get('consultarpacienteexcluido/(:num)', 'ListaEspera::consultarPacienteExcluido/$1');
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:any)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->get('carregaaside/(:num)/(:any)/(:any)', 'ListaEspera::getDetailsAside/$1/$2/$3');
