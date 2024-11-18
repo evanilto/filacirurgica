@@ -1345,9 +1345,25 @@ class MapaCirurgico extends ResourceController
             foreach ($data['candidatos'] as &$candidato) {
                 $ordempaciente = $this->vwordempacientemodel->find($candidato['idlistaespera']);
                 $candidato['ordem_fila'] = $ordempaciente['ordem_fila'];
+                $trimmed = trim($candidato['campos_mapa'], '()');
+                $values = str_getcsv($trimmed);
+                $candidato['riscocirurgico'] = $values[4];
+                $candidato['congelacao'] = $values[5];
+                $candidato['lateralidade'] = $values[7];
+                $candidato['cid'] = $values[8];
+                $candidato['datariscocirurgico'] = $values[9];
+                $candidato['complexidade'] = $values[10];
+                $candidato['infoadicionais'] = $values[11];
+
             }
         }
         array_multisort(array_column($data['candidatos'], 'ordem_fila'), SORT_ASC, $data['candidatos']);
+
+        /* $input= $data['candidatos'][0]['campos_mapa'];
+        $trimmed = trim($input, '()');
+        $values = str_getcsv($trimmed);
+        $valor = $values[0];
+        die(var_dump($valor)); */
 
         unset($candidato);
 
@@ -1474,7 +1490,7 @@ class MapaCirurgico extends ResourceController
                         'indcongelacao' => $this->data['congelacao'],
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
-                        'indSituacao' => 'P' // Programada
+                        'indsituacao' => 'P' // Programada
                         ];
 
                 $this->listaesperamodel->update($this->data['idlistapac2'], $lista);

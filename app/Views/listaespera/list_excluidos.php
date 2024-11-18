@@ -1,3 +1,5 @@
+<script>$('#janelaAguarde').show();</script>
+
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
@@ -64,6 +66,8 @@
         var primeiraVez = true;
         var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
 
+        $('#janelaAguarde').show();
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
@@ -84,7 +88,12 @@
                 'excel',
                 'pdf',
                 'print' 
-            ] } }
+            ] } },
+            processing: true, 
+            "deferRender": true,
+            initComplete: function() {
+                $('#janelaAguarde').hide();
+            }
         });
 
         var table = $('#table').DataTable();

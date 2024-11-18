@@ -1,5 +1,7 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 
+<script>$('#janelaAguarde').show();</script>
+
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
@@ -139,11 +141,13 @@
         
         return true;
     }
-    
+
   $(document).ready(function() {
 
         var primeiraVez = true;
         var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
+
+        $('#janelaAguarde').show();
 
         $('#table').DataTable({
             "order": [[0, 'asc']],
@@ -165,11 +169,24 @@
                 'excel',
                 'pdf',
                 'print' 
-            ] } }
+            ] } },
+            processing: true, 
+            "deferRender": true,
+            initComplete: function() {
+                $('#janelaAguarde').hide();
+            }
         });
 
         var table = $('#table').DataTable();
         var firstRecordId;
+
+        table.on('processing.dt', function(e, settings, processing) {
+            if (processing) {
+                $('#janelaAguarde').show(); // Exibir o modal
+            } else {
+                $('#janelaAguarde').hide(); // Esconder o modal
+            }
+        });
 
         function loadAsideContent(prontuario, ordem, fila) {
             $.ajax({

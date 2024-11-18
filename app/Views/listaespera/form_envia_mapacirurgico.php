@@ -359,6 +359,54 @@
                             </div>
                         </div>
                         <div class="row g-3">
+                            <div class="container bordered-container mb-4">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="filtro_especialidades" class="form-label">Especialidade</label>
+                                            <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades">
+                                                <option value="">Todas</option>
+                                                <?php foreach ($data['especialidades_med'] as $filtro): ?>
+                                                    <option value="<?= $filtro->seq ?>"><?= $filtro->nome_especialidade ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
+                                            <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
+                                                    id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
+                                                <?php
+                                                // Certifique-se de que $data['profissional'] está definido como um array
+                                                $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
+
+                                                // Certifique-se de que o array não tenha valores vazios
+                                                $data['profissional'] = array_filter($data['profissional']);
+
+                                                $array_selected = [];
+                                                foreach ($data['prof_especialidades'] as $prof_espec) {
+                                                    if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
+                                                        $selected = 'selected';
+                                                        $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
+                                                    } else {
+                                                        $selected = '';
+                                                    }
+                                                    echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                            <?php if ($validation->hasError('profissional')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('profissional') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
@@ -411,54 +459,6 @@
                                             <?= $validation->getError('justenvio') ?>
                                         </div>
                                     <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="container bordered-container">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="filtro_especialidades" class="form-label">Especialidade</label>
-                                            <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades">
-                                                <option value="">Todas</option>
-                                                <?php foreach ($data['especialidades_med'] as $filtro): ?>
-                                                    <option value="<?= $filtro->seq ?>"><?= $filtro->nome_especialidade ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
-                                            <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
-                                                    id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
-                                                <?php
-                                                // Certifique-se de que $data['profissional'] está definido como um array
-                                                $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
-
-                                                // Certifique-se de que o array não tenha valores vazios
-                                                $data['profissional'] = array_filter($data['profissional']);
-
-                                                $array_selected = [];
-                                                foreach ($data['prof_especialidades'] as $prof_espec) {
-                                                    if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
-                                                        $selected = 'selected';
-                                                        $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
-                                                    } else {
-                                                        $selected = '';
-                                                    }
-                                                    echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                            <?php if ($validation->hasError('profissional')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('profissional') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>

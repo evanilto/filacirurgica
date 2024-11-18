@@ -22,7 +22,11 @@
                                             <?php
                                             foreach ($data['candidatos'] as $key => $candidato) {
                                                 $selected = ($data['candidato'] == $candidato['prontuario']) ? 'selected' : '';
-                                                echo '<option value="'.$candidato['prontuario'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].'" data-procedimento="'.$candidato['idprocedimento'].'" '.$selected.'> No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
+                                                echo '<option value="'.$candidato['prontuario'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
+                                                '" data-procedimento="'.$candidato['idprocedimento'].'" data-risco="'.$candidato['riscocirurgico'].'" data-dtrisco="'.$candidato['datariscocirurgico'].
+                                                '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].
+                                                '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].
+                                                '" '.$selected.'> No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -176,7 +180,7 @@
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco" onchange="verificarPerfil()"
+                                            id="risco" name="risco" 
                                             data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
@@ -284,13 +288,13 @@
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="NÃO"
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'NÃO') ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N"
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="SIM"
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'SIM') ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S"
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
@@ -315,50 +319,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="2"
-                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('info')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('info') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="2"
-                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('nec_proced') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Justificativa para troca<b class="text-danger">*</b></label>
-                                    <textarea id="justtroca" maxlength="255" rows="2"
-                                            class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
-                                            name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justtroca')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('justtroca') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="container bordered-container">
+                            <div class="container bordered-container mb-4">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -402,6 +363,49 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Informações adicionais</label>
+                                    <textarea id="info" maxlength="255" rows="3" readonly
+                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
+                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('info')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('info') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="nec_proced">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <textarea id="nec_proced" maxlength="255" rows="3"
+                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('nec_proced') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="justtroca">Justificativa para troca<b class="text-danger">*</b></label>
+                                    <textarea id="justtroca" maxlength="255" rows="3"
+                                            class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
+                                            name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('justtroca')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('justtroca') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -646,15 +650,54 @@
             var prontuarioValue = $(this).val();
             var ordemValue = $(this).find('option:selected').data('ordem');
             var idlistaValue = $(this).find('option:selected').data('id');
-
-            //var procedimentoValue = $(this).find('option:selected').data('procedimento');
             var procedimentoValue = $(this).find('option:selected').data('procedimento');
+            var infoValue = $(this).find('option:selected').data('infoadicionais');
+            var cidValue = $(this).find('option:selected').data('cid');
+            var riscoValue = $(this).find('option:selected').data('risco');
+            var complexidadeValue = $(this).find('option:selected').data('complexidade');
+            var lateralidadeValue = $(this).find('option:selected').data('lateralidade');
+            var congelacaoValue = $(this).find('option:selected').data('congelacao');
+
+            var dtriscoValue = $(this).find('option:selected').data('dtrisco');
+            const [year, month, day] = dtriscoValue.split("-");
+            dtriscoValue = `${day}/${month}/${year}`;
+
+            
+            //alert(complexidadeValue);
+/*            alert(dtriscoValue);
+            alert($('input[name="dtrisco"]').val()); // Verifica se o campo é encontrado
+ */
 
             //if (prontuarioValue) { // Verifica se prontuarioValue não está vazio
 
-                $('input[name="procedimento"]').val(procedimentoValue); // Define o valor do hidden
-                $('input[name="prontuario"]').val(prontuarioValue); // Define o valor do hidden
-                $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
+                $('select[name="cid"]').val(cidValue).change(); // Define o valor do hidden
+                $('textarea[name="info"]').val(infoValue); // Define o valor do hidden
+                $('select[name="risco"]').val(riscoValue).change(); // Define o valor do hidden
+                $('select[name="lateralidade"]').val(lateralidadeValue).change(); // Define o valor do hidden
+                $('input[name="dtrisco"]').val(dtriscoValue); // Define o valor do hidden
+                //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
+                $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
+                $('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true).trigger('change');
+                //$('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true);
+                //$('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true);
+
+                /* var elemento = $('input[name="complexidade"][value="' + complexidadeValue + '"]');
+
+                console.log("Elemento encontrado:", elemento);
+
+                if (elemento.length) {
+                    // Marca o botão de rádio
+                    elemento.prop('checked', true).trigger('change');
+                    console.log("Complexidade definida para:", complexidadeValue);
+                } else {
+                    console.warn("Botão de rádio correspondente não encontrado.");
+                } */
+/* 
+                if ($('#candidato').val()) {
+                    $('#candidato').trigger('change');
+                } */
+
+                //$('#candidato').trigger('change');
 
                 loadAsideContent(prontuarioValue, ordemValue, filaText);
 

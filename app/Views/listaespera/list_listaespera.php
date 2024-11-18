@@ -1,5 +1,26 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 
+<script>$('#janelaAguarde').show();</script>
+
+<!-- Modal -->
+<div id="modalDetalhes" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalhes da Linha</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="detalhesLinha">Carregando...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
@@ -131,6 +152,8 @@
         var primeiraVez = true;
         var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
 
+        $('#janelaAguarde').show();
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
@@ -145,29 +168,50 @@
             { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
             { "visible": false, "targets": [0] }
             ],
-            layout: { topStart: { buttons: [
+            layout: { topStart: {
+                buttons: [
+                {
+                    extend: 'colvis', // Botão para exibir/inibir colunas
+                    text: 'Colunas', // Texto do botão
+                    columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
+                },
                 'copy',
                 'csv',
                 'excel',
                 'pdf',
                 'print' 
-            ] } }
+            ] } },
+            processing: true, 
+            "deferRender": true,
+            initComplete: function() {
+                $('#janelaAguarde').hide();
+            }
         });
 
         var table = $('#table').DataTable();
 
-        /* var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
-        if (paginaAnterior) {
-            alert('pag anterior: ' + paginaAnterior);
+        table.on('processing.dt', function(e, settings, processing) {
+            if (processing) {
+                $('#janelaAguarde').show(); // Exibir o modal
+            } else {
+                $('#janelaAguarde').hide(); // Esconder o modal
+            }
+        });
 
-            table.page(parseInt(paginaAnterior)).draw(false);
-        } */
+        $('#table tbody').on('dblclick', 'tr', function() {
+            // Obtenha os dados da linha clicada
+            var data = table.row(this).data();
 
-        // Armazena a página atual quando o DataTable é redesenhado
-        /* table.on('draw', function() {
-            var paginaAtual = table.page();
-            sessionStorage.setItem('paginaSelecionada', paginaAtual);
-        }); */
+            // Atualize o conteúdo do modal com os detalhes da linha
+            $('#detalhesLinha').html(`
+                <strong>ID:</strong> ${data[0]}<br>
+                <strong>Nome:</strong> ${data[1]}<br>
+                <strong>Outro Campo:</strong> ${data[2]}
+            `);
+
+            // Exiba o modal
+            $('#modalDetalhes').modal('show');
+        });
 
         function loadAsideContent(prontuario, ordem, fila) {
             $.ajax({
@@ -244,5 +288,5 @@
         });
 
     });
-</script>
 
+</script>
