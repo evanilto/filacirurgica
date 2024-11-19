@@ -67,9 +67,9 @@
             <section class="content" id="content">
                 <?= $this->renderSection('content') ?>
             </section>
-            <aside class="sidebar" id="sidebar">
+            <!-- <aside class="sidebar" id="sidebar">
                 Aguarde...
-            </aside>
+            </aside> -->
         </main>
         <footer class="footer">
             <p>&copy; 2024 HUAP-UFF - SETISD/USID - v1.0</p>

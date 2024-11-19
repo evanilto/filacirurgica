@@ -42,9 +42,9 @@ body {
 .main {
     grid-area: main;
     display: grid;
-    grid-template-columns: 3.5fr 1fr;
+    /* grid-template-columns: 3.5fr 1fr;
     gap: 1rem;
-    padding: 1rem;
+    padding: 1rem; */
 }
 
 .content {
@@ -155,6 +155,10 @@ input, textarea {
     opacity: 0.6; /* Ajuste a opacidade conforme necessário */
 }
 
+#table tbody tr {
+    cursor: pointer; /* Define o cursor como ponteiro ao passar o mouse sobre as linhas da tabela */
+}
+
 #table tbody tr.lineselected {
    background-color: #d6f0dc;
 }
@@ -195,8 +199,10 @@ input, textarea {
 }
 
 table {
+    table-layout: fixed; /* Isso ajuda a manter as larguras das colunas */
     page-break-inside: auto;
     width: 100%;
+    margin-top: 20px;
     border-collapse: collapse; /* Remove gaps between table cells */
     background-color: #f8f9fa; /* Cor de fundo clara */
     border-radius: 5px; /* Bordas arredondadas */
@@ -214,6 +220,54 @@ thead {
 
 tfoot {
     display: table-footer-group;
+}
+
+.tabela-60 {
+    width: 60% !important; /* Define a largura da tabela apenas para esta classe */
+    margin-top: 30px !important;
+    margin: 0 auto; /* Centraliza a tabela horizontalmente */
+}
+
+/* Certifique-se de que os estilos se apliquem corretamente */
+.tabela-60 table {
+    width: 100%; /* Garante que a tabela ocupe 100% do contêiner */
+}
+
+.table-container {
+    margin-top: 5px; /* Margem superior */
+    margin-bottom: 5px; /* Margem superior */
+    width: 100%; /* Define a largura do contêiner */
+    margin-left: auto; /* Centraliza à esquerda */
+    margin-right: auto; /* Centraliza à direita */
+    border: 1px solid #b5b8bb; /* Adiciona uma moldura azul ao redor do contêiner */
+    border-radius: 5px; /* Opcional: arredonda os cantos */
+    padding: 15px; /* Opcional: espaço interno */
+    background-color: #fff; /* Define a cor de fundo do contêiner */
+    background-color: #fff; /* Cor de fundo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona sombra */
+    user-select: none; /* Isso desabilita a seleção de texto */
+}
+
+.break-line {
+    white-space: normal; /* Permite quebra de linha */
+    word-wrap: break-word; /* Quebra palavras longas, se necessário */
+    word-break: break-all; /* Quebra palavras muito longas em qualquer ponto */
+    /*max-width: 150px; /* Defina a largura máxima para a coluna */
+    overflow: hidden; /* Esconde o excesso de texto que não cabe */
+    text-overflow: ellipsis; /* Adiciona "..." no final do texto se truncado */
+}
+
+.tooltip {
+    display: none; /* Começa oculto */
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1000;
+    max-width: 100px;
+    white-space: normal; /* Permite quebra de linha dentro do tooltip */
+    word-wrap: break-word; /* Quebra palavras longas */
 }
 
 .bordered-container {

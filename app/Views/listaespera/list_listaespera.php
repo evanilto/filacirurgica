@@ -20,11 +20,11 @@
     </div>
 </div>
 
-
+<div class="table-container">
 <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
     <thead>
         <tr>
-            <th scope="col" colspan="20" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+            <th scope="col" colspan="21" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
         </tr>
         <tr>
             <th scope="col" data-field="" ></th>
@@ -33,23 +33,23 @@
             <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
             <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
             <th scope="col" data-field="prontuarioaghu" >Nome</th>
-            <th scope="col" data-field="prontuarioaghu" >Origem</th>
             <th scope="col" data-field="prontuarioaghu" >Fila</th>
             <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
+            <th scope="col" data-field="prontuarioaghu" >Informações Adicionais</th>
+            <th scope="col" data-field="prontuarioaghu" >Risco</th>
             <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
             <th scope="col" data-field="prontuarioaghu" >CID</th>
             <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
+            <th scope="col" data-field="prontuarioaghu" >Origem</th>
             <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
             <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
             <th scope="col" data-field="prontuarioaghu" >Congelação</th>
-            <th scope="col" data-field="prontuarioaghu" >Risco</th>
             <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
             <th scope="col" data-field="acao" colspan="3" style="text-align: center;">Ações</th>
         </tr>
     </thead>
     <tbody>
         <?php foreach($listaespera as $itemlista): 
-        //die(var_dump( $itemlista->created_at));
             $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
         ?>
@@ -59,13 +59,31 @@
                 <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
                 <td><?php echo $itemlista->created_at ?></td>
                 <td><?php echo $itemlista->prontuario ?></td>
-                <td><?php echo $itemlista->nome_paciente ?></td>
-                <td><?php echo $itemlista->origem_descricao ?></td>
-                <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->especialidade_descricao ?></td>
-                <td><?php echo $itemlista->procedimento_descricao ?></td>
-                <td><?php echo $itemlista->cid ?></td>
-                <td><?php echo $itemlista->cid_descricao ?></td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->nome_paciente); ?>">
+                    <?php echo htmlspecialchars($itemlista->nome_paciente); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->fila); ?>">
+                    <?php echo htmlspecialchars($itemlista->fila); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>">
+                    <?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->info_adicionais); ?>">
+                    <?php echo htmlspecialchars($itemlista->info_adicionais); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->risco_descricao); ?>">
+                    <?php echo htmlspecialchars($itemlista->risco_descricao); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>">
+                    <?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>
+                </td>
+                <td class="break-line"><?php echo $itemlista->cid ?></td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->cid_descricao); ?>">
+                    <?php echo htmlspecialchars($itemlista->cid_descricao); ?>
+                </td>
+                <td class="break-line" title="<?php echo htmlspecialchars($itemlista->origem_descricao); ?>">
+                    <?php echo htmlspecialchars($itemlista->origem_descricao); ?>
+                </td>
                 <td>
                     <?php 
                     switch ($itemlista->complexidade) {
@@ -84,9 +102,9 @@
                     }
                     ?>
                 </td>
-                <td><?php echo $itemlista->nmlateralidade ?></td>
-                <td><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
-                <td><?php echo $itemlista->risco_descricao ?></td>
+                <td class="break-line"><?php echo $itemlista->nmlateralidade ?></td>
+                <td class="break-line"><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
+                
                 <td><?php echo $itemlista->data_risco ?></td>
                 <td style="text-align: center; vertical-align: middle;">
                     <?php 
@@ -124,6 +142,7 @@
         <i class="fa-solid fa-arrow-left"></i> Voltar
     </a>
 </div>
+</div>
 <script>
   function mostrarAguarde(event, href) {
     event.preventDefault(); // Prevenir o comportamento padrão do link
@@ -149,31 +168,93 @@
     
   $(document).ready(function() {
 
+        $('#table tbody').on('mouseenter', 'td.break-line', function() {
+            var $this = $(this); 
+            
+            // Verifica se o conteúdo do texto ultrapassa a largura visível da célula
+            if ($this[0].scrollWidth > $this.innerWidth()) {
+                var tooltip = $('<div class="tooltip"></div>')
+                    .text($this.attr('title')) // Usa o atributo title para o texto do tooltip
+                    .appendTo('body');
+                    
+                // Posições o tooltip
+                tooltip.css({ 
+                    top: $this.offset().top + $this.outerHeight() + 10, // Posiciona abaixo da célula
+                    left: $this.offset().left
+                }).fadeIn('slow');
+
+                $this.data('tooltip', tooltip); // Salva o tooltip na célula
+            } else {
+                $(this).data('tooltip', null); // Garante que o tooltip não seja salvo se não necessário
+            }
+
+        }).on('mouseleave', 'td.break-line', function() {
+            var tooltip = $(this).data('tooltip'); // Recupera o tooltip salvo
+            if (tooltip) {
+                tooltip.remove(); // Remove o tooltip ao sair
+            }
+        }).on('mousemove', 'td.break-line', function(e) {
+            var tooltip = $(this).data('tooltip'); // Recupera o tooltip
+            if (tooltip) {
+                tooltip.css({ // Move o tooltip conforme o mouse
+                    top: e.pageY + 10,
+                    left: e.pageX + 10
+                });
+            }
+        });
+
         var primeiraVez = true;
         var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
 
         $('#janelaAguarde').show();
 
+        $('[data-toggle="tooltip"]').tooltip();
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
-            "pageLength": 15,
+            "pageLength": 16,
             "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
+            "columns": [
+                { "width": "0px" },  // Primeira coluna
+                null,
+                null,
+                { "width": "115px" },                
+                { "width": "100px" },  // prontuario
+                { "width": "300px" }, 
+                { "width": "300px" },  // fila
+                { "width": "190px" }, 
+                { "width": "300px" },  // infoadicionais
+                { "width": "120px" },  // risco
+                { "width": "300px" },
+                { "width": "60px"  },   // CID
+                { "width": "300px" },
+                { "width": "140px" },
+                { "width": "120px" }, // complex
+                { "width": "150px" },
+                { "width": "110px" },
+                { "width": "90px" }, // dt risco
+                { "width": "35px" },
+                { "width": "35px" },
+                { "width": "35px" }
+            ],
             "columnDefs": [
             { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
-            { "visible": false, "targets": [0] }
+            { "visible": false, "targets": [0] },
+            { "width": "500px", "targets": [8] }
             ],
             layout: { topStart: {
                 buttons: [
                 {
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
-                    columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
+                    //columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
+                    columns: ':not(:nth-child(2)):not(:last-child)' 
                 },
                 'copy',
                 'csv',
@@ -185,6 +266,7 @@
             "deferRender": true,
             initComplete: function() {
                 $('#janelaAguarde').hide();
+                $('#table tbody tr td').addClass('break-line');
             }
         });
 
@@ -199,6 +281,7 @@
         });
 
         $('#table tbody').on('dblclick', 'tr', function() {
+            event.preventDefault();
             // Obtenha os dados da linha clicada
             var data = table.row(this).data();
 
@@ -243,7 +326,7 @@
             var data = table.row(this).data(); // Obtenha os dados da linha clicada
             var recordId = data[4];
 
-            loadAsideContent(recordId, ordemFila, fila); 
+            //loadAsideContent(recordId, ordemFila, fila); 
 
         });
 
@@ -265,7 +348,7 @@
             // Obter os dados do registro selecionado e carregar os detalhes no aside
             var data = table.row(firstRecordIndex).data();
             var recordId = data[4];
-            loadAsideContent(recordId, ordemFila, fila);
+            //loadAsideContent(recordId, ordemFila, fila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
