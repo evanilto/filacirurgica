@@ -5,6 +5,7 @@
         <div class="content" id="content">
             <div class="content-container">
                 <?php include 'modal_aguarde.php'; ?>
+                <?php include 'modal_detalhes.php'; ?>
 
                 <?= $this->include('layouts/div_flashdata') ?>
                 <?= $this->renderSection('subcontent') ?>

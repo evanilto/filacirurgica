@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
@@ -104,7 +104,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="procedimento" class="form-label">Procedimento Principal</label>
                                     <div class="input-group">
@@ -127,9 +129,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
                                     <div class="input-group">
@@ -155,7 +155,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cid" class="form-label">CID</label>
                                     <div class="input-group">
@@ -178,9 +180,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -218,8 +218,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
+                            <div class="col-md-2">
+                                <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -241,30 +241,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-4">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
-                        <div class="row g-3">
+                        <div class="row g-2">
                             <div class="col-md-3">
                                 <div class="mb-4">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
@@ -288,7 +266,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -312,6 +290,28 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -333,7 +333,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -359,7 +359,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="container bordered-container mb-4">
+                            <div class="container bordered-container mb-3">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -410,7 +410,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="2" readonly
+                                    <textarea id="justorig" maxlength="255" rows="3" readonly
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
                                             name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>
@@ -423,7 +423,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="2" readonly
+                                    <textarea id="info" maxlength="255" rows="3" readonly
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -438,7 +438,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="2"
+                                    <textarea id="nec_proced" maxlength="255" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -451,7 +451,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
-                                    <textarea id="justenvio" maxlength="255" rows="2"
+                                    <textarea id="justenvio" maxlength="255" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
                                             name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justenvio')): ?>

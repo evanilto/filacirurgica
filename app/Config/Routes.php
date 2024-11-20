@@ -24,6 +24,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->get('carregaaside/(:num)', 'ListaEspera::getDetailsAside/$1');
     $routes->get('carregaaside/(:num)/(:any)', 'ListaEspera::getDetailsAside/$1/$2');
     $routes->get('carregaaside/(:num)/(:any)/(:any)', 'ListaEspera::getDetailsAside/$1/$2/$3');
+    $routes->get('carregadadosmodal', 'ListaEspera::getDadosModal');
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');

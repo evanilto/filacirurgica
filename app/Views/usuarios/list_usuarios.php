@@ -9,7 +9,7 @@
             <tr>
                 <th scope="col" class="col-1" data-field="Id" >Id</th>
                 <th scope="col" data-field="Login">Login</th>
-                <th scope="col" data-field="Nome" >Nome</th>
+                <th scope="col" data-field="Nome" style="text-align: left;">Nome</th>
                 <!-- <th scope="col" data-field="Perfil" >Perfil</th> -->
                 <th scope="col" data-field="Situacao" >Situação</th>
                 <th scope="col" class="col-1">Ação</th>
@@ -53,6 +53,15 @@
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
+            "autoWidth": false,
+            "scrollX": true,
+            "columns": [
+                { "width": "40px" },  // Primeira coluna
+                { "width": "150px" },                
+                { "width": "300px" }, 
+                { "width": "70px" },  
+                { "width": "40px" }, 
+            ],
             "columnDefs": [
              { "orderable": false, "targets": [] }, 
            /*  { "visible": false, "targets": [0] }  */

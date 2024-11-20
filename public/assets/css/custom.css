@@ -156,11 +156,17 @@ input, textarea {
 }
 
 #table tbody tr {
-    cursor: pointer; /* Define o cursor como ponteiro ao passar o mouse sobre as linhas da tabela */
+    /*cursor: pointer; /* Define o cursor como ponteiro ao passar o mouse sobre as linhas da tabela */
+    /* Altere o cursor para o padrão (seta) */
+    cursor: default !important;
 }
 
 #table tbody tr.lineselected {
    background-color: #d6f0dc;
+}
+
+.dt-search input { /* campos pesquisar do data-table */
+    width: 500px !important;; /* Define o tamanho desejado */
 }
 
 .form-container {
@@ -292,6 +298,14 @@ tfoot {
     box-sizing: border-box;
 }
 
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: flex;
+    align-items: center;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
 .select2-selection__arrow {
     height: 30px; /* Altura da seta */
 }
@@ -323,6 +337,7 @@ tfoot {
 .select2-container {
     width: 100% !important;
 }
+
 
 .select2-selection--multiple {
     height: auto !important;
@@ -390,16 +405,16 @@ background-color: transparent; /* Remova o fundo escurecido */
 }
 
 .modal-content {
-position: fixed;
-top: 50%;
-left: 45%;
-transform: translate(-50%, -50%);
-max-width: 15%;
-padding: 20px;
-border: 2px solid #000;
-border-radius: 5px;
-background-color: white;
-z-index: 1001; /* Deve ser maior que o z-index de modal-overlay */
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 115px); /* Compensa a largura do menu lateral */
+    transform: translate(-50%, -50%);
+    max-width: 15%;
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 1001; /* Deve ser maior que o z-index de modal-overlay */
 }
 
 .modal-overlay {
@@ -416,6 +431,20 @@ z-index: 1000;
 text-align: center;
 margin: 10px 0 0 0;
 padding: 0;
+}
+
+.modal-dialog {
+    position: fixed; /* Fixa o modal na viewport */
+    top: 10%; /* Posiciona no meio vertical */
+    left: calc(25% + 115px); /* Metade da largura do menu (230px / 2) */
+    transform: translate(-50%, -50%); /* Centraliza com precisão */
+    max-width: 50%; /* Define a largura máxima */
+    width: 100%; /* Garante que não ultrapasse a largura disponível */
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 1001; /* Deve ser maior que o modal-overlay */
 }
 
 .spinner {
@@ -449,6 +478,7 @@ animation-delay: -0.16s;
 }
 
 /* Responsive adjustments */
+
 @media (max-width: 768px) {
     .main {
         grid-template-columns: 1fr;
@@ -457,5 +487,9 @@ animation-delay: -0.16s;
     .nav ul {
         flex-direction: column;
         align-items: center;
+    }
+
+    .modal-dialog {
+        max-width: 90%; /* Em telas menores, pode ocupar mais espaço */
     }
 }

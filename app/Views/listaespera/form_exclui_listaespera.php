@@ -43,7 +43,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-5">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
@@ -66,7 +66,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">

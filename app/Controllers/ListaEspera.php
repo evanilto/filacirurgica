@@ -177,6 +177,26 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
+    public function getDadosModal()
+    {
+        $prontuario = $this->request->getGet('prontuario'); // Captura o parâmetro via GET
+    
+        // Valida se o parâmetro foi enviado
+        if (!$prontuario) {
+            return $this->response->setJSON(['erro' => 'Parâmetro prontuario é obrigatório'], 400);
+        }
+    
+        // Busca o paciente pelo prontuário
+        $paciente = $this->localaippacientesmodel->find($prontuario);
+    
+        // Retorna como JSON
+        return $this->response->setJSON($paciente);
+    }
+    /**
+     * Return the properties of a resource object
+     *
+     * @return mixed
+     */
     public function getNomePaciente($numProntuario)
 {
     //return $this->response->setJSON(['error' => $numProntuario], 404);

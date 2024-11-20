@@ -1,50 +1,52 @@
 <script>$('#janelaAguarde').show();</script>
 
-<table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
-    <thead>
-        <tr>
-            <th scope="col" colspan="7" class="bg-light text-start"><h5><strong>Pacientes Excluídos</strong></h5></th>
-        </tr>
-        <tr>
-            <th scope="col" data-field="" ></th>
-            <!-- <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
-            <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th> -->
-            <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
-            <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
-            <th scope="col" data-field="prontuarioaghu" >Nome</th>
-            <th scope="col" data-field="prontuarioaghu" >Fila</th>
-            <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
-            <th scope="col" data-field="acao" colspan="1" style="text-align: center;">Ação</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach($listaespera as $itemlista): 
-        //die(var_dump( $itemlista->created_at));
-            $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
-/*             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
- */        ?>
-            <!-- <tr data-ordem="<--?= $itemlista->ordem_fila ?>" data-fila="<--?= $itemlista->fila ?>"> -->
+<div class="table-container">
+    <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
+        <thead>
             <tr>
-                <td><?php echo "" ?></td>
-                <!-- <td title="Ordem de entrada na Lista Cirúrgica">--<--?php echo $itemlista->ordem_lista ?></td>
-                <td title="Ordem na Fila Cirúrgica"><--?php echo $itemlista->ordem_fila ?></td> -->
-                <td><?php echo $itemlista->created_at ?></td>
-                <td><?php echo $itemlista->prontuario ?></td>
-                <td><?php echo $itemlista->nome_paciente ?></td>
-                <td><?php echo $itemlista->fila ?></td>
-                <td><?php echo $itemlista->nome_especialidade ?></td>
-                <td style="text-align: center; vertical-align: middle;">
-                    <!-- <--?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Recuperar Paciente')) ?> -->
-                    <?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id, '<i class="fa-solid fa-arrow-rotate-left"></i>', array('title' => 'Recuperar Paciente')) ?>
-                </td>
+                <th scope="col" colspan="7" class="bg-light text-start"><h5><strong>Pacientes Excluídos</strong></h5></th>
             </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-<div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultarexcluidos') ?>">
-        <i class="fa-solid fa-arrow-left"></i> Voltar
-    </a>
+            <tr>
+                <th scope="col" data-field="" ></th>
+                <!-- <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
+                <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th> -->
+                <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
+                <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+                <th scope="col" data-field="prontuarioaghu" >Nome</th>
+                <th scope="col" data-field="prontuarioaghu" >Fila</th>
+                <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
+                <th scope="col" data-field="acao" colspan="1" style="text-align: center;">Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($listaespera as $itemlista): 
+            //die(var_dump( $itemlista->created_at));
+                $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
+    /*             $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
+    */        ?>
+                <!-- <tr data-ordem="<--?= $itemlista->ordem_fila ?>" data-fila="<--?= $itemlista->fila ?>"> -->
+                <tr>
+                    <td><?php echo "" ?></td>
+                    <!-- <td title="Ordem de entrada na Lista Cirúrgica">--<--?php echo $itemlista->ordem_lista ?></td>
+                    <td title="Ordem na Fila Cirúrgica"><--?php echo $itemlista->ordem_fila ?></td> -->
+                    <td><?php echo $itemlista->created_at ?></td>
+                    <td><?php echo $itemlista->prontuario ?></td>
+                    <td><?php echo $itemlista->nome_paciente ?></td>
+                    <td><?php echo $itemlista->fila ?></td>
+                    <td><?php echo $itemlista->nome_especialidade ?></td>
+                    <td style="text-align: center; vertical-align: middle;">
+                        <!-- <--?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Recuperar Paciente')) ?> -->
+                        <?php echo anchor('listaespera/recuperarexcluido/'.$itemlista->id, '<i class="fa-solid fa-arrow-rotate-left"></i>', array('title' => 'Recuperar Paciente')) ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="col-md-12">
+        <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultarexcluidos') ?>">
+            <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
+    </div>
 </div>
 <script>
   function mostrarAguarde(event, href) {
@@ -78,6 +80,15 @@
             },
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
+            "columns": [
+                { "width": "0px" },  //
+                { "width": "100px" },  // 
+                { "width": "90px" },                
+                { "width": "400px" },  // 
+                { "width": "400px" }, 
+                { "width": "400px" }, 
+                { "width": "50px" }
+            ],
             "columnDefs": [
             { "orderable": false, "targets": [0, 1, 2, 3, 4, 5] },
             { "visible": false, "targets": [0] }

@@ -58,7 +58,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -81,7 +81,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -104,7 +104,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="procedimento" class="form-label">Procedimento<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -127,14 +129,12 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cid" class="form-label">CID</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
-                                            id="cid" name="cid"
+                                            id="cid" name="cid" style="width: 100px;"
                                             data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
@@ -152,7 +152,9 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -175,7 +177,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -190,8 +192,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-4">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
@@ -215,7 +215,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -238,7 +238,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -255,7 +255,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="mb-4">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -423,7 +423,7 @@
                 window.location.href = href;
             }, 1000);
         });
-        
+
         $('.select2-dropdown').select2({
             dropdownCssClass: 'custom-dropdown',
             allowClear: true
