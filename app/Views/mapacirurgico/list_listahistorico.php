@@ -1,32 +1,34 @@
-<table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
-    <thead>
-        <tr>
-            <th scope="col" colspan="4" class="bg-light text-start"><h5><strong>Histórico de Atividades</strong></h5></th>
-        </tr>
-        <tr>
-            <th scope="col" data-field="" ></th>
-            <th scope="col" data-field="prontuarioaghu" >Dt/Hr Evento</th>
-            <th scope="col" data-field="prontuarioaghu" >Evento</th>
-            <th scope="col" data-field="prontuarioaghu" >Usuário</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach($historico as $itemhistorico): 
-            $itemhistorico->dthrevento = \DateTime::createFromFormat('Y-m-d H:i:s', $itemhistorico->dthrevento)->format('d/m/Y H:i');
-        ?>
-            <tr data-ordem="<?= $data['ordem_fila']?>" data-fila="<?= $data['fila'] ?>" data-prontuario="<?= $data['prontuario'] ?>">
-                <td><?php echo "" ?></td>
-                <td><?php echo $itemhistorico->dthrevento ?></td>
-                <td><?php echo $itemhistorico->nmevento ?></td>
-                <td><?php echo $itemhistorico->idlogin ?></td>
+<div class="table-container tabela-60">
+    <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
+        <thead>
+            <tr>
+                <th scope="col" colspan="4" class="bg-light text-start"><h5><strong>Histórico de Atividades</strong></h5></th>
             </tr>
-        <?php endforeach; ?>
-    </tbody>
-</table>
-<div class="col-md-12">
-    <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibirsituacao') ?>">
-        <i class="fa-solid fa-arrow-left"></i> Voltar
-    </a>
+            <tr>
+                <th scope="col" data-field="" ></th>
+                <th scope="col" data-field="prontuarioaghu" >Dt/Hr Evento</th>
+                <th scope="col" data-field="prontuarioaghu" >Evento</th>
+                <th scope="col" data-field="prontuarioaghu" >Usuário</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php foreach($historico as $itemhistorico): 
+                $itemhistorico->dthrevento = \DateTime::createFromFormat('Y-m-d H:i:s', $itemhistorico->dthrevento)->format('d/m/Y H:i');
+            ?>
+                <tr data-ordem="<?= $data['ordem_fila']?>" data-fila="<?= $data['fila'] ?>" data-prontuario="<?= $data['prontuario'] ?>">
+                    <td><?php echo "" ?></td>
+                    <td><?php echo $itemhistorico->dthrevento ?></td>
+                    <td><?php echo $itemhistorico->nmevento ?></td>
+                    <td><?php echo $itemhistorico->idlogin ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody>
+    </table>
+    <div class="col-md-12">
+        <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibirsituacao') ?>">
+            <i class="fa-solid fa-arrow-left"></i> Voltar
+        </a>
+    </div>
 </div>
 <script>
   function mostrarAguarde(event, href) {

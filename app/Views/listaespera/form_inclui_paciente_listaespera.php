@@ -280,7 +280,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea type="text" id="justorig" maxlength="255" rows="2"
+                                    <textarea type="text" id="justorig" maxlength="255" rows="3"
                                         class="form-control <?php if($validation->getError('justorig')): ?>is-invalid<?php endif ?>"
                                         name="justorig" value="<?= set_value('justorig') ?>"></textarea>
                                         <?php if ($validation->getError('justorig')): ?>
@@ -294,7 +294,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea type="text" id="info" maxlength="255" rows="2"
+                                    <textarea type="text" id="info" maxlength="255" rows="3"
                                         class="form-control <?php if($validation->getError('info')): ?>is-invalid<?php endif ?>"
                                         name="info" value="<?= set_value('info') ?>"></textarea>
                                         <?php if ($validation->getError('info')): ?>

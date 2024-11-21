@@ -1035,7 +1035,6 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'info' => 'max_length[1024]|min_length[3]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'centrocirurgico' => 'required',
             'sala' => 'required'
@@ -1068,7 +1067,7 @@ class MapaCirurgico extends ResourceController
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
                         'idlateralidade' => $this->data['lateralidade'],
-                        'txtinfoadicionais' => $this->data['info']
+                        //'txtinfoadicionais' => $this->data['info']
                         ];
 
                 $this->listaesperamodel->update($this->data['idlistaespera'], $lista);
@@ -1351,7 +1350,7 @@ class MapaCirurgico extends ResourceController
                 $candidato['congelacao'] = $values[5];
                 $candidato['lateralidade'] = $values[7];
                 $candidato['cid'] = $values[8];
-                $candidato['datariscocirurgico'] = $values[9];
+                $candidato['datariscocirurgico'] = $values[9] ?? '';
                 $candidato['complexidade'] = $values[10];
                 $candidato['infoadicionais'] = $values[11];
 
@@ -1362,8 +1361,8 @@ class MapaCirurgico extends ResourceController
         /* $input= $data['candidatos'][0]['campos_mapa'];
         $trimmed = trim($input, '()');
         $values = str_getcsv($trimmed);
-        $valor = $values[0];
-        die(var_dump($valor)); */
+        $valor = $values[0]; */
+        //die(var_dump($pacatrocar));
 
         unset($candidato);
 
@@ -1446,11 +1445,9 @@ class MapaCirurgico extends ResourceController
             'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
             'fila' => 'required',
-            'procedimento' => 'required',
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
-            'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justtroca' => 'required|max_length[500]|min_length[3]',
         ];

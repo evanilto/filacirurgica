@@ -1,6 +1,17 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<style>
+.content {
+    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    overflow-y: auto; /* Rolagem apenas vertical */
+    overflow-x: hidden; /* Impede a rolagem horizontal */
+    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+</style>
 <div class="container" style="padding-top: 0; margin-top: -30px">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -185,7 +196,7 @@
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco" onchange="verificarPerfil()"
+                                            id="risco" name="risco"
                                             data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
@@ -289,28 +300,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="col-md-2">
                                 <div class="mb-4">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
@@ -354,6 +343,28 @@
                                                 <?= $validation->getError('hemoderivados') ?>
                                             </div>
                                         <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -641,11 +652,6 @@
             }, 1000);
         });
         
-        $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
-            allowClear: true
-        });
-
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
         prontuarioInput.addEventListener('change', function() {

@@ -436,12 +436,13 @@
                     <strong>Data Nascimento:</strong> ${verificarValor(paciente.dt_nascimento)}<br>
                     <strong>Idade:</strong> ${verificarValor(paciente.idade)}<br>
                     <strong>CPF:</strong> ${verificarValor(paciente.cpf)}<br>
+                    <strong>CNS:</strong> ${verificarValor(paciente.cns)}<br>
                 `);
 
                 // Atualiza o conteúdo do modal para a coluna direita
                 $('#colunaDireita1').html(`
-                    <strong>CNS:</strong> ${verificarValor(paciente.cns)}<br>
-                    <strong>Telefone:</strong> ${verificarValor(paciente.tel_1)} ${verificarOutroValor(paciente.tel_2)}<br>
+                    <strong>Tel. Residencial:</strong> ${verificarValor(paciente.tel_1)}<br>
+                    <strong>Tel. Recados:</strong> ${verificarValor(paciente.tel_2)}<br>
                     <strong>Email:</strong> ${verificarValor(paciente.email)}<br>
                     <strong>Endereço:</strong> ${verificarValor(paciente.logradouro)}, ${verificarValor(paciente.num_logr)} ${verificarOutroValor(paciente.compl_logr)}<br>
                     <strong>Cidade:</strong> ${verificarValor(paciente.cidade)}<br>

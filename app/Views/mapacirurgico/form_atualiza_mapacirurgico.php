@@ -1,6 +1,19 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+<style>
+.content {
+    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    overflow-y: auto; /* Rolagem apenas vertical */
+    overflow-x: hidden; /* Impede a rolagem horizontal */
+    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+</style>
+
 <div class="container" style="padding-top: 0; margin-top: -30px">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -63,7 +76,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
@@ -86,7 +99,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
@@ -109,7 +122,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="procedimento" class="form-label">Procedimento Principal</label>
                                     <div class="input-group">
@@ -132,9 +147,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
                                     <div class="input-group">
@@ -160,7 +173,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cid" class="form-label">CID</label>
                                     <div class="input-group">
@@ -183,9 +198,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -208,7 +221,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -224,11 +237,11 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
-                                            id="origem" name="origem"
+                                            id="origem" name="origem" 
                                             data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
                                             <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
                                             <?php
@@ -246,8 +259,90 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-4">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>"
+                                            id="posoperatorio" name="posoperatorio"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
+                                            <option value="" <?php echo set_select('posoperatorio', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['posoperatorios'] as $key => $posoperatorio) {
+                                                $selected = ($data['posoperatorio'] == $posoperatorio['id']) ? 'selected' : '';
+                                                echo '<option value="'.$posoperatorio['id'].'" '.$selected.'>'.$posoperatorio['descricao'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('posoperatorio')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('posoperatorio') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
+                                            id="lateralidade" name="lateralidade"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
+                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
+                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('lateralidade')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('lateralidade') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">Congelação<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N" <?= $data['status_fila'] ?>
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S" <?= $data['status_fila'] ?>
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosN" value="N" <?= $data['status_fila'] ?>
+                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="hemoderivadosN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S" <?= $data['status_fila'] ?>
+                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -270,117 +365,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
-                                <div class="mb-4">
-                                    <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>"
-                                            id="posoperatorio" name="posoperatorio"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
-                                            <option value="" <?php echo set_select('posoperatorio', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['posoperatorios'] as $key => $posoperatorio) {
-                                                $selected = ($data['posoperatorio'] == $posoperatorio['id']) ? 'selected' : '';
-                                                echo '<option value="'.$posoperatorio['id'].'" '.$selected.'>'.$posoperatorio['descricao'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('posoperatorio')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('posoperatorio') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
-                                    <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
-                                            id="lateralidade" name="lateralidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
-                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('lateralidade')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('lateralidade') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
-                                    <label class="form-label">Congelação<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N" <?= $data['status_fila'] ?>
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S" <?= $data['status_fila'] ?>
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
-                                    <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosN" value="N" <?= $data['status_fila'] ?>
-                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="hemoderivadosN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S" <?= $data['status_fila'] ?>
-                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="2" <?= $data['status_fila'] ?> disabled
-                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('info')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('info') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="2" <?= $data['status_fila'] ?>
-                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('nec_proced') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="container bordered-container">
+                            <div class="container bordered-container mb-3">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -428,7 +413,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="container bordered-container">
+                            <div class="container bordered-container mb-3">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -464,6 +449,34 @@
                                             <?php endif; ?>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Informações adicionais</label>
+                                    <textarea id="info" maxlength="255" rows="3" <?= $data['status_fila'] ?> disabled
+                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
+                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('info')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('info') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <textarea id="nec_proced" maxlength="255" rows="3" <?= $data['status_fila'] ?>
+                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('nec_proced') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -561,7 +574,7 @@
         fetchPacienteNome(prontuarioInput.value);
     }
 
-    fetchPacienteNomeOnLoad();
+    //fetchPacienteNomeOnLoad();
 
     $(document).ready(function() {
         $('.select2-dropdown').select2({
@@ -707,11 +720,6 @@
             setTimeout(function() {
                 window.location.href = href;
             }, 1000);
-        });
-        
-        $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
-            allowClear: true
         });
 
         const prontuarioInput = document.getElementById('prontuario');

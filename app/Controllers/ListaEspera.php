@@ -261,6 +261,8 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
+        //die(var_dump($data));
+
         //$dataflash = session()->getFlashdata('dataflash');
 
         if ($_SESSION['listaespera']) {
@@ -331,6 +333,8 @@ class ListaEspera extends ResourceController
             }
 
             $this->validator->reset();
+
+            //die(var_dump($data));
 
             $result = $this->getListaEspera($data);
 
@@ -982,11 +986,22 @@ class ListaEspera extends ResourceController
             $this->validator->reset();
 
             //if(isset($resultAGHUX) && empty($resultAGHUX)) {
-            if(is_null($paciente)) {
+            //if(is_null($paciente)) {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                    'validation' => $this->validator,
+                                                    'data' => $dataform]);
             } else {
+
                 if ($this->getPacienteNaLista($data)) {
                     session()->setFlashdata('failed', 'Paciente já tem cirurgia cadastrada nesse dia para a mesma especialidade, fila e procedimento!');
+
+                    return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                    'validation' => $this->validator,
+                                                    'data' => $dataform]);
+
                 } else {
 
                     $db = \Config\Database::connect('default');
@@ -1061,21 +1076,11 @@ class ListaEspera extends ResourceController
                         $dataform['ordem'] = $ordemfila ?? 'A Definir';
                         $dataform['habilitasalvar'] = false;
 
-                        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                                            'data' => $dataform]);     
-
-                    /*  $response = service('response');
-                        $response->setHeader('Cache-Control', 'no-cache, no-store, must-revalidate'); // HTTP 1.1.
-                        $response->setHeader('Pragma', 'no-cache'); // HTTP 1.0.
-                        $response->setHeader('Expires', '0'); // Proxies.
-                                                            
-                        $data_le['prontuario'] = $data['prontuario'];
-                        $data_le['dtinicio'] = date('Y-m-d');
-                        $data_le['dtfim'] = date('Y-m-d') . ' ' .date('H:i:s');
-                
-                        return view('layouts/sub_content', ['view' => 'listaespera/list_listaespera',
-                                                            'listaespera' => $this->getListaEspera($data_le),
-                                                            'data' => $data_le]); */
+                        /* return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                            'data' => $dataform]);  */    
+                        $_SESSION['listaespera'] = ["fila" => $data['fila']];
+                        //die(var_dump($_SESSION['listaespera']));
+                        return redirect()->to(base_url('listaespera/exibir'));
 
                     } catch (\Throwable $e) {
                         $db->transRollback(); 
@@ -1085,22 +1090,18 @@ class ListaEspera extends ResourceController
                     }
                 }
             }
-        } 
 
-        //die(var_dump($this->validator));
+        } else {
 
-        //if(isset($resultAGHUX) && empty($resultAGHUX)) {
-        if(is_null($paciente)) {
-            $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
         }
-
-       /*  if ($this->validator->hasError('procedimento')) {
-            die(var_dump($this->validator->getError('procedimento')));
-        } */
               
         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                             'validation' => $this->validator,
-                                            'data' => $dataform]);
+                                            'data' => $dataform]); 
+
     }
     /**
      * Return a new resource object, with default properties
