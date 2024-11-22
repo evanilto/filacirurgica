@@ -1035,6 +1035,8 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
+            'cid' => 'required',
+            'risco' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'centrocirurgico' => 'required',
             'sala' => 'required'
@@ -1842,6 +1844,7 @@ class MapaCirurgico extends ResourceController
 
             $data['filas'] = $this->selectfila;
             $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
                                                 'data' => $data]);

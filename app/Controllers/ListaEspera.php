@@ -455,15 +455,63 @@ class ListaEspera extends ResourceController
 
         $builder = $db->table('lista_espera');
 
-        $builder->where('numprontuario', $data['prontuario']);
-        $builder->where('idespecialidade', $data['especialidade']);
-        $builder->where('idtipoprocedimento', $data['fila']);
-        $builder->where('idprocedimento', $data['procedimento']);
-        //$builder->where('nmlateralidade', $data['lateralidade']);
+        if (isset($data['especialidade']) && isset($data['procedimento'])) {
+            $builder->where('numprontuario', $data['prontuario']);
+            $builder->where('idespecialidade', $data['especialidade']);
+            $builder->where('idtipoprocedimento', $data['fila']);
+            $builder->where('idprocedimento', $data['procedimento']);
+            //$builder->where('nmlateralidade', $data['lateralidade']);
+
+        } else {
+            $builder->where('numprontuario', $data['prontuario']);
+        }
 
         //var_dump($builder->getCompiledSelect());die();
+        //var_dump($builder->get()->getResult());die();
 
         return $builder->get()->getResult();
+    }
+   /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function verificaPacienteNaLista()
+    {
+        // Configuração para aceitar somente requisições AJAX
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Requisição inválida.'
+            ])->setStatusCode(400);
+        }
+
+        // Capturar os dados enviados pela requisição POST
+        $data = $this->request->getJSON(true);
+
+        // Verificar se o prontuário foi enviado
+        if (empty($data['prontuario'])) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Prontuário não informado.'
+            ])->setStatusCode(422);
+        }
+
+        // Procurar o paciente na lista
+        $paciente = $this->getPacienteNaLista($data);
+
+        if ($paciente) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Paciente encontrado.',
+                'data' => $paciente
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Paciente não encontrado.'
+            ]);
+        }
     }
     /**
      * Return a new resource object, with default properties
@@ -966,7 +1014,7 @@ class ListaEspera extends ResourceController
         $dataform['procedimentos'] = $this->selectitensprocedhospit;
         $dataform['habilitasalvar'] = true;
 
-        //die(var_dump($dataform['lateralidade']));
+        //die(var_dump($data['cid']));
 
         $rules = [
             'especialidade' => 'required',
@@ -977,6 +1025,8 @@ class ListaEspera extends ResourceController
             'origem' => 'required',
             'lateralidade' => 'required',
             'congelacao' => 'required',
+            'cid' => 'required',
+            'risco' => 'required',
             'justorig' => 'max_length[1024]|min_length[0]',
             'info' => 'max_length[1024]|min_length[0]',
         ];
@@ -1001,92 +1051,100 @@ class ListaEspera extends ResourceController
                     return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                     'validation' => $this->validator,
                                                     'data' => $dataform]);
-
                 } else {
+                    if ($data['origem'] == 3 && empty($data['justorig'])) { // Interesse Acadêmico
+                        $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
 
-                    $db = \Config\Database::connect('default');
+                        return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                        'validation' => $this->validator,
+                                                        'data' => $dataform]);
 
-                    $db->transStart();
+                    } else {
 
-                    try {
+                        $db = \Config\Database::connect('default');
 
-                        $paciente = [
-                            'numprontuario' => $data['prontuario'],
-                            'idespecialidade' => $data['especialidade'],
-                            'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
-                            'dtriscocirurgico' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
-                            'numcid' => empty($data['cid']) ? NULL : $data['cid'],
-                            'idcomplexidade' => $data['complexidade'],
-                            'idtipoprocedimento' => $data['fila'],
-                            'idorigempaciente' => $data['origem'],
-                            'indcongelacao' => $data['congelacao'],
-                            'idprocedimento' => $data['procedimento'],
-                            'idlateralidade' => $data['lateralidade'],
-                            'indsituacao' => 'A',
-                            'txtinfoadicionais' => $data['info'],
-                            'txtorigemjustificativa' => $data['justorig']
-                        ];
-                        
-                        $idlista = $this->listaesperamodel->insert($paciente);
+                        $db->transStart();
 
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = isset($error['code']) ? $error['code'] : 0;
+                        try {
 
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                            );
+                            $paciente = [
+                                'numprontuario' => $data['prontuario'],
+                                'idespecialidade' => $data['especialidade'],
+                                'idriscocirurgico' => empty($data['risco']) ? NULL : $data['risco'],
+                                'dtriscocirurgico' => empty($data['dtrisco']) ? NULL : $data['dtrisco'],
+                                'numcid' => empty($data['cid']) ? NULL : $data['cid'],
+                                'idcomplexidade' => $data['complexidade'],
+                                'idtipoprocedimento' => $data['fila'],
+                                'idorigempaciente' => $data['origem'],
+                                'indcongelacao' => $data['congelacao'],
+                                'idprocedimento' => $data['procedimento'],
+                                'idlateralidade' => $data['lateralidade'],
+                                'indsituacao' => 'A',
+                                'txtinfoadicionais' => $data['info'],
+                                'txtorigemjustificativa' => $data['justorig']
+                            ];
+                            
+                            $idlista = $this->listaesperamodel->insert($paciente);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $array = [
+                                'dthrevento' => date('Y-m-d H:i:s'),
+                                'idlistaespera' => $idlista,
+                                'idevento' => 5,
+                                'idlogin' => session()->get('Sessao')['login']
+                            ];
+
+                            $this->historicomodel->insert($array);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            $db->transComplete();
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+
+                            session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
+
+                            $ordemfila = $this->getOrdemFila($idlista);
+                            $dataform['ordem'] = $ordemfila ?? 'A Definir';
+                            $dataform['habilitasalvar'] = false;
+
+                            /* return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                                'data' => $dataform]);  */    
+                            $_SESSION['listaespera'] = ["fila" => $data['fila']];
+                            //die(var_dump($_SESSION['listaespera']));
+                            return redirect()->to(base_url('listaespera/exibir'));
+
+                        } catch (\Throwable $e) {
+                            $db->transRollback(); 
+                            $msg = sprintf('Erro ao incluir um paciente da Lista! - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                            log_message('error', 'Exception: ' . $msg);
+                            session()->setFlashdata('exception', $msg);
                         }
-
-                        $array = [
-                            'dthrevento' => date('Y-m-d H:i:s'),
-                            'idlistaespera' => $idlista,
-                            'idevento' => 5,
-                            'idlogin' => session()->get('Sessao')['login']
-                        ];
-
-                        $this->historicomodel->insert($array);
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
-
-                        $db->transComplete();
-
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = isset($error['code']) ? $error['code'] : 0;
-
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
-                            );
-                        }
-
-                        session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
-
-                        $ordemfila = $this->getOrdemFila($idlista);
-                        $dataform['ordem'] = $ordemfila ?? 'A Definir';
-                        $dataform['habilitasalvar'] = false;
-
-                        /* return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
-                                                            'data' => $dataform]);  */    
-                        $_SESSION['listaespera'] = ["fila" => $data['fila']];
-                        //die(var_dump($_SESSION['listaespera']));
-                        return redirect()->to(base_url('listaespera/exibir'));
-
-                    } catch (\Throwable $e) {
-                        $db->transRollback(); 
-                        $msg = sprintf('Erro ao incluir um paciente da Lista! - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                        log_message('error', 'Exception: ' . $msg);
-                        session()->setFlashdata('exception', $msg);
                     }
                 }
             }
@@ -1270,7 +1328,7 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($dataflash));
+        //die(var_dump($data));
 
         $rules = [
             'especialidade' => 'required',
@@ -1284,6 +1342,22 @@ class ListaEspera extends ResourceController
         ];
 
         if ($this->validate($rules)) {
+
+            if ($data['origem'] == 3 && empty($data['justorig'])) { // Interesse Acadêmico
+                $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
+
+                $data['filas'] = $this->selectfila;
+                $data['riscos'] = $this->selectrisco;
+                $data['origens'] = $this->selectorigempaciente;
+                $data['lateralidades'] = $this->selectlateralidade;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['cids'] = $this->selectcids;
+                $data['procedimentos'] = $this->selectitensprocedhospit;
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+            }
 
             try {
 
@@ -1389,6 +1463,7 @@ class ListaEspera extends ResourceController
             $data['cids'] = $this->selectcids;
             $data['procedimentos'] = $this->selectitensprocedhospit;
 
+            //die(var_dump($data));
             return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                 'data' => $data]);
         }
@@ -1647,7 +1722,7 @@ class ListaEspera extends ResourceController
                                                          ->where('ordem_fila <', $this->data['ordemfila'])->findAll();
 
                 if ($tempacfila) {
-                    $this->validator->setError('justenvio', 'Informe a justificativa para o envio ao mapa cirúrgico de um paciente fora da ordem da lista!');
+                    $this->validator->setError('justenvio', 'Informe a justificativa para o envio ao mapa cirúrgico um paciente fora da ordem da lista!');
 
                     $this->carregaMapa();
 

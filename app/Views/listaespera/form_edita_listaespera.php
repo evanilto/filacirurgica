@@ -111,8 +111,8 @@
                                     <label for="procedimento" class="form-label">Procedimento<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
-                                            id="procedimento" name="procedimento"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            id="procedimento" name="procedimento" 
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled> 
                                             <option value="" <?php echo set_select('procedimento', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['procedimentos'] as $key => $procedimento) {
@@ -323,6 +323,7 @@
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
+                        <input type="hidden" name="procedimento" id="fila-procedimento" value="<?php echo $data['procedimento']; ?>">
                 </div>
             </div>
         </div>
@@ -428,6 +429,10 @@
             dropdownCssClass: 'custom-dropdown',
             allowClear: true
         });
+
+        $('#procedimento').select2().on('select2:opening', function(e) {
+        e.preventDefault(); // Impede a abertura do dropdown
+    });
 
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {

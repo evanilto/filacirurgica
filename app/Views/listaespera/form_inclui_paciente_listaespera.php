@@ -1,6 +1,17 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.4/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.4/dist/sweetalert2.min.css">
 
+<style>
+.content {
+    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    overflow-y: auto; /* Rolagem apenas vertical */
+    overflow-x: hidden; /* Impede a rolagem horizontal */
+    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+</style>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -59,7 +70,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -82,7 +93,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -107,7 +118,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-5">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="procedimento" class="form-label">Procedimento<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -130,15 +143,13 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label for="cid" class="form-label">CID</label>
+                                    <label for="cid" class="form-label">CID<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
                                             id="cid" name="cid"
-                                            data-placeholder="" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
@@ -147,21 +158,23 @@
                                             }
                                             ?>
                                         </select>
+                                        <?php if ($validation->getError('cid')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('cid') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
-                                    <?php if ($validation->getError('cid')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('cid') ?>
-                                        </div>
-                                    <?php endif; ?>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="risco" class="form-label">Risco Cirúrgico</label>
+                                    <label for="risco" class="form-label">Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco" onchange="verificarPerfil()"
-                                            data-placeholder="" data-allow-clear="1">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                            id="risco" name="risco"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
@@ -178,7 +191,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -193,10 +206,8 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <div class="mb-4">
+                            <div class="col-md-4">
+                                <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -218,8 +229,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
+                            <div class="col-md-2">
+                                <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
@@ -241,8 +252,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -256,8 +269,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <div class="mb-4">
+                            <div class="col-md-3">
+                                <div class="mb-3">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -309,7 +322,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <?php if ($data['habilitasalvar'] ) { ?>
-                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1" onclick="return confirma(this);">
                                         <i class="fa-solid fa-save"></i> Salvar
                                     </button>
                                 <?php } ?>
@@ -335,6 +348,122 @@
             input.addEventListener('keydown', disableEnter);
         });
     };
+
+    function confirma(button) {
+
+        const form = button.form;
+        const prontuario = form.querySelector('input[name="prontuario"]').value;
+
+        const data = { prontuario: prontuario };
+
+        if (!prontuario || prontuario.trim() === "") {
+            return true;
+
+        } else {
+
+            $('#janelaAguarde').show();
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '<?= base_url('listaespera/verificapacientenalista') ?>', false); // 'false' faz a requisição ser sincrona
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            xhr.send(JSON.stringify(data));
+
+            if (xhr.status >= 200 && xhr.status < 400) {
+                const response = JSON.parse(xhr.responseText);
+
+                if (response.success) {
+                    const continuar = confirm("Já existe esse prontuário na Lista de Espera. Deseja continuar mesmo assim?");
+                    if (!continuar) {
+                        $('#janelaAguarde').hide();
+                        return false; 
+                    }
+                    return true;  
+                                        
+                } else {
+                    // Se a resposta do servidor for negativa, pergunta ao usuário
+                    return true;  // Permite a submissão
+                }
+
+            } else {
+                console.error('Erro ao enviar os dados:', xhr.statusText);
+                alert('Erro na comunicação com o servidor.');
+                $('#janelaAguarde').hide();
+                return false;  // Impede a submissão em caso de erro
+            }
+        }
+
+    }
+
+    function carregarDadosModal(dados) {
+
+        $.ajax({
+            url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
+            //url: '<--?= base_url('listaespera/carregadadosmodal/') ?>' + prontuario,
+            type: 'GET',
+            data: { prontuario: dados.prontuario }, // Envia o ID como parâmetro
+            dataType: 'json',
+            success: function(paciente) {
+                // Função para verificar se o valor é nulo ou vazio
+                function verificarValor(valor) {
+                    
+                    return (valor === null || valor === '') ? 'N/D' : valor;
+                }
+
+                function verificarOutroValor(valor) {
+                    
+                    return (valor === null || valor === '') ? '' : ' - ' + valor;
+                }
+
+                // Atualiza o conteúdo do modal para a coluna esquerda
+                $('#colunaEsquerda1').html(`
+                    <strong>Prontuario:</strong> ${verificarValor(paciente.prontuario)}<br>
+                    <strong>Nome:</strong> ${verificarValor(paciente.nome)}<br>
+                    <strong>Nome da Mãe:</strong> ${verificarValor(paciente.nm_mae)}<br>
+                    <strong>Sexo:</strong> ${verificarValor(paciente.sexo)}<br>
+                    <strong>Data Nascimento:</strong> ${verificarValor(paciente.dt_nascimento)}<br>
+                    <strong>Idade:</strong> ${verificarValor(paciente.idade)}<br>
+                    <strong>CPF:</strong> ${verificarValor(paciente.cpf)}<br>
+                    <strong>CNS:</strong> ${verificarValor(paciente.cns)}<br>
+                `);
+
+                // Atualiza o conteúdo do modal para a coluna direita
+                $('#colunaDireita1').html(`
+                    <strong>Tel. Residencial:</strong> ${verificarValor(paciente.tel_1)}<br>
+                    <strong>Tel. Recados:</strong> ${verificarValor(paciente.tel_2)}<br>
+                    <strong>Email:</strong> ${verificarValor(paciente.email)}<br>
+                    <strong>Endereço:</strong> ${verificarValor(paciente.logradouro)}, ${verificarValor(paciente.num_logr)} ${verificarOutroValor(paciente.compl_logr)}<br>
+                    <strong>Cidade:</strong> ${verificarValor(paciente.cidade)}<br>
+                    <strong>Bairro:</strong> ${verificarValor(paciente.bairro)}<br>
+                    <strong>CEP:</strong> ${verificarValor(paciente.cep)}<br>
+                `);
+                $('#colunaEsquerda2').html(`
+                    <strong>Fila:</strong> ${dados.fila}<br>
+                    <strong>Especialidade:</strong> ${dados.especialidade}<br>
+                    <strong>Procedimento:</strong> ${dados.procedimento}<br>
+                `);
+
+                // Atualiza o conteúdo do modal para a coluna direita
+                $('#colunaDireita2').html(`
+                    <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
+                    <strong>Entrada no Centro Cirúrgico:</strong> ${verificarValor(dados.hrnocentro)}<br>
+                    <strong>Início da Cirurgia:</strong> ${verificarValor(dados.hremcirurgia)}<br>
+                    <strong>Saída da Sala:</strong> ${verificarValor(dados.hrsaidasl)}<br>
+                    <strong>Saída do Centro Cirúrgico:</strong> ${verificarValor(dados.hrsaidacc)}<br>
+                `);
+/* 
+                $('#linha').html(`
+                    <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
+                `); */
+
+                // Mostra o modal
+                $('#modalDetalhes').modal('show');
+            },
+            error: function(xhr, status, error) {
+                console.error('Erro ao carregar os dados:', error);
+            }
+        });
+    }
 
     function loadAsideContent(prontuario, ordem, fila) {
         $.ajax({
@@ -412,7 +541,6 @@
         $('.select2-dropdown').select2({
             placeholder: "",
             allowClear: true,
-            dropdownCssClass: 'custom-dropdown',
             width: 'resolve' // Corrigir a largura
         });
 

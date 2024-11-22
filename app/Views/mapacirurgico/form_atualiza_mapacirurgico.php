@@ -175,13 +175,13 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="cid" class="form-label">CID</label>
+                                    <label for="cid" class="form-label">CID<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
-                                            id="cid" name="cid" <?= $data['status_fila'] ?>
-                                            data-placeholder="" data-allow-clear="1">
+                                            id="cid" name="cid"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
@@ -190,21 +190,21 @@
                                             }
                                             ?>
                                         </select>
+                                        <?php if ($validation->getError('cid')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('cid') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
-                                    <?php if ($validation->getError('cid')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('cid') ?>
-                                        </div>
-                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="risco" class="form-label">Risco Cirúrgico</label>
+                                    <label for="risco" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco" onchange="verificarPerfil()" <?= $data['status_fila'] ?>
-                                            data-placeholder="" data-allow-clear="1">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                            id="risco" name="risco"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
