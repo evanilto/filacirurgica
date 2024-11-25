@@ -549,7 +549,7 @@
                         <?php } ?>
                         <div class="row g-3">
                             <div class="col-md-12">
-                            <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibirsituacao') ?>">
+                            <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
                                 <i class="fa-solid fa-arrow-left"></i> Voltar
                             </a>
                             </div>

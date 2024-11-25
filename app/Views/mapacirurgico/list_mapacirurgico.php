@@ -157,7 +157,17 @@
                     data-cid="<?= $itemmapa->cid_descricao ?>"
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
                     data-ordem="<?= $itemmapa->ordem_fila ?>"
-                    data-complexidade="<?= $itemmapa->complexidade ?>">
+                    data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
+                    data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
+                    data-congelacao="<?= $itemmapa->congelacao ?>"
+                    data-risco="<?= $itemmapa->risco_descricao ?>"
+                    data-dtrisco="<?= $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : 'N/D' ?>"
+                    data-infoadic="<?= htmlspecialchars($itemmapa->infoadicionais, ENT_QUOTES, 'UTF-8') ?>"
+                    data-posoperatorio="<?= $itemmapa->posoperatorio ?>"
+                    data-necesspro="<?= htmlspecialchars($itemmapa->necessidadesproced, ENT_QUOTES, 'UTF-8') ?>"
+                    data-hemo="<?= $itemmapa->hemoderivados ?>"
+                    data-orig="<?= htmlspecialchars($itemmapa->origemjustificativa, ENT_QUOTES, 'UTF-8') ?>"
+                    >
 
                     <td><?php echo $itemmapa->dthrcirurgia ?></td>
                     <td style="text-align: center; vertical-align: middle;">
@@ -266,14 +276,15 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
                             if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { 
-                                echo '<a href="#" title="Detalhes do Paciente"
+                               /*  echo '<a href="#" title="Detalhes do Paciente"
                                  data-prontuario="' . $itemmapa->prontuario . '"
                                  data-nome_paciente="' . $itemmapa->nome_paciente . '"
                                  data-ordem="' . $itemmapa->ordem_fila . '"
                                  data-fila="' . $itemmapa->fila . '"
                                  data-especialidade="' . $itemmapa->especialidade_descricao . '"
                                  data-procedimento="' . $itemmapa->procedimento_principal . '"
-                                 onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>';
+                                 onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>'; */
+                                 echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para consultar."><i class="fa-solid fa-magnifying-glass"></i></span>';
                             } 
@@ -450,20 +461,31 @@
                     <strong>CEP:</strong> ${verificarValor(paciente.cep)}<br>
                 `);
                 $('#colunaEsquerda2').html(`
+                    <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
                     <strong>Fila:</strong> ${dados.fila}<br>
                     <strong>Especialidade:</strong> ${dados.especialidade}<br>
                     <strong>Procedimento:</strong> ${dados.procedimento}<br>
+                    <strong>Risco:</strong> ${dados.risco}<br>
+                    <strong>Data Risco:</strong> ${dados.dtrisco}<br>
+                    <strong>CID:</strong> ${dados.cid}<br>
+                    <strong>Complexidade:</strong> ${dados.complexidade}<br>
                 `);
 
                 // Atualiza o conteúdo do modal para a coluna direita
                 $('#colunaDireita2').html(`
-                    <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
+                    <strong>Lateralidade:</strong> ${dados.lateralidade}<br>
+                    <strong>Congelação:</strong> ${dados.congelacao}<br>
+                    <strong>Hemoderivados:</strong> ${dados.hemo}<br>
+                    <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
+                    <strong>Informações Adicionais:</strong> ${dados.infoadic}<br>
+                    <strong>Necessidades do Procedimento:</strong> ${dados.necesspro}<br>
+                `);
+/* 
+
                     <strong>Entrada no Centro Cirúrgico:</strong> ${verificarValor(dados.hrnocentro)}<br>
                     <strong>Início da Cirurgia:</strong> ${verificarValor(dados.hremcirurgia)}<br>
                     <strong>Saída da Sala:</strong> ${verificarValor(dados.hrsaidasl)}<br>
                     <strong>Saída do Centro Cirúrgico:</strong> ${verificarValor(dados.hrsaidacc)}<br>
-                `);
-/* 
                 $('#linha').html(`
                     <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                 `); */
@@ -599,7 +621,16 @@
             cid: $(this).data('cid'),
             procedimento: $(this).data('procedimento'),
             ordem: $(this).data('ordem'),
-            complexidade: $(this).data('complexidade')
+            complexidade: $(this).data('complexidade'),
+            risco: $(this).data('risco'),
+            dtrisco: $(this).data('dtrisco'),
+            lateralidade: $(this).data('lateralidade'),
+            congelacao: $(this).data('congelacao'),
+            hemo: $(this).data('hemo'),
+            posoperatorio: $(this).data('posoperatorio'),
+            infoadic: $(this).data('infoadic'),
+            necesspro: $(this).data('necesspro'),
+
         };
 
         if (dadosAdicionais.ordem == 0) {

@@ -323,7 +323,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline <?php if($validation->getError('hemoderivados')): ?>is-invalid<?php endif ?>">

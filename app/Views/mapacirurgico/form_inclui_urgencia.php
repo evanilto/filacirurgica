@@ -252,7 +252,7 @@
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
-                                            id="origem" name="origem"
+                                            id="origem" name="origem" 
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
                                             <?php
@@ -498,7 +498,8 @@
                         <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" />
                         <input type="hidden" name="fila_hidden" id="fila_hidden" />
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
-
+                        <input type="hidden" name="infoadic_hidden" id="infoadic_hidden" />
+                        <input type="hidden" name="justorigem_hidden" id="justorig_hidden" />
                     </form>
                 </div>
             </div>
@@ -605,6 +606,9 @@
                         option.setAttribute('data-especialidade-id', item.idespecialidade);
                         option.setAttribute('data-fila-id', item.idtipoprocedimento);
                         option.setAttribute('data-procedimento-id', item.idprocedimento);
+                        option.setAttribute('data-origempaciente-id', item.idorigempaciente);
+                        option.setAttribute('data-justorig', item.just_orig);
+                        option.setAttribute('data-info', item.info_adicionais);
 
                         listapacienteSelect.add(option); // Adiciona a nova opção ao select
                     });
@@ -776,6 +780,10 @@
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
+                const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
+                const justorig = selectedOption.getAttribute('data-justorig');
+                const info = selectedOption.getAttribute('data-info');
+
                 //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
                 //alert("ID do item selecionado:", dataId);
                 //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
@@ -784,15 +792,23 @@
                 $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
                 $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
                 $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                $('#justorig').val(justorig);
+                $('#info').val(info);
 
                 $('#especialidade_hidden').val(especialidadeId);
                 $('#fila_hidden').val(filaId);
                 $('#procedimento_hidden').val(procedimentoId);
+                $('#infoadic_hidden').val(info);
+                $('#justorig_hidden').val(justorig);
 
                 // Desabilitar os campos após preencher
                 $('#especialidade').prop('disabled', true);
                 $('#fila').prop('disabled', true);
                 $('#procedimento').prop('disabled', true);
+                //$('#origem').prop('disabled', true);
+                $('#justorig').prop('disabled', true);
+                $('#info').prop('disabled', true);
             } else {
                 // Limpar os campos se a opção selecionada não for válida
                 $('#especialidade').val('').trigger('change');
@@ -803,6 +819,9 @@
                 $('#especialidade').prop('disabled', false);
                 $('#fila').prop('disabled', false);
                 $('#procedimento').prop('disabled', false);
+                $('#origem').prop('disabled', false);
+                $('#justorig').prop('disabled', false);
+                $('#info').prop('disabled', false);
             }
         });
 

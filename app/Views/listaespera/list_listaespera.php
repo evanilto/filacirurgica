@@ -6,7 +6,7 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" colspan="22" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+                <th scope="col" colspan="23" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
             </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
@@ -23,6 +23,7 @@
                 <th scope="col" data-field="prontuarioaghu" >CID</th>
                 <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
                 <th scope="col" data-field="prontuarioaghu" >Origem</th>
+                <th scope="col" data-field="prontuarioaghu" >Justificativas da Origem</th>
                 <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
                 <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
                 <th scope="col" data-field="prontuarioaghu" >Congelação</th>
@@ -65,6 +66,9 @@
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->origem_descricao); ?>">
                         <?php echo htmlspecialchars($itemlista->origem_descricao); ?>
+                        <td class="break-line" title="<?php echo htmlspecialchars($itemlista->just_orig); ?>">
+                        <?php echo htmlspecialchars($itemlista->just_orig); ?>
+                    </td>
                     </td>
                     <td>
                         <?php 
@@ -124,7 +128,7 @@
                                  data-ordem="' . $itemlista->ordem_fila . '"
                                  data-fila="' . $itemlista->fila . '"
                                  data-especialidade="' . $itemlista->especialidade_descricao . '"
-                                 data-infoadic="' . $itemlista->info_adicionais . '"
+                                 data-justorig="' . htmlspecialchars($itemlista->just_orig, ENT_QUOTES, 'UTF-8') . '"
                                  data-risco="' . $itemlista->risco_descricao . '"
                                  data-procedimento="' . $itemlista->procedimento_descricao . '"
                                  data-cid="' . $itemlista->cid . '"
@@ -134,6 +138,7 @@
                                  data-lateralidade="' . $itemlista->nmlateralidade . '"
                                  data-congelacao="' . $itemlista->indcongelacao . '"
                                  data-dtrisco="' . $itemlista->data_risco . '"
+                                 data-infoadic="' . htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') . '"
                                  onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>';
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para consultar."><i class="fa-solid fa-magnifying-glass"></i></span>';
@@ -185,10 +190,11 @@
             var cid = dados[7];
             var ciddescr = dados[8];
             var origem = dados[9];
-            var complexidade = dados[10];
-            var lateralidade = dados[11];
-            var congelacao = dados[12];
-            var dtrisco = dados[13];
+            var justorig = dados[10];
+            var complexidade = dados[11];
+            var lateralidade = dados[12];
+            var congelacao = dados[13];
+            var dtrisco = dados[14];
 
             $.ajax({
                 url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
@@ -237,6 +243,7 @@
                         <strong>Procedimento:</strong> ${procedimento}<br>
                         <strong>Risco:</strong> ${risco}<br>
                         <strong>Data do Risco:</strong> ${verificarValor(dtrisco)}<br>
+                        <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                     `);
 
                     // Atualiza o conteúdo do modal para a coluna direita
@@ -244,13 +251,13 @@
                         <strong>CID:</strong> ${verificarValor(cid)}<br>
                         <strong>CID Descrição:</strong> ${verificarValor(ciddescr)}<br>
                         <strong>Origem:</strong> ${origem}<br>
+                        <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                         <strong>Complexidade:</strong> ${complexidade}<br>
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
                     `);
 
                     $('#linha').html(`
-                        <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                     `);
 
                     // Mostra o modal
@@ -282,7 +289,8 @@
                 element.getAttribute('data-complexidade') === 'B' ? 'BAIXA' : 'N/D',
                 element.getAttribute('data-lateralidade'), // Lateralidade
                 element.getAttribute('data-congelacao') === 'S' ? 'SIM' : 'NÃO', // Congelação
-                element.getAttribute('data-dtrisco')  // Data de Risco
+                element.getAttribute('data-dtrisco'),  // Data de Risco
+                element.getAttribute('data-justorig')
             ];
 
             carregarDadosModal(dadosLista);
@@ -357,6 +365,7 @@
                 { "width": "60px"  },   // CID
                 { "width": "300px" },
                 { "width": "140px" },
+                { "width": "300px" },
                 { "width": "120px" }, // complex
                 { "width": "150px" },
                 { "width": "110px" },
@@ -428,7 +437,8 @@
                     data[14], // Complexidade
                     data[15], // Lateralidade
                     data[16], // Congelação
-                    data[17]  // Data de Risco
+                    data[17],  // Data de Risco
+                    data[18]  // Just Orig
                 ];
 
             //alert(prontuario);

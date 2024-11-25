@@ -884,6 +884,8 @@ class MapaCirurgico extends ResourceController
         $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
         $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
         $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
+        //$this->data['info'] = $this->data['info'] ?? $this->data['infoadic_hidden'];
+        //$this->data['justorig'] = $this->data['justorig'] ?? $this->data['justorig_hidden'];
 
         $this->data['filas'] = $this->selectfila;
         $this->data['riscos'] = $this->selectrisco;
@@ -1035,6 +1037,7 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
+            'congelacao' => 'required',
             'cid' => 'required',
             'risco' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',

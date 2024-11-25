@@ -311,16 +311,23 @@
                                 <div class="mb-3">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N" <?= $data['status_fila'] ?>
+                                        <div class="form-check form-check-inline <?php if($validation->getError('congelacao')): ?>is-invalid<?php endif ?>">
+                                            <input class="form-check-input" 
+                                                type="radio" name="congelacao" id="congelacaoN" value="N"
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S" <?= $data['status_fila'] ?>
+                                            <input class="form-check-input" 
+                                                type="radio" name="congelacao" id="congelacaoS" value="S"
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
+                                        <?php if ($validation->getError('congelacao')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('congelacao') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
