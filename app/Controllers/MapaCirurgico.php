@@ -1879,7 +1879,7 @@ class MapaCirurgico extends ResourceController
         $data['listaesperas'] = [];
         $data['candidatos'] = null;
         $data['ordem'] = null;
-        $data['dtcirurgia'] = date('d/m/Y');
+        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+1 hour'));
         //DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
         $data['especialidade'] = null;
         $data['risco'] = '';
@@ -1895,6 +1895,8 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorio'] = null;
         $data['info'] = '';
         $data['nec_proced'] = '';
+        $data['sala'] =  '';
+        $data['centrocirurgico'] =  '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
@@ -1907,6 +1909,9 @@ class MapaCirurgico extends ResourceController
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['procedimentos_adicionais'] = $data['procedimentos'];
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+
         $data['listapacienteSelect'] = [];
 
         //$codToRemove = $pac1['prontuario'];
@@ -1963,12 +1968,17 @@ class MapaCirurgico extends ResourceController
         $rules = [
             'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
             'listapaciente' => 'required',
-            'dtcirurgia' => 'required|valid_date[d/m/Y]',
+            'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
             'complexidade' => 'required',
-            'origem' => 'required',
+            'cid' => 'required',
+            'risco' => 'required',
+            //'dtrisco' => 'required',
+            'centrocirurgico' => 'required',
+            'sala' => 'required',
+            //'origem' => 'required',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justorig' => 'max_length[1024]|min_length[0]',
@@ -2103,6 +2113,8 @@ class MapaCirurgico extends ResourceController
                                 'indhemoderivados' => $this->data['hemoderivados'],
                                 'txtnecessidadesproced' => $this->data['nec_proced'],
                                 'txtjustificativaurgencia' => $this->data['justurgencia'],
+                                'idcentrocirurgico' => $this->data['centrocirurgico'],
+                                'idsala' => $this->data['sala'],
                                 'indurgencia' => 'S'
                                 ];
 
@@ -2268,7 +2280,10 @@ class MapaCirurgico extends ResourceController
             $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
         }
         
+        $this->data['origem'] =  $this->data['origem_hidden'];
         $this->carregaMapa();
+
+        //die(var_dump($this->data['origem_hidden']));
 
         //die(var_dump($this->data));
 

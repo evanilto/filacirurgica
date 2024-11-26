@@ -193,7 +193,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-2">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -216,7 +216,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
@@ -239,7 +239,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Congelação</label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">

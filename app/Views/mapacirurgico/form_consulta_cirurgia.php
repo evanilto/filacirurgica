@@ -219,7 +219,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -242,7 +242,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Complexidade</label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -266,7 +266,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>" disabled
@@ -289,7 +289,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>" disabled
@@ -312,7 +312,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Congelação</label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -329,7 +329,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-3">
                                     <label class="form-label">Hemoderivados</label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -347,7 +347,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="container bordered-container mb-4">
+                            <div class="container bordered-container mb-3">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
@@ -395,7 +395,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="container bordered-container mb-4">
+                            <div class="container bordered-container mb-3">
                                 <div class="row g-3">
                                     <div class="col-md-6">
                                         <div class="mb-3">
