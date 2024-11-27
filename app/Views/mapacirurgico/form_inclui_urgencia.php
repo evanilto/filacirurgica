@@ -3,15 +3,6 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-<style>
-.content {
-    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
-    overflow-y: auto; /* Rolagem apenas vertical */
-    overflow-x: hidden; /* Impede a rolagem horizontal */
-    height: 100%; /* Garante que use todo o espaço vertical permitido */
-    box-sizing: border-box; /* Inclui padding no cálculo da largura */
-}
-</style>
 
 <div class="container mt-5">
     <div class="row justify-content-center">

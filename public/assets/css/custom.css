@@ -49,8 +49,13 @@ body {
 
 .content {
     background: #fff;
-    padding: 1rem;
-    border: 1px solid #ddd;
+    padding: 0;
+    border: none;
+    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    overflow-y: auto; /* Rolagem apenas vertical */
+    overflow-x: hidden; /* Impede a rolagem horizontal */
+    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
 }
 
 .sidebar {
@@ -79,18 +84,18 @@ section {
 }
 
 /* Remove a borda da classe content */
-section .content {
+/* section .content {
     border: none;
     padding: 0;
-}
+} */
 
 input, textarea {
     font-size: 14px; /* Defina o tamanho da fonte desejado */
 }
 
-#content table {
+/* #content table {
     width: 100%;
-}
+} */
 
 .nav {
     grid-area: nav;
