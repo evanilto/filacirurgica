@@ -1052,7 +1052,7 @@ class ListaEspera extends ResourceController
                                                     'validation' => $this->validator,
                                                     'data' => $dataform]);
                 } else {
-                    if ($data['origem'] == 3 && empty($data['justorig'])) { // Interesse Acadêmico
+                    if (($data['origem'] == 3 || $data['origem'] == 4) && empty($data['justorig'])) { // Interesse Acadêmico
                         $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',

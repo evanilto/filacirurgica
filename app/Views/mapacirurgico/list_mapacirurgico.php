@@ -19,10 +19,11 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="row" colspan="3" class="bg-light text-start"  style="border-right: none;"><h5><strong>Mapa Cirúrgico</strong></h5>
+                <th scope="row" colspan="3" class="bg-light text-start" style="border-right: none;">
+                    <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
-                <th scope="row" colspan="17" class="bg-light text-start" style="vertical-align: middle; border-left: none;">
-                    <table class="legend-table">
+                <th scope="row" colspan="17" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                    <table class="legend-table" style="margin: 0 auto;">
                         <tr>
                             <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
                             <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
@@ -31,7 +32,7 @@
                             <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
                             <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
                             <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
-                            <!--td class="legend-cell" style="background-color: <-?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
+                            <!--td class="legend-cell" style="background-color: <?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
                         </tr>
                     </table>
                 </th>
@@ -226,7 +227,8 @@
                     </td>
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
-                            if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            //if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            if (in_array($status_cirurgia, ["Programada", "NoCentroCirurgico"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                                 //echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                                 echo anchor('mapacirurgico/suspendercirurgia/'.$itemmapa->id, '<i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i>', array('title' => 'Suspender Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
@@ -236,7 +238,9 @@
                     </td>
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
-                            if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            //if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            if (in_array($status_cirurgia, ["Programada", "NoCentroCirurgico"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+
                                 $params = array(
                                     'idlista' => $itemmapa->idlista,
                                     'idmapa' => $itemmapa->id,
@@ -257,7 +261,9 @@
                     </td>
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
-                            if ($status_cirurgia != "Suspensa" && $permiteatualizar && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            //if ($status_cirurgia != "Suspensa"  && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            if (!in_array($status_cirurgia, ["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"]) && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+
                                 echo anchor('mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id, '<i class="fa-regular fa-clock"></i>', array('title' => 'Atualizar Horários', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" style="color: gray;"></i></span>';
@@ -266,7 +272,9 @@
                     </td>         
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
-                            if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            //if ($status_cirurgia != "Suspensa" && $status_cirurgia != "Cancelada" && $status_cirurgia != "TrocaPaciente" && $status_cirurgia != "Realizada" && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                            if (!in_array($status_cirurgia, ["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+
                                 echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';

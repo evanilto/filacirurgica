@@ -881,9 +881,9 @@ class MapaCirurgico extends ResourceController
      */
     private function carregaMapa() {
 
-        $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
-        $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
-        $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
+        $this->data['especialidade'] = $this->data['especialidade'] ?? (isset($this->data['especialidade_hidden']) ? $this->data['especialidade_hidden'] : '' );
+        $this->data['fila'] = $this->data['fila'] ?? (isset($this->data['fila_hidden']) ? $this->data['fila_hidden'] : '' );
+        $this->data['procedimento'] = $this->data['procedimento'] ?? (isset($this->data['procedimento_hidden']) ? $this->data['procedimento_hidden'] : '' );
         //$this->data['info'] = $this->data['info'] ?? $this->data['infoadic_hidden'];
         //$this->data['justorig'] = $this->data['justorig'] ?? $this->data['justorig_hidden'];
 
@@ -898,8 +898,12 @@ class MapaCirurgico extends ResourceController
         $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
         $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
 
-        $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
-        $this->data['proced_adic'] = array_filter($this->data['proced_adic']);
+        if (isset($this->data['especialidade_hidden'])) {
+            $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
+            $this->data['proced_adic'] = array_filter($this->data['proced_adic']);
+        } else {
+            $this->data['proced_adic'] = '';
+        }
 
         $codToRemove = $this->data['procedimento'];
         $procedimentos = $this->data['procedimentos'];
@@ -1344,7 +1348,7 @@ class MapaCirurgico extends ResourceController
 
         if (!$data['candidatos']) {
             session()->setFlashdata('failed', 'Não existem candidatos a troca nessa Fila!');
-            return redirect()->to(base_url('mapacirurgico/mostrarmapa'));
+            return redirect()->to(base_url('mapacirurgico/exibir'));
         } else {
             foreach ($data['candidatos'] as &$candidato) {
                 $ordempaciente = $this->vwordempacientemodel->find($candidato['idlistaespera']);
@@ -1446,6 +1450,7 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($this->data));
 
         $rules = [
+            'candidato' => 'required',
             'especialidade' => 'required',
             'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
@@ -1453,6 +1458,9 @@ class MapaCirurgico extends ResourceController
             'posoperatorio' => 'required',
             'profissional' => 'required',
             'lateralidade' => 'required',
+            'congelacao' => 'required',
+            'hemoderivados' => 'required',
+            'complexidade' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justtroca' => 'required|max_length[500]|min_length[3]',
         ];
@@ -1978,10 +1986,9 @@ class MapaCirurgico extends ResourceController
             //'dtrisco' => 'required',
             'centrocirurgico' => 'required',
             'sala' => 'required',
-            //'origem' => 'required',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
-            'justorig' => 'max_length[1024]|min_length[0]',
+            //'justorig' => 'max_length[1024]|min_length[0]',
             'justurgencia' => 'required|max_length[250]|min_length[3]',
         ];
 
@@ -1989,7 +1996,8 @@ class MapaCirurgico extends ResourceController
             $rules = $rules + [
                 'fila' => 'required',
                 'especialidade' => 'required',
-                'procedimento' => 'required'
+                'procedimento' => 'required',
+                'origem' => 'required'
             ];
          }
 
@@ -2001,18 +2009,21 @@ class MapaCirurgico extends ResourceController
 
             if(isset($resultAGHUX) && empty($resultAGHUX)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+
             } else {
                 if ($this->getPacienteNoMapa($this->data)) {
                     session()->setFlashdata('failed', 'Já existe uma cirurgia programada para esse paciente nesse dia!');
+
                 } else {
 
-                    $this->validator->reset();
+                    //die(var_dump($this->data));
 
-                    //$result = $this->getPacienteNaLista($this->data);
+                    if (isset($this->data['origem']) && ($this->data['origem'] == 3 || $this->data['origem'] == 4) && empty($this->data['justorig'])) { // Interesse Acadêmico ou Judicialização
+                        $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
 
-                    //if ($result) {
+                    } else {
 
-                        //die(var_dump($result));
+                        $this->validator->reset();
 
                         $db->transStart();
                     
@@ -2069,7 +2080,10 @@ class MapaCirurgico extends ResourceController
                                     'idtipoprocedimento' => $this->data['fila'],
                                     'idprocedimento' => $this->data['procedimento'],
                                     'numprontuario' => $this->data['prontuario'],
+                                    'idriscocirurgico' => $this->data['risco'],
+                                    'dtriscocirurgico' => $this->data['dtrisco'],
                                     'idorigempaciente' => $this->data['origem'],
+                                    'txtorigemjustificativa' => $this->data['justorig'],
                                     'indsituacao' => 'A',
                                     'indurgencia' => 'S'
                                     ];
@@ -2248,26 +2262,30 @@ class MapaCirurgico extends ResourceController
                             $msg = sprintf('Exception - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
                             log_message('error', 'Exception: ' . $msg);
                             session()->setFlashdata('exception', $msg);
+
+                            $this->carregaMapa();
+                            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                            'validation' => $this->validator,
+                                            'data' => $this->data]);
                         }
 
-                    //}
+                        $this->carregaMapa();
 
-                    $this->carregaMapa();
+                        //$dados = $this->request->getPost();
 
-                    //$dados = $this->request->getPost();
+                        //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
 
-                    //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
+                        $dataflash['dtinicio'] = date('d/m/Y');
+                        $dataflash['dtfim'] = date('d/m/Y');
+                    
+                        session()->setFlashdata('dataflash', $dataflash);
 
-                    $dataflash['dtinicio'] = date('d/m/Y');
-                    $dataflash['dtfim'] = date('d/m/Y');
-                
-                    session()->setFlashdata('dataflash', $dataflash);
+                        //session()->setFlashdata('dados', $this->request->getPost());
+                        return redirect()->to(base_url('mapacirurgico/exibir'));
 
-                    //session()->setFlashdata('dados', $this->request->getPost());
-                    return redirect()->to(base_url('mapacirurgico/exibir'));
-
-                   /*  return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
-                                                'data' => $this->data]); */
+                    /*  return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                                    'data' => $this->data]); */
+                    }
                 }
             }
 
@@ -2279,9 +2297,54 @@ class MapaCirurgico extends ResourceController
             //die(var_dump($this->validator));
             $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
         }
+
+        //die(var_dump($this->data['listapaciente']));
+        if (empty($this->data['prontuario']) || $this->data['listapaciente'] == '') {
+            $this->data = [];
+            $this->data['listaesperas'] = [];
+            $this->data['candidatos'] = null;
+            $this->data['ordem'] = null;
+            $this->data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+1 hour'));
+            //DateTime::createFromFormat('Y-m-d H:i:s', $mapapac1['dthrcirurgia'])->format('d/m/Y H:i');
+            $this->data['especialidade'] = null;
+            $this->data['risco'] = '';
+            $this->data['dtrisco'] = '';
+            $this->data['cid'] = '';
+            $this->data['complexidade'] = '';
+            $this->data['fila'] = null;
+            $this->data['origem'] = '';
+            $this->data['congelacao'] = '';
+            $this->data['procedimento'] = '';
+            $this->data['proced_adic'] = [];
+            $this->data['lateralidade'] = '';
+            $this->data['posoperatorio'] = null;
+            $this->data['info'] = '';
+            $this->data['nec_proced'] = '';
+            $this->data['sala'] =  '';
+            $this->data['centrocirurgico'] =  '';
+            $this->data['profissional'] = [];
+            $this->data['filas'] = $this->selectfila;
+            $this->data['riscos'] = $this->selectrisco;
+            $this->data['origens'] = $this->selectorigempaciente;
+            $this->data['lateralidades'] = $this->selectlateralidade;
+            $this->data['posoperatorios'] = $this->selectposoperatorio;
+            $this->data['especialidades'] = $this->selectespecialidadeaghu;
+            $this->data['cids'] = $this->selectcids;
+            $this->data['procedimentos'] = $this->selectitensprocedhospit;
+            $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
+            $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+            $this->data['procedimentos_adicionais'] = $this->data['procedimentos'];
+            $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+            $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+            $this->data['listapacienteSelect'] = [];
         
-        $this->data['origem'] =  $this->data['origem_hidden'];
-        $this->carregaMapa();
+        } else {
+
+            $this->data['origem'] =  $this->data['origem_hidden'];
+            $this->carregaMapa();
+
+        }
+        
 
         //die(var_dump($this->data['origem_hidden']));
 

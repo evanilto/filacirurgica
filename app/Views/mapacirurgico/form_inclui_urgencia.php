@@ -453,7 +453,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="3" readonly
+                                    <textarea id="justorig" maxlength="255" rows="3" 
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
                                             name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>
@@ -525,7 +525,7 @@
                         <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" />
                         <input type="hidden" name="fila_hidden" id="fila_hidden" />
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
-                        <input type="hidden" name="origem_hidden" id="origem_hidden"/>
+                        <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
                     </form>
                 </div>
             </div>
@@ -784,6 +784,10 @@
             $('#profissional_hidden').val($(this).val());
         });
 
+        $('#origem').change(function() {
+            $('#origem_hidden').val($(this).val());
+        });
+
         // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
         $('#profissional_hidden').val($('#profissional').val());
 
@@ -859,6 +863,7 @@
                 $('#fila').prop('disabled', true);
                 $('#procedimento').prop('disabled', true);
                 $('#origem').prop('disabled', true);
+                $('#justorig').prop('disabled', true);
             } else {
                 // Limpar os campos se a opção selecionada não for válida
                 $('#especialidade').val('').trigger('change');
@@ -870,6 +875,7 @@
                 $('#fila').prop('disabled', false);
                 $('#procedimento').prop('disabled', false);
                 $('#origem').prop('disabled', false);
+                $('#justorig').prop('disabled', false);
             }
         });
 

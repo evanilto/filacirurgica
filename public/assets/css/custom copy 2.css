@@ -1,0 +1,500 @@
+/* Grid Container */
+body {
+    display: grid;
+    grid-template-areas: 
+        "header header"
+        "nav main"
+        "footer footer";
+    grid-template-rows: 50px 1fr 35px;
+    grid-template-columns: 230px 1fr;
+    min-height: 100vh;
+    line-height: 1.6;
+    font-size: 14px; /* Adjust the font size as needed */
+    font-family: 'Montserrat', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Grid Items */
+.header {
+    grid-area: header;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+    padding: 1rem;
+    text-align: center;
+}
+
+.card-header {
+    font-size: 16px; /* Defina o tamanho da fonte desejado */
+}
+
+.header img {
+    margin-left: 1rem;
+}
+
+.main {
+    grid-area: main;
+    display: grid;
+    /* grid-template-columns: 3.5fr 1fr;
+    gap: 1rem;
+    padding: 1rem; */
+}
+
+.content {
+    background: #fff;
+    padding: 0;
+    border: none;
+    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    overflow-y: auto; /* Rolagem apenas vertical */
+    overflow-x: hidden; /* Impede a rolagem horizontal */
+    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    box-sizing: border-box; /* Inclui padding no cálculo da largura */
+}
+
+.sidebar {
+    background: #f9f9f9;
+    padding: 1rem;
+    border: 1px solid #ddd;
+}
+
+.footer {
+    grid-area: footer;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 35px; 
+}
+
+.footer p {
+    margin-bottom: 0;
+}
+
+section {
+    overflow-y: hidden; 
+}
+
+/* Remove a borda da classe content */
+/* section .content {
+    border: none;
+    padding: 0;
+} */
+
+input, textarea {
+    font-size: 14px; /* Defina o tamanho da fonte desejado */
+}
+
+/* #content table {
+    width: 100%;
+} */
+
+.nav {
+    grid-area: nav;
+    background-color: rgba(var(--bs-primary-rgb));
+    color: #fff;
+}
+
+.ul-first {
+    margin-top: 6rem; /* Ajuste conforme necessário */
+}
+
+.nav-link {
+    font-size: 14px; /* Adjust the font size as needed */
+}
+
+.menu-lateral {
+    max-height: 100vh; /* Máxima altura da viewport */
+    overflow-y: auto; /* Habilita rolagem vertical quando necessário */
+    position: fixed; /* Mantém o menu fixo na posição */
+    left: 0; /* Alinha o menu à esquerda */
+    top: 0; /* Alinha o menu no topo */
+    background-color: #007bff; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    width: 230px; /* Define a largura do menu lateral */
+    word-wrap: break-word; /* Permite quebra de linha */
+    white-space: normal; /* Permite quebra de linha */
+}
+
+.submenu-1 {
+    list-style-type: none;
+    padding-left: 20px; /* Ajuste conforme necessário */
+}
+
+.submenu-1 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-2 {
+    margin-left: 20px; /* Ajuste conforme necessário para o segundo nível */
+}
+
+.submenu-2 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.submenu-3 {
+    margin-left: 40px; /* Ajuste conforme necessário para o terceiro nível */
+}
+
+.submenu-3 li::before {
+    display: inline-block;
+    width: 1em; /* Largura do ícone (pode ser ajustada) */
+    margin-left: -1em; /* Margem negativa para alinhar com o texto */
+}
+
+.disabled {
+    pointer-events: none;
+    opacity: 0.6; /* Ajuste a opacidade conforme necessário */
+}
+
+#table tbody tr {
+    /*cursor: pointer; /* Define o cursor como ponteiro ao passar o mouse sobre as linhas da tabela */
+    /* Altere o cursor para o padrão (seta) */
+    cursor: default !important;
+}
+
+#table tbody tr.lineselected {
+   background-color: #d6f0dc;
+}
+
+.dt-search input { /* campos pesquisar do data-table */
+    width: 500px !important;; /* Define o tamanho desejado */
+}
+
+.form-container {
+    background-color: #f8f9fa; /* Cor de fundo clara */
+    padding: 20px; /* Preenchimento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    margin-top: 20px; /* Margem superior */
+}
+.form-check {
+    display: flex; /* Flex para os itens de radio */
+    align-items: center; /* Centraliza verticalmente os radio buttons e suas labels */
+    margin-right: 15px; /* Espaço entre as opções */
+    height: 26px; /* Define a altura do contêiner */
+}
+.form-check-input {
+    margin-top: 0; /* Remove a margem padrão do input */
+}
+.form-check-label {
+    margin-bottom: 0; /* Remove a margem padrão da label */
+}
+
+/* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
+#table, #table th, #table td {
+    font-size: 12px;  /* Você pode ajustar o tamanho conforme necessário */
+    line-height: 1px;
+    vertical-align: middle;  /* Centraliza verticalmente o conteúdo das células */
+    font-family: 'Montserrat', sans-serif;
+    white-space: nowrap;  /* Impede quebra de linha dentro das células */
+}
+
+/* Adiciona uma classe de estilo personalizado para ajustar o tamanho da fonte da tabela */
+.table-smaller-font td,
+.table-smaller-font th {
+    font-size: 0.875rem; /* Ajuste o tamanho da fonte conforme necessário */
+}
+
+table {
+    table-layout: fixed; /* Isso ajuda a manter as larguras das colunas */
+    page-break-inside: auto;
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse; /* Remove gaps between table cells */
+    background-color: #f8f9fa; /* Cor de fundo clara */
+    border-radius: 5px; /* Bordas arredondadas */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+}
+
+thead {
+    display: table-header-group;
+}
+
+tfoot {
+    display: table-footer-group;
+}
+
+.tabela-60 {
+    width: 60% !important; /* Define a largura da tabela apenas para esta classe */
+    margin-top: 30px !important;
+    margin: 0 auto; /* Centraliza a tabela horizontalmente */
+}
+
+/* Certifique-se de que os estilos se apliquem corretamente */
+.tabela-60 table {
+    width: 100%; /* Garante que a tabela ocupe 100% do contêiner */
+}
+
+.table-container {
+    margin-top: 5px; /* Margem superior */
+    margin-bottom: 5px; /* Margem superior */
+    width: 100%; /* Define a largura do contêiner */
+    margin-left: auto; /* Centraliza à esquerda */
+    margin-right: auto; /* Centraliza à direita */
+    border: 1px solid #b5b8bb; /* Adiciona uma moldura azul ao redor do contêiner */
+    border-radius: 5px; /* Opcional: arredonda os cantos */
+    padding: 15px; /* Opcional: espaço interno */
+    background-color: #fff; /* Define a cor de fundo do contêiner */
+    background-color: #fff; /* Cor de fundo */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adiciona sombra */
+    user-select: none; /* Isso desabilita a seleção de texto */
+}
+
+.break-line {
+    white-space: normal; /* Permite quebra de linha */
+    word-wrap: break-word; /* Quebra palavras longas, se necessário */
+    word-break: break-all; /* Quebra palavras muito longas em qualquer ponto */
+    /*max-width: 150px; /* Defina a largura máxima para a coluna */
+    overflow: hidden; /* Esconde o excesso de texto que não cabe */
+    text-overflow: ellipsis; /* Adiciona "..." no final do texto se truncado */
+}
+
+.tooltip {
+    display: none; /* Começa oculto */
+    position: absolute;
+    background-color: #333;
+    color: #fff;
+    border-radius: 5px;
+    padding: 5px;
+    z-index: 1000;
+    max-width: 100px;
+    white-space: normal; /* Permite quebra de linha dentro do tooltip */
+    word-wrap: break-word; /* Quebra palavras longas */
+}
+
+.bordered-container {
+    border: 1px solid #d6cfcf; /* Define a Espessura e a Cor da Borda */
+    background-color: #fff;   /* Define o Fundo Branco */
+    border-radius: 5px;       /* Define o Arredondamento dos Cantos da Borda */
+    padding: 0px;            /* Define o Espaçamento Interno */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* Estilos do Select2 */
+.custom-dropdown {
+    max-width: max-content !important; /* Ajuste este valor conforme necessário */
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered .select2-dropdown{
+    height: 30px; /* Altura do campo select */
+    line-height: 30px; /* Alinha verticalmente o texto */
+    padding-left: 10px; /* Ajuste conforme necessário */
+    padding-right: 10px; /* Ajuste conforme necessário */
+    box-sizing: border-box;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    display: flex;
+    align-items: center;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+.select2-selection__arrow {
+    height: 30px; /* Altura da seta */
+}
+
+.select2-results__option {
+    height: 30px; /* Altura das opções */
+    display: flex;
+    align-items: center;
+}
+
+.form-select, .select2-container .select2-selection--single .form-lab {
+    height: 30px; /* Garantir altura consistente para todos os campos */
+    display: flex;
+    align-items: center; /* Centralizando verticalmente */
+    padding: 0; /* Remove o padding */
+}
+
+/* Ajusta padding e borda para alinhar visualmente */
+.select2-container .select2-selection--single .select2-selection__rendered {
+    display: flex;
+    align-items: center;
+}
+
+/* CSS para impedir quebra de linha nas opções do select2 */
+.select2-container--default .select2-results__option {
+    white-space: nowrap; /* Impede quebra de linha */
+}
+
+.select2-container {
+    width: 100% !important;
+}
+
+
+.select2-selection--multiple {
+    height: auto !important;
+    min-height: 30px !important; /* Valor que corresponde à altura de um campo de formulário padrão */
+}
+
+.select2-selection--single {
+    height: 30px !important; /* Valor que corresponde à altura de um campo de formulário padrão */
+}
+
+.select2-selection__rendered {
+    padding-top: 0px !important; /* Ajuste de padding para centralização do texto */
+}
+
+.select2-disabled{
+    background-color: #f0f0f0; /* Cinza claro */
+    border: 1px solid #ccc; /* Borda padrão */
+    color: #6c757d; /* Texto cinza */
+    cursor: not-allowed; /* Cursor que indica não interativo */
+}
+
+.form-control {
+    padding: 2px;
+    padding-left: 4px;
+    font-size: 14px;
+}
+
+.legend-container {
+    display: flex;
+    justify-content: space-between; /* espaços iguais entre os itens */
+    align-items: center;
+    border-right: none; /* Remove a borda à direita do primeiro cabeçalho */
+}
+
+.legend-table {
+    border-collapse: collapse; /* Para garantir que as bordas não se sobreponham */
+    border: none; /* Remove a borda da tabela */
+    vertical-align: middle;
+    max-width: 90%
+}
+
+.legend-cell {
+    width: 100px;  
+    height: 20px; 
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 0.75rem !important;
+    font-weight: normal; /* Remove o negrito */
+    padding: 0px;  /* reduzir espaço interno */
+    color: #fff;
+    border: none; /* Remove a borda das células */
+    /*font-weight: bold;  */
+}
+
+************** Spinner ***************************/        
+.modal {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: 999;
+background-color: transparent; /* Remova o fundo escurecido */
+}
+
+.modal-content {
+    position: fixed;
+    top: 50%;
+    left: calc(50% + 115px); /* Compensa a largura do menu lateral */
+    transform: translate(-50%, -50%);
+    max-width: 15%;
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 1001; /* Deve ser maior que o z-index de modal-overlay */
+}
+
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.3);
+z-index: 1000;
+}
+
+.modal-text {
+text-align: center;
+margin: 10px 0 0 0;
+padding: 0;
+}
+
+.modal-dialog {
+    position: fixed; /* Fixa o modal na viewport */
+    top: 10%; /* Posiciona no meio vertical */
+    left: calc(25% + 115px); /* Metade da largura do menu (230px / 2) */
+    transform: translate(-50%, -50%); /* Centraliza com precisão */
+    max-width: 50%; /* Define a largura máxima */
+    width: 100%; /* Garante que não ultrapasse a largura disponível */
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 1001; /* Deve ser maior que o modal-overlay */
+}
+
+.spinner {
+text-align: center;
+}
+
+.spinner div {
+width: 15px;
+height: 15px;
+background-color: #333;
+border-radius: 100%;
+display: inline-block;
+animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.spinner .bounce1 {
+animation-delay: -0.32s;
+}
+
+.spinner .bounce2 {
+animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive adjustments */
+
+@media (max-width: 768px) {
+    .main {
+        grid-template-columns: 1fr;
+    }
+
+    .nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .modal-dialog {
+        max-width: 90%; /* Em telas menores, pode ocupar mais espaço */
+    }
+}
