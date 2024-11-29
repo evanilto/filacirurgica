@@ -157,7 +157,7 @@
 <script>
     window.onload = function() {
         // Adiciona o listener de "keydown" a todos os elementos de entrada
-        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        const inputs = document.querySelectorAll('input, select, .form-check-input');
         inputs.forEach(input => {
             input.addEventListener('keydown', disableEnter);
         });

@@ -42,6 +42,7 @@ $routes->group('listaespera', function ($routes) {
     $routes->add('exibirexcluidos', 'ListaEspera::exibirExcluidos');
     $routes->get('recuperarexcluido/(:num)', 'ListaEspera::recuperarPaciente/$1');
     $routes->post('recuperar', 'ListaEspera::recuperar');
+    $routes->post('verpacientenafrente', 'ListaEspera::verPacienteNaFrente');
 });
 
 $routes->group('mapacirurgico', function ($routes) {

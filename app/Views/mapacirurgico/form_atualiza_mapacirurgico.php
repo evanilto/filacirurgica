@@ -175,7 +175,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-6">
                                 <div class="mb-3">
                                     <label for="cid" class="form-label">CID<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -460,7 +460,22 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <textarea id="nec_proced" maxlength="2048" rows="5" <?= $data['status_fila'] ?>
+                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('nec_proced') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
                                     <textarea id="info" maxlength="255" rows="3" <?= $data['status_fila'] ?> disabled
@@ -469,19 +484,6 @@
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('info') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3" <?= $data['status_fila'] ?>
-                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('nec_proced') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>

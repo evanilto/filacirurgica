@@ -209,7 +209,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA" disabled
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
-                                            name="dtrisco" value="<?= set_value('dtrisco'), $data['dtrisco'] ?>"/>
+                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
@@ -435,6 +435,21 @@
                             </div>
                         </div>
                         <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="nec_proced">Necessidades do Procedimento</label>
+                                    <textarea id="nec_proced" maxlength="255" rows="5" disabled
+                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('nec_proced') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
@@ -450,21 +465,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label" for="nec_proced">Necessidades do Procedimento</label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3" disabled
-                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('nec_proced') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
                                     <label class="form-label" for="justenvio">Justificativas Envio ao Mapa</label>
                                     <textarea id="justenvio" maxlength="255" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
@@ -476,6 +476,8 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <?php if ($data['indurgencia'] == 'S') { ?>
                                 <div class="col-md-6">
                                     <div class="mb-3">

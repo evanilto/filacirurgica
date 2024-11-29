@@ -183,7 +183,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
-                                            name="dtrisco" value="<?= set_value('dtrisco'), $data['dtrisco'] ?>"/>
+                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
@@ -333,7 +333,7 @@
 <script>
     window.onload = function() {
         // Adiciona o listener de "keydown" a todos os elementos de entrada
-        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        const inputs = document.querySelectorAll('input, select, .form-check-input');
         inputs.forEach(input => {
             input.addEventListener('keydown', disableEnter);
         });

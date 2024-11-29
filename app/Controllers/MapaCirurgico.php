@@ -603,7 +603,8 @@ class MapaCirurgico extends ResourceController
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
-        $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
+        //$data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
+        $data['dtrisco'] = $lista['dtriscocirurgico'];
         $data['cid'] = $lista['numcid'];
         $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
@@ -655,7 +656,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //die(var_dump($this->data));
 
         $rules = [
             'especialidade' => 'required',
@@ -1252,7 +1253,7 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function ConsultarCirurgia(int $id)
+    public function consultarCirurgia(int $id)
     {
        
         HUAP_Functions::limpa_msgs_flash();
@@ -1619,6 +1620,8 @@ class MapaCirurgico extends ResourceController
                 $array['idlistatroca'] = $this->data['idlistapac2'];
                 $array['txtjustificativatroca'] = $this->data['justtroca'];
 
+                //die(var_dump($array));
+
                 $this->mapacirurgicomodel->update($this->data['idmapapacatrocar'], $array);
 
                 if ($db->transStatus() === false) {
@@ -1670,10 +1673,6 @@ class MapaCirurgico extends ResourceController
 
                 $this->validator->reset();
 
-                //return $this->response->setJSON(['success' => true, 'message' => 'Paciente trocado com sucesso!']);
-                /* $this->response->setHeader('Content-Type', 'text/plain');
-                return $this->response->setBody('ok'); */
-                
             } catch (\Throwable $e) {
                 $db->transRollback(); 
                 $msg = sprintf('Exception - Falha na troca de paciente - idmapa: %d - cod: (%d) msg: %s', (int) $this->data['idmapapacatrocar'], (int) $e->getCode(), $e->getMessage());

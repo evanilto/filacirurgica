@@ -220,7 +220,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
-                                            name="dtrisco" value="<?= set_value('dtrisco'), $data['dtrisco'] ?>"/>
+                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
@@ -418,6 +418,34 @@
                             </div>
                         </div>
                         <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <textarea id="nec_proced" maxlength="2048" rows="5"
+                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('nec_proced') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
+                                    <textarea id="justenvio" maxlength="255" rows="3"
+                                            class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
+                                            name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('justenvio')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('justenvio') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
@@ -431,6 +459,8 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
@@ -440,34 +470,6 @@
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('info') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3"
-                                            class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('nec_proced') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
-                                    <textarea id="justenvio" maxlength="255" rows="3"
-                                            class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
-                                            name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justenvio')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('justenvio') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -490,7 +492,7 @@
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
-                        <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="origem" id="origem-hidden" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
 
@@ -503,7 +505,7 @@
 
 <script>
      window.onload = function() {
-        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        const inputs = document.querySelectorAll('input, select, .form-check-input');
         inputs.forEach(input => {
             input.addEventListener('keydown', disableEnter);
         });

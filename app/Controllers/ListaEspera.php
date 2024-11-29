@@ -31,6 +31,7 @@ use CodeIgniter\Config\Services;
 use Config\Database;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use PHPUnit\Framework\Constraint\IsNull;
+use CodeIgniter\HTTP\ResponseInterface;
 
 
 class ListaEspera extends ResourceController
@@ -1904,11 +1905,56 @@ class ListaEspera extends ResourceController
 
             $this->carregaMapa();
 
+            //die(var_dump($this->data));
+
             return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
-                                                'validation' => $this->validator,
+                                                //'validation' => $this->validator,
                                                 'data' => $this->data]);
         }
     }
+    /**
+     * Add or update a model resource, from "posted" properties
+     *
+     * @return mixed
+     */
+    public function verPacienteNaFrente()
+    {
+
+        try {
+            $request = service('request');
+
+            if (!$request->isAJAX()) {
+                throw new \Exception('Acesso não autorizado');
+            }
+
+            $arrayidJson = $this->request->getPost('arrayid');
+
+            if (empty($arrayidJson)) {
+                throw new \Exception('Parâmetros ausentes');
+            }
+
+            $arrayid = json_decode($arrayidJson, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                throw new \Exception('Erro ao decodificar JSON: ' . json_last_error_msg());
+            }
+
+
+            $tempaciente = $this->vwordempacientemodel->where('idfila', $arrayid['idFila'])
+                                            ->where('ordem_fila <', $arrayid['nuOrdem'])->findAll();
+
+            if (!empty($tempaciente))
+                return $this->response->setJSON(['success' => true, 'message' => 'Tem paciente']);
+            else
+                return $this->response->setJSON(['success' => true, 'message' => 'NÂO tem paciente']);
+
+        } catch (\Throwable $e) {
+
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                                    ->setJSON(['success' => false, 'message' => $e->getMessage()]);
+        }
+
+    }        
     /**
      * Add or update a model resource, from "posted" properties
      *

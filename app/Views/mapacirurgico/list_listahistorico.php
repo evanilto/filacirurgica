@@ -52,6 +52,12 @@
             },
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
+            "columns": [
+                { "width": "0px" },                
+                { "width": "90px" },                
+                { "width": "300px" }, 
+                { "width": "100px" }
+            ],
             "columnDefs": [
             /* { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] }, */
             { "visible": false, "targets": [0] }

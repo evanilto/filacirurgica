@@ -465,23 +465,23 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" readonly
-                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('info')): ?>
+                                    <label class="form-label" for="info">Justificativas da Urgência<b class="text-danger">*</b></label>
+                                    <textarea id="justurgencia" maxlength="255" rows="3"
+                                            class="form-control <?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
+                                            name="justurgencia"><?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('justurgencia')): ?>
                                         <div class="invalid-feedback">
-                                            <?= $validation->getError('info') ?>
+                                            <?= $validation->getError('justurgencia') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3"
+                                    <textarea id="nec_proced" maxlength="2048" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -491,15 +491,17 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label" for="info">Justificativas da Urgência<b class="text-danger">*</b></label>
-                                    <textarea id="justurgencia" maxlength="255" rows="3"
-                                            class="form-control <?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
-                                            name="justurgencia"><?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justurgencia')): ?>
+                                    <label class="form-label" for="info">Informações adicionais</label>
+                                    <textarea id="info" maxlength="255" rows="3" readonly
+                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
+                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('info')): ?>
                                         <div class="invalid-feedback">
-                                            <?= $validation->getError('justurgencia') ?>
+                                            <?= $validation->getError('info') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -535,7 +537,7 @@
 
 <script>
     window.onload = function() {
-        const inputs = document.querySelectorAll('input, textarea, select, .form-check-input');
+        const inputs = document.querySelectorAll('input, select, .form-check-input');
         inputs.forEach(input => {
             input.addEventListener('keydown', disableEnter);
         });

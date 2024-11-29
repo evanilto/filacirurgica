@@ -4,11 +4,11 @@
     //session()->set('parametros_consulta_mapa', $data); 
     $corProgramada = 'yellow';
     $corNoCentroCirúrgico = '#97DA4B';
-    $corEmCirurgia = '#804616';
+    $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
-    $corSaídaCentroCirúrgico = '#277534';
-    $corTrocaPaciente = '#E9967A';
-    $corCirurgiaSuspensa = '#B54398';
+    $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
+    $corTrocaPaciente = '#FF7F7F';//'#E9967A';
+    $corCirurgiaSuspensa = 'red';//'#B54398';
     $corCirurgiaCancelada = 'red';
 
 ?>

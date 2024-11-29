@@ -24,9 +24,24 @@
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/trocar') ?>">
                         <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="dtcirurgia" class="form-label">Data/hora da Cirurgia</label>
+                                    <div class="input-group">
+                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM" disabled
+                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>"/>
+                                        <?php if ($validation->getError('dtcirurgia')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('dtcirurgia') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-10">
                                 <div class="mb-3">
-                                    <label for="candidato" class="form-label">Paciente de Troca</label>
+                                    <label for="candidato" class="form-label">Paciente de Troca<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('candidato')): ?>is-invalid<?php endif ?>"
                                             id="candidato" name="candidato"
@@ -46,21 +61,6 @@
                                         <?php if ($validation->getError('candidato')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('candidato') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-3">
-                                    <label for="dtcirurgia" class="form-label">Data/hora da Cirurgia</label>
-                                    <div class="input-group">
-                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM" disabled
-                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
-                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>"/>
-                                        <?php if ($validation->getError('dtcirurgia')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('dtcirurgia') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -426,9 +426,13 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                            <button class="btn btn-primary mt-3" type="button"
+                                    onclick="verPacienteNaLista(event);">
+                                <i class="fa-solid fa-people-arrows"></i> Trocar
+                            </button>
+                               <!--  <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-people-arrows"></i> Trocar
-                                </button>
+                                </button> -->
                                 <!-- <button class="btn btn-primary mt-3" id="submit" name="submit" type="button" onclick="trocarpaciente()">
                                     <i class="fa-solid fa-people-arrows"></i> Trocar
                                 </button> -->
@@ -453,6 +457,9 @@
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="idlistapac2" id="idlistapac2"/>
+                        <input type="hidden" name="ordem_hidden" id="ordem_hidden"/>
+                        <input type="hidden" name="action" id="formAction" value="">
+                        
                     </form>
                 </div>
             </div>
@@ -461,6 +468,76 @@
 </div>
 
 <script>
+
+    function verPacienteNaLista(event) {
+
+        //event.preventDefault(); // Previne o comportamento padrão do botão
+
+        $('#janelaAguarde').show(); // Exibe a janela de carregamento
+
+        // Obtenha os valores diretamente dos campos do formulário
+        const idfila = $('#fila').val(); // Pega o valor de idFila usando jQuery
+        const ordem = $('#ordem_hidden').val(); // Pega o valor de ordem usando jQuery
+
+        if (idfila && ordem) {
+
+            var formData = new FormData();
+            const arrayId = {
+                idFila: idfila,
+                nuOrdem: ordem
+            };
+            formData.append('arrayid', JSON.stringify(arrayId));
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '<?= base_url('listaespera/verpacientenafrente') ?>', true);
+            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+            xhr.onload = function() {
+                $('#janelaAguarde').hide(); // Esconde a janela de carregamento
+
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    try {
+                        var response = JSON.parse(xhr.responseText);
+                        console.log(response);
+
+                        if (response.success) {
+
+                            if (response.message == 'Tem paciente') {
+                                // Pergunta ao usuário se deseja confirmar a continuação
+                                if (!confirm('Existe paciente(s) na frente desse paciente na lista de espera. Confirma a troca por esse paciente?')) {
+                                    return false; // Caso contrário, cancela
+                                }
+                            }  
+
+                            $('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
+                            $('#idForm').submit(); // Submet
+
+                        } else {
+                            alert('Erro: ' + response.message);
+                        }
+                    } catch (error) {
+                        console.error('Erro ao analisar a resposta: ', error);
+                        alert('Erro ao processar a resposta do servidor.');
+                    }
+                } else {
+                    console.error('Erro ao enviar os dados: ' + xhr.status);
+                    alert('Erro ao enviar os dados. Status: ' + xhr.status);
+                }
+            };
+
+            xhr.onerror = function() {
+                $('#janelaAguarde').hide(); // Esconde a janela de carregamento
+                console.error('Erro na requisição AJAX.');
+                alert('Erro na requisição AJAX.');
+            };
+
+            xhr.send(formData); // Envia os dados
+        } else {
+            
+            $('#idForm').submit();
+        }
+    }
+
     /* function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<--?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
@@ -654,13 +731,10 @@
         
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
-        $('#idForm').submit(function() {
-            $('#janelaAguarde').show();
-            setTimeout(function() {
-                window.location.href = href;
-            }, 1000);
+       /*  $('#idForm').submit(function() {
+            //$('#idForm').off('submit').submit(); // Remove qualquer manipulador anterior e submete o formulário
         });
-   
+    */
         $('#candidato').on('change', function() {
             var prontuarioValue = $(this).val();
             var ordemValue = $(this).find('option:selected').data('ordem');
@@ -687,6 +761,7 @@
                 $('select[name="lateralidade"]').val(lateralidadeValue).change(); // Define o valor do hidden
                 $('input[name="dtrisco"]').val(dtriscoValue); // Define o valor do hidden
                 $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
+                $('input[name="ordem_hidden"]').val(ordemValue); // Define o valor do hidden
                 //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
                 $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
                 $('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true).trigger('change');

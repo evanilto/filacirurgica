@@ -37,7 +37,6 @@ class MapaCirurgicoModel extends Model
         'txtjustificativatroca',
         'numordem',
         'indurgencia',
-        'idtroca',
         'idsuspensao',
     ];
 
