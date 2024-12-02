@@ -6,7 +6,7 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" colspan="23" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+                <th scope="col" colspan="24" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
             </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
@@ -27,6 +27,7 @@
                 <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
                 <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
                 <th scope="col" data-field="prontuarioaghu" >Congelação</th>
+                <th scope="col" data-field="prontuarioaghu" >OPME</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
                 <th scope="col" data-field="acao" colspan="4" style="text-align: center;">Ações</th>
             </tr>
@@ -90,6 +91,7 @@
                     </td>
                     <td class="break-line"><?php echo $itemlista->nmlateralidade ?></td>
                     <td class="break-line"><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
+                    <td class="break-line"><?php echo $itemlista->opme == 'S' ? 'SIM' : ($itemlista->opme == 'N' ? 'NÃO' : '') ?></td>
                     
                     <td><?php echo $itemlista->data_risco ?></td>
                     <td style="text-align: center; vertical-align: middle;">
@@ -137,6 +139,7 @@
                                  data-complexidade="' . $itemlista->complexidade . '"
                                  data-lateralidade="' . $itemlista->nmlateralidade . '"
                                  data-congelacao="' . $itemlista->indcongelacao . '"
+                                 data-opme="' . $itemlista->opme . '"
                                  data-dtrisco="' . $itemlista->data_risco . '"
                                  data-infoadic="' . htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') . '"
                                  onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>';
@@ -194,7 +197,10 @@
             var complexidade = dados[11];
             var lateralidade = dados[12];
             var congelacao = dados[13];
-            var dtrisco = dados[14];
+            var opme = dados[14];
+            var dtrisco = dados[15];
+
+            //alert (dados[13]);
 
             $.ajax({
                 url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
@@ -255,6 +261,7 @@
                         <strong>Complexidade:</strong> ${complexidade}<br>
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
+                        <strong>OPME:</strong> ${opme}<br>
                     `);
 
                     $('#linha').html(`
@@ -273,6 +280,17 @@
             // Recupera os atributos data-* do elemento clicado
             //const prontuario = element.getAttribute('data-prontuario');
 
+            switch (element.getAttribute('data-opme')) {
+                case 'S': 
+                    opme = 'SIM';
+                    break;
+                case 'N': 
+                    opme = 'NÂO';
+                    break;
+                default:
+                    opme = '';
+            }
+
             var dadosLista = [
                 element.getAttribute('data-prontuario'), // Prontuario
                 element.getAttribute('data-ordem'), // Ordem
@@ -289,6 +307,7 @@
                 element.getAttribute('data-complexidade') === 'B' ? 'BAIXA' : 'N/D',
                 element.getAttribute('data-lateralidade'), // Lateralidade
                 element.getAttribute('data-congelacao') === 'S' ? 'SIM' : 'NÃO', // Congelação
+                opme,
                 element.getAttribute('data-dtrisco'),  // Data de Risco
                 element.getAttribute('data-justorig')
             ];
@@ -369,6 +388,7 @@
                 { "width": "120px" }, // complex
                 { "width": "150px" },
                 { "width": "110px" },
+                { "width": "110px" },
                 { "width": "90px" }, // dt risco
                 { "width": "35px" },
                 { "width": "35px" },
@@ -377,7 +397,7 @@
 
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
+            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
             { "visible": false, "targets": [0] },
             { "width": "500px", "targets": [8] }
             ],
@@ -437,8 +457,9 @@
                     data[14], // Complexidade
                     data[15], // Lateralidade
                     data[16], // Congelação
-                    data[17],  // Data de Risco
-                    data[18]  // Just Orig
+                    data[17], // OPME
+                    data[18],  // Data de Risco
+                    data[19]  // Just Orig
                 ];
 
             //alert(prontuario);

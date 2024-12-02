@@ -203,7 +203,7 @@
                                     <label for="risco" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco"
+                                            id="risco" name="risco" disabled
                                             data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $data['status_fila'] ?>>
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
@@ -221,13 +221,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="dtrisco" class="form-label">Data Risco</label>
+                                    <label for="dtrisco" class="form-label">Data Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA" <?= $data['status_fila'] ?>
+                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
-                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco'])?>"/>
+                                            name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
@@ -236,7 +236,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente</label>
                                     <div class="input-group">
@@ -261,7 +261,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -284,7 +284,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -331,7 +331,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -348,8 +348,32 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
+                                    <label class="form-label">OPME<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('opme')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('opme') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="mb-4">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -510,6 +534,7 @@
                         <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="sala_hidden" id="sala_adic_hidden" />

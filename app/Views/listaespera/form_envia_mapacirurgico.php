@@ -193,11 +193,11 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="risco" class="form-label">Risco Cirúrgico</label>
+                                    <label for="risco" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco"
-                                            data-placeholder="" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
@@ -216,7 +216,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="dtrisco" class="form-label">Data Risco</label>
+                                    <label for="dtrisco" class="form-label">Data Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
@@ -253,7 +253,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
@@ -277,7 +277,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -346,8 +346,32 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
+                                    <label class="form-label">OPME<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('opme')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('opme') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
+                                <div class="mb-4">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
                                         <div class="form-check form-check-inline">

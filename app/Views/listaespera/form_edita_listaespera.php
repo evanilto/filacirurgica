@@ -154,7 +154,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -177,7 +177,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-1">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -192,7 +192,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -254,8 +254,37 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php if ($validation->getError('congelacao')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('congelacao') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">OPME<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S"
+                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                    <?php if ($validation->getError('opme')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('opme') ?>
+                                    </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-3 bordered-container">
@@ -276,6 +305,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php if ($validation->getError('complexidade')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('complexidade') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row g-3">

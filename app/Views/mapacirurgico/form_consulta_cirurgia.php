@@ -311,7 +311,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label class="form-label">Congelação</label>
                                     <div class="input-group mb-3 bordered-container">
@@ -328,7 +328,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label class="form-label">Hemoderivados</label>
                                     <div class="input-group mb-3 bordered-container">
@@ -344,6 +344,28 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label class="form-label">OPME<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-3 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N" disabled
+                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S" disabled
+                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('opme')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('opme') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row g-3">
