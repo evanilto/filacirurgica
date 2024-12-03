@@ -104,7 +104,6 @@
         $('.select2-dropdown').select2({
             placeholder: "",
             allowClear: true,
-            dropdownCssClass: 'custom-dropdown',
             width: 'resolve' // Corrigir a largura
         });
     });

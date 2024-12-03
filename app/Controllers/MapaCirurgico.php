@@ -62,6 +62,7 @@ class MapaCirurgico extends ResourceController
     private $aghucontroller;
     private $selectfila;
     private $selectrisco;
+    private $selectriscoativos;
     private $selectespecialidade;
     private $selectespecialidadeaghu;
     private $selectprofespecialidadeaghu;
@@ -70,7 +71,9 @@ class MapaCirurgico extends ResourceController
     private $selectcids;
     private $selectitensprocedhospit;
     private $selectorigempaciente;
+    private $selectorigempacienteativos;
     private $selectlateralidade;
+    private $selectlateralidadeativos;
     private $selectposoperatorio;
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
@@ -108,9 +111,12 @@ class MapaCirurgico extends ResourceController
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-        $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-        $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
-        $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
+        $this->selectrisco = $this->riscomodel->orderBy('nmrisco', 'ASC')->findAll();
+        $this->selectriscoativos = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+        $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
+        $this->selectorigempacienteativos = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
+        $this->selectlateralidade = $this->lateralidademodel->orderBy('id', 'ASC')->findAll();
+        $this->selectlateralidadeativos = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
@@ -880,7 +886,7 @@ class MapaCirurgico extends ResourceController
      * 
      * @return mixed
      */
-    private function carregaMapa() {
+    private function carregaMapa($oper = null) {
 
         $this->data['especialidade'] = $this->data['especialidade'] ?? (isset($this->data['especialidade_hidden']) ? $this->data['especialidade_hidden'] : '' );
         $this->data['fila'] = $this->data['fila'] ?? (isset($this->data['fila_hidden']) ? $this->data['fila_hidden'] : '' );
@@ -889,9 +895,15 @@ class MapaCirurgico extends ResourceController
         //$this->data['justorig'] = $this->data['justorig'] ?? $this->data['justorig_hidden'];
 
         $this->data['filas'] = $this->selectfila;
-        $this->data['riscos'] = $this->selectrisco;
-        $this->data['origens'] = $this->selectorigempaciente;
-        $this->data['lateralidades'] = $this->selectlateralidade;
+        if ($oper == 'I') {
+            $this->data['riscos'] = $this->selectriscoativos;
+            $this->data['lateralidades'] = $this->selectlateralidadeativos;
+            $this->data['origens'] = $this->selectorigempacienteativos;
+        } else {
+            $this->data['riscos'] = $this->selectrisco;
+            $this->data['lateralidades'] = $this->selectlateralidade;
+            $this->data['origens'] = $this->selectorigempaciente;
+        }
         $this->data['posoperatorios'] = $this->selectposoperatorio;
         $this->data['especialidades'] = $this->selectespecialidadeaghu;
         $this->data['cids'] = $this->selectcids;
@@ -1921,9 +1933,9 @@ class MapaCirurgico extends ResourceController
         $data['centrocirurgico'] =  '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectrisco;
-        $data['origens'] = $this->selectorigempaciente;
-        $data['lateralidades'] = $this->selectlateralidade;
+        $data['riscos'] = $this->selectriscoativos;
+        $data['origens'] = $this->selectorigempacienteativos;
+        $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
@@ -2283,13 +2295,13 @@ class MapaCirurgico extends ResourceController
                                 log_message('error', 'Exception: ' . $msg);
                                 session()->setFlashdata('exception', $msg);
 
-                                $this->carregaMapa();
+                                $this->carregaMapa('I');
                                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
                                                 'validation' => $this->validator,
                                                 'data' => $this->data]);
                             }
 
-                            $this->carregaMapa();
+                            $this->carregaMapa('I');
 
                             //$dados = $this->request->getPost();
 
@@ -2343,9 +2355,9 @@ class MapaCirurgico extends ResourceController
             $this->data['centrocirurgico'] =  '';
             $this->data['profissional'] = [];
             $this->data['filas'] = $this->selectfila;
-            $this->data['riscos'] = $this->selectrisco;
-            $this->data['origens'] = $this->selectorigempaciente;
-            $this->data['lateralidades'] = $this->selectlateralidade;
+            $this->data['riscos'] = $this->selectriscoativos;
+            $this->data['origens'] = $this->selectorigempacienteativos;
+            $this->data['lateralidades'] = $this->selectlateralidadeativos;
             $this->data['posoperatorios'] = $this->selectposoperatorio;
             $this->data['especialidades'] = $this->selectespecialidadeaghu;
             $this->data['cids'] = $this->selectcids;
@@ -2360,7 +2372,7 @@ class MapaCirurgico extends ResourceController
         } else {
 
             $this->data['origem'] =  $this->data['origem_hidden'];
-            $this->carregaMapa();
+            $this->carregaMapa('I');
 
         }
         
@@ -2437,7 +2449,7 @@ class MapaCirurgico extends ResourceController
 
         if ($this->validate($rules)) {
 
-            if (DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d') != date('Y-m-d')) {
+            /* if (DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d') != date('Y-m-d')) {
                 $this->validator->setError('dthrcirurgia', 'A cirurgia não pode ser realizada fora da data prevista!');
 
                 session()->setFlashdata('error', $this->validator);
@@ -2449,7 +2461,7 @@ class MapaCirurgico extends ResourceController
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
-            }
+            } */
 
             $mapa = [
                 'dthrnocentrocirurgico'  => !empty($data['hrnocentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrnocentrocirurgico'] : NULL,

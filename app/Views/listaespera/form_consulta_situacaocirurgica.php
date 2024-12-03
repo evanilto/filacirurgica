@@ -89,7 +89,7 @@
         });
 
         $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
+            //dropdownCssClass: 'custom-dropdown',
         });
 
         const prontuarioInput = document.getElementById('prontuario');

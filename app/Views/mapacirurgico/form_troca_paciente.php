@@ -1,19 +1,6 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-
-<style>
-.content {
-    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
-    overflow-y: auto; /* Rolagem apenas vertical */
-    overflow-x: hidden; /* Impede a rolagem horizontal */
-    height: 100%; /* Garante que use todo o espaço vertical permitido */
-    box-sizing: border-box; /* Inclui padding no cálculo da largura */
-}
-</style>
-
 <div class="container" style="padding-top: 0; margin-top: -30px">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -201,8 +188,8 @@
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
                                                 $selected = ($data['risco'] == $risco['id']) ? 'selected' : '';
-                                                echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
-                                            }
+                                                $enabled = ($risco['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$risco['id'].'" '.$selected.' '.$enabled.'>'.$risco['nmrisco'].'</option>';                                              }
                                             ?>
                                         </select>
                                         <?php if ($validation->getError('risco')): ?>
@@ -264,8 +251,8 @@
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
                                                 $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
-                                            }
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';                                                }
                                             ?>
                                         </select>
                                         <?php if ($validation->getError('lateralidade')): ?>

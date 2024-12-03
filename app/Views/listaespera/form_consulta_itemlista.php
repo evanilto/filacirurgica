@@ -509,7 +509,6 @@
         });
         
         $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
             allowClear: true
         });
 

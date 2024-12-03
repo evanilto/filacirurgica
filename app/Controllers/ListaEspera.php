@@ -62,13 +62,16 @@ class ListaEspera extends ResourceController
     private $aghucontroller;
     private $selectfila;
     private $selectrisco;
+    private $selectriscoativos;
     private $selectespecialidade;
     private $selectespecialidadeaghu;
     private $selectprofespecialidadeaghu;
     private $selectcids;
     private $selectitensprocedhospit;
     private $selectorigempaciente;
+    private $selectorigempacienteativos;
     private $selectlateralidade;
+    private $selectlateralidadeativos;
     private $selectposoperatorio;
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
@@ -105,9 +108,12 @@ class ListaEspera extends ResourceController
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-        $this->selectrisco = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
-        $this->selectorigempaciente = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
-        $this->selectlateralidade = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
+        $this->selectrisco = $this->riscomodel->orderBy('nmrisco', 'ASC')->findAll();
+        $this->selectriscoativos = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+        $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
+        $this->selectorigempacienteativos = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
+        $this->selectlateralidade = $this->lateralidademodel->orderBy('id', 'ASC')->findAll();
+        $this->selectlateralidadeativos = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativasexclusao = $this->justificativasmodel->Where('tipojustificativa', 'E')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -959,9 +965,9 @@ class ListaEspera extends ResourceController
         $data['dtinclusao'] = date('d/m/Y H:i');
         $data['ordem'] = '';
         $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectrisco;
-        $data['origens'] = $this->selectorigempaciente;
-        $data['lateralidades'] = $this->selectlateralidade;
+        $data['riscos'] = $this->selectriscoativos;
+        $data['origens'] = $this->selectorigempacienteativos;
+        $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
@@ -1008,9 +1014,9 @@ class ListaEspera extends ResourceController
         //$dataform['dtrisco'] = null;
         $dataform['ordem'] = 'A definir';
         $dataform['filas'] = $this->selectfila;
-        $dataform['riscos'] = $this->selectrisco;
-        $dataform['origens'] = $this->selectorigempaciente;
-        $dataform['lateralidades'] = $this->selectlateralidade;
+        $dataform['riscos'] = $this->selectriscoativos;
+        $dataform['origens'] = $this->selectorigempacienteativos;
+        $dataform['lateralidades'] = $this->selectlateralidadeativos;
         $dataform['especialidades'] = $this->selectespecialidadeaghu;
         $dataform['cids'] = $this->selectcids;
         $dataform['procedimentos'] = $this->selectitensprocedhospit;

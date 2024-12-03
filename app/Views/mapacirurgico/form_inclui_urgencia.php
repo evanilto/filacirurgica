@@ -1,8 +1,37 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+    <script>
+        function confirmarAcao(callback) {
+            // Inicializa o modal
+            var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            confirmModal.show();
+
+            // Listener para o botão de confirmação
+            document.getElementById('confirmBtn').onclick = function() {
+                confirmModal.hide(); // Fecha o modal
+                callback(true); // Chama o callback passando 'true'
+            };
+
+            // Listener para o botão de cancelar (ou fechar)
+            document.querySelector('.btn-secondary').onclick = function() {
+                confirmModal.hide(); // Fecha o modal
+                callback(false); // Chama o callback passando 'false'
+            };
+        }
+
+        // Função demonstrativa que chama o modal e submete o formulário após confirmação
+        function demoAcao() {
+            event.preventDefault(); // Prevenir o comportamento padrão do link
+
+            confirmarAcao(function(confirmado) {
+                if (confirmado) {
+                    $('#idForm').off('submit'); 
+                    $('#idForm').submit(); 
+                }
+            });
+        }
+    </script>
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -211,8 +240,8 @@
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
                                                 $selected = ($data['risco'] == $risco['id']) ? 'selected' : '';
-                                                echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
-                                            }
+                                                $enabled = ($risco['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$risco['id'].'" '.$selected.' '.$enabled.'>'.$risco['nmrisco'].'</option>';                                            }
                                             ?>
                                         </select>
                                         <?php if ($validation->getError('risco')): ?>
@@ -249,8 +278,8 @@
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
                                                 $selected = ($data['origem'] == $origem['id']) ? 'selected' : '';
-                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
-                                            }
+                                                $enabled = ($origem['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$origem['id'].'" '.$selected.' '.$enabled.'>'.$origem['nmorigem'].'</option>';                                            }
                                             ?>
                                         </select>
                                         <?php if ($validation->getError('origem')): ?>
@@ -297,8 +326,8 @@
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
                                                 $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
-                                            }
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';                                            }
                                             ?>
                                         </select>
                                         <?php if ($validation->getError('lateralidade')): ?>
@@ -534,11 +563,13 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                <!-- button class="btn btn-primary mt-3"> -->
                                     <i class="fa-solid fa-floppy-disk"></i> Incluir
                                 </button>
                                 <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
+                                <!-- <button onclick="demoAcao()" class="btn btn-danger">Excluir</button> -->
                             </div>
                         </div>
 
@@ -958,6 +989,42 @@
         <?php if (isset($data['sala']) && $data['sala'] !== ''): ?>
             $('#sala').val('<?= $data['sala'] ?>').trigger('change');
         <?php endif; ?>
+
+        // Event listener for when an especialidade is selected
+        $('#especialidade').change(function() {
+            var selectedEspecialidade = $(this).val();
+            
+            // Clear previous options
+            $('#fila').empty().append('<option value="">Selecione uma opção</option>');
+            
+            <?php foreach ($data['filas'] as $fila): ?>
+            var value = '<?= $fila['id'] ?>';
+            var text = '<?= $fila['nmtipoprocedimento']?>';
+            var especie = '<?= $fila['idespecialidade'] ?>';
+            if (!selectedEspecialidade || selectedEspecialidade === especie) {
+                var option = new Option(text, value, false, false);
+                $("#fila").append(option);
+            }
+            <?php endforeach; ?>
+
+            // Reset and update the Select2 component
+            $('#fila').val('').trigger('change.select2');
+        });
+
+        // Event listener for when a fila is selected
+        $('#fila').change(function() {
+            var selectedFila = $(this).val();
+            var selectedEspecialidade = '';
+            
+            <?php foreach ($data['filas'] as $fila): ?>
+            if (selectedFila === '<?= $fila['id'] ?>') {
+                selectedEspecialidade = '<?= $fila['idespecialidade'] ?>';
+            }
+            <?php endforeach; ?>
+            
+            // Set the especialidade value and update the Select2 component
+            $('#especialidade').val(selectedEspecialidade).trigger('change.select2');
+        });
 
         document.getElementById('idForm').addEventListener('submit', function(event) {
             $('#janelaAguarde').show();

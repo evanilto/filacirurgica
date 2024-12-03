@@ -10,7 +10,6 @@
     $corTrocaPaciente = '#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'red';//'#B54398';
     $corCirurgiaCancelada = 'red';
-
 ?>
 
 <script>$('#janelaAguarde').show();</script>
@@ -22,7 +21,7 @@
                 <th scope="row" colspan="3" class="bg-light text-start" style="border-right: none;">
                     <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
-                <th scope="row" colspan="17" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                <th scope="row" colspan="10" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
                     <table class="legend-table" style="margin: 0 auto;">
                         <tr>
                             <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -36,13 +35,15 @@
                         </tr>
                     </table>
                 </th>
+                <th scope="row" colspan="9" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                </th>
             </tr>
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
+                <th scope="col" data-field="fila" >Dt/Hr Cirurgia</th>
                 <th scope="col" class="col-0" >Centro Cirúrgico</th>
                 <th scope="col" class="col-0" >Sala</th>
-                <th scope="col" data-field="fila" >Dt/Hr Estimada</th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
                         <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
                 </th>
@@ -55,6 +56,8 @@
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
+                <th scope="col" class="col-0" >Especialidade</th>
+                <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
                 <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
@@ -68,11 +71,11 @@
                     $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
 
                     //die(var_dump($itemmapa));
-                    if (DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('Y-m-d') != date('Y-m-d')) {
-                        $permiteatualizar = false;
-                    } else {
+                    //if (DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('Y-m-d') != date('Y-m-d')) {
+                        //$permiteatualizar = false;
+                    //} else {
                         $permiteatualizar = true;
-                    }
+                    //}
 
                     if ($itemmapa->dthrsuspensao) {
                         $color =$corCirurgiaSuspensa;
@@ -174,17 +177,22 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?> "  title="<?= $title?>"></i>
                     </td>
+                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y H:i') ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>">
                         <?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->sala); ?>">
                         <?php echo htmlspecialchars($itemmapa->sala); ?>
                     </td>
-                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y H:i') ?></td>
                     <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>">
+                        <?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>
+                    </td><td class="break-line" title="<?php echo htmlspecialchars($itemmapa->fila); ?>">
+                        <?php echo htmlspecialchars($itemmapa->fila); ?>
+                    </td>
                     <td><?php echo $itemmapa->prontuario ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
@@ -555,7 +563,7 @@
     $('#table').DataTable({
         "order": [[0, 'asc']],
         "lengthChange": true,
-        "pageLength": 15,
+        "pageLength": 17,
         "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
         "language": {
             "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
@@ -564,16 +572,18 @@
         "scrollX": true,
         "columns": [
                 { "width": "0px" },  // Primeira coluna
-                { "width": "40px" },                
-                { "width": "300px" },  // centro cir
-                { "width": "200px" }, 
-                { "width": "140px" },  // dthr
+                { "width": "40px" },       
+                { "width": "160px" },  // dthr
+                { "width": "250px" },  // centro cir
+                { "width": "150px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
+                { "width": "200px" },  // especial
+                { "width": "250px" },  // fila
                 { "width": "100px" },  // 
-                { "width": "300px" },  // Nome
+                { "width": "250px" },  // Nome
                 { "width": "35px" },  // 
                 { "width": "35px" },  // 
                 { "width": "35px" },  // 
@@ -585,16 +595,16 @@
                 { "width": "35px" },  // 
             ],
         "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 4, 5, 6, 7, 8, 11, 12, 13, 14, 15, 16, 17] },
+            { "orderable": false, "targets": [0, 1, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: {
              buttons: [
-           /*  {
+            {
                 extend: 'colvis', // Botão para exibir/inibir colunas
                 text: 'Colunas', // Texto do botão
-                columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
-            }, */
+                columns: [2, 3, 4, 9, 10, 11, 12] // Especifica quais colunas são visíveis
+            },
             'copy',
             'csv',
             'excel',
@@ -658,9 +668,10 @@
         // Obtenha os dados da linha clicada
         var data = table.row(this).data();
 
-        var dadosCompletos = {                centrocir: data[2], 
-                sala: data[3], 
-                dthrcir: data[9], 
+        var dadosCompletos = {
+                dthrcir: data[2], 
+                centrocir: data[3], 
+                sala: data[4], 
                 hrnocentro: data[5], 
                 hremcirurgia: data[6], 
                 hrsaidasl: data[7], 

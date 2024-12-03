@@ -99,12 +99,12 @@ class Home extends ResourceController
         if (!isset($perfil) || !$perfil) {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Usuário não possui nenhum perfil associado.');
             return view('home/form_login');
-        } */
+        }  */
 
-       /*  if (!$this->validate_ldap($v['Usuario'], $v['Senha'])) {
+       if (!$this->validate_ldap($v['Usuario'], $v['Senha'])) {
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Senha incorreta.');
             return view('home/form_login');
-        }  */
+        } 
 
         $usuario = $v['Usuario'];
 

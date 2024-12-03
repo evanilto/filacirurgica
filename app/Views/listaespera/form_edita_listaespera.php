@@ -165,7 +165,8 @@
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
                                                 $selected = ($data['risco'] == $risco['id']) ? 'selected' : '';
-                                                echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
+                                                $enabled = ($risco['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$risco['id'].'" '.$selected.' '.$enabled.'>'.$risco['nmrisco'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -203,7 +204,8 @@
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
                                                 $selected = ($data['origem'] == $origem['id']) ? 'selected' : '';
-                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
+                                                $enabled = ($origem['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$origem['id'].'" '.$selected.' '.$enabled.'>'.$origem['nmorigem'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -226,7 +228,8 @@
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
                                                 $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -460,7 +463,7 @@
         });
 
         $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
+            //dropdownCssClass: 'custom-dropdown',
             allowClear: true
         });
 

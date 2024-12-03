@@ -179,7 +179,8 @@
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
                                                 $selected = (set_value('risco') == $risco['id']) ? 'selected' : '';
-                                                echo '<option value="'.$risco['id'].'" '.$selected.'>'.$risco['nmrisco'].'</option>';
+                                                $enabled = ($risco['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$risco['id'].'" '.$selected.' '.$enabled.'>'.$risco['nmrisco'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -217,7 +218,8 @@
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
                                                 $selected = (set_value('origem') == $origem['id']) ? 'selected' : '';
-                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
+                                                $enabled = ($origem['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$origem['id'].'" '.$selected.' '.$enabled.'>'.$origem['nmorigem'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -240,7 +242,8 @@
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
                                                 $selected = (set_value('lateralidade') == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -583,10 +586,13 @@
             fetchPacienteNome(prontuarioInput.value);
         });
 
+        $('.select2-dropdown').select2();
+
+        // Event listener for when an especialidade is selected
         $('#especialidade').change(function() {
             var selectedEspecialidade = $(this).val();
             
-            // Limpar opções anteriores
+            // Clear previous options
             $('#fila').empty().append('<option value="">Selecione uma opção</option>');
             
             <?php foreach ($data['filas'] as $fila): ?>
@@ -599,9 +605,25 @@
             }
             <?php endforeach; ?>
 
-            // Reset e atualiza o componente Select2
-            $('#fila').val('').trigger('change');
+            // Reset and update the Select2 component
+            $('#fila').val('').trigger('change.select2');
         });
+
+        // Event listener for when a fila is selected
+        $('#fila').change(function() {
+            var selectedFila = $(this).val();
+            var selectedEspecialidade = '';
+            
+            <?php foreach ($data['filas'] as $fila): ?>
+            if (selectedFila === '<?= $fila['id'] ?>') {
+                selectedEspecialidade = '<?= $fila['idespecialidade'] ?>';
+            }
+            <?php endforeach; ?>
+            
+            // Set the especialidade value and update the Select2 component
+            $('#especialidade').val(selectedEspecialidade).trigger('change.select2');
+        });
+            
     });
 
 </script>

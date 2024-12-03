@@ -185,7 +185,7 @@
         });
 
         $('.select2-dropdown').select2({
-            dropdownCssClass: 'custom-dropdown',
+            //dropdownCssClass: 'custom-dropdown',
         });
 
         const prontuarioInput = document.getElementById('prontuario');
@@ -193,6 +193,26 @@
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
             loadAsideContent(prontuarioInput.value);
+        });
+
+        $('#especialidade').change(function() {
+            var selectedEspecialidade = $(this).val();
+            
+            // Limpar opções anteriores
+            $('#fila').empty().append('<option value="">Selecione uma opção</option>');
+            
+            <?php foreach ($data['filas'] as $fila): ?>
+            var value = '<?= $fila['id'] ?>';
+            var text = '<?= $fila['nmtipoprocedimento']?>';
+            var especie = '<?= $fila['idespecialidade'] ?>';
+            if (!selectedEspecialidade || selectedEspecialidade === especie) {
+                var option = new Option(text, value, false, false);
+                $("#fila").append(option);
+            }
+            <?php endforeach; ?>
+
+            // Reset e atualiza o componente Select2
+            $('#fila').val('').trigger('change');
         });
     });
 </script>

@@ -676,7 +676,7 @@ class Usuarios extends ResourceController
 
                 $usuario = [];
                 $usuario['idlogin'] = $reg->usuarios;
-                $usuario['indsituacao'] = 'I';
+                $usuario['indsituacao'] = 'A';
 
                 $this->usuariomodel->insert($usuario);
                 

@@ -291,8 +291,12 @@ tfoot {
 }
 
 /* Estilos do Select2 */
-.custom-dropdown {
-    max-width: max-content !important; /* Ajuste este valor conforme necessário */
+/* .custom-dropdown {
+    max-width: max-content !important; 
+} */
+
+.select2-results__option--disabled {
+    color: #d3d3d3;  /* Cor cinza */
 }
 
 .select2-container--default .select2-selection--single .select2-selection__rendered .select2-dropdown{

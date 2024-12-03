@@ -6,6 +6,7 @@
             <div class="content-container">
                 <?php include 'modal_aguarde.php'; ?>
                 <?php include 'modal_detalhes.php'; ?>
+                <?php include 'modal_confirmaBootstrap.php'; ?>
 
                 <?= $this->include('layouts/div_flashdata') ?>
                 <?= $this->renderSection('subcontent') ?>
