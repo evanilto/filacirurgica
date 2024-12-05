@@ -220,6 +220,37 @@
                         return (valor === null || valor === '') ? '' : ', ' + valor;
                     }
 
+                    let telefonesHtml = '';
+                    /* paciente.contatos.forEach(contato => {
+                        telefonesHtml += `<strong>Tel.:</strong> (${contato.ddd})${verificarValor(contato.nro_fone)} - ${verificarValor(contato.observacao)}<br>`;
+                    }); */
+                    /* paciente.contatos.forEach((contato, index) => {
+                        const dddFormatado = contato.ddd ? `(${verificarValor(contato.ddd)})` : '';
+                        const nroFoneFormatado = verificarValor(contato.nro_fone).replace(/(\d{5})(\d+)/, '$1-$2'); // Adiciona o hífen após o 5º dígito
+                        const observacaoFormatada = contato.observacao ? `(${verificarValor(contato.observacao)})` : '';
+
+                        telefonesHtml += `<strong>Tel ${index + 1}:</strong> ${dddFormatado} ${nroFoneFormatado} ${observacaoFormatada}<br>`;
+                    }); */
+                    if (paciente.contatos && paciente.contatos.length > 0) {
+                        // Verifica se há mais de um telefone
+                        paciente.contatos.forEach((contato, index) => {
+                            const dddFormatado = contato.ddd ? `(${verificarValor(contato.ddd)})` : '';
+                            const nroFoneFormatado = verificarValor(contato.nro_fone).replace(/(\d{5})(\d+)/, '$1-$2'); // Adiciona o hífen após o 5º dígito
+                            const observacaoFormatada = contato.observacao ? `(${verificarValor(contato.observacao)})` : '';
+
+                            if (paciente.contatos.length > 1) {
+                                // Se houver mais de um telefone, exibe o índice
+                                telefonesHtml += `<strong>Tel ${index + 1}:</strong> ${dddFormatado} ${nroFoneFormatado} ${observacaoFormatada}<br>`;
+                            } else {
+                                // Se houver apenas um telefone, não exibe o índice
+                                telefonesHtml += `<strong>Tel:</strong> ${dddFormatado} ${nroFoneFormatado} ${observacaoFormatada}<br>`;
+                            }
+                        });
+                    } else {
+                        // Se não houver nenhum telefone, exibe "Tel: N/D"
+                        telefonesHtml = '<strong>Tel:</strong> N/D<br>';
+                    }
+
                     // Atualiza o conteúdo do modal para a coluna esquerda
                     $('#colunaEsquerda1').html(`
                         <strong>Prontuario:</strong> ${verificarValor(paciente.prontuario)}<br>
@@ -234,14 +265,14 @@
 
                     // Atualiza o conteúdo do modal para a coluna direita
                     $('#colunaDireita1').html(`
-                        <strong>Tel. Residencial:</strong> ${verificarValor(paciente.tel_1)}<br>
-                        <strong>Tel. Recados:</strong> ${verificarValor(paciente.tel_2)}<br>
-                        <strong>Email:</strong> ${verificarValor(paciente.email)}<br>
                         <strong>Endereço:</strong> ${verificarValor(paciente.logradouro)}, ${verificarValor(paciente.num_logr)} ${verificarOutroValor(paciente.compl_logr)}<br>
                         <strong>Cidade:</strong> ${verificarValor(paciente.cidade)}<br>
                         <strong>Bairro:</strong> ${verificarValor(paciente.bairro)}<br>
                         <strong>CEP:</strong> ${verificarValor(paciente.cep)}<br>
+                        <strong>Email:</strong> ${verificarValor(paciente.email)}<br>
+                        ${telefonesHtml}
                     `);
+
                     $('#colunaEsquerda2').html(`
                         <strong>Ordem na Fila:</strong> ${ordem}<br>
                         <strong>Fila:</strong> ${fila}<br>
@@ -257,11 +288,11 @@
                         <strong>CID:</strong> ${verificarValor(cid)}<br>
                         <strong>CID Descrição:</strong> ${verificarValor(ciddescr)}<br>
                         <strong>Origem:</strong> ${origem}<br>
-                        <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                         <strong>Complexidade:</strong> ${complexidade}<br>
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
-                        <strong>OPME:</strong> ${opme}<br>
+                        <strong>OPME:</strong> ${verificarValor(opme)}<br>
+                        <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                     `);
 
                     $('#linha').html(`

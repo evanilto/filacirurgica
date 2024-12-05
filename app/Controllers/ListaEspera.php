@@ -25,6 +25,9 @@ use App\Models\LocalAghEspecialidadesModel;
 use App\Models\LocalAipPacientesModel;
 use App\Models\LocalProfEspecialidadesModel;
 use App\Models\VwOrdemPacienteModel;
+use App\Models\LocalVwDetalhesPacientesModel;
+use App\Models\LocalAipContatosPacientesModel;
+
 //use App\Controllers\MapaCirurgico;
 use DateTime;
 use CodeIgniter\Config\Services;
@@ -54,6 +57,8 @@ class ListaEspera extends ResourceController
     private $localaghespecialidadesmodel;
     private $localprofespecialidadesmodel;
     private $localaippacientesmodel;
+    private $localaipcontatospacientesmodel;
+    private $localvwdetalhespacientesmodel;
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
     private $historicomodel;
@@ -105,6 +110,8 @@ class ListaEspera extends ResourceController
         $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
         $this->mapacirurgicocontroller = new MapaCirurgico(); // disable for migration
+        $this->localvwdetalhespacientesmodel = new LocalVwDetalhesPacientesModel();
+        $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -194,8 +201,10 @@ class ListaEspera extends ResourceController
         }
     
         // Busca o paciente pelo prontuário
-        $paciente = $this->localaippacientesmodel->find($prontuario);
-    
+        //$paciente = $this->localaippacientesmodel->find($prontuario);
+        $paciente = $this->localvwdetalhespacientesmodel->find($prontuario);
+        $paciente->contatos = $this->localaipcontatospacientesmodel->Where('pac_codigo', $paciente->codigo)->findAll();
+                   
         // Retorna como JSON
         return $this->response->setJSON($paciente);
     }

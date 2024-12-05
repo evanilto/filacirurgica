@@ -398,8 +398,8 @@
                     if (response.success) {
                         // Exibe a SweetAlert2
                         Swal.fire({
-                            title: 'Já existe esse prontuário na Lista de Espera. Deseja continuar mesmo assim?',
-                            icon: 'question',
+                            title: 'Esse paciente já está na Lista de Espera. Deseja incluí-lo mesmo assim?',
+                            icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Ok',
                             cancelButtonText: 'Cancelar'
