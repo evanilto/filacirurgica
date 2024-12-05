@@ -328,53 +328,60 @@
     }
 
     function confirma(link) {
-        let message;
-        let array;
+    let message;
+    let evento;
 
-        //const arrayId = ['programada', 'nocentrocirurgico', 'emcirurgia', 'saidadasala', 'suspender', 'cancelar'];
-
-        switch (link.id) {
-            case 'programada':
-                evento = 'dthrnocentrocirurgico';
-                message = 'Confirma a entrada no centro cirúrgico?';
-                break;
-            case 'nocentrocirurgico':
-                evento = 'dthremcirurgia';
-                message = 'Confirma o paciente em cirurgia?';
-                break;
-            case 'emcirurgia':
-                evento = 'dthrsaidasala';
-                message = 'Confirma a saída da sala?';
-                break;
-            case 'saidadasala':
-                evento = 'dthrsaidacentrocirurgico';
-                message = 'Confirma a saída do centro cirúrgico?';
-                break;
-            case 'suspender':
-                evento = 'dthrsuspensao';
-                message = 'Confirma a suspensão da cirurgia?';
-                break;
-            case 'trocar':
-                evento = 'dthrtroca';
-                message = 'Confirma a troca do paciente?';
-                break;
-            default:
-                message = '';
-                break;
-        }
-
-        //if (arrayId.includes(link.id)) {
-            if (!confirm(message)) {
-                return false; 
-            }
-        //}
-
-        $('#janelaAguarde').show();
-
-        tratarLink(link, evento);
-
-        return true; 
+    switch (link.id) {
+        case 'programada':
+            evento = 'dthrnocentrocirurgico';
+            message = 'Confirma a entrada no centro cirúrgico?';
+            break;
+        case 'nocentrocirurgico':
+            evento = 'dthremcirurgia';
+            message = 'Confirma o paciente em cirurgia?';
+            break;
+        case 'emcirurgia':
+            evento = 'dthrsaidasala';
+            message = 'Confirma a saída da sala?';
+            break;
+        case 'saidadasala':
+            evento = 'dthrsaidacentrocirurgico';
+            message = 'Confirma a saída do centro cirúrgico?';
+            break;
+        case 'suspender':
+            evento = 'dthrsuspensao';
+            message = 'Confirma a suspensão da cirurgia?';
+            break;
+        case 'trocar':
+            evento = 'dthrtroca';
+            message = 'Confirma a troca do paciente?';
+            break;
+        default:
+            message = '';
+            break;
     }
+
+    // Exibe a SweetAlert para confirmar a ação
+    Swal.fire({
+        title: message,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ok',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $('#janelaAguarde').show(); // Mostra a janela de aguardo
+
+            // Chama a função para tratar o link somente após confirmação
+            tratarLink(link, evento);
+        } else {
+            // Ação ao cancelar, se necessário
+            $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
+        }
+    });
+
+    return false; // Queremos prevenir o comportamento padrão do link
+}
 
     function tratarLink(link, evento) {
 

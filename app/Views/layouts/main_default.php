@@ -16,6 +16,7 @@
         <link href="<?= base_url('/assets/select2-4.0.13/dist/css/select2.min.css') ?>"  rel="stylesheet">
         <link href="<?= base_url('/assets/bootstrap-table.1.22.5/bootstrap-table.min.css') ?>" rel="stylesheet">
         <link href="<?= base_url('/assets/fontawesome.6.5.2/css/all.min.css') ?>" rel="stylesheet">
+        <link href="<?= base_url('/assets/sweetalert2-11/dist/css/sweetalert2.min.css') ?>" rel="stylesheet">
         <link href="<?= base_url('/assets/css/custom.css') ?>" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
@@ -36,6 +37,7 @@
         <script src="<?= base_url('/assets/bootstrap-table.1.22.5/bootstrap-table.min.js'); ?>"></script>
         <script src="<?= base_url('/assets/bootstrap-table.1.22.5/locale/bootstrap-table-pt-BR.min.js'); ?>"></script>
         <script src="<?= base_url('/assets/jquery.countdown-2.2.0/jquery.countdown.min.js') ?>" crossorigin="anonymous"></script>
+        <script src="<?= base_url('/assets/sweetalert2-11/dist/js/sweetalert2.min.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/jquery.maskedinput.min.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/jquery.maskMoney.min.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/HUAP_ready_jquery.js') ?>" crossorigin="anonymous"></script>

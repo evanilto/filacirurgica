@@ -522,6 +522,7 @@
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
+                        <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="sala_hidden" id="sala_adic_hidden" />
@@ -603,6 +604,19 @@
             allowClear: true,
             width: 'resolve' // Corrigir a largura
         });
+
+        $('#risco').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="risco"]').val(selectedFilter);
+        })
+        $('#origem').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="origem"]').val(selectedFilter);
+        })
+        $('#lateralidade').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="lateralidade"]').val(selectedFilter);
+        })
 
         //------------------------ Filtro de salas cirurgicas baseado no filtro selecionado ----------------
         

@@ -122,12 +122,12 @@ class MapaCirurgico extends ResourceController
         //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
         $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
                                                                            ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll(); // disable for migration
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
         //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll();
+                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -1733,8 +1733,9 @@ class MapaCirurgico extends ResourceController
 
             $this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
+            //die(var_dump($this->data));
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
-                                                'validation' => $this->validator,
+                                                //'validation' => $this->validator,
                                                 'data' => $this->data,
                                                 'pacatrocar' => $_SESSION['pacatrocar']]);
         }
@@ -2957,7 +2958,7 @@ class MapaCirurgico extends ResourceController
             $sqlSetDefaultEqpMed = "ALTER TABLE equipe_medica ALTER COLUMN id SET DEFAULT nextval('equipe_medica_seq');";
 
             $sql = "
-                SELECT
+                SELECT DISTINCT
                 cm.idmapacirurgico,
                 cm.idlistacirurgica,
                 cm.aguardando,

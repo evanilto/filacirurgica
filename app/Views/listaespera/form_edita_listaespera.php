@@ -361,6 +361,9 @@
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
                         <input type="hidden" name="procedimento" id="fila-procedimento" value="<?php echo $data['procedimento']; ?>">
+                        <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
+                        <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                 </div>
             </div>
         </div>
@@ -466,6 +469,19 @@
             //dropdownCssClass: 'custom-dropdown',
             allowClear: true
         });
+
+        $('#risco').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="risco"]').val(selectedFilter);
+        })
+        $('#origem').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="origem"]').val(selectedFilter);
+        })
+        $('#lateralidade').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="lateralidade"]').val(selectedFilter);
+        })
 
         $('#procedimento').select2().on('select2:opening', function(e) {
         e.preventDefault(); // Impede a abertura do dropdown

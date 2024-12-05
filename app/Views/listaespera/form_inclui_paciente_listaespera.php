@@ -1,17 +1,6 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.4/dist/sweetalert2.all.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11.3.4/dist/sweetalert2.min.css">
 
-<style>
-.content {
-    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
-    overflow-y: auto; /* Rolagem apenas vertical */
-    overflow-x: hidden; /* Impede a rolagem horizontal */
-    height: 100%; /* Garante que use todo o espaço vertical permitido */
-    box-sizing: border-box; /* Inclui padding no cálculo da largura */
-}
-</style>
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -359,7 +348,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <?php if ($data['habilitasalvar'] ) { ?>
-                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1" onclick="return confirma(this);">
+                                    <button class="btn btn-primary mt-3" onclick="return confirma(this);">
                                         <i class="fa-solid fa-save"></i> Salvar
                                     </button>
                                 <?php } ?>
@@ -387,49 +376,65 @@
     };
 
     function confirma(button) {
+        event.preventDefault();
 
         const form = button.form;
         const prontuario = form.querySelector('input[name="prontuario"]').value;
-
         const data = { prontuario: prontuario };
 
         if (!prontuario || prontuario.trim() === "") {
             return true;
-
         } else {
-
-            $('#janelaAguarde').show();
-
+            // Use uma requisição assíncrona
             const xhr = new XMLHttpRequest();
-            xhr.open('POST', '<?= base_url('listaespera/verificapacientenalista') ?>', false); // 'false' faz a requisição ser sincrona
+            xhr.open('POST', '<?= base_url('listaespera/verificapacientenalista') ?>', true); // 'true' faz a requisição ser assíncrona
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-            xhr.send(JSON.stringify(data));
+            
+            xhr.onload = function() {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    const response = JSON.parse(xhr.responseText);
 
-            if (xhr.status >= 200 && xhr.status < 400) {
-                const response = JSON.parse(xhr.responseText);
-
-                if (response.success) {
-                    const continuar = confirm("Já existe esse prontuário na Lista de Espera. Deseja continuar mesmo assim?");
-                    if (!continuar) {
-                        $('#janelaAguarde').hide();
-                        return false; 
+                    if (response.success) {
+                        // Exibe a SweetAlert2
+                        Swal.fire({
+                            title: 'Já existe esse prontuário na Lista de Espera. Deseja continuar mesmo assim?',
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonText: 'Ok',
+                            cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Se o usuário confirmar, submete o formulário
+                                $('#janelaAguarde').show();
+                                $('#idForm').off('submit'); 
+                                $('#idForm').submit(); 
+                            } else {
+                                // Se o usuário cancelar, não faz nada
+                                $('#janelaAguarde').hide();
+                            }
+                        });
+                    } else {
+                        return false;
                     }
-                    return true;  
-                                        
                 } else {
-                    // Se a resposta do servidor for negativa, pergunta ao usuário
-                    return true;  // Permite a submissão
+                    console.error('Erro ao enviar os dados:', xhr.statusText);
+                    alert('Erro na comunicação com o servidor.');
+                    $('#janelaAguarde').hide();
+                    return false;  // Impede a submissão em caso de erro
                 }
+            };
 
-            } else {
+            xhr.onerror = function() {
                 console.error('Erro ao enviar os dados:', xhr.statusText);
                 alert('Erro na comunicação com o servidor.');
                 $('#janelaAguarde').hide();
                 return false;  // Impede a submissão em caso de erro
-            }
-        }
+            };
 
+            // Envia os dados como JSON
+            xhr.send(JSON.stringify(data));
+        }
     }
 
     function carregarDadosModal(dados) {
@@ -568,12 +573,12 @@
     fetchPacienteNomeOnLoad();
 
     $(document).ready(function() {
-        $('#idForm').submit(function() {
+        /* $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
                 window.location.href = href;
             }, 1000);
-        });
+        }); */
         
         $('.select2-dropdown').select2({
             placeholder: "",

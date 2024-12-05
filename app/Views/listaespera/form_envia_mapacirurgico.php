@@ -509,7 +509,10 @@
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
-                        <input type="hidden" name="origem" id="origem-hidden" value="<?= $data['origem'] ?>" />
+                        <!-- <input type="hidden" name="origem-hidden" id="origem-hidden" value="<--?= $data['origem'] ?>" /> -->
+                        <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
+                        <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
 
@@ -596,6 +599,19 @@
             //dropdownCssClass: 'custom-dropdown',
             allowClear: true,
         });
+
+        $('#risco').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="risco"]').val(selectedFilter);
+        })
+        $('#origem').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="origem"]').val(selectedFilter);
+        })
+        $('#lateralidade').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="lateralidade"]').val(selectedFilter);
+        })
 
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------
         function updateProfEspecialidades(selectedFilter) {

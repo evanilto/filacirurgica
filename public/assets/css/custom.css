@@ -401,6 +401,47 @@ tfoot {
     /*font-weight: bold;  */
 }
 
+.swal2-title {
+    font-size: 1rem; /* Ajuste o tamanho da fonte do título */
+}
+
+.swal2-html-container {
+    font-size: 0.9rem; /* Ajuste o tamanho da fonte do texto */
+}
+
+.swal2-confirm {
+    width: 100px;
+    font-size: 1rem; /* Ajuste o tamanho das fontes dos botões */
+    background-color: #3085d6; /* Cor de fundo */
+    color: white;
+}
+
+.swal2-cancel {
+    width: 100px;
+    font-size: 1rem; /* Ajuste o tamanho das fontes dos botões */
+    background-color: #d33; /* Cor de fundo */
+    color: white
+}
+
+.swal2-confirm:hover {
+    background-color: #1c7bb9; /* Cor de fundo ao passar o mouse */
+}
+
+.swal2-cancel:hover {
+    background-color: #b32d2a; /* Cor de fundo ao passar o mouse */
+}
+
+.swal2-popup {
+    width: 350px; /* Ajuste a largura desejada */
+    font-size: 0.9rem; /* Ajuste o tamanho da fonte, se necessário */
+}
+
+/*  .swal2-icon {
+    width: 10px; 
+    height: 20px; 
+    font-size: 10px;
+} */
+
 ************** Spinner ***************************/        
 .modal {
 display: none;

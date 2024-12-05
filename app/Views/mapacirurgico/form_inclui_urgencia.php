@@ -1,37 +1,38 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-    <script>
-        function confirmarAcao(callback) {
-            // Inicializa o modal
-            var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-            confirmModal.show();
+<!-- BootStrap Modal -->
+<!-- <script>
+    function confirmarAcao(callback) {
+        // Inicializa o modal
+        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+        confirmModal.show();
 
-            // Listener para o botão de confirmação
-            document.getElementById('confirmBtn').onclick = function() {
-                confirmModal.hide(); // Fecha o modal
-                callback(true); // Chama o callback passando 'true'
-            };
+        // Listener para o botão de confirmação
+        document.getElementById('confirmBtn').onclick = function() {
+            confirmModal.hide(); // Fecha o modal
+            callback(true); // Chama o callback passando 'true'
+        };
 
-            // Listener para o botão de cancelar (ou fechar)
-            document.querySelector('.btn-secondary').onclick = function() {
-                confirmModal.hide(); // Fecha o modal
-                callback(false); // Chama o callback passando 'false'
-            };
-        }
+        // Listener para o botão de cancelar (ou fechar)
+        document.querySelector('.btn-secondary').onclick = function() {
+            confirmModal.hide(); // Fecha o modal
+            callback(false); // Chama o callback passando 'false'
+        };
+    }
 
-        // Função demonstrativa que chama o modal e submete o formulário após confirmação
-        function demoAcao() {
-            event.preventDefault(); // Prevenir o comportamento padrão do link
+    // Função demonstrativa que chama o modal e submete o formulário após confirmação
+    function demoAcao() {
+        event.preventDefault(); // Prevenir o comportamento padrão do link
 
-            confirmarAcao(function(confirmado) {
-                if (confirmado) {
-                    $('#idForm').off('submit'); 
-                    $('#idForm').submit(); 
-                }
-            });
-        }
-    </script>
+        confirmarAcao(function(confirmado) {
+            if (confirmado) {
+                $('#idForm').off('submit'); 
+                $('#idForm').submit(); 
+            }
+        });
+    }
+</script> -->
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -562,14 +563,16 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
-                                <!-- button class="btn btn-primary mt-3"> -->
+                                <!-- <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1"> -->
+                                <button class="btn btn-primary mt-3">
                                     <i class="fa-solid fa-floppy-disk"></i> Incluir
                                 </button>
                                 <a class="btn btn-warning mt-3" href="javascript:history.go(-1)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                                 <!-- <button onclick="demoAcao()" class="btn btn-danger">Excluir</button> -->
+                                <!-- <button id="confirmButton" class="btn btn-danger">Teste Modal</button> -->
+
                             </div>
                         </div>
 
@@ -789,6 +792,29 @@
             placeholder: "",
             allowClear: true,
             width: 'resolve' // Corrigir a largura
+        });
+
+        $('#confirmButton').click(function() {
+            event.preventDefault();
+            Swal.fire({
+                title: 'Confirma a exclusão?',
+                icon: 'question', //'info', 'error', 'success','warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ok',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    $('#idForm').off('submit'); 
+                    $('#idForm').submit(); 
+
+                    Swal.fire(
+                        'Excluído!',
+                        'O item foi excluído com sucesso.',
+                        'success'
+                    );
+                }
+            });
         });
 
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------

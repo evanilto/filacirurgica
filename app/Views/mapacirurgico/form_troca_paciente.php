@@ -244,23 +244,26 @@
                                 <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
-                                            id="lateralidade" name="lateralidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';                                                }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('lateralidade')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('lateralidade') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
+    <select class="form-select select2-dropdown <?php if ($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
+        id="lateralidade" name="lateralidade"
+        data-placeholder="Selecione uma opção" data-allow-clear="1">
+        <option value="" <?php echo set_select('lateralidade', '', TRUE); ?>></option>
+        <?php foreach ($data['lateralidades'] as $lateralidade): ?>
+            <?php
+            $selected = set_select('lateralidade', $lateralidade['id'], ($data['lateralidade'] == $lateralidade['id']));
+            $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+            ?>
+            <option value="<?php echo $lateralidade['id']; ?>" <?php echo $selected; ?> <?php echo $enabled; ?>>
+                <?php echo $lateralidade['descricao']; ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <?php if ($validation->getError('lateralidade')): ?>
+        <div class="invalid-feedback">
+            <?= $validation->getError('lateralidade') ?>
+        </div>
+    <?php endif; ?>
+</div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -464,10 +467,11 @@
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="fila" id="fila" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
-                        <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
+                        <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
-                        <input type="hidden" name="idlistapac2" id="idlistapac2"/>
+                        <input type="hidden" name="idlistapac2" id="idlistapac2" value="<?= $data['idlistapac2'] ?? null ?>"/>
                         <input type="hidden" name="ordem_hidden" id="ordem_hidden"/>
                         <input type="hidden" name="action" id="formAction" value="">
                         
@@ -480,74 +484,83 @@
 
 <script>
 
-    function verPacienteNaLista(event) {
+function verPacienteNaLista(event) {
+    event.preventDefault(); // Previne o comportamento padrão do botão
 
-        //event.preventDefault(); // Previne o comportamento padrão do botão
+    $('#janelaAguarde').show(); // Exibe a janela de carregamento
 
-        $('#janelaAguarde').show(); // Exibe a janela de carregamento
+    // Obtenha os valores diretamente dos campos do formulário
+    const idfila = $('#fila').val(); // Pega o valor de idFila usando jQuery
+    const ordem = $('#ordem_hidden').val(); // Pega o valor de ordem usando jQuery
 
-        // Obtenha os valores diretamente dos campos do formulário
-        const idfila = $('#fila').val(); // Pega o valor de idFila usando jQuery
-        const ordem = $('#ordem_hidden').val(); // Pega o valor de ordem usando jQuery
+    if (idfila && ordem) {
+        var formData = new FormData();
+        const arrayId = {
+            idFila: idfila,
+            nuOrdem: ordem
+        };
+        formData.append('arrayid', JSON.stringify(arrayId));
 
-        if (idfila && ordem) {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '<?= base_url('listaespera/verpacientenafrente') ?>', true);
+        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
-            var formData = new FormData();
-            const arrayId = {
-                idFila: idfila,
-                nuOrdem: ordem
-            };
-            formData.append('arrayid', JSON.stringify(arrayId));
+        xhr.onload = function() {
+            $('#janelaAguarde').hide(); // Esconde a janela de carregamento
 
-            const xhr = new XMLHttpRequest();
-            xhr.open('POST', '<?= base_url('listaespera/verpacientenafrente') ?>', true);
-            xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+            if (xhr.status >= 200 && xhr.status < 400) {
+                try {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log(response);
 
-            xhr.onload = function() {
-                $('#janelaAguarde').hide(); // Esconde a janela de carregamento
-
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    try {
-                        var response = JSON.parse(xhr.responseText);
-                        console.log(response);
-
-                        if (response.success) {
-
-                            if (response.message == 'Tem paciente') {
-                                // Pergunta ao usuário se deseja confirmar a continuação
-                                if (!confirm('Existe paciente(s) na frente desse paciente na lista de espera. Confirma a troca por esse paciente?')) {
-                                    return false; // Caso contrário, cancela
+                    if (response.success) {
+                        if (response.message == 'Tem paciente') {
+                            Swal.fire({
+                                title: 'Existe paciente na frente desse paciente na lista de espera. Confirma a troca por esse paciente?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ok',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#janelaAguarde').show();
+                                    $('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
+                                    $('#idForm').submit(); // Submete
+                                } else {
+                                    $('#janelaAguarde').hide(); // Esconde a janela de carregamento
                                 }
-                            }  
-
-                            $('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
-                            $('#idForm').submit(); // Submet
-
+                            });
                         } else {
-                            alert('Erro: ' + response.message);
+                            // Se não há pacientes, simplesmente submeta
+                            $('#janelaAguarde').show();
+                            $('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
+                            $('#idForm').submit(); // Submete
                         }
-                    } catch (error) {
-                        console.error('Erro ao analisar a resposta: ', error);
-                        alert('Erro ao processar a resposta do servidor.');
+                    } else {
+                        alert('Erro: ' + response.message);
                     }
-                } else {
-                    console.error('Erro ao enviar os dados: ' + xhr.status);
-                    alert('Erro ao enviar os dados. Status: ' + xhr.status);
+                } catch (error) {
+                    console.error('Erro ao analisar a resposta: ', error);
+                    alert('Erro ao processar a resposta do servidor.');
                 }
-            };
+            } else {
+                console.error('Erro ao enviar os dados: ' + xhr.status);
+                alert('Erro ao enviar os dados. Status: ' + xhr.status);
+            }
+        };
 
-            xhr.onerror = function() {
-                $('#janelaAguarde').hide(); // Esconde a janela de carregamento
-                console.error('Erro na requisição AJAX.');
-                alert('Erro na requisição AJAX.');
-            };
+        xhr.onerror = function() {
+            $('#janelaAguarde').hide(); // Esconde a janela de carregamento
+            console.error('Erro na requisição AJAX.');
+            alert('Erro na requisição AJAX.');
+        };
 
-            xhr.send(formData); // Envia os dados
-        } else {
-            
-            $('#idForm').submit();
-        }
+        xhr.send(formData); // Envia os dados
+    } else {
+        // Se não houver idfila ou ordem, apenas submeta o formulário normalmente
+        $('#idForm').submit();
     }
+};
 
     /* function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
@@ -671,6 +684,9 @@
             closeOnSelect: true // Fecha o dropdown automaticamente
         });
 
+        var lateralidadeValue = $('input[name="lateralidade"]').val(); // O valor deve ser definido aqui para o hidden
+        $('select[name="lateralidade"]').val(lateralidadeValue).change(); // 
+
         $('#seu-select2').on('select2:select', function (e) {
             $(this).select2('close'); // Fecha o dropdown manualmente
         });
@@ -756,6 +772,7 @@
             var riscoValue = $(this).find('option:selected').data('risco');
             var complexidadeValue = $(this).find('option:selected').data('complexidade');
             var lateralidadeValue = $(this).find('option:selected').data('lateralidade');
+            var origemValue = $(this).find('option:selected').data('origem');
             var congelacaoValue = $(this).find('option:selected').data('congelacao');
             var opmeValue = $(this).find('option:selected').data('opme');
 
@@ -773,6 +790,9 @@
                 $('select[name="risco"]').val(riscoValue).change(); // Define o valor do hidden
                 $('select[name="lateralidade"]').val(lateralidadeValue).change(); // Define o valor do hidden
                 $('input[name="dtrisco"]').val(dtriscoValue); // Define o valor do hidden
+                $('input[name="risco"]').val(riscoValue); // Define o valor do hidden
+                $('input[name="origem"]').val(origemValue); // Define o valor do hidden
+                $('input[name="lateralidade"]').val(lateralidadeValue); // Define o valor do hidden
                 $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
                 $('input[name="ordem_hidden"]').val(ordemValue); // Define o valor do hidden
                 //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
@@ -816,9 +836,22 @@
             } */
         });
 
-        if ($('#candidato').val()) {
+      /*   if ($('#candidato').val()) {
             $('#candidato').trigger('change');
-        }
+        } */
+
+        /* $('select[name="lateralidade"]').on('change', function() {
+            var selectedValue = $(this).val();
+             $('input[name="lateralidade"]').val(selectedValue);
+        }); */
+        $('#risco').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="risco"]').val(selectedFilter);
+        })
+        $('#lateralidade').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="lateralidade"]').val(selectedFilter);
+        })
 
     });
 </script>

@@ -123,7 +123,7 @@ class ListaEspera extends ResourceController
                                                                            ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
                                                                            ->orderBy('nome_especialidade', 'ASC')->findAll(); 
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration */
+                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
@@ -2258,7 +2258,7 @@ class ListaEspera extends ResourceController
             $sqlSetDefault = "ALTER TABLE lista_espera ALTER COLUMN id SET DEFAULT nextval('lista_espera_seq');";
 
             $sql = "
-                SELECT
+                SELECT DISTINCT
                     cl.idlistacirurgica,
                     cl.prontuario,
                     cl.datainclusao,
