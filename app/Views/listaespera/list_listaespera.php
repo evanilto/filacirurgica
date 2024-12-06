@@ -15,8 +15,8 @@
                 <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
                 <th scope="col" data-field="prontuarioaghu" >Nome</th>
-                <th scope="col" data-field="prontuarioaghu" >Fila</th>
                 <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
+                <th scope="col" data-field="prontuarioaghu" >Fila</th>
                 <th scope="col" data-field="prontuarioaghu" >Informações Adicionais</th>
                 <th scope="col" data-field="prontuarioaghu" >Risco</th>
                 <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
@@ -38,7 +38,7 @@
                 $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
             ?>
                 <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
-                    <td><?php echo "" ?></td>
+                    <td><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
                     <td><?php echo $itemlista->created_at ?></td>
@@ -46,11 +46,11 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemlista->nome_paciente); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->fila); ?>">
-                        <?php echo htmlspecialchars($itemlista->fila); ?>
-                    </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>">
                         <?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->fila); ?>">
+                        <?php echo htmlspecialchars($itemlista->fila); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->info_adicionais); ?>">
                         <?php echo htmlspecialchars($itemlista->info_adicionais); ?>
@@ -185,8 +185,8 @@
 
             var prontuario = dados[0];
             var ordem = dados[1];
-            var fila = dados[2];
-            var especialidade = dados[3];
+            var especialidade = dados[2];
+            var fila = dados[3];
             var infoadic = dados[4];
             var risco = dados[5];
             var procedimento = dados[6];
@@ -275,8 +275,8 @@
 
                     $('#colunaEsquerda2').html(`
                         <strong>Ordem na Fila:</strong> ${ordem}<br>
-                        <strong>Fila:</strong> ${fila}<br>
                         <strong>Especialidade:</strong> ${especialidade}<br>
+                        <strong>Fila:</strong> ${fila}<br>
                         <strong>Procedimento:</strong> ${procedimento}<br>
                         <strong>Risco:</strong> ${risco}<br>
                         <strong>Data do Risco:</strong> ${verificarValor(dtrisco)}<br>
@@ -402,9 +402,9 @@
             "scrollX": true,  /* Ative a rolagem horizontal */
             "columns": [
                 { "width": "0px" },  // Primeira coluna
-                null,
-                null,
-                { "width": "115px" },                
+                { "width": "90px" },  // Lista
+                { "width": "60px" },  // Fila
+                { "width": "130px" },                
                 { "width": "100px" },  // prontuario
                 { "width": "300px" }, 
                 { "width": "300px" },  // fila
@@ -428,7 +428,7 @@
 
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
+            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
             { "visible": false, "targets": [0] },
             { "width": "500px", "targets": [8] }
             ],
@@ -477,8 +477,8 @@
             var dadosLista = [
                     data[4], // Prontuario
                     data[2], // Ordem
-                    data[6], // Fila
-                    data[7], // Especialidade
+                    data[6], // Especialidade
+                    data[7], // Fila
                     data[8], // Informação Adicional
                     data[9], // Risco
                     data[10], // Procedimento

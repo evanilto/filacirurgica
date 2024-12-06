@@ -506,8 +506,8 @@
                 `);
                 $('#colunaEsquerda2').html(`
                     <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
-                    <strong>Fila:</strong> ${dados.fila}<br>
                     <strong>Especialidade:</strong> ${dados.especialidade}<br>
+                    <strong>Fila:</strong> ${dados.fila}<br>
                     <strong>Procedimento:</strong> ${dados.procedimento}<br>
                     <strong>Risco:</strong> ${dados.risco}<br>
                     <strong>Data Risco:</strong> ${dados.dtrisco}<br>
