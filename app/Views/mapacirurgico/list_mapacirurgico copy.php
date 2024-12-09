@@ -18,10 +18,10 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="row" colspan="4" class="bg-light text-start" style="border-right: none;">
+                <th scope="row" colspan="3" class="bg-light text-start" style="border-right: none;">
                     <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
-                <th scope="row" colspan="9" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
+                <th scope="row" colspan="24" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
                     <table class="legend-table" style="margin: 0 auto;">
                         <tr>
                             <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -35,7 +35,7 @@
                         </tr>
                     </table>
                 </th>
-                <th scope="row" colspan="23" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                <th scope="row" colspan="9" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
                 </th>
             </tr>
             <tr>
@@ -60,6 +60,7 @@
                 <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
+                
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >CID</th>
@@ -68,13 +69,12 @@
                 <th scope="col" data-field="nome" >Complexidade</th>
                 <th scope="col" data-field="nome" >Lateralidade</th>
                 <th scope="col" data-field="nome" >Congelação</th>
-                <th scope="col" data-field="nome" >Hemod.</th>
+                <th scope="col" data-field="nome" >Hemoderivados</th>
                 <th scope="col" data-field="nome" >OPME</th>
                 <th scope="col" data-field="nome" >Pós-Operatório</th>
                 <th scope="col" data-field="nome" >Info Adicionais</th>
                 <th scope="col" data-field="nome" >Necessidades do Procedimento</th>
                 <th scope="col" data-field="nome" >Procedimento Principal</th>
-
                 <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
             </tr>
         </thead>
@@ -213,30 +213,27 @@
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
                     </td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
-                    <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
+                    <td><?php echo $itemmapa->dtrisco ?></td>
                     <td><?php echo $itemmapa->cid ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->cid_descricao); ?>">
+                    </td><td class="break-line" title="<?php echo htmlspecialchars($itemmapa->cid_descricao); ?>">
                         <?php echo htmlspecialchars($itemmapa->cid_descricao); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
-                        <?php echo htmlspecialchars($itemmapa->origem_descricao); ?>
-                    </td>
+                    <td><?php echo $itemmapa->origem_descricao ?></td>
                     <td><?php echo $itemmapa->nmcomplexidade ?></td>
                     <td><?php echo $itemmapa->nmlateralidade ?></td>
                     <td><?php echo $itemmapa->congelacao ?></td>
                     <td><?php echo $itemmapa->hemoderivados ?></td>
                     <td><?php echo $itemmapa->opme ?></td>
                     <td><?php echo $itemmapa->posoperatorio ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->infoadicionais); ?>">
+                    </td><td class="break-line" title="<?php echo htmlspecialchars($itemmapa->infoadicionais); ?>">
                         <?php echo htmlspecialchars($itemmapa->infoadicionais); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>">
+                    </td><td class="break-line" title="<?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>">
                         <?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>">
+                    <td>
+                    </td></td><td class="break-line" title="<?php echo $itemmapa->procedimento_principal.'-'.htmlspecialchars($itemmapa->procedimento_principal); ?>">
                         <?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>
-                    </td>
-                    
+
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
                             if ($status_cirurgia == "Programada" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
@@ -641,7 +638,7 @@
         "columns": [
                 { "width": "0px" },  // Primeira coluna
                 { "width": "40px" },       
-                { "width": "140px" },  // dthr
+                { "width": "160px" },  // dthr
                 { "width": "250px" },  // centro cir
                 { "width": "150px" }, 
                 { "width": "55px" }, 
@@ -652,35 +649,34 @@
                 { "width": "250px" },  // fila
                 { "width": "100px" },  // 
                 { "width": "250px" },  // Nome
-
-                { "width": "160px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
                 { "width": "100px" },  // 
-                { "width": "60px" },  // 
-                { "width": "250px" },  //
-                { "width": "140px" },  // Origem
-                { "width": "120px" },  // 
-                { "width": "150px" },  // 
                 { "width": "100px" },  // 
-                { "width": "70px" },  // Hemoderivados
-                { "width": "70px" },  // 
-                { "width": "150px" },  // 
-                { "width": "250px" },  // 
-                { "width": "250px" },  // 
-                { "width": "250px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
+                { "width": "100px" },  // 
 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                { "width": "35px" },  // 
-                
             ],
         "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27] },
+/*             { "orderable": false, "targets": [0, 1, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21] },
+ */            { "orderable": true, "targets": [2, 3, 4, 9, 10, 11, 12] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: {

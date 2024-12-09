@@ -105,7 +105,7 @@
                     </td> 
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
-                            if(HUAP_Functions::tem_permissao('listaespera-alterar')) { 
+                            if(HUAP_Functions::tem_permissao('listaespera-enviar')) { 
                                 echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para enviar para o mapa cirúrgico."><i class="fas fa-paper-plane"></i></span>';

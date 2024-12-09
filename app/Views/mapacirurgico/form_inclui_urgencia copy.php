@@ -136,8 +136,7 @@
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
-                                            id="fila" name="fila"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            id="fila" name="fila">
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['filas'] as $key => $fila) {
@@ -255,7 +254,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="dtrisco" class="form-label">Data Risco</label>
+                                    <label for="dtrisco" class="form-label">Data Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
@@ -274,7 +273,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
                                             id="origem" name="origem" 
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
@@ -582,9 +581,9 @@
                         <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" id="listapacienteSelect" name="listapacienteSelect">
-                        <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" value="<?= $data['especialidade'] ?>"/>
-                        <input type="hidden" name="fila_hidden" id="fila_hidden" value="<?= $data['fila'] ?>" />
-                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
+                        <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" />
+                        <input type="hidden" name="fila_hidden" id="fila_hidden" />
+                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
                         <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
                     </form>
                 </div>
@@ -935,10 +934,8 @@
                 $('#info').val(info);
 
                 $('#especialidade_hidden').val(especialidadeId);
-                $('#fila').val(filaId);
                 $('#fila_hidden').val(filaId);
                 $('#procedimento_hidden').val(procedimentoId);
-                $('#origem').val(origempacienteId);
                 $('#origem_hidden').val(origempacienteId);
                 /* $('#infoadic_hidden').val(info);
                 $('#justorig_hidden').val(justorig); */
@@ -951,21 +948,20 @@
                 $('#justorig').prop('disabled', true);
             } else {
                 // Limpar os campos se a opção selecionada não for válida
-                $('#especialidade').val('').trigger('change');
-                $('#fila').val(177).trigger('change');
-                $('#origem').val(9).trigger('change');
+                //$('#especialidade').val('').trigger('change');
+                //$('#fila').val('').trigger('change');
                 $('#procedimento').val('').trigger('change');
-
-                $('#fila_hidden').val(177);
-                $('#origem_hidden').val(9);
-                $('#info').val("");
 
                 // Habilitar os campos para nova seleção
                 $('#especialidade').prop('disabled', false);
                 $('#fila').prop('disabled', true);
+                $('#fila').val(177).trigger('change'); // Define o valor do select de fila e atualiza
+                $('#fila_hidden').val(177);
                 $('#procedimento').prop('disabled', false);
                 $('#origem').prop('disabled', true);
-                $('#justorig').prop('disabled', true);
+                $('#origem').val(9).trigger('change'); // Define o valor do select de procedimento e atualiza
+                $('#origem_hidden').val(9);
+                $('#justorig').prop('disabled', false);
             }
         });
 
@@ -1024,26 +1020,28 @@
         <?php endif; ?>
 
         // Event listener for when an especialidade is selected
-       /*  $('#especialidade').change(function() {
+        $('#especialidade').change(function() {
+            var selectedEspecialidade = $(this).val();
             
-                var selectedEspecialidade = $(this).val();
-                
-                // Clear previous options
-                $('#fila').empty().append('<option value="">Selecione uma opção</option>');
-                
-                <--?php foreach ($data['filas'] as $fila): ?>
-                var value = '<--?= $fila['id'] ?>';
-                var text = '<--?= $fila['nmtipoprocedimento']?>';
-                var especie = '<--?= $fila['idespecialidade'] ?>';
-                if (!selectedEspecialidade || selectedEspecialidade === especie) {
-                    var option = new Option(text, value, false, false);
-                    $("#fila").append(option);
-                }
-                <--?php endforeach; ?>
+            // Clear previous options
+            //$('#fila').empty().append('<option value="">Selecione uma opção</option>');
+            $('#fila').empty();
+            $('#fila').append(new Option('URGÊNCIA', '177', true, true));
+            $('#fila').trigger('change');
+           
+            /* <--?php foreach ($data['filas'] as $fila): ?>
+            var value = '<--?= $fila['id'] ?>';
+            var text = '<--?= $fila['nmtipoprocedimento']?>';
+            var especie = '<--?= $fila['idespecialidade'] ?>';
+            if (!selectedEspecialidade || selectedEspecialidade === especie) {
+                var option = new Option(text, value, false, false);
+                $("#fila").append(option);
+            }
+            <--?php endforeach; ?> */
 
-                // Reset and update the Select2 component
-                $('#fila').val('').trigger('change.select2');
-        }); */
+            // Reset and update the Select2 component
+            //$('#fila').val('').trigger('change.select2');
+        });
 
         // Event listener for when a fila is selected
         $('#fila').change(function() {
@@ -1057,7 +1055,7 @@
             <?php endforeach; ?>
             
             // Set the especialidade value and update the Select2 component
-            //$('#especialidade').val(selectedEspecialidade).trigger('change.select2');
+            $('#especialidade').val(selectedEspecialidade).trigger('change.select2');
         });
 
         document.getElementById('idForm').addEventListener('submit', function(event) {

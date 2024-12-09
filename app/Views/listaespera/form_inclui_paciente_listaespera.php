@@ -415,7 +415,9 @@
                             }
                         });
                     } else {
-                        return false;
+                        $('#janelaAguarde').show();
+                        $('#idForm').off('submit'); 
+                        $('#idForm').submit();        
                     }
                 } else {
                     console.error('Erro ao enviar os dados:', xhr.statusText);

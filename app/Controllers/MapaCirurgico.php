@@ -60,6 +60,7 @@ class MapaCirurgico extends ResourceController
     private $justificativasmodel;
     private $usuariocontroller;
     private $aghucontroller;
+    private $selectfilaativas;
     private $selectfila;
     private $selectrisco;
     private $selectriscoativos;
@@ -110,7 +111,8 @@ class MapaCirurgico extends ResourceController
         $this->usuariocontroller = new Usuarios();
         //$this->aghucontroller = new Aghu();
 
-        $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        $this->selectfila = $this->filamodel->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        $this->selectfilaativas= $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $this->selectrisco = $this->riscomodel->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectriscoativos = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
@@ -290,7 +292,7 @@ class MapaCirurgico extends ResourceController
         //$data['dtfim'] = date('d/m/Y');
         $data['dtinicio'] = NULL;
         $data['dtfim'] = NULL;
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['riscos'] = $this->selectrisco;
         $data['especialidades'] = $this->selectespecialidadeaghu;
 
@@ -354,7 +356,7 @@ class MapaCirurgico extends ResourceController
         if ($this->validate($rules)) {
             if ($data['dtinicio'] || $data['dtfim']) {
 
-                $data['filas'] = $this->selectfila;
+                $data['filas'] = $this->selectfilaativas;
                 $data['riscos'] = $this->selectrisco;
                 $data['especialidades'] = $this->selectespecialidadeaghu;
 
@@ -625,7 +627,7 @@ class MapaCirurgico extends ResourceController
         $data['justorig'] = $lista['txtorigemjustificativa'];
         $data['justenvio'] = '';
         $data['profissional'] = [];
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
@@ -898,7 +900,7 @@ class MapaCirurgico extends ResourceController
         if ($oper == 'I') {
             $this->data['riscos'] = $this->selectriscoativos;
             $this->data['lateralidades'] = $this->selectlateralidadeativos;
-            $this->data['origens'] = $this->selectorigempacienteativos;
+            $this->data['origens'] = $this->selectorigempaciente;
         } else {
             $this->data['riscos'] = $this->selectrisco;
             $this->data['lateralidades'] = $this->selectlateralidade;
@@ -937,7 +939,7 @@ class MapaCirurgico extends ResourceController
 
         die(var_dump($this->equipemedicamodel->where(['idmapacirurgico' => $id])->find()));
 
-        $this->data['filas'] = $this->selectfila;
+        $this->data['filas'] = $this->selectfilaativas;
         $this->data['riscos'] = $this->selectrisco;
         $this->data['origens'] = $this->selectorigempaciente;
         $this->data['lateralidades'] = $this->selectlateralidade;
@@ -1048,7 +1050,7 @@ class MapaCirurgico extends ResourceController
 
         $rules = [
             'especialidade' => 'required',
-            'dtrisco' => 'required|valid_date[d/m/Y]',
+            //'dtrisco' => 'required|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
             'fila' => 'required',
             'procedimento' => 'required',
@@ -1315,7 +1317,7 @@ class MapaCirurgico extends ResourceController
         $data['sala'] =  $mapa->idsala;
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
@@ -1413,7 +1415,7 @@ class MapaCirurgico extends ResourceController
         $data['nec_proced'] = '';
         $data['justtroca'] = '';
         $data['profissional'] = [];
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
@@ -1767,7 +1769,7 @@ class MapaCirurgico extends ResourceController
         $data['prontuario'] = $mapa['prontuario'];
         $data['especialidade'] = $mapa['idespecialidade'];
         $data['fila'] = $mapa['idfila'];
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
         $data['idsuspensao'] = null;
@@ -1884,7 +1886,7 @@ class MapaCirurgico extends ResourceController
         } else {
             session()->setFlashdata('error', $this->validator);
 
-            $data['filas'] = $this->selectfila;
+            $data['filas'] = $this->selectfilaativas;
             $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
 
@@ -1935,7 +1937,7 @@ class MapaCirurgico extends ResourceController
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectriscoativos;
-        $data['origens'] = $this->selectorigempacienteativos;
+        $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
@@ -1980,7 +1982,13 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($this->data));
+        $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
+        $this->data['origem'] = $this->data['origem'] ?? $this->data['origem_hidden'];
+        $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
+        $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
+
+
+        //die(var_dump($this->request->getVar()));
 
         /* if(!empty($this->data['prontuario']) && is_numeric($this->data['prontuario'])) {
             $resultAGHUX = $this->aghucontroller->getPaciente($this->data['prontuario']);
@@ -2012,7 +2020,7 @@ class MapaCirurgico extends ResourceController
             'complexidade' => 'required',
             'cid' => 'required',
             'risco' => 'required',
-            'dtrisco' => 'required',
+            //'dtrisco' => 'required',
             'centrocirurgico' => 'required',
             'sala' => 'required',
             'info' => 'max_length[1024]|min_length[0]',
@@ -2023,10 +2031,10 @@ class MapaCirurgico extends ResourceController
 
         if ($this->data['listapaciente'] == 0) {
             $rules = $rules + [
-                'fila' => 'required',
+                //'fila' => 'required',
                 'especialidade' => 'required',
                 'procedimento' => 'required',
-                'origem' => 'required'
+                //'origem' => 'required'
             ];
          }
 
@@ -2050,10 +2058,10 @@ class MapaCirurgico extends ResourceController
 
                     } else {
 
-                        if ($this->data['risco'] != 8) { // Risco Liberado
+                       /*  if ($this->data['risco'] != 8) { // Risco Liberado
                             $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
             
-                        } else {
+                        } else { */
 
                             $this->validator->reset();
 
@@ -2316,7 +2324,7 @@ class MapaCirurgico extends ResourceController
                             //session()->setFlashdata('dados', $this->request->getPost());
                             return redirect()->to(base_url('mapacirurgico/exibir'));
 
-                        }
+                       /*  } */
                     }
                 }
             }
@@ -2355,7 +2363,7 @@ class MapaCirurgico extends ResourceController
             $this->data['sala'] =  '';
             $this->data['centrocirurgico'] =  '';
             $this->data['profissional'] = [];
-            $this->data['filas'] = $this->selectfila;
+            $this->data['filas'] = $this->selectfilaativas;
             $this->data['riscos'] = $this->selectriscoativos;
             $this->data['origens'] = $this->selectorigempacienteativos;
             $this->data['lateralidades'] = $this->selectlateralidadeativos;
@@ -2372,7 +2380,7 @@ class MapaCirurgico extends ResourceController
         
         } else {
 
-            $this->data['origem'] =  $this->data['origem_hidden'];
+            //$this->data['origem'] =  $this->data['origem_hidden'];
             $this->carregaMapa('I');
 
         }
@@ -2408,7 +2416,7 @@ class MapaCirurgico extends ResourceController
         $data['especialidade'] = $mapa->idespecialidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['fila'] = $mapa->idfila;
-        $data['filas'] = $this->selectfila;
+        $data['filas'] = $this->selectfilaativas;
         $data['procedimento'] = $mapa->idprocedimento;
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
@@ -2456,7 +2464,7 @@ class MapaCirurgico extends ResourceController
                 session()->setFlashdata('error', $this->validator);
 
                 $data['especialidades'] = $this->selectespecialidadeaghu;
-                $data['filas'] = $this->selectfila;
+                $data['filas'] = $this->selectfilaativas;
                 $data['procedimentos'] = $this->selectitensprocedhospit;
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
@@ -2538,7 +2546,7 @@ class MapaCirurgico extends ResourceController
                
                if ($erro) {
                 $data['especialidades'] = $this->selectespecialidadeaghu;
-                $data['filas'] = $this->selectfila;
+                $data['filas'] = $this->selectfilaativas;
                 $data['procedimentos'] = $this->selectitensprocedhospit;
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
@@ -2607,7 +2615,7 @@ class MapaCirurgico extends ResourceController
             }
 
             /* $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['filas'] = $this->selectfila;
+            $data['filas'] = $this->selectfilaativas;
             $data['procedimentos'] = $this->selectitensprocedhospit;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
@@ -2620,7 +2628,7 @@ class MapaCirurgico extends ResourceController
             session()->setFlashdata('error', $this->validator);
 
             $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['filas'] = $this->selectfila;
+            $data['filas'] = $this->selectfilaativas;
             $data['procedimentos'] = $this->selectitensprocedhospit;
 
             //die(var_dump($this->validator->getErrors()));
@@ -2666,7 +2674,7 @@ class MapaCirurgico extends ResourceController
                 session()->setFlashdata('error', $this->validator);
 
                 $data['especialidades'] = $this->selectespecialidadeaghu;
-                $data['filas'] = $this->selectfila;
+                $data['filas'] = $this->selectfilaativas;
                 $data['procedimentos'] = $this->selectitensprocedhospit;
 
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',

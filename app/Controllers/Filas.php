@@ -200,7 +200,9 @@ class Filas extends ResourceController
         //var_dump($data);die();
 
         if(!empty($this->filasmodel->Where('idespecialidade', $data['especialidade'])
-                                   ->Where('nmtipoprocedimento', $data['nome'])->find())) {
+                                   ->Where('nmtipoprocedimento', $data['nome'])
+                                   ->whereNotIn('id', [$data['id']])->find())) {
+
 
                 session()->setFlashdata('failed', 'Fila já cadastrada!');
 
