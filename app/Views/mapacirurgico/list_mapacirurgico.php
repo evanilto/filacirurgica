@@ -214,7 +214,7 @@
                     </td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
-                    <td><?php echo $itemmapa->cid ?></td>
+                    <td><?php echo $itemmapa->cid_codigo ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->cid_descricao); ?>">
                         <?php echo htmlspecialchars($itemmapa->cid_descricao); ?>
                     </td>

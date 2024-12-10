@@ -165,7 +165,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -363,7 +363,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
+                                            <label for="profissional" class="form-label">Equipe Cirúrgica<b class="text-danger">*</b></label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
                                                     id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
                                                 <?php

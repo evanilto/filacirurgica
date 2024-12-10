@@ -166,7 +166,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -384,7 +384,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="profissional" class="form-label">Profissionais Auxiliares</label>
+                                            <label for="profissional" class="form-label">Equipe Cirúrgica</label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>" disabled
                                                     id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
                                                 <?php
@@ -573,7 +573,7 @@
                         <?php } ?>
                         <div class="row g-3">
                             <div class="col-md-12">
-                            <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
+                            <a class="btn btn-warning mt-3" href="<?= $data['linkorigem'] === 'situacao_cirurgica' ? base_url('listaespera/exibirsituacao') : base_url('mapacirurgico/exibir') ?>">
                                 <i class="fa-solid fa-arrow-left"></i> Voltar
                             </a>
                             </div>

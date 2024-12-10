@@ -51,6 +51,7 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->add('mostrarmapa', 'MapaCirurgico::mostrarMapaCirurgicoSalvo');
     $routes->get('atualizarcirurgia/(:num)', 'MapaCirurgico::atualizarCirurgia/$1');
     $routes->get('consultarcirurgia/(:num)', 'MapaCirurgico::consultarCirurgia/$1');
+    $routes->get('consultarcirurgia/(:num)/(:any)', 'MapaCirurgico::consultarCirurgia/$1/$2');
     $routes->post('atualizar', 'MapaCirurgico::atualizar');
     $routes->post('tratareventocirurgico', 'MapaCirurgico::tratarEventoCirurgico');
     $routes->get('atualizarhorarioscirurgia/(:num)', 'MapaCirurgico::atualizarHorariosCirurgia/$1');

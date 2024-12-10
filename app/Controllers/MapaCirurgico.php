@@ -898,7 +898,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data['filas'] = $this->selectfila;
         if ($oper == 'I') {
-            $this->data['riscos'] = $this->selectriscoativos;
+            $this->data['riscos'] = $this->selectrisco;
             $this->data['lateralidades'] = $this->selectlateralidadeativos;
             $this->data['origens'] = $this->selectorigempaciente;
         } else {
@@ -1270,7 +1270,7 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function consultarCirurgia(int $id)
+    public function consultarCirurgia(int $id, $linkorigem = null)
     {
        
         HUAP_Functions::limpa_msgs_flash();
@@ -1281,6 +1281,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         //$data['ordemfila'] = $mapa->ordem_fila;
+        $data['linkorigem'] = $linkorigem;
         $array = $this->vwordempacientemodel->select('ordem_fila')->where('id', $mapa->idlista)->first();
         $data['ordemfila'] = !is_null($array) ? $array['ordem_fila'] : 0;
         $data['idmapa'] = $mapa->id;
@@ -1317,7 +1318,7 @@ class MapaCirurgico extends ResourceController
         $data['sala'] =  $mapa->idsala;
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
-        $data['filas'] = $this->selectfilaativas;
+        $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
@@ -1914,6 +1915,7 @@ class MapaCirurgico extends ResourceController
         $data = [];
         //$data['listaespera'] = $this->vwlistaesperamodel->Where('prontuario', $prontuario)->findAll();
         $data['listaesperas'] = [];
+        $data['listapaciente'] = '0';
         $data['candidatos'] = null;
         $data['ordem'] = null;
         $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+1 hour'));
@@ -1936,7 +1938,7 @@ class MapaCirurgico extends ResourceController
         $data['centrocirurgico'] =  '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
-        $data['riscos'] = $this->selectriscoativos;
+        $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['posoperatorios'] = $this->selectposoperatorio;
@@ -1984,6 +1986,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
         $this->data['origem'] = $this->data['origem'] ?? $this->data['origem_hidden'];
+        $this->data['risco'] = $this->data['risco'] ?? $this->data['risco_hidden'];
         $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
         $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
 
@@ -2019,7 +2022,7 @@ class MapaCirurgico extends ResourceController
             'opme' => 'required',
             'complexidade' => 'required',
             'cid' => 'required',
-            'risco' => 'required',
+            //'risco' => 'required',
             //'dtrisco' => 'required',
             'centrocirurgico' => 'required',
             'sala' => 'required',
@@ -2036,7 +2039,13 @@ class MapaCirurgico extends ResourceController
                 'procedimento' => 'required',
                 //'origem' => 'required'
             ];
-         }
+        } else {
+            $rules = $rules + [
+                //'especialidade' => 'required',
+                //'procedimento' => 'required',
+                //'dtrisco' => 'required',
+            ];        
+        }
 
         //die(var_dump($this->data));
 
@@ -2053,10 +2062,10 @@ class MapaCirurgico extends ResourceController
 
                 } else {
 
-                    if (isset($this->data['origem']) && ($this->data['origem'] == 3 || $this->data['origem'] == 4) && empty($this->data['justorig'])) { // Interesse Acadêmico ou Judicialização
+                   /*  if (isset($this->data['origem']) && ($this->data['origem'] == 3 || $this->data['origem'] == 4) && empty($this->data['justorig'])) { // Interesse Acadêmico ou Judicialização
                         $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
 
-                    } else {
+                    } else { */
 
                        /*  if ($this->data['risco'] != 8) { // Risco Liberado
                             $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
@@ -2325,7 +2334,7 @@ class MapaCirurgico extends ResourceController
                             return redirect()->to(base_url('mapacirurgico/exibir'));
 
                        /*  } */
-                    }
+                  /*   } */
                 }
             }
 

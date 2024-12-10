@@ -61,7 +61,7 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>">
                         <?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>
                     </td>
-                    <td class="break-line"><?php echo $itemlista->cid ?></td>
+                    <td class="break-line"><?php echo $itemlista->cid_codigo ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->cid_descricao); ?>">
                         <?php echo htmlspecialchars($itemlista->cid_descricao); ?>
                     </td>

@@ -105,17 +105,18 @@
                                     }
                                     break;
                             
-                                case 'Realizada':
-                                case 'Programada':
+                                /* case 'Realizada':
+                                case 'Programada': */
+                                default:
                                     if (HUAP_Functions::tem_permissao('mapacirurgico-consultar')) {
-                                        echo anchor('mapacirurgico/consultarcirurgia/'.$itemlista->idmapacirurgico, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
+                                        echo anchor('mapacirurgico/consultarcirurgia/'.$itemlista->idmapacirurgico.'/situacao_cirurgica', '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                                     } else {
                                         echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';
                                     }
                                     break;
                             
-                                default:
-                                    echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';
+                                /* default:
+                                    echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>'; */
                             }
                         ?>
                     </td>  

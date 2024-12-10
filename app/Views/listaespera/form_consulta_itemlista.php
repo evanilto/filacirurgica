@@ -64,7 +64,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
                                             id="especialidade" name="especialidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            data-placeholder="" data-allow-clear="1" disabled>
                                         <option value="" <?php echo set_select('especialidade', '', TRUE); ?>></option>
                                         <?php
                                         foreach ($data['especialidades'] as $especialidade) {
@@ -87,7 +87,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown select2-disabled <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            data-placeholder="" data-allow-clear="1" disabled>
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['filas'] as $key => $fila) {
@@ -110,7 +110,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
                                             id="procedimento" name="procedimento" disabled
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('procedimento', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['procedimentos'] as $key => $procedimento) {
@@ -140,7 +140,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -198,7 +198,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
                                             id="origem" name="origem" disabled
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
@@ -221,7 +221,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
                                             id="lateralidade" name="lateralidade" disabled
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="" data-allow-clear="1">
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
@@ -329,7 +329,7 @@
                                         <div class="input-group">
                                             <select class="form-select select2-dropdown <?php if($validation->getError('idexclusao')): ?>is-invalid<?php endif ?>"
                                                 id="idexclusao" name="idexclusao" disabled
-                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                                data-placeholder="" data-allow-clear="1">
                                                 <option value="" <?php echo set_select('idexclusao', '', TRUE); ?> ></option>
                                                 <?php
                                                 foreach ($data['justificativasexclusao'] as $key => $idexclusao) {

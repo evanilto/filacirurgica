@@ -169,7 +169,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -186,7 +186,7 @@
                                     <label for="risco" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
-                                            id="risco" name="risco"
+                                            id="risco" name="risco" disabled
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
@@ -209,7 +209,7 @@
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA" readonly
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
                                             name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
@@ -402,7 +402,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
+                                            <label for="profissional" class="form-label">Equipe Cirúrgica<b class="text-danger">*</b></label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
                                                     id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
                                                 <?php

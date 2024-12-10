@@ -140,7 +140,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>

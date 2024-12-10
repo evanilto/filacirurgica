@@ -114,7 +114,8 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
                                             id="especialidade" name="especialidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1"
+                                            <?= $data['listapaciente'] == '' || $data['listapaciente'] == '0' ? '' : 'disabled' ?> >
                                         <option value="" <?php echo set_select('especialidade', '', TRUE); ?>></option>
                                         <?php
                                         foreach ($data['especialidades'] as $especialidade) {
@@ -162,7 +163,8 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
                                             id="procedimento" name="procedimento"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1"
+                                            <?= $data['listapaciente'] == '' || $data['listapaciente'] == '0' ? '' : 'disabled' ?> >
                                             <option value="" <?php echo set_select('procedimento', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['procedimentos'] as $key => $procedimento) {
@@ -218,7 +220,7 @@
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
                                                 $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
-                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->descricao.'</option>';
+                                                echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -236,7 +238,8 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1"
+                                            <?= $data['listapaciente'] == '' || $data['listapaciente'] == '0' ? 'disabled' : '' ?> >
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
@@ -259,6 +262,7 @@
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
+                                            <?= $data['listapaciente'] == '' || $data['listapaciente'] == '0' ? 'readonly' : '' ?>
                                             name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
@@ -436,7 +440,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="profissional" class="form-label">Profissionais Auxiliares<b class="text-danger">*</b></label>
+                                            <label for="profissional" class="form-label">Equipe<b class="text-danger">*</b></label>
                                             <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
                                                     id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
                                                 <?php
@@ -507,7 +511,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="3" 
+                                    <textarea id="justorig" maxlength="255" rows="3" readonly
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
                                             name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>
@@ -578,14 +582,15 @@
 
                       <!--   <input type="hidden" name="idlista" value="<--?= $data['id'] ?>" />
                         <input type="hidden" id="hiddenDataIdField" name="hiddenDataIdField" value=""> -->
-                        <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
-                        <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
-                        <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" id="listapacienteSelect" name="listapacienteSelect">
+                        <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
+                        <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
+                        <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" value="<?= $data['especialidade'] ?>"/>
                         <input type="hidden" name="fila_hidden" id="fila_hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
                         <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="risco_hidden" id="risco_hidden"  value="<?= $data['risco'] ?>" />
                     </form>
                 </div>
             </div>
@@ -680,7 +685,7 @@
                     //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
                     const option = document.createElement("option"); // Usando createElement para criar uma nova opção
                     option.value = 0; // ID que será usado como valor da opção
-                    option.text = `Inluir uma novo item (cirurgia) na lista`;
+                    option.text = `Paciente não está na Lista de Espera`;
                     if (valorSelecionado == "0") { // Verifica se "0" foi o valor selecionado
                         option.selected = true;
                     }
@@ -700,6 +705,19 @@
                         option.setAttribute('data-origempaciente-id', item.idorigempaciente);
                         option.setAttribute('data-justorig', item.just_orig);
                         option.setAttribute('data-info', item.info_adicionais);
+
+                        option.setAttribute('data-risco', item.idriscocirurgico);
+                        option.setAttribute('data-lateralidade', item.lateralidade);
+                        option.setAttribute('data-congelacao', item.indcongelacao);
+                        option.setAttribute('data-opme', item.opme);
+                        option.setAttribute('data-complexidade', item.complexidade);
+
+                        if (item.data_risco) {
+                            const dataOriginal = item.data_risco;
+                            const [ano, mes, dia] = dataOriginal.split('-');
+                            const dataFormatada = `${dia}/${mes}/${ano}`;
+                            option.setAttribute('data-dtrisco', dataFormatada);
+                        }
 
                         if (valorSelecionado == item.id) {
                             option.selected = true;
@@ -922,6 +940,13 @@
                 const justorig = selectedOption.getAttribute('data-justorig');
                 const info = selectedOption.getAttribute('data-info');
 
+                const risco = selectedOption.getAttribute('data-risco');
+                const dtrisco = selectedOption.getAttribute('data-dtrisco');
+                const lateralidade = selectedOption.getAttribute('data-lateralidade');
+                const congelacao = selectedOption.getAttribute('data-congelacao');
+                const opme = selectedOption.getAttribute('data-opme');
+                const complexidade = selectedOption.getAttribute('data-complexidade');
+
                 //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
                 //alert("ID do item selecionado:", dataId);
                 //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
@@ -931,8 +956,15 @@
                 $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
                 $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
                 $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                $('#risco').val(risco).trigger('change'); 
                 $('#justorig').val(justorig);
                 $('#info').val(info);
+
+                $('#lateralidade').val(lateralidade);
+                $('#congelacao').val(congelacao);
+                $('#opme').val(opme);
+                $('#complexidade').val(complexidade);
+                $('#dtrisco').val(dtrisco);
 
                 $('#especialidade_hidden').val(especialidadeId);
                 $('#fila').val(filaId);
@@ -940,6 +972,8 @@
                 $('#procedimento_hidden').val(procedimentoId);
                 $('#origem').val(origempacienteId);
                 $('#origem_hidden').val(origempacienteId);
+                $('#risco').val(risco); 
+                $('#risco_hidden').val(risco);
                 /* $('#infoadic_hidden').val(info);
                 $('#justorig_hidden').val(justorig); */
 
@@ -948,16 +982,21 @@
                 $('#fila').prop('disabled', true);
                 $('#procedimento').prop('disabled', true);
                 $('#origem').prop('disabled', true);
-                $('#justorig').prop('disabled', true);
+                $('#justorig').prop('readonly', true);
+                $('#risco').prop('disabled', false);
+                $('#dtrisco').prop('readonly', false);
             } else {
                 // Limpar os campos se a opção selecionada não for válida
                 $('#especialidade').val('').trigger('change');
                 $('#fila').val(177).trigger('change');
                 $('#origem').val(9).trigger('change');
+                $('#risco').val(11).trigger('change');
+                $('#dtrisco').val("");
                 $('#procedimento').val('').trigger('change');
 
                 $('#fila_hidden').val(177);
                 $('#origem_hidden').val(9);
+                $('#risco_hidden').val(11);
                 $('#info').val("");
 
                 // Habilitar os campos para nova seleção
@@ -965,7 +1004,10 @@
                 $('#fila').prop('disabled', true);
                 $('#procedimento').prop('disabled', false);
                 $('#origem').prop('disabled', true);
-                $('#justorig').prop('disabled', true);
+                $('#justorig').prop('readonly', true);
+                $('#risco').prop('disabled', true);
+                $('#dtrisco').prop('readonly', true);
+
             }
         });
 
