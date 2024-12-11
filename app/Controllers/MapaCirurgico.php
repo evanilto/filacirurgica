@@ -1990,6 +1990,9 @@ class MapaCirurgico extends ResourceController
         $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
         $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
 
+        if (empty($this->data['risco'])) {
+            $this->data['risco'] = 11;
+        };
 
         //die(var_dump($this->request->getVar()));
 
@@ -2072,6 +2075,10 @@ class MapaCirurgico extends ResourceController
             
                         } else { */
 
+                         if (DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d') < date('Y-m-d')) {
+                            $this->validator->setError('dtcirurgia', 'Não é possível agendar a cirurgia para uma data anterior a data atual!');
+
+                        } else {
                             $this->validator->reset();
 
                             $db->transStart();
@@ -2332,6 +2339,7 @@ class MapaCirurgico extends ResourceController
 
                             //session()->setFlashdata('dados', $this->request->getPost());
                             return redirect()->to(base_url('mapacirurgico/exibir'));
+                        }
 
                        /*  } */
                   /*   } */

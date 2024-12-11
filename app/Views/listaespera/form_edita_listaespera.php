@@ -158,13 +158,13 @@
                                 <div class="mb-3">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown<?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco"
-                                            data-placeholder="" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
-                                                $selected = ($data['risco'] == $risco['id']) ? 'selected' : '';
+                                                $selected = (set_value('risco') == $risco['id']) ? 'selected' : '';
                                                 $enabled = ($risco['indsituacao'] == 'I') ? 'disabled' : ''; 
                                                 echo '<option value="'.$risco['id'].'" '.$selected.' '.$enabled.'>'.$risco['nmrisco'].'</option>';
                                             }

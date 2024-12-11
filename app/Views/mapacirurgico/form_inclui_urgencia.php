@@ -234,7 +234,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-3">
-                                    <label for="risco" class="form-label">Risco Cirúrgico<b class="text-danger">*</b></label>
+                                    <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco"

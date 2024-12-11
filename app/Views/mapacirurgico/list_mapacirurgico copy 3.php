@@ -21,7 +21,7 @@
                 <th scope="row" colspan="4" class="bg-light text-start" style="border-right: none;">
                     <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
-                <th scope="row" colspan="9" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
+                <th scope="row" colspan="13" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
                     <table class="legend-table" style="margin: 0 auto;">
                         <tr>
                             <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
@@ -35,13 +35,14 @@
                         </tr>
                     </table>
                 </th>
-                <th scope="row" colspan="23" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                <th scope="row" colspan="27" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
                 </th>
             </tr>
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
-                <th scope="col" data-field="fila" >Dt/Hr Cirurgia</th>
+                <th scope="col" data-field="fila" >Data Cirurgia</th>
+                <th scope="col" data-field="fila" >Hora</th>
                 <th scope="col" class="col-0" >Centro Cirúrgico</th>
                 <th scope="col" class="col-0" >Sala</th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
@@ -60,6 +61,7 @@
                 <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
+                <th scope="col" data-field="nome" >Idade</th>
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >CID</th>
@@ -74,6 +76,8 @@
                 <th scope="col" data-field="nome" >Info Adicionais</th>
                 <th scope="col" data-field="nome" >Necessidades do Procedimento</th>
                 <th scope="col" data-field="nome" >Procedimento Principal</th>
+                <th scope="col" data-field="nome" >Procedimentos Adicionais</th>
+                <th scope="col" data-field="nome" >Equipe</th>
 
                 <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
             </tr>
@@ -193,7 +197,8 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?> "  title="<?= $title?>"></i>
                     </td>
-                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y H:i') ?></td>
+                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y') ?></td>
+                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>">
                         <?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>
                     </td>
@@ -213,6 +218,7 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
                     </td>
+                    <td><?php echo $itemmapa->idade ?></td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td><?php echo $itemmapa->cid_codigo ?></td>
@@ -236,6 +242,12 @@
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>">
                         <?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimentos_adicionais); ?>">
+                        <?php echo htmlspecialchars($itemmapa->procedimentos_adicionais); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipe_cirurgica); ?>">
+                        <?php echo htmlspecialchars($itemmapa->equipe_cirurgica); ?>
                     </td>
                     
                     <td style="text-align: center; vertical-align: middle;">
@@ -642,7 +654,8 @@
         "columns": [
                 { "width": "0px" },  // Primeira coluna
                 { "width": "40px" },       
-                { "width": "140px" },  // dthr
+                { "width": "90px" },  // dt
+                { "width": "50px" },  // hr
                 { "width": "250px" },  // centro cir
                 { "width": "150px" }, 
                 { "width": "55px" }, 
@@ -653,6 +666,7 @@
                 { "width": "250px" },  // fila
                 { "width": "100px" },  // 
                 { "width": "250px" },  // Nome
+                { "width": "50px" },  // idade
 
                 { "width": "160px" },  // 
                 { "width": "100px" },  // 
@@ -668,6 +682,8 @@
                 { "width": "250px" },  // 
                 { "width": "250px" },  // 
                 { "width": "250px" },  // 
+                { "width": "250px" },  // proc adic
+                { "width": "250px" },  // equipe
 
                 { "width": "35px" },  // 
                 { "width": "35px" },  // 
@@ -757,12 +773,12 @@
 
         var dadosCompletos = {
                 dthrcir: data[2], 
-                centrocir: data[3], 
-                sala: data[4], 
-                hrnocentro: data[5], 
-                hremcirurgia: data[6], 
-                hrsaidasl: data[7], 
-                hrsaidacc: data[8],
+                centrocir: data[4], 
+                sala: data[5], 
+                hrnocentro: data[6], 
+                hremcirurgia: data[7], 
+                hrsaidasl: data[8], 
+                hrsaidacc: data[9],
                 ...dadosAdicionais
         };
 
@@ -909,3 +925,4 @@
 });
 
 </script>
+

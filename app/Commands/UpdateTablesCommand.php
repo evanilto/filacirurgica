@@ -39,7 +39,7 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_mbc_sala_cirurgicas SELECT * FROM remoto.mbc_sala_cirurgicas');
         $insertStatus = $db->query('INSERT INTO local_prof_especialidades SELECT * FROM remoto.vw_prof_especialidades');
         $insertStatus = $db->query('INSERT INTO local_centros_cirurgicos SELECT * FROM remoto.vw_centros_cirurgicos');
-        $insertStatus = $db->query('INSERT INTO local_aip_pacientes SELECT * FROM remoto.vw_detalhes_pacientes');
+        $insertStatus = $db->query('INSERT INTO local_aip_pacientes SELECT * FROM remoto.aip_pacientes');
         $insertStatus = $db->query('INSERT INTO local_aip_contatos_pacientes SELECT * FROM remoto.aip_contatos_pacientes;');
         $insertStatus = $db->query('INSERT INTO local_vw_detalhes_pacientes SELECT * FROM remoto.vw_detalhes_pacientes;');
 
