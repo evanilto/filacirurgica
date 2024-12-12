@@ -8,7 +8,7 @@
             </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
-                <!-- <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
+                <!-- <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Fila Cirúrgica">#Lista</th>
                 <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th> -->
                 <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>

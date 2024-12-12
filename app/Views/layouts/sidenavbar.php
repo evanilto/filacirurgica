@@ -4,7 +4,7 @@
         <?php if(HUAP_Functions::tem_permissao('listaespera')) { ?>
         <li>
             <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                <i class="fa-solid fa-plus toggle-icon"></i> Lista de Espera
+                <i class="fa-solid fa-plus toggle-icon"></i> Fila Cirúrgica
             </a>
             <div class="collapse" id="listaespera">
                 <ul class="nav flex-column submenu-2">

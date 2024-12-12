@@ -21,11 +21,11 @@
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 
         <!-- Favicons -->
-        <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/imgdoctor-2025514_640.png') : base_url('/favicon.ico') ?>" rel="shortcut icon" type="image/png"/>
+        <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/img/doctor-32.png') : base_url('/favicon.ico') ?>" rel="shortcut icon" type="image/png"/>
         <link href="<?= base_url('/assets/img/caduceus/caduceus-128.png') ?>" sizes="180x180" rel="apple-touch-icon">
         <link href="<?= base_url('/assets/img/caduceus/caduceus-32.png') ?>" sizes="32x32" type="image/png" rel="icon">
         <link href="<?= base_url('/assets/img/caduceus/caduceus-16.png') ?>" sizes="16x16" type="image/png" rel="icon">
-        <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/img/doctor-2025514_640.png') : base_url('/favicon.ico') ?>" rel="icon">
+        <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/img/doctor-32.png') : base_url('/favicon.ico') ?>" rel="icon">
         <meta name="csrf-token" content="<?= csrf_hash() ?>">
 
         <!-- https://datatables.net/download/index - Contém as packages DataTables 2.0.7, jquery 3.7.0 e Buttons 3.0.2 (incluindo Column visibility v3.0.2,  -->

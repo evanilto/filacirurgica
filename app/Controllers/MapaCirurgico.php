@@ -717,7 +717,7 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1105,7 +1105,7 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1546,7 +1546,7 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1678,7 +1678,7 @@ class MapaCirurgico extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar paciente na Fila Cirúrgica! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -2107,7 +2107,7 @@ class MapaCirurgico extends ResourceController
                                         $errorCode = !empty($error['code']) ? $error['code'] : 0;
         
                                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                                            sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                                         );
                                     }
 
@@ -2153,7 +2153,7 @@ class MapaCirurgico extends ResourceController
                                         $errorCode = !empty($error['code']) ? $error['code'] : 0;
         
                                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao incluir paciente na Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                                            sprintf('Erro ao incluir paciente na Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                                         );
                                     }
 

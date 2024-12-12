@@ -6,11 +6,11 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" colspan="24" class="bg-light text-start"><h5><strong>Lista de Espera</strong></h5></th>
+                <th scope="col" colspan="24" class="bg-light text-start"><h5><strong>Fila Cirúrgica</strong></h5></th>
             </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
-                <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Lista de Espera">#Lista</th>
+                <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Fila Cirúrgica">#Lista</th>
                 <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
@@ -170,7 +170,7 @@
   }
 
   function confirma_excluir () {
-        if (!confirm('Confirma a exclusão desse paciente da lista de espera?')) {
+        if (!confirm('Confirma a exclusão desse paciente da Fila Cirúrgica?')) {
             return false;
         };
         

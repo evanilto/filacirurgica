@@ -1170,7 +1170,7 @@ class ListaEspera extends ResourceController
                     );
                 }
 
-                session()->setFlashdata('success', 'Paciente incluído da Lista de Espera com sucesso!');
+                session()->setFlashdata('success', 'Paciente incluído da Fila Cirúrgica com sucesso!');
 
                 $ordemfila = $this->getOrdemFila($idlista);
                 $dataform['ordem'] = $ordemfila ?? 'A Definir';
@@ -1469,7 +1469,7 @@ class ListaEspera extends ResourceController
                     $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar paciente na Fila Cirúrgica! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1500,11 +1500,11 @@ class ListaEspera extends ResourceController
                     $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar paciente na lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar paciente na Fila Cirúrgica! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
-                session()->setFlashdata('success', 'Paciente alterado na Lista de Espera com sucesso!');
+                session()->setFlashdata('success', 'Paciente alterado na Fila Cirúrgica com sucesso!');
 
                 $this->validator->reset();
                 
@@ -1676,7 +1676,7 @@ class ListaEspera extends ResourceController
                 session()->setFlashdata('dataflash', $dataflash);
 
             } else {
-                session()->setFlashdata('success', 'Paciente excluído da Lista de Espera com sucesso!');
+                session()->setFlashdata('success', 'Paciente excluído da Fila Cirúrgica com sucesso!');
             }
 
             return redirect()->to(base_url('listaespera/exibir'));
@@ -1880,7 +1880,7 @@ class ListaEspera extends ResourceController
                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao atualizar Lista de Espera [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -2560,7 +2560,7 @@ class ListaEspera extends ResourceController
                     $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao incluir lista de espera! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao incluir Fila Cirúrgica! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -2574,7 +2574,7 @@ class ListaEspera extends ResourceController
                 $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                 throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                    sprintf('Erro na criação da lista de espera! [%d] %s', $errorCode, $errorMessage)
+                    sprintf('Erro na criação da Fila Cirúrgica! [%d] %s', $errorCode, $errorMessage)
                 );
             }
 
@@ -2583,7 +2583,7 @@ class ListaEspera extends ResourceController
             $query = $db->query($sqlSetDefault);
 
         } catch (\Throwable $e) {
-            $msg = 'Falha na criação da lista de espera - '. (isset($reg->prontuario) ? $reg->prontuario : '') .' ==> '.$e->getMessage();
+            $msg = 'Falha na criação da Fila Cirúrgica - '. (isset($reg->prontuario) ? $reg->prontuario : '') .' ==> '.$e->getMessage();
             log_message('error', $msg.': ' . $e->getMessage());
             throw $e;
         }

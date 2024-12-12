@@ -44,7 +44,7 @@
                         ?>
                     </td>
                     <td><?php echo $itemlista->status ?></td>
-                    <td title="Ordem na Lista de Espera"><?php echo $itemlista->ordem_lista ?? '-' ?></td>
+                    <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_lista ?? '-' ?></td>
                     <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?? '-' ?></td>
                     <td><?php echo $itemlista->dthrinclusao ?></td>
                     <td><?php echo $itemlista->prontuario ?></td>
@@ -144,7 +144,7 @@
   }
 
   function confirma_excluir () {
-        if (!confirm('Confirma a exclusão desse paciente da lista de espera?')) {
+        if (!confirm('Confirma a exclusão desse paciente da Fila Cirúrgica?')) {
             return false;
         };
         

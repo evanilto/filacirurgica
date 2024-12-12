@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Incluir Paciente na Lista de Espera' ?></b>
+                    <b><?= 'Incluir Paciente na Fila Cirúrgica' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('listaespera/incluir') ?>">
@@ -185,7 +185,7 @@
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
-                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="text" id="dtrisco" maxlength="10" value="" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
                                             name="dtrisco" value="<?= set_value('dtrisco') ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
@@ -398,7 +398,7 @@
                     if (response.success) {
                         // Exibe a SweetAlert2
                         Swal.fire({
-                            title: 'Esse paciente já está na Lista de Espera. Deseja incluí-lo mesmo assim?',
+                            title: 'Esse paciente já está na Fila Cirúrgica. Deseja incluí-lo mesmo assim?',
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'Ok',

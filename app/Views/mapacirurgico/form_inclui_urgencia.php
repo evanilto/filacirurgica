@@ -93,7 +93,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-3">
-                                    <label for="listapaciente" class="form-label">Lista de Espera do Paciente<b class="text-danger">*</b></label>
+                                    <label for="listapaciente" class="form-label">Fila Cirúrgica do Paciente<b class="text-danger">*</b></label>
                                     <select class="form-select select2-dropdown <?php if($validation->getError('listapaciente')): ?>is-invalid<?php endif ?>" 
                                     id="listapaciente" name="listapaciente">
                                         <option value="">Selecione uma opção</option>
@@ -685,7 +685,7 @@
                     //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
                     const option = document.createElement("option"); // Usando createElement para criar uma nova opção
                     option.value = 0; // ID que será usado como valor da opção
-                    option.text = `Paciente não está na Lista de Espera`;
+                    option.text = `Paciente não está na Fila Cirúrgica`;
                     if (valorSelecionado == "0") { // Verifica se "0" foi o valor selecionado
                         option.selected = true;
                     }
@@ -733,7 +733,7 @@
 
                 },
                 error: function(xhr, status, error) {
-                    console.error('Erro ao buscar lista de espera:', error);
+                    console.error('Erro ao buscar Fila Cirúrgica:', error);
                 }
             });
 
@@ -803,7 +803,7 @@
         }
     });
 
-    // Função para atualizar o select da lista de espera
+    // Função para atualizar o select da Fila Cirúrgica
 
     $(document).ready(function() {
         $('.select2-dropdown').select2({

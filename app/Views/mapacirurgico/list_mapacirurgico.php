@@ -12,6 +12,12 @@
     $corCirurgiaCancelada = 'red';
 ?>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+
+<style>
+</style>
+
 <script>$('#janelaAguarde').show();</script>
 
 <div class="table-container">
@@ -35,13 +41,14 @@
                         </tr>
                     </table>
                 </th>
-                <th scope="row" colspan="23" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                <th scope="row" colspan="27" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
                 </th>
             </tr>
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
-                <th scope="col" data-field="fila" >Dt/Hr Cirurgia</th>
+                <th scope="col" data-field="fila" >Data Cirurgia</th>
+                <th scope="col" data-field="fila" >Hora</th>
                 <th scope="col" class="col-0" >Centro Cirúrgico</th>
                 <th scope="col" class="col-0" >Sala</th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
@@ -57,23 +64,27 @@
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" >Especialidade</th>
-                <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
-                <th scope="col" data-field="nome" >Risco</th>
-                <th scope="col" data-field="nome" >Data Risco</th>
+                <th scope="col" data-field="nome" >Idade</th>
+                <th scope="col" data-field="nome" >Procedimento Principal</th>
+                <th scope="col" data-field="nome" >Procedimentos Adicionais</th>
+                <th scope="col" data-field="nome" >Lateralidade</th>
                 <th scope="col" data-field="nome" >CID</th>
                 <th scope="col" data-field="nome" >CID Descrição<output></output></th>
-                <th scope="col" data-field="nome" >Origem</th>
-                <th scope="col" data-field="nome" >Complexidade</th>
-                <th scope="col" data-field="nome" >Lateralidade</th>
-                <th scope="col" data-field="nome" >Congelação</th>
+                <th scope="col" data-field="nome" >Necessidades Procedimento</th>
+                <th scope="col" data-field="nome" >Info Adicionais</th>
+                <th scope="col" data-field="nome" >Equipe</th>
+                <th scope="col" class="col-0" >Fila</th>
+                <th scope="col" data-field="nome" >Pós-Operatório</th>
+                <th scope="col" data-field="nome" >Congel.</th>
                 <th scope="col" data-field="nome" >Hemod.</th>
                 <th scope="col" data-field="nome" >OPME</th>
-                <th scope="col" data-field="nome" >Pós-Operatório</th>
-                <th scope="col" data-field="nome" >Info Adicionais</th>
-                <th scope="col" data-field="nome" >Necessidades do Procedimento</th>
-                <th scope="col" data-field="nome" >Procedimento Principal</th>
+                <th scope="col" data-field="nome" >Risco</th>
+                <th scope="col" data-field="nome" >Data Risco</th>
+                <th scope="col" data-field="nome" >Origem</th>
+                <th scope="col" data-field="nome" >Complex.</th>
+                
 
                 <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
             </tr>
@@ -193,7 +204,8 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <i class="fa-regular fa-square-full" style="color: <?= $color ?>; background-color: <?= $background_color ?> "  title="<?= $title?>"></i>
                     </td>
-                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y H:i') ?></td>
+                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y') ?></td>
+                    <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>">
                         <?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>
                     </td>
@@ -206,37 +218,45 @@
                     <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>">
                         <?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>
-                    </td><td class="break-line" title="<?php echo htmlspecialchars($itemmapa->fila); ?>">
-                        <?php echo htmlspecialchars($itemmapa->fila); ?>
                     </td>
                     <td><?php echo $itemmapa->prontuario ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
                     </td>
-                    <td><?php echo $itemmapa->risco_descricao ?></td>
-                    <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
+                    <td><?php echo $itemmapa->idade ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>">
+                        <?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimentos_adicionais); ?>">
+                        <?php echo htmlspecialchars($itemmapa->procedimentos_adicionais); ?>
+                    </td>
+                    <td><?php echo $itemmapa->nmlateralidade ?></td>
                     <td><?php echo $itemmapa->cid_codigo ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->cid_descricao); ?>">
                         <?php echo htmlspecialchars($itemmapa->cid_descricao); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>">
+                        <?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->infoadicionais); ?>">
+                        <?php echo htmlspecialchars($itemmapa->infoadicionais); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipe_cirurgica); ?>">
+                        <?php echo htmlspecialchars($itemmapa->equipe_cirurgica); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->fila); ?>">
+                        <?php echo htmlspecialchars($itemmapa->fila); ?>
+                    </td>
+                    <td><?php echo $itemmapa->posoperatorio ?></td>
+                    <td><?php echo $itemmapa->congelacao ?></td>
+                    <td><?php echo $itemmapa->hemoderivados ?></td>
+                    <td><?php echo $itemmapa->opme ?></td>
+                    <td><?php echo $itemmapa->risco_descricao ?></td>
+                    <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
                         <?php echo htmlspecialchars($itemmapa->origem_descricao); ?>
                     </td>
                     <td><?php echo $itemmapa->nmcomplexidade ?></td>
-                    <td><?php echo $itemmapa->nmlateralidade ?></td>
-                    <td><?php echo $itemmapa->congelacao ?></td>
-                    <td><?php echo $itemmapa->hemoderivados ?></td>
-                    <td><?php echo $itemmapa->opme ?></td>
-                    <td><?php echo $itemmapa->posoperatorio ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->infoadicionais); ?>">
-                        <?php echo htmlspecialchars($itemmapa->infoadicionais); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>">
-                        <?php echo htmlspecialchars($itemmapa->necessidadesproced); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>">
-                        <?php echo htmlspecialchars($itemmapa->procedimento_principal); ?>
-                    </td>
                     
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
@@ -333,14 +353,6 @@
                     <td style="text-align: center; vertical-align: middle;">
                         <?php
                             if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { 
-                               /*  echo '<a href="#" title="Detalhes do Paciente"
-                                 data-prontuario="' . $itemmapa->prontuario . '"
-                                 data-nome_paciente="' . $itemmapa->nome_paciente . '"
-                                 data-ordem="' . $itemmapa->ordem_fila . '"
-                                 data-fila="' . $itemmapa->fila . '"
-                                 data-especialidade="' . $itemmapa->especialidade_descricao . '"
-                                 data-procedimento="' . $itemmapa->procedimento_principal . '"
-                                 onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>'; */
                                  echo anchor('mapacirurgico/consultarcirurgia/'.$itemmapa->id, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
                                 echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para consultar."><i class="fa-solid fa-magnifying-glass"></i></span>';
@@ -357,6 +369,7 @@
         </a>
     </div>
 </div>
+
 <script>
     function mostrarAguarde(event, href) {
         event.preventDefault(); // Prevenir o comportamento padrão do link
@@ -369,64 +382,64 @@
     }
 
     function confirma(link) {
-    let message;
-    let evento;
+        let message;
+        let evento;
 
-    switch (link.id) {
-        case 'programada':
-            evento = 'dthrnocentrocirurgico';
-            message = 'Confirma a entrada no centro cirúrgico?';
-            break;
-        case 'nocentrocirurgico':
-            evento = 'dthremcirurgia';
-            message = 'Confirma o paciente em cirurgia?';
-            break;
-        case 'emcirurgia':
-            evento = 'dthrsaidasala';
-            message = 'Confirma a saída da sala?';
-            break;
-        case 'saidadasala':
-            evento = 'dthrsaidacentrocirurgico';
-            message = 'Confirma a saída do centro cirúrgico?';
-            break;
-        case 'suspender':
-            evento = 'dthrsuspensao';
-            message = 'Confirma a suspensão da cirurgia?';
-            break;
-        case 'trocar':
-            evento = 'dthrtroca';
-            message = 'Confirma a troca do paciente?';
-            break;
-        default:
-            message = '';
-            break;
-    }
-
-    // Exibe a SweetAlert para confirmar a ação
-    Swal.fire({
-        title: message,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ok',
-        cancelButtonText: 'Cancelar'
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $('#janelaAguarde').show(); // Mostra a janela de aguardo
-
-            // Chama a função para tratar o link somente após confirmação
-            tratarLink(link, evento);
-        } else {
-            // Ação ao cancelar, se necessário
-            $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
+        switch (link.id) {
+            case 'programada':
+                evento = 'dthrnocentrocirurgico';
+                message = 'Confirma a entrada no centro cirúrgico?';
+                break;
+            case 'nocentrocirurgico':
+                evento = 'dthremcirurgia';
+                message = 'Confirma o paciente em cirurgia?';
+                break;
+            case 'emcirurgia':
+                evento = 'dthrsaidasala';
+                message = 'Confirma a saída da sala?';
+                break;
+            case 'saidadasala':
+                evento = 'dthrsaidacentrocirurgico';
+                message = 'Confirma a saída do centro cirúrgico?';
+                break;
+            case 'suspender':
+                evento = 'dthrsuspensao';
+                message = 'Confirma a suspensão da cirurgia?';
+                break;
+            case 'trocar':
+                evento = 'dthrtroca';
+                message = 'Confirma a troca do paciente?';
+                break;
+            default:
+                message = '';
+                break;
         }
-    });
 
-    return false; // Queremos prevenir o comportamento padrão do link
-}
+        // Exibe a SweetAlert para confirmar a ação
+        Swal.fire({
+            title: message,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#janelaAguarde').show(); // Mostra a janela de aguardo
+
+                // Chama a função para tratar o link somente após confirmação
+                tratarLink(link, evento);
+            } else {
+                // Ação ao cancelar, se necessário
+                $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
+            }
+        });
+
+        return false; // Queremos prevenir o comportamento padrão do link
+    }
 
     function tratarLink(link, evento) {
 
-        //$('#janelaAguarde').show();
+        $('#janelaAguarde').show();
 
         // Previnir o comportamento padrão do link
         event.preventDefault(); 
@@ -461,8 +474,7 @@
 
                 if (response.success) {
                     console.log('Evento registrado com sucesso.');
-                    //window.history.back();
-                    //window.location.reload();
+                  
                     window.location.href = "<?= base_url('mapacirurgico/exibir') ?>";
                 } else {
                     console.error('Erro ao redirecionar.');
@@ -502,7 +514,6 @@
                     return (valor === null || valor === '') ? '' : ' - ' + valor;
                 }
 
-                
                 let telefonesHtml = '';
                 if (paciente.contatos && paciente.contatos.length > 0) {
                     // Verifica se há mais de um telefone
@@ -565,17 +576,7 @@
                     <strong>Informações Adicionais:</strong> ${dados.infoadic}<br>
                     <strong>Necessidades do Procedimento:</strong> ${dados.necesspro}<br>
                 `);
-/* 
 
-                    <strong>Entrada no Centro Cirúrgico:</strong> ${verificarValor(dados.hrnocentro)}<br>
-                    <strong>Início da Cirurgia:</strong> ${verificarValor(dados.hremcirurgia)}<br>
-                    <strong>Saída da Sala:</strong> ${verificarValor(dados.hrsaidasl)}<br>
-                    <strong>Saída do Centro Cirúrgico:</strong> ${verificarValor(dados.hrsaidacc)}<br>
-                $('#linha').html(`
-                    <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
-                `); */
-
-                // Mostra o modal
                 $('#modalDetalhes').modal('show');
             },
             error: function(xhr, status, error) {
@@ -583,42 +584,6 @@
             }
         });
     }
-
-    function consultaDetalhes(element) {
-
-        // Obtenha os dados da linha clicada
-        const row = element.closest('tr');
-        const columns = row.querySelectorAll('td');
-
-        //alert(columns[2]?.innerText);
-
-        var dadosAdicionais = {
-            prontuario: element.getAttribute('data-prontuario'),
-            nome_paciente: element.getAttribute('data-nome_paciente'),
-            fila:  element.getAttribute('data-fila'),
-            especialidade: element.getAttribute('data-especialidade'),
-            procedimento: element.getAttribute('data-procedimento'),
-            ordem: element.getAttribute('data-ordem'),
-        };
-
-        if (dadosAdicionais.ordem == 0) {
-            dadosAdicionais.ordem = '-';
-        }
-
-        var dadosCompletos = {  
-                centrocir: columns[1]?.innerText, 
-                sala: columns[2]?.innerText, 
-                dthrcir: columns[3]?.innerText, 
-                hrnocentro: columns[4]?.innerText, 
-                hremcirurgia: columns[5]?.innerText, 
-                hrsaidasl: columns[6]?.innerText, 
-                hrsaidacc: columns[7]?.innerText,
-                ...dadosAdicionais
-        };
-
-        carregarDadosModal(dadosCompletos);
-    }
-
 
   $(document).ready(function() {
 
@@ -639,35 +604,44 @@
         },
         "autoWidth": false,
         "scrollX": true,
+       /*  fixedColumns: {
+            leftColumns: 9 // Número de colunas a serem fixadas
+        },
+        paging: false, // Opcional: desativa paginação se não necessário
+        ordering: true, // Mantém ordenação */
         "columns": [
                 { "width": "0px" },  // Primeira coluna
                 { "width": "40px" },       
-                { "width": "140px" },  // dthr
+                { "width": "95px" },  // dt
+                { "width": "65px" },  // hr
                 { "width": "250px" },  // centro cir
-                { "width": "150px" }, 
+                { "width": "100px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
                 { "width": "55px" }, 
                 { "width": "200px" },  // especial
-                { "width": "250px" },  // fila
-                { "width": "100px" },  // 
-                { "width": "250px" },  // Nome
+                { "width": "95px" },  // pront
+                { "width": "250px" },  // nome 
+                { "width": "55px" },  // idade
+                { "width": "250px" },  // proc prin
 
-                { "width": "160px" },  // 
-                { "width": "100px" },  // 
-                { "width": "60px" },  // 
-                { "width": "250px" },  //
-                { "width": "140px" },  // Origem
-                { "width": "120px" },  // 
-                { "width": "150px" },  // 
-                { "width": "100px" },  // 
-                { "width": "70px" },  // Hemoderivados
-                { "width": "70px" },  // 
-                { "width": "150px" },  // 
-                { "width": "250px" },  // 
-                { "width": "250px" },  // 
-                { "width": "250px" },  // 
+                { "width": "250px" },  //  proc adic
+                { "width": "140px" },  // lat
+                { "width": "60px" },  // cid
+                { "width": "250px" },  // cid desc
+                { "width": "250px" },  // necess
+                { "width": "250px" },  //  info adic
+                { "width": "250px" },  // equipe
+                { "width": "250px" },  // fila
+                { "width": "120px" },  // posoer
+                { "width": "70px" },  // cong
+                { "width": "70px" },  // hemod
+                { "width": "70px" },  // opme
+                { "width": "150px" },  // risco
+                { "width": "90px" },  // dt risco
+                { "width": "130px" },  // origem
+                { "width": "100px" },  // complex
 
                 { "width": "35px" },  // 
                 { "width": "35px" },  // 
@@ -681,7 +655,7 @@
                 
             ],
         "columnDefs": [
-            { "orderable": false, "targets": [0, 1, 5, 6, 7, 8, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27] },
+            { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] },
             { "visible": false, "targets": [0] }
         ],
         layout: { topStart: {
@@ -689,7 +663,7 @@
             {
                 extend: 'colvis', // Botão para exibir/inibir colunas
                 text: 'Colunas', // Texto do botão
-                columns: [2, 3, 4, 9, 10, 11, 12] // Especifica quais colunas são visíveis
+                columns: [2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
             },
             'copy',
             'csv',
@@ -707,12 +681,39 @@
     var table = $('#table').DataTable();
 
     table.on('processing.dt', function(e, settings, processing) {
-            if (processing) {
-                $('#janelaAguarde').show(); // Exibir o modal
-            } else {
-                $('#janelaAguarde').hide(); // Esconder o modal
-            }
-        });
+        if (processing) {
+            $('#janelaAguarde').show(); // Exibir o modal
+        } else {
+            $('#janelaAguarde').hide(); // Esconder o modal
+        }
+    });
+
+    
+    function markFirstRecordSelected() {
+        // Obter o índice do primeiro registro na página
+        var firstRecordIndex = table.page.info().start;
+        var $firstRecordRow = $(table.row(firstRecordIndex).node());
+
+        // Remover a classe 'lineselected' de todas as linhas e adicionar ao primeiro registro da página
+        $('#table tbody tr').removeClass('lineselected');
+        $firstRecordRow.addClass('lineselected');
+
+        // Cria um objeto de paciente
+        var paciente = {
+            prontuario: $firstRecordRow.data('prontuario'),
+            nome: $firstRecordRow.data('nome_paciente'),
+            especialidade: $firstRecordRow.data('especialidade'),
+            cid_codigo: $firstRecordRow.data('cid_codigo'),
+            cid: $firstRecordRow.data('cid'),
+            procedimento: $firstRecordRow.data('procedimento'),
+            ordem: $firstRecordRow.data('ordem'),
+            complexidade: $firstRecordRow.data('complexidade'),
+            fila: $firstRecordRow.data('fila')
+        };
+
+        // Exibe os detalhes do primeiro registro
+        //displayAsideContent(paciente);
+    }
 
     $('#table tbody').on('dblclick', 'tr', function(event) {
         event.preventDefault();
@@ -757,12 +758,12 @@
 
         var dadosCompletos = {
                 dthrcir: data[2], 
-                centrocir: data[3], 
-                sala: data[4], 
-                hrnocentro: data[5], 
-                hremcirurgia: data[6], 
-                hrsaidasl: data[7], 
-                hrsaidacc: data[8],
+                centrocir: data[4], 
+                sala: data[5], 
+                hrnocentro: data[6], 
+                hremcirurgia: data[7], 
+                hrsaidasl: data[8], 
+                hrsaidacc: data[9],
                 ...dadosAdicionais
         };
 
@@ -772,120 +773,12 @@
         //$('#modalDetalhes').modal('show');
     });
 
-    // Função para exibir os dados na seção aside
-    function displayAsideContent(paciente) {
-        let complexidadeDescricao;
-
-        switch (paciente.complexidade) {
-            case 'A':
-                complexidadeDescricao = 'ALTA';
-                break;
-            case 'B':
-                complexidadeDescricao = 'BAIXA';
-                break;
-            case 'M':
-                complexidadeDescricao = 'MÉDIA';
-                break;
-            default:
-                complexidadeDescricao = 'Indefinida'; // Valor padrão para casos inesperados
-                break;
-        }
-
-        if (paciente.ordem === 0) {
-            paciente.ordem = '-';
-        }
-
-        var htmlContent = `
-            <h6><strong>Paciente</strong></h6>
-            <table class="table table-left-aligned table-smaller-font">
-                <tbody>
-                    <tr>
-                        <td title="Ordem na Fila antes de ser enviado ao Mapa" width="40%"><i class="fa-solid fa-hashtag"></i> Ordem Fila:</td>
-                        <td title="Ordem na Fila antes de ser enviado ao Mapa"><b>${paciente.ordem}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-users-line"></i> Fila:</td>
-                        <td><b>${paciente.fila}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-folder"></i> Prontuário:</td>
-                        <td><b>${paciente.prontuario}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-user"></i> Nome:</td>
-                        <td><b>${paciente.nome}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Especialidade:</td>
-                        <td><b>${paciente.especialidade}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Procedimento Principal:</td>
-                        <td><b>${paciente.procedimento}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> CID:</td>
-                        <td><b>${paciente.cid}</b></td>
-                    </tr>
-                    <tr>
-                        <td width="40%"><i class="fa-solid fa-list"></i> Complexidade:</td>
-                        <td><b>${complexidadeDescricao}</b></td>
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
-        // Atualizar o conteúdo do aside
-        $('#sidebar').html(htmlContent);
-    }
-
     $('#table tbody').on('click', 'tr', function() {
         $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
-
-        // Cria um objeto de paciente com os dados
-        /* var paciente = {
-            prontuario: $(this).data('prontuario'),
-            nome: $(this).data('nome_paciente'),
-            especialidade: $(this).data('especialidade'),
-            cid: $(this).data('cid'),
-            procedimento: $(this).data('procedimento'),
-            ordem: $(this).data('ordem'),
-            complexidade: $(this).data('complexidade'),
-            fila:  $(this).data('fila')
-        }; */
-
-        // Exibe as informações do paciente na seção aside
-        //displayAsideContent(paciente);
     });
-
-    function markFirstRecordSelected() {
-        // Obter o índice do primeiro registro na página
-        var firstRecordIndex = table.page.info().start;
-        var $firstRecordRow = $(table.row(firstRecordIndex).node());
-
-        // Remover a classe 'lineselected' de todas as linhas e adicionar ao primeiro registro da página
-        $('#table tbody tr').removeClass('lineselected');
-        $firstRecordRow.addClass('lineselected');
-
-        // Cria um objeto de paciente
-        var paciente = {
-            prontuario: $firstRecordRow.data('prontuario'),
-            nome: $firstRecordRow.data('nome_paciente'),
-            especialidade: $firstRecordRow.data('especialidade'),
-            cid_codigo: $firstRecordRow.data('cid_codigo'),
-            cid: $firstRecordRow.data('cid'),
-            procedimento: $firstRecordRow.data('procedimento'),
-            ordem: $firstRecordRow.data('ordem'),
-            complexidade: $firstRecordRow.data('complexidade'),
-            fila: $firstRecordRow.data('fila')
-        };
-
-        // Exibe os detalhes do primeiro registro
-        displayAsideContent(paciente);
-    }
-    
+   
     // Marcar o primeiro registro como selecionado ao inicializar a DataTable
-    markFirstRecordSelected();
+    //markFirstRecordSelected();
 
     table.on('draw.dt', function() {
 
@@ -909,3 +802,4 @@
 });
 
 </script>
+

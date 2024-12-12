@@ -516,7 +516,7 @@ function verPacienteNaLista(event) {
                     if (response.success) {
                         if (response.message == 'Tem paciente') {
                             Swal.fire({
-                                title: 'Existe paciente na frente desse paciente na lista de espera. Confirma a troca por esse paciente?',
+                                title: 'Existe paciente na frente desse paciente na Fila Cirúrgica. Confirma a troca por esse paciente?',
                                 icon: 'question',
                                 showCancelButton: true,
                                 confirmButtonText: 'Ok',

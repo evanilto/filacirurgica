@@ -10,7 +10,7 @@ Entrar <?= $this->endSection() ?>
         <?= $this->include('layouts/div_flashdata') ?>
 
         <a href="/"><img class="mb-4" src="<?= base_url() ?>/assets/img/doctor-96.png" alt=""></a>
-        <h1 class="h3 mb-3 fw-normal"><?= HUAP_APPNAME ?></h1>
+        <h1 class="h3 mb-3 fw-normal"><?= HUAP_APPNAME.'<br><strong>Desenvolvimento</strong>' ?></h1>
 
         <div class="card-body p-4">
             <div class="form-group mb-3 has-validation text-start">
