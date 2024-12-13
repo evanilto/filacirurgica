@@ -37,7 +37,7 @@
                 $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
                 $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
             ?>
-                <tr data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
+                <tr data-id="<?= $itemlista->id ?>" data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
                     <td><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
@@ -152,13 +152,90 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <div class="col-md-12">
-        <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/consultar') ?>">
+    <div class="col-md-12 table-actions">
+        <a class="btn btn-warning" href="<?= base_url('listaespera/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
+        <button class="btn btn-primary" id="editar" disabled>
+            <i class="fas fa-pencil-alt"></i> Editar
+        </button>
+        <button class="btn btn-success" id="enviar" disabled>
+            <i class="fa-solid fa-paper-plane"></i> Enviar para Mapa
+        </button>
+        <button class="btn btn-danger" id="excluir" disabled>
+            <i class="fas fa-trash-alt"></i> Excluir
+        </button>
+        <button class="btn btn-info" id="detalhes" disabled>
+            <i class="fa-solid fa-magnifying-glass"></i> Detalhes
+        </button>
+
     </div>
 </div>
+
 <script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const table = document.getElementById("table");
+        const editar = document.getElementById("editar");
+        const enviar = document.getElementById("enviar");
+        const excluir = document.getElementById("excluir");
+        const detalhes = document.getElementById("detalhes");
+
+        let selectedRow = null;
+
+        // Adiciona evento de clique nas linhas
+        table.querySelectorAll("tbody tr").forEach(row => {
+            row.addEventListener("click", function () {
+                // Remove a seleção anterior
+                if (selectedRow) selectedRow.classList.remove("lineselected");
+                
+                // Adiciona a seleção na nova linha
+                selectedRow = this;
+                //selectedRow.classList.add("selected");
+                selectedRow.classList.add("lineselected"); // Correção aqui
+
+                // Habilita os botões de ação
+                editar.disabled = false;
+                enviar.disabled = false;
+                excluir.disabled = false;
+                detalhes.disabled = false;
+            });
+        });
+
+        // Adicione ações aos botões
+        editar.addEventListener("click", function () {
+            if (selectedRow) {
+                const id = selectedRow.dataset.id;
+                window.location.href = `/listaespera/editarlista/${id}`;
+            }
+        });
+
+        enviar.addEventListener("click", function () {
+            if (selectedRow) {
+                const id = selectedRow.dataset.id;
+                window.location.href = `/listaespera/enviarmapa/${id}`;
+            }
+        });
+
+        excluir.addEventListener("click", function () {
+            if (selectedRow) {
+                const id = selectedRow.dataset.id;
+                window.location.href = `/listaespera/excluirpaciente/${id}`;
+            }
+        });
+
+        detalhes.addEventListener("click", function () {
+            if (selectedRow) {
+                const detalhes = {
+                    prontuario: selectedRow.dataset.prontuario,
+                    nome: selectedRow.dataset.nome,
+                    // Extraia mais dados conforme necessário
+                };
+                consultaDetalhes(detalhes);
+            }
+        });
+    });
+
   function mostrarAguarde(event, href) {
     event.preventDefault(); // Prevenir o comportamento padrão do link
     $('#janelaAguarde').show();
@@ -519,42 +596,6 @@
             });
         }
 
-        $('#table tbody').on('click', 'tr', function() {
-
-            $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
-            /* $('#table tbody tr').removeClass('lineselected');
-            $(this).addClass('lineselected'); */
-
-           /*  var ordemFila = $(this).data('ordem');
-            var fila = $(this).data('fila');
-            var data = table.row(this).data(); // Obtenha os dados da linha clicada
-            var recordId = data[4];
- */
-            //loadAsideContent(recordId, ordemFila, fila); 
-
-        });
-
-        function markFirstRecordSelected() {
-            // Obter o índice do primeiro registro na página
-            var firstRecordIndex = table.page.info().start;
-            var $firstRecordRow = $(table.row(firstRecordIndex).node());
-
-            // Selecionar a linha correspondente ao índice
-            var $firstRecordRow = $(table.row(firstRecordIndex).node());
-
-            // Remover a classe 'selected' de todas as linhas e adicionar ao primeiro registro da página
-            $('#table tbody tr').removeClass('lineselected');
-            $firstRecordRow.addClass('lineselected');
-
-            var ordemFila = $firstRecordRow.data('ordem'); 
-            var fila = $firstRecordRow.data('fila'); 
-
-            // Obter os dados do registro selecionado e carregar os detalhes no aside
-            var data = table.row(firstRecordIndex).data();
-            var recordId = data[4];
-            //loadAsideContent(recordId, ordemFila, fila);
-        }
-
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
         table.on('draw.dt', function() {
 
@@ -571,7 +612,7 @@
             sessionStorage.setItem('paginaSelecionada', paginaAtual);
 
             // Chama markFirstRecordSelected, que não deve causar recursão
-            markFirstRecordSelected();
+            //markFirstRecordSelected();
         });
 
     });

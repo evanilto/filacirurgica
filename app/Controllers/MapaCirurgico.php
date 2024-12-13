@@ -517,6 +517,7 @@ class MapaCirurgico extends ResourceController
     }
     
     //var_dump($builder->getCompiledSelect());die();
+    //var_dump($builder->get()->getResult());die();
 
     return $builder->get()->getResult();
 }

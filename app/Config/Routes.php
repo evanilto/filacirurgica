@@ -14,7 +14,7 @@ $routes->group('/', function ($routes) {
     $routes->get('testeconexao/(:any)', 'Testeconexao::index/$1');
 });
 
-$routes->group('listaespera', function ($routes) {
+$routes->group('listaespera', ['filter' => 'auth'], function ($routes) {
     $routes->get('consultar', 'ListaEspera::consultarListaEspera');
     $routes->add('exibir', 'ListaEspera::exibirListaEspera');
     $routes->add('mostrarlista', 'ListaEspera::mostrarListaEsperaSalva');
@@ -29,9 +29,10 @@ $routes->group('listaespera', function ($routes) {
     $routes->post('getnomepac/(:num)', 'ListaEspera::getNomePaciente/$1');
     $routes->get('incluirpaciente', 'ListaEspera::incluirPacienteNaLista');
     $routes->post('incluir', 'ListaEspera::incluir');
-    $routes->get('editarlista/(:num)/(:num)', 'ListaEspera::editarLista/$1/$2');
+    //$routes->get('editarlista/(:num)/(:num)', 'ListaEspera::editarLista/$1/$2');
+    $routes->get('editarlista/(:num)', 'ListaEspera::editarLista/$1');
     $routes->post('editar', 'ListaEspera::editar');
-    $routes->get('excluirpaciente/(:num)/(:num)', 'ListaEspera::excluirPaciente/$1/$2');
+    $routes->get('excluirpaciente/(:num)', 'ListaEspera::excluirPaciente/$1');
     $routes->post('excluir/', 'ListaEspera::excluirPacienteDaLista');
     $routes->get('enviarmapa/(:num)', 'ListaEspera::enviarMapa/$1');
     $routes->post('enviar', 'ListaEspera::enviar');

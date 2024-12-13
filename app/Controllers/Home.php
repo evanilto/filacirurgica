@@ -36,7 +36,7 @@ class Home extends ResourceController
     //public function index(): string
     public function index_home()
     {
-
+     
         return view('layouts/form_home', ['timer' => env('huap.session.expires')]);
 
     }
@@ -105,6 +105,8 @@ class Home extends ResourceController
             session()->setFlashdata('failed', 'Erro ao autenticar. <br> Senha incorreta.');
             return view('home/form_login');
         } 
+
+        session()->set('isLoggedIn', true);
 
         $usuario = $v['Usuario'];
 

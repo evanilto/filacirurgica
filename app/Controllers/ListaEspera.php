@@ -1314,7 +1314,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function editarLista(int $id, $ordemfila)
+    public function editarLista(int $id, $ordemfila = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 
@@ -1554,7 +1554,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function excluirPaciente(int $id, $ordemfila)
+    public function excluirPaciente(int $id, $ordemfila = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 

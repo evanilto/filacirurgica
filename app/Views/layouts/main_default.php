@@ -74,7 +74,7 @@
             </aside> -->
         </main>
         <footer class="footer">
-            <p>&copy; 2024 HUAP-UFF - SETISD/USID - v1.4.2</p>
+            <p>&copy; 2024 HUAP-UFF - SETISD/USID - v1.5</p>
         </footer>
     </body>
 </html>

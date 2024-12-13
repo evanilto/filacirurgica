@@ -40,7 +40,8 @@ class Session extends BaseConfig
      * The number of SECONDS you want the session to last.
      * Setting to 0 (zero) means expire when the browser is closed.
      */
-    public int $expiration = 7200;
+    //public int $expiration = 14400;
+    public int $expiration;
 
     /**
      * --------------------------------------------------------------------------
@@ -99,4 +100,16 @@ class Session extends BaseConfig
      * DB Group for the database session.
      */
     public ?string $DBGroup = null;
+
+     /**
+     * --------------------------------------------------------------------------
+     * Constructor
+     * --------------------------------------------------------------------------
+     *
+     * Initializes the session expiration dynamically from the .env file.
+     */
+    public function __construct()
+    {
+        $this->expiration = env('huap.session.expires', 7200); // Default to 7200 seconds if not set in .env
+    }
 }
