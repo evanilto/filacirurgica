@@ -432,6 +432,7 @@
             { "visible": false, "targets": [0] },
             { "width": "500px", "targets": [8] }
             ],
+            stateSave: true, // Habilita o salvamento do estado
             layout: { topStart: {
                 buttons: [
                 {
