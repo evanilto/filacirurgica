@@ -108,6 +108,8 @@ class Home extends ResourceController
 
         session()->set('isLoggedIn', true);
 
+        session()->regenerate(); // Regenera apenas no login
+
         $usuario = $v['Usuario'];
 
         $perfis = $perfilusu->Where('idlogin', $usuario)->select('idperfil')->findAll();

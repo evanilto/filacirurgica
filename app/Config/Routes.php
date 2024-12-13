@@ -46,7 +46,7 @@ $routes->group('listaespera', ['filter' => 'auth'], function ($routes) {
     $routes->post('verpacientenafrente', 'ListaEspera::verPacienteNaFrente');
 });
 
-$routes->group('mapacirurgico', function ($routes) {
+$routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->get('consultar', 'MapaCirurgico::consultarMapaCirurgico');
     $routes->add('exibir', 'MapaCirurgico::exibirMapaCirurgico');
     $routes->add('mostrarmapa', 'MapaCirurgico::mostrarMapaCirurgicoSalvo');
@@ -67,7 +67,7 @@ $routes->group('mapacirurgico', function ($routes) {
     $routes->post('suspender/', 'MapaCirurgico::suspender');
 });
 
-$routes->group('usuarios', function ($routes) {
+$routes->group('usuarios', ['filter' => 'auth'], function ($routes) {
     $routes->get('', 'Usuarios');
     $routes->post('', 'Usuarios::create');
     $routes->get('list', 'Usuarios::getUsuarios');
@@ -83,7 +83,7 @@ $routes->group('usuarios', function ($routes) {
     $routes->get('carregarPagina/(:segment)', 'Usuarios::carregarPagina/$1');
 });
 
-$routes->group('filas', function ($routes) {
+$routes->group('filas', ['filter' => 'auth'], function ($routes) {
     $routes->get('incluir', 'Filas::incluir_fila');
     $routes->post('incluir', 'Filas::incluir');
     $routes->get('editar/(:num)', 'Filas::editar_fila/$1');
@@ -91,7 +91,7 @@ $routes->group('filas', function ($routes) {
     $routes->get('listar', 'Filas::listar');
 });
 
-$routes->group('relatorios', function ($routes) {
+$routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
     $routes->get('agendas', 'Agendas::consultarAgendas');
     $routes->post('consultar', 'Agendas::consultar');
     $routes->get('imprimiragendas', 'Agendas::imprimirAgendas');
