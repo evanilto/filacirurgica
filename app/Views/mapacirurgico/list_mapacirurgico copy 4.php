@@ -7,7 +7,7 @@
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
     $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
-    $corTrocaPaciente = '#FF7F7F';//'#E9967A';
+    $corTrocaPaciente = '#E9967A'; //'#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'red';//'#B54398';
     $corCirurgiaCancelada = 'red';
 ?>
@@ -24,24 +24,8 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="row" colspan="4" class="bg-light text-start" style="border-right: none;">
+                <th scope="row" colspan="41" class="bg-light text-start" style="border-right: none;">
                     <h5><strong>Mapa Cirúrgico</strong></h5>
-                </th>
-                <th scope="row" colspan="9" class="bg-light text-center" style="border-left: none; border-right: none; vertical-align: middle;">
-                    <table class="legend-table" style="margin: 0 auto;">
-                        <tr>
-                            <td class="legend-cell" style="background-color: <?= $corProgramada ?>; color: black;">Aguardando</td>
-                            <td class="legend-cell" style="background-color: <?= $corNoCentroCirúrgico ?>; color: black;">No Centro Cirúrgico</td>
-                            <td class="legend-cell" style="background-color: <?= $corEmCirurgia ?>;">Em Cirurgia</td>
-                            <td class="legend-cell" style="background-color: <?= $corSaídaDaSala ?>; color: black;">Saída da Sala</td>
-                            <td class="legend-cell" style="background-color: <?= $corSaídaCentroCirúrgico ?>;">Saída C. Cirúrgico</td>
-                            <td class="legend-cell" style="background-color: <?= $corTrocaPaciente ?>; color: black;">Troca de Paciente</td>
-                            <td class="legend-cell" style="background-color: <?= $corCirurgiaSuspensa ?>;">Cirurgia Suspensa</td>
-                            <!--td class="legend-cell" style="background-color: <?= $corCirurgiaCancelada ?>;">Cirurgia Cancelada</td-->
-                        </tr>
-                    </table>
-                </th>
-                <th scope="row" colspan="28" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
                 </th>
             </tr>
             <tr>
@@ -265,7 +249,7 @@
                             if ($status_cirurgia == "Programada" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                                 echo '<a href="#" id="programada" title="Informar entrada no centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corNoCentroCirúrgico.';"></i></a>';
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" ></i></span>';
                             }
                         ?>
                     </td>
@@ -274,7 +258,7 @@
                             if ($status_cirurgia == "NoCentroCirurgico" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                                 echo '<a href="#" id="nocentrocirurgico" title="Informar paciente em cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corEmCirurgia.';"></i></a>';
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" ></i></span>';
                             }
                         ?>
                     </td>
@@ -283,7 +267,7 @@
                             if ($status_cirurgia == "EmCirurgia" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                                 echo '<a href="#" id="emcirurgia" title="Informar saída da sala cirúrgica" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaDaSala.';"></i></a>';
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" ></i></span>';
                             }
                         ?>
                     </td>
@@ -292,7 +276,7 @@
                             if ($status_cirurgia == "SaídaDaSala" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
                                 echo '<a href="#" id="saidadasala" title="Informar saída do centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-circle" style="color: '.$corSaídaCentroCirúrgico.';"></i></a>';
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-circle" ></i></span>';
                             }
                         ?>
                     </td>
@@ -303,7 +287,7 @@
                                 //echo '<a href="#" id="suspender" title="Suspender cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i></a>';
                                 echo anchor('mapacirurgico/suspendercirurgia/'.$itemmapa->id, '<i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i>', array('title' => 'Suspender Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-power-off" ></i></span>';
                             }
                         ?>
                     </td>
@@ -326,7 +310,7 @@
                                 
                                 echo anchor('mapacirurgico/trocarpaciente?' . $queryString, '<i class="fa-solid fa-people-arrows" style="color: '.$corTrocaPaciente.';"></i>', array('title' => 'Trocar Paciente', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-people-arrows" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-people-arrows" ></i></span>';
                             }
                         ?>
                     </td>
@@ -337,7 +321,7 @@
 
                                 echo anchor('mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id, '<i class="fa-regular fa-clock"></i>', array('title' => 'Atualizar Horários', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-regular fa-clock" ></i></span>';
                             }
                         ?>
                     </td>         
@@ -348,7 +332,7 @@
 
                                 echo anchor('mapacirurgico/atualizarcirurgia/'.$itemmapa->id, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Atualizar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                             } else {
-                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" style="color: gray;"></i></span>';
+                                echo '<span style="color: gray; cursor: not-allowed;"><i class="fas fa-pencil-alt" ></i></span>';
                             }
                         ?>
                     </td>    
@@ -365,14 +349,165 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <div class="container-legend mt-3">
-        <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
+    <div class="col-md-12 table-actions mt-3">
+        <a class="btn btn-warning" style="font-size: 14px;" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if ($status_cirurgia == "Programada" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-primary" style="font-size: 14px;" title="Informar entrada no centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);">No Centro Cirúrgico</button>';
+                } else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corNoCentroCirúrgico.';" enabled>No Centro Cirúrgico</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if ($status_cirurgia == "NoCentroCirurgico" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-success" style="font-size: 14px;" title="Informar paciente em cirurgia" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);">Em Cirurgia</button>';
+                } else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corEmCirurgia.';" enabled>Em Cirurgia</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if ($status_cirurgia == "EmCirurgia" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-warning" style="font-size: 14px;" title="Informar saída da sala cirúrgica" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);">Saída da Sala</button>';
+                } else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corSaídaDaSala.';" enabled>Saída da Sala Cirúrgica</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                //if ($status_cirurgia == "SaídaDaSala" && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                  //  echo '<button class="btn btn-danger" style="font-size: 14px;" title="Informar saída do centro cirúrgico" data-mapa-dthrcirurgia="'.$itemmapa->dthrcirurgia.'" data-mapa-id="'.$itemmapa->id.'" data-lista-id="'.$itemmapa->idlista.'" data-time="'.date('Y-m-d H:i:s').'" onclick="return confirma(this);">Saída Centro Cirúrgico</button>';
+                //} else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corSaídaCentroCirúrgico.';" enabled>Saída Centro Cirúrgico</button>';
+                //}
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if (in_array($status_cirurgia, ["Programada", "NoCentroCirurgico"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-warning" style="font-size: 14px;" title="Suspender Cirurgia" onclick="mostrarAguarde(event, \'mapacirurgico/suspendercirurgia/'.$itemmapa->id.'\')"><i class="fa-solid fa-power-off" style="color: '.$corCirurgiaSuspensa.';"></i> Suspender Cirurgia</button>';
+                } else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corCirurgiaSuspensa.';" enabled><i class="fa-solid fa-power-off" ></i> Suspender Cirurgia</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if (in_array($status_cirurgia, ["Programada", "NoCentroCirurgico"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    $params = [
+                        'idlista' => $itemmapa->idlista,
+                        'idmapa' => $itemmapa->id,
+                        'idfila' => $itemmapa->idfila,
+                        'fila' => $itemmapa->fila,
+                        'ordemfila' => $itemmapa->ordem_fila,
+                        'idespecialidade' => $itemmapa->idespecialidade,
+                        'prontuario' => $itemmapa->prontuario,
+                        'dthrcirurgia' => $itemmapa->dthrcirurgia
+                    ];
+                    $queryString = http_build_query($params);
+                    echo '<button class="btn btn-info" style="font-size: 14px;" title="Trocar Paciente" onclick="mostrarAguarde(event, \'mapacirurgico/trocarpaciente?' . $queryString . '\')"><i class="fa-solid fa-people-arrows" style="color: '.$corTrocaPaciente.';"></i> Trocar Paciente</button>';
+                } else {
+                    echo '<button class="btn btn-secondary" style="font-size: 14px; background-color: '.$corTrocaPaciente.';" enabled><i class="fa-solid fa-people-arrows" ></i> Trocar Paciente</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if (!in_array($status_cirurgia, ["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"]) && $permiteatualizar && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-primary" style="font-size: 14px;" title="Atualizar Horários" onclick="mostrarAguarde(event, \'mapacirurgico/atualizarhorarioscirurgia/'.$itemmapa->id.'\')"><i class="fa-regular fa-clock"></i> Atualizar Horários</button>';
+                } else {
+                    echo '<button class="btn btn-primary" style="font-size: 14px;" enabled><i class="fa-regular fa-clock" ></i> Atualizar Horários</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                if (!in_array($status_cirurgia, ["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"]) && HUAP_Functions::tem_permissao('mapacirurgico-alterar')) {
+                    echo '<button class="btn btn-primary" id="editar" style="font-size: 14px;" title="Atualizar Cirurgia" onclick="mostrarAguarde(event, \'mapacirurgico/atualizarcirurgia/'.$itemmapa->id.'\')"><i class="fas fa-pencil-alt"></i> Atualizar Cirurgia</button>';
+                } else {
+                    echo '<button class="btn btn-primary" id="editar" style="font-size: 14px;" enabled><i class="fas fa-pencil-alt" </i> Atualizar Cirurgia</button>';
+                }
+            ?>
+        </td>
+        <td style="text-align: center; vertical-align: middle;">
+            <?php
+                //if (HUAP_Functions::tem_permissao('mapacirurgico-consultar')) {
+                    //echo '<button class="btn btn-info" style="font-size: 14px;" title="Consultar Cirurgia" onclick="mostrarAguarde(event, \'mapacirurgico/consultarcirurgia/'.$itemmapa->id.'\')"><i class="fa-solid fa-magnifying-glass"></i> Consultar Cirurgia</button>';
+                //} else {
+                    echo '<button class="btn btn-primary" style="font-size: 14px;" enabled title="Você não tem permissão para consultar."><i class="fa-solid fa-magnifying-glass"></i> Consultar Cirurgia</button>';
+                //}
+            ?>
+        </td>
+
     </div>
 </div>
 
 <script>
+
+document.addEventListener("DOMContentLoaded", function () {
+        const table = document.getElementById("table");
+        const editar = document.getElementById("editar");
+        const enviar = document.getElementById("enviar");
+        const excluir = document.getElementById("excluir");
+        const detalhes = document.getElementById("detalhes");
+
+        let selectedRow = null;
+
+        // Adiciona evento de clique nas linhas
+        table.querySelectorAll("tbody tr").forEach(row => {
+            row.addEventListener("click", function () {
+                // Remove a seleção anterior
+                if (selectedRow) selectedRow.classList.remove("lineselected");
+                
+                // Adiciona a seleção na nova linha
+                selectedRow = this;
+                //selectedRow.classList.add("selected");
+                selectedRow.classList.add("lineselected"); // Correção aqui
+
+            });
+        });
+
+        // Adicione ações aos botões
+        editar.addEventListener("click", function () {
+            if (selectedRow) {
+                const prontuario = selectedRow.dataset.prontuario;
+                window.location.href = `/listaespera/editarlista/${prontuario}`;
+            }
+        });
+
+        enviar.addEventListener("click", function () {
+            if (selectedRow) {
+                const id = selectedRow.dataset.id;
+                window.location.href = `/listaespera/enviarmapa/${id}`;
+            }
+        });
+
+        excluir.addEventListener("click", function () {
+            if (selectedRow) {
+                const id = selectedRow.dataset.id;
+                window.location.href = `/listaespera/excluirpaciente/${id}`;
+            }
+        });
+
+        detalhes.addEventListener("click", function () {
+            if (selectedRow) {
+                const detalhes = {
+                    prontuario: selectedRow.dataset.prontuario,
+                    nome: selectedRow.dataset.nome,
+                    // Extraia mais dados conforme necessário
+                };
+                consultaDetalhes(detalhes);
+            }
+        });
+    });
+
     function mostrarAguarde(event, href) {
         event.preventDefault(); // Prevenir o comportamento padrão do link
         $('#janelaAguarde').show();
@@ -612,7 +747,7 @@
         paging: false, // Opcional: desativa paginação se não necessário
         ordering: true, // Mantém ordenação */
         "columns": [
-            { "width": "0px" },  // Primeira coluna
+                { "width": "0px" },  // Primeira coluna
                 { "width": "40px" },       
                 { "width": "95px" },  // dt
                 { "width": "65px" },  // hr
@@ -661,6 +796,7 @@
             { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] },
             { "visible": false, "targets": [0] }
         ],
+        stateSave: true, // Habilita o salvamento do estado
         layout: { topStart: {
              buttons: [
             {
@@ -776,9 +912,9 @@
         //$('#modalDetalhes').modal('show');
     });
 
-    $('#table tbody').on('click', 'tr', function() {
+   /*  $('#table tbody').on('click', 'tr', function() {
         $(this).toggleClass('lineselected').siblings().removeClass('lineselected');
-    });
+    }); */
    
     // Marcar o primeiro registro como selecionado ao inicializar a DataTable
     //markFirstRecordSelected();
@@ -798,10 +934,11 @@
         sessionStorage.setItem('paginaSelecionada', paginaAtual);
 
         // Chama markFirstRecordSelected, que não deve causar recursão
-        markFirstRecordSelected();
+        //markFirstRecordSelected();
 
     });
 
 });
 
 </script>
+

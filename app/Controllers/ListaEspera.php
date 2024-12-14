@@ -73,6 +73,7 @@ class ListaEspera extends ResourceController
     private $selectprofespecialidadeaghu;
     private $selectcids;
     private $selectitensprocedhospit;
+    private $selectitensprocedhospitativos;
     private $selectorigempaciente;
     private $selectorigempacienteativos;
     private $selectlateralidade;
@@ -134,7 +135,9 @@ class ListaEspera extends ResourceController
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
-        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
+        $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+
     }
 
     /**
@@ -227,7 +230,7 @@ class ListaEspera extends ResourceController
         return $this->response->setJSON(['nome' => $paciente->nome]);
     }
 
-    return $this->response->setJSON(['error' => 'Paciente não encontrado na base do AGHU'], 404);
+    return $this->response->setJSON(['error' => 'Paciente não localizado'], 404);
 }
     /**
      * Return a new resource object, with default properties
@@ -981,7 +984,7 @@ class ListaEspera extends ResourceController
         $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['habilitasalvar'] = true;
 
         //var_dump($data['dtinclusao']);die();
@@ -1031,7 +1034,7 @@ class ListaEspera extends ResourceController
         $dataform['lateralidades'] = $this->selectlateralidadeativos;
         $dataform['especialidades'] = $this->selectespecialidadeaghu;
         $dataform['cids'] = $this->selectcids;
-        $dataform['procedimentos'] = $this->selectitensprocedhospit;
+        $dataform['procedimentos'] = $this->selectitensprocedhospitativos;
         $dataform['habilitasalvar'] = true;
 
         //die(var_dump($data['cid']));
@@ -1243,7 +1246,7 @@ class ListaEspera extends ResourceController
         $data['lateralidades'] = $this->selectlateralidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
 
         /* if ($data['idexclusao']) {
             $historico = $this->historicomodel->where('idevento', 7)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
@@ -1300,7 +1303,7 @@ class ListaEspera extends ResourceController
         $data['lateralidades'] = $this->selectlateralidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
         $data['idexclusao'] = $lista['idexclusao'];
         $data['justexclusao'] = $lista['txtjustificativaexclusao'];
@@ -1350,7 +1353,7 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
-        //var_dump($data['id']);die();
+        //var_dump($data);die();
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                             'data' => $data]);
@@ -1737,7 +1740,7 @@ class ListaEspera extends ResourceController
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
 
@@ -1848,6 +1851,33 @@ class ListaEspera extends ResourceController
             $data_clone['dtcirurgia'] = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d');
             if ($this->mapacirurgicocontroller->getPacienteNoMapa($data_clone)) {
                 session()->setFlashdata('failed', 'Esse paciente já tem uma cirurgia programada para esse dia!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
+            if (!$this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->find($this->data['procedimento'])) {
+                $this->validator->setError('procedimento', 'Esse procedimento foi desativado no AGHUX!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
+            if (!$this->lateralidademodel->Where('indsituacao', 'A')->find($this->data['lateralidade'])) {
+                $this->validator->setError('lateralidade', 'Informe a Lateralidade!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
+            if (!$this->origempacientemodel->Where('indsituacao', 'A')->find($this->data['origem'])) {
+                $this->validator->setError('origem', 'Esse tipo de origem foi desativado!');
 
                 $this->carregaMapa();
 
@@ -2294,6 +2324,37 @@ class ListaEspera extends ResourceController
                                                'validation' => $this->validator,
                                                 'data' => $data]);
         }
+    }
+    /**
+     * 
+     * @return mixed
+     */
+    public function sincronizar($prontuario) {
+
+        $db = \Config\Database::connect();
+
+        $db->transStart();
+
+        $db->table('local_aip_pacientes')->truncate();
+        $db->table('local_aip_contatos_pacientes')->truncate();
+        $db->table('local_vw_detalhes_pacientes')->truncate();
+
+        $insertStatus = 'starting';
+        $insertStatus = $db->query('INSERT INTO local_aip_pacientes SELECT * FROM remoto.aip_pacientes');
+        $insertStatus = $db->query('INSERT INTO local_aip_contatos_pacientes SELECT * FROM remoto.aip_contatos_pacientes;');
+        $insertStatus = $db->query('INSERT INTO local_vw_detalhes_pacientes SELECT * FROM remoto.vw_detalhes_pacientes;');
+
+        $db->transComplete(); 
+
+        if ($db->transStatus() === FALSE) {
+            $error = $db->error();
+            $msg = 'Falha na sincronização - ' . $error['message'];
+            echo json_encode(['error' => $msg]);
+        } else {
+            $paciente = $this->localvwdetalhespacientesmodel->find($prontuario);
+            echo json_encode(['nome' => $paciente->nome]);
+        }
+       
     }
     /**
      * 

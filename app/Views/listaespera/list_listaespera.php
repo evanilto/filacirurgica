@@ -6,7 +6,7 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" colspan="24" class="bg-light text-start"><h5><strong>Fila Cirúrgica</strong></h5></th>
+                <th scope="col" colspan="20" class="bg-light text-start"><h5><strong>Fila Cirúrgica</strong></h5></th>
             </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
@@ -29,7 +29,6 @@
                 <th scope="col" data-field="prontuarioaghu" >Congelação</th>
                 <th scope="col" data-field="prontuarioaghu" >OPME</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
-                <th scope="col" data-field="acao" colspan="4" style="text-align: center;">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -37,7 +36,26 @@
                 $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
                 $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
             ?>
-                <tr data-id="<?= $itemlista->id ?>" data-ordem="<?= $itemlista->ordem_fila ?>" data-fila="<?= $itemlista->fila ?>">
+                <tr data-id="<?= $itemlista->id ?>" 
+                    data-ordem="<?= $itemlista->ordem_fila ?>" 
+                    data-fila="<?= $itemlista->fila ?>"
+                    data-prontuario="<?= $itemlista->prontuario ?>" 
+                    data-ordem="<?= $itemlista->ordem_fila ?>" 
+                    data-fila="<?= $itemlista->fila ?>" 
+                    data-especialidade="<?= $itemlista->especialidade_descricao ?>" 
+                    data-justorig="<?= htmlspecialchars($itemlista->just_orig, ENT_QUOTES, 'UTF-8') ?>" 
+                    data-risco="<?= $itemlista->risco_descricao ?>" 
+                    data-procedimento="<?= $itemlista->procedimento_descricao ?>" 
+                    data-cid="<?= $itemlista->cid_codigo ?>" 
+                    data-ciddescr="<?= $itemlista->cid_descricao ?>" 
+                    data-origem="<?= $itemlista->origem_descricao ?>" 
+                    data-complexidade="<?= $itemlista->complexidade ?>" 
+                    data-lateralidade="<?= $itemlista->nmlateralidade ?>" 
+                    data-congelacao="<?= $itemlista->indcongelacao ?>" 
+                    data-opme="<?= $itemlista->opme ?>" 
+                    data-dtrisco="<?= $itemlista->data_risco ?>" 
+                    data-infoadic="<?= htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') ?>" 
+                >
                     <td><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
@@ -92,62 +110,7 @@
                     <td class="break-line"><?php echo $itemlista->nmlateralidade ?></td>
                     <td class="break-line"><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
                     <td class="break-line"><?php echo $itemlista->opme == 'S' ? 'SIM' : ($itemlista->opme == 'N' ? 'NÃO' : '') ?></td>
-                    
                     <td><?php echo $itemlista->data_risco ?></td>
-                    <td style="text-align: center; vertical-align: middle;">
-                        <?php 
-                            if(HUAP_Functions::tem_permissao('listaespera-alterar')) { 
-                                echo anchor('listaespera/editarlista/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-pencil-alt"></i>', array('title' => 'Editar Paciente da Lista'));
-                            } else {
-                                echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para editar."><i class="fas fa-pencil-alt"></i></span>';
-                            } 
-                        ?>
-                    </td> 
-                    <td style="text-align: center; vertical-align: middle;">
-                        <?php
-                            if(HUAP_Functions::tem_permissao('listaespera-enviar')) { 
-                                echo anchor('listaespera/enviarmapa/'.$itemlista->id, '<i class="fa-solid fa-paper-plane"></i>', array('title' => 'Enviar para o Mapa Cirúrgico', 'onclick' => 'mostrarAguarde(event, this.href)'));
-                            } else {
-                                echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para enviar para o mapa cirúrgico."><i class="fas fa-paper-plane"></i></span>';
-                            } 
-                        ?>
-                    </td>
-                    <td style="text-align: center; vertical-align: middle;">
-                        <?php
-                            if(HUAP_Functions::tem_permissao('listaespera-excluir')) { 
-                                echo anchor('listaespera/excluirpaciente/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-trash-alt"></i>', 'title="Excluir Paciente da Lista"');
-                            } else {
-                                echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para excluir."><i class="fas fa-trash-alt"></i></span>';
-                            } 
-                        ?>
-                    </td>
-                    <td style="text-align: center; vertical-align: middle;">
-                        <?php
-                            if(HUAP_Functions::tem_permissao('listaespera-consultar')) { 
-                                //echo anchor('listaespera/excluirpaciente/'.$itemlista->id.'/'.$itemlista->ordem_fila, '<i class="fas fa-trash-alt"></i>');
-                                echo '<a href="#" title="Detalhes do Paciente"
-                                 data-prontuario="' . $itemlista->prontuario . '"
-                                 data-ordem="' . $itemlista->ordem_fila . '"
-                                 data-fila="' . $itemlista->fila . '"
-                                 data-especialidade="' . $itemlista->especialidade_descricao . '"
-                                 data-justorig="' . htmlspecialchars($itemlista->just_orig, ENT_QUOTES, 'UTF-8') . '"
-                                 data-risco="' . $itemlista->risco_descricao . '"
-                                 data-procedimento="' . $itemlista->procedimento_descricao . '"
-                                 data-cid="' . $itemlista->cid . '"
-                                 data-ciddescr="' . $itemlista->cid_descricao . '"
-                                 data-origem="' . $itemlista->origem_descricao . '"
-                                 data-complexidade="' . $itemlista->complexidade . '"
-                                 data-lateralidade="' . $itemlista->nmlateralidade . '"
-                                 data-congelacao="' . $itemlista->indcongelacao . '"
-                                 data-opme="' . $itemlista->opme . '"
-                                 data-dtrisco="' . $itemlista->data_risco . '"
-                                 data-infoadic="' . htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') . '"
-                                 onclick="consultaDetalhes(this);"><i class="fa-solid fa-magnifying-glass"></i></a>';
-                            } else {
-                                echo '<span style="color: gray; cursor: not-allowed;" title="Você não tem permissão para consultar."><i class="fa-solid fa-magnifying-glass"></i></span>';
-                            } 
-                        ?>
-                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -165,7 +128,7 @@
         <button class="btn btn-danger" id="excluir" disabled>
             <i class="fas fa-trash-alt"></i> Excluir
         </button>
-        <button class="btn btn-info" id="detalhes" disabled>
+        <button class="btn btn-info" id="consultar" disabled>
             <i class="fa-solid fa-magnifying-glass"></i> Detalhes
         </button>
 
@@ -179,30 +142,24 @@
         const editar = document.getElementById("editar");
         const enviar = document.getElementById("enviar");
         const excluir = document.getElementById("excluir");
-        const detalhes = document.getElementById("detalhes");
+        const consultar = document.getElementById("consultar");
 
         let selectedRow = null;
 
-        // Adiciona evento de clique nas linhas
         table.querySelectorAll("tbody tr").forEach(row => {
             row.addEventListener("click", function () {
-                // Remove a seleção anterior
                 if (selectedRow) selectedRow.classList.remove("lineselected");
                 
-                // Adiciona a seleção na nova linha
                 selectedRow = this;
                 //selectedRow.classList.add("selected");
-                selectedRow.classList.add("lineselected"); // Correção aqui
-
-                // Habilita os botões de ação
-                editar.disabled = false;
-                enviar.disabled = false;
-                excluir.disabled = false;
-                detalhes.disabled = false;
+                selectedRow.classList.add("lineselected"); 
+                <?php if(HUAP_Functions::tem_permissao('listaespera-alterar')) { ?> editar.disabled = false;  <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-enviar')) { ?> enviar.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-excluir')) { ?> excluir.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?> consultar.disabled = false; <?php } ?>
             });
         });
 
-        // Adicione ações aos botões
         editar.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
@@ -224,66 +181,40 @@
             }
         });
 
-        detalhes.addEventListener("click", function () {
+        consultar.addEventListener("click", function () {
             if (selectedRow) {
-                const detalhes = {
-                    prontuario: selectedRow.dataset.prontuario,
-                    nome: selectedRow.dataset.nome,
-                    // Extraia mais dados conforme necessário
-                };
-                consultaDetalhes(detalhes);
+               carregarDadosModal(selectedRow);
             }
         });
     });
 
-  function mostrarAguarde(event, href) {
-    event.preventDefault(); // Prevenir o comportamento padrão do link
-    $('#janelaAguarde').show();
+    function carregarDadosModal(element) {
 
-    // Redirecionar para o link após um pequeno atraso (1 segundo)
-    setTimeout(function() {
-      window.location.href = href;
-    }, 1000);
-  }
-
-  function confirma_excluir () {
-        if (!confirm('Confirma a exclusão desse paciente da Fila Cirúrgica?')) {
-            return false;
-        };
-        
-        return true;
-    }
-
-    window.onload = function() {
-        sessionStorage.setItem('previousPage', window.location.href);
-    };
-
-    function carregarDadosModal(dados) {
-
-            var prontuario = dados[0];
-            var ordem = dados[1];
-            var especialidade = dados[2];
-            var fila = dados[3];
-            var infoadic = dados[4];
-            var risco = dados[5];
-            var procedimento = dados[6];
-            var cid = dados[7];
-            var ciddescr = dados[8];
-            var origem = dados[9];
-            var justorig = dados[10];
-            var complexidade = dados[11];
-            var lateralidade = dados[12];
-            var congelacao = dados[13];
-            var opme = dados[14];
-            var dtrisco = dados[15];
-
-            //alert (dados[13]);
-
+            prontuario = element.getAttribute('data-prontuario');
+            ordem = element.getAttribute('data-ordem');
+            fila = element.getAttribute('data-fila'); 
+            especialidade = element.getAttribute('data-especialidade'); 
+            infoadic = element.getAttribute('data-infoadic');
+            risco = element.getAttribute('data-risco'); 
+            procedimento = element.getAttribute('data-procedimento'); 
+            cid = element.getAttribute('data-cid'); 
+            ciddescr = element.getAttribute('data-ciddescr'); 
+            origem = element.getAttribute('data-origem'); 
+            complexidade = element.getAttribute('data-complexidade') === 'A' ? 'ALTA'  :
+                            element.getAttribute('data-complexidade') === 'M' ? 'MÉDIA'  :
+                            element.getAttribute('data-complexidade') === 'B' ? 'BAIXA'  : 'N/D';
+            lateralidade = element.getAttribute('data-lateralidade'); 
+            congelacao = element.getAttribute('data-congelacao') === 'S' ? 'SIM' : 'NÃO';
+            opme = element.getAttribute('data-opme') === 'S' ? 'SIM' :
+                    element.getAttribute('data-opme') === 'N' ? 'NÃO' : '';
+            dtrisco = element.getAttribute('data-dtrisco');  
+            justorig = element.getAttribute('data-justorig')
+           
             $.ajax({
                 url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
                 //url: '<--?= base_url('listaespera/carregadadosmodal/') ?>' + prontuario,
                 type: 'GET',
-                data: { prontuario: prontuario }, // Envia o ID como parâmetro
+                data: { prontuario: prontuario }, 
                 dataType: 'json',
                 success: function(paciente) {
                     // Função para verificar se o valor é nulo ou vazio
@@ -298,16 +229,7 @@
                     }
 
                     let telefonesHtml = '';
-                    /* paciente.contatos.forEach(contato => {
-                        telefonesHtml += `<strong>Tel.:</strong> (${contato.ddd})${verificarValor(contato.nro_fone)} - ${verificarValor(contato.observacao)}<br>`;
-                    }); */
-                    /* paciente.contatos.forEach((contato, index) => {
-                        const dddFormatado = contato.ddd ? `(${verificarValor(contato.ddd)})` : '';
-                        const nroFoneFormatado = verificarValor(contato.nro_fone).replace(/(\d{5})(\d+)/, '$1-$2'); // Adiciona o hífen após o 5º dígito
-                        const observacaoFormatada = contato.observacao ? `(${verificarValor(contato.observacao)})` : '';
-
-                        telefonesHtml += `<strong>Tel ${index + 1}:</strong> ${dddFormatado} ${nroFoneFormatado} ${observacaoFormatada}<br>`;
-                    }); */
+                    
                     if (paciente.contatos && paciente.contatos.length > 0) {
                         // Verifica se há mais de um telefone
                         paciente.contatos.forEach((contato, index) => {
@@ -384,47 +306,29 @@
             });
     }
 
-    function consultaDetalhes(element) {
-            // Recupera os atributos data-* do elemento clicado
-            //const prontuario = element.getAttribute('data-prontuario');
+    function mostrarAguarde(event, href) {
+        event.preventDefault(); // Prevenir o comportamento padrão do link
+        $('#janelaAguarde').show();
 
-            switch (element.getAttribute('data-opme')) {
-                case 'S': 
-                    opme = 'SIM';
-                    break;
-                case 'N': 
-                    opme = 'NÂO';
-                    break;
-                default:
-                    opme = '';
-            }
-
-            var dadosLista = [
-                element.getAttribute('data-prontuario'), // Prontuario
-                element.getAttribute('data-ordem'), // Ordem
-                element.getAttribute('data-fila'), // Fila
-                element.getAttribute('data-especialidade'), // Especialidade
-                element.getAttribute('data-infoadic'), // Informação Adicional
-                element.getAttribute('data-risco'), // Risco
-                element.getAttribute('data-procedimento'), // Procedimento
-                element.getAttribute('data-cid'), // CID
-                element.getAttribute('data-ciddescr'), // Descrição do CID
-                element.getAttribute('data-origem'), // Origem
-                element.getAttribute('data-complexidade') === 'A' ? 'ALTA' :
-                element.getAttribute('data-complexidade') === 'M' ? 'MÉDIA' :
-                element.getAttribute('data-complexidade') === 'B' ? 'BAIXA' : 'N/D',
-                element.getAttribute('data-lateralidade'), // Lateralidade
-                element.getAttribute('data-congelacao') === 'S' ? 'SIM' : 'NÃO', // Congelação
-                opme,
-                element.getAttribute('data-dtrisco'),  // Data de Risco
-                element.getAttribute('data-justorig')
-            ];
-
-            carregarDadosModal(dadosLista);
+        // Redirecionar para o link após um pequeno atraso (1 segundo)
+        setTimeout(function() {
+        window.location.href = href;
+        }, 1000);
     }
-    
-  $(document).ready(function() {
 
+    function confirma_excluir () {
+        if (!confirm('Confirma a exclusão desse paciente da Fila Cirúrgica?')) {
+            return false;
+        };
+        
+        return true;
+    }
+
+    window.onload = function() {
+        sessionStorage.setItem('previousPage', window.location.href);
+    };
+
+    $(document).ready(function() {
         $('#table tbody').on('mouseenter', 'td.break-line', function() {
             var $this = $(this); 
             
@@ -444,7 +348,6 @@
             } else {
                 $(this).data('tooltip', null); // Garante que o tooltip não seja salvo se não necessário
             }
-
         }).on('mouseleave', 'td.break-line', function() {
             var tooltip = $(this).data('tooltip'); // Recupera o tooltip salvo
             if (tooltip) {
@@ -470,7 +373,7 @@
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "lengthChange": true,
-            "pageLength": 16,
+            "pageLength": 15,
             "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
@@ -497,15 +400,11 @@
                 { "width": "150px" },
                 { "width": "110px" },
                 { "width": "110px" },
-                { "width": "90px" }, // dt risco
-                { "width": "35px" },
-                { "width": "35px" },
-                { "width": "35px" },
-                { "width": "35px" }
+                { "width": "90px" } // dt risco
 
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20] },
+            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
             { "visible": false, "targets": [0] },
             { "width": "500px", "targets": [8] }
             ],
@@ -545,56 +444,10 @@
         $('#table tbody').on('dblclick', 'tr', function(event) {
             event.preventDefault();
             
-            // Obtenha os dados da linha clicada
-            var data = table.row(this).data();
-
-            if (data[2] == 0) {
-                data[2] = '-';
-            }
-
-            var dadosLista = [
-                    data[4], // Prontuario
-                    data[2], // Ordem
-                    data[6], // Especialidade
-                    data[7], // Fila
-                    data[8], // Informação Adicional
-                    data[9], // Risco
-                    data[10], // Procedimento
-                    data[11], // CID
-                    data[12], // Descrição do CID
-                    data[13], // Origem
-                    data[14], // Complexidade
-                    data[15], // Lateralidade
-                    data[16], // Congelação
-                    data[17], // OPME
-                    data[18],  // Data de Risco
-                    data[19]  // Just Orig
-                ];
-
-            //alert(prontuario);
-            carregarDadosModal(dadosLista);
+            carregarDadosModal(this);
 
             //$('#modalDetalhes').modal('show');
         });
-
-        function loadAsideContent(prontuario, ordem, fila) {
-            $.ajax({
-                url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
-                method: 'GET',
-                beforeSend: function() {
-                    $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
-                },
-                success: function(response) {
-                    $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
-                },
-                error: function(xhr, status, error) {
-                    var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
-                    console.error(errorMessage);
-                    console.error(xhr.responseText);
-                    $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
-                }
-            });
-        }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela
         table.on('draw.dt', function() {

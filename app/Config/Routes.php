@@ -44,6 +44,7 @@ $routes->group('listaespera', ['filter' => 'auth'], function ($routes) {
     $routes->get('recuperarexcluido/(:num)', 'ListaEspera::recuperarPaciente/$1');
     $routes->post('recuperar', 'ListaEspera::recuperar');
     $routes->post('verpacientenafrente', 'ListaEspera::verPacienteNaFrente');
+    $routes->post('sincronizaraghux/(:num)', 'ListaEspera::sincronizar/$1');
 });
 
 $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {

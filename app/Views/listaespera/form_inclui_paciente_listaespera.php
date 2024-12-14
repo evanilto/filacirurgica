@@ -509,9 +509,9 @@
         });
     }
 
-    function loadAsideContent(prontuario, ordem, fila) {
+    /* function loadAsideContent(prontuario, ordem, fila) {
         $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
+            url: '<--?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
             method: 'GET',
             beforeSend: function() {
                 $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
@@ -526,53 +526,108 @@
                 $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
             }
         });
-    }
+    } */
 
     function fetchPacienteNome(prontuarioValue) {
-      if (prontuarioValue) {
+        if (!prontuarioValue) {
+            document.getElementById('nome').value = '';
+            return;
+        }
+
+        // Controle para evitar múltiplas requisições
+        let isSyncInProgress = false;
+
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
+            if (!response.ok) {
+                throw new Error('Erro ao buscar nome do paciente');
+            }
+            return response.json();
         })
         .then(data => {
-          if (data.nome) {
-            document.getElementById('nome').value = data.nome;
+            if (data.nome) {
+                // Paciente encontrado, atualiza o campo
+                document.getElementById('nome').value = data.nome;
+            } else {
+                // Paciente não encontrado, exibe modal para sincronizar
+                document.getElementById('nome').value = data.error || 'Nome não encontrado';
 
-            var ordemValue = document.getElementById('ordem_hidden').value;
-            var selectElement = document.getElementById('fila');
-            var filaText = selectElement.options[selectElement.selectedIndex].text;
+                Swal.fire({
+                    title: 'Paciente não localizado na base local! <br>Deseja sincronizar com a base do AGHUX?',
+                    text: 'Obs: isso pode levar alguns minutos',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed && !isSyncInProgress) {
+                        // Prevenir chamadas duplicadas
+                        isSyncInProgress = true;
 
-            loadAsideContent(prontuarioValue, ordemValue, filaText);
+                        $('#janelaAguarde').show();
 
-          } else {
-            document.getElementById('nome').value = data.error;
-            console.error(data.error || 'Nome não encontrado');
-            $('#sidebar').html('<p>'+data.error+'</p>'); 
-          }
+                        fetch('<?= base_url('listaespera/sincronizarComAghux/') ?>' + prontuarioValue, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(syncResponse => {
+                            if (!syncResponse.ok) {
+                                throw new Error('Erro na sincronização');
+                            }
+                            return syncResponse.json();
+                        })
+                        .then(syncData => {
+                            Swal.fire({
+                                title: 'Sincronização concluída!',
+                                text: 'Os dados foram atualizados com sucesso.',
+                                icon: 'success'
+                            });
+                            if (syncData.nome) {
+                                document.getElementById('nome').value = syncData.nome;
+                            } else {
+                                document.getElementById('nome').value = 'Não encontrado após sincronização';
+                            }
+                        })
+                        .catch(syncError => {
+                            console.error('Erro na sincronização:', syncError);
+                            Swal.fire({
+                                title: 'Erro',
+                                text: 'Não foi possível sincronizar os dados.',
+                                icon: 'error'
+                            });
+                        })
+                        .finally(() => {
+                            isSyncInProgress = false; // Sincronização concluída ou falhou
+                            $('#janelaAguarde').hide(); // Ocultar indicador de carregamento
+                        });
+                    }
+                });
+            }
         })
         .catch(error => {
-          console.error('Erro:', error);
-          document.getElementById('nome').value = '';
+            console.error('Erro ao buscar nome do paciente:', error);
+            document.getElementById('nome').value = '';
+            Swal.fire({
+                title: 'Erro',
+                text: 'Houve um problema ao buscar os dados do paciente. Tente novamente.',
+                icon: 'error'
+            });
         });
-      } else {
-        document.getElementById('nome').value = '';
-      }
     }
     
-    function fetchPacienteNomeOnLoad() {
+   /*  function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
         fetchPacienteNome(prontuarioInput.value);
-    }
+    } */
 
-    fetchPacienteNomeOnLoad();
+    //fetchPacienteNomeOnLoad();
 
     $(document).ready(function() {
         /* $('#idForm').submit(function() {
@@ -589,8 +644,34 @@
         });
 
         const prontuarioInput = document.getElementById('prontuario');
-        prontuarioInput.addEventListener('change', function() {
+       /*  prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
+        }); */
+        let isFetching = false;
+        function handleProntuarioInput(event) {
+            if (isFetching) return; // Bloqueia se já houver uma requisição em andamento
+            if (event.type === 'keydown' && !(event.key === 'Enter' || event.key === 'Tab')) {
+                return; // Só processa Enter ou Tab no keydown
+            }
+
+            // Marca que a requisição está em andamento
+            isFetching = true;
+
+            fetchPacienteNome(prontuarioInput.value);
+
+            // Libera o controle após a execução
+            setTimeout(() => {
+                isFetching = false;
+            }, 300); // Tempo estimado para prevenir disparos rápidos consecutivos
+        }
+
+        // Adicionar eventos
+        prontuarioInput.addEventListener('change', handleProntuarioInput);
+        prontuarioInput.addEventListener('blur', handleProntuarioInput);
+        prontuarioInput.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === 'Tab') {
+                handleProntuarioInput(event);
+            }
         });
 
         $('.select2-dropdown').select2();

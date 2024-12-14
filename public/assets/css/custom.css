@@ -170,6 +170,10 @@ input, textarea {
    background-color: #d6f0dc;
 }
 
+.dataTable tbody tr {
+    height: 30px; /* Ajuste o valor conforme necessário */
+}
+
 .dt-search input { /* campos pesquisar do data-table */
     width: 500px !important;; /* Define o tamanho desejado */
 }

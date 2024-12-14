@@ -1083,6 +1083,7 @@ class HUAP_Functions
         \Config\Services::session();
 
        //die(var_dump(array_intersect($_SESSION['Sessao']['idPerfil'], ['0', '2'])));
+       //die(var_dump($_SESSION['Sessao']['idPerfil']));
 
         switch ($menu) {
             case 'listaespera':
