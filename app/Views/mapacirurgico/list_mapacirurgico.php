@@ -317,6 +317,7 @@
                                     'idmapa' => $itemmapa->id,
                                     'idfila' => $itemmapa->idfila,
                                     'fila' => $itemmapa->fila,
+                                    'idprocedimento' => $itemmapa->idprocedimento,
                                     'ordemfila' =>$itemmapa->ordem_fila,
                                     'idespecialidade' => $itemmapa->idespecialidade,
                                     'prontuario' => $itemmapa->prontuario,
