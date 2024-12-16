@@ -36,12 +36,12 @@
                                             <option value="" <?php echo set_select('candidato', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['candidatos'] as $key => $candidato) {
-                                                $selected = ($data['candidato'] == $candidato['prontuario']) ? 'selected' : '';
-                                                echo '<option value="'.$candidato['prontuario'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
+                                                $selected = ($data['candidato'] == $candidato['idlistaespera']) ? 'selected' : '';
+                                                echo '<option value="'.$candidato['idlistaespera'].'" data-prontuario="'.$candidato['prontuario'].'" data-fila="'.$candidato['fila'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
                                                 '" data-procedimento="'.$candidato['idprocedimento'].'" data-risco="'.$candidato['riscocirurgico'].'" data-dtrisco="'.$candidato['datariscocirurgico'].
                                                 '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].
                                                 '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].'" data-opme="'.$candidato['opme'].
-                                                '" '.$selected.'> No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
+                                                '" '.$selected.'>Fila: '.$candidato['fila'].' '.'No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
                                             }
                                             ?>
                                         </select>
@@ -140,7 +140,8 @@
                                         
                                         foreach ($data['procedimentos_adicionais'] as $procedimento) {
                                             $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
-                                            echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
+                                            $enabled = ($procedimento->ind_situacao == 'I') ? 'disabled' : ''; 
+                                            echo '<option value="'.$procedimento->cod_tabela.'" '.$selected.' '.$enabled.'>'.$procedimento->cod_tabela.' - '.$procedimento->descricao.'</option>';
                                         }
                                         ?>
                                     </select>
@@ -183,7 +184,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
                                             id="risco" name="risco" 
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
                                             <option value="" <?php echo set_select('risco', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['riscos'] as $key => $risco) {
@@ -204,7 +205,7 @@
                                 <div class="mb-3">
                                     <label for="dtrisco" class="form-label">Data Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA" readonly
                                             class="form-control Data <?php if($validation->getError('dtrisco')): ?>is-invalid<?php endif ?>"
                                             name="dtrisco" value="<?= set_value('dtrisco', $data['dtrisco']) ?>"/>
                                         <?php if ($validation->getError('dtrisco')): ?>
@@ -244,26 +245,26 @@
                                 <div class="mb-3">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
-    <select class="form-select select2-dropdown <?php if ($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
-        id="lateralidade" name="lateralidade"
-        data-placeholder="Selecione uma opção" data-allow-clear="1">
-        <option value="" <?php echo set_select('lateralidade', '', TRUE); ?>></option>
-        <?php foreach ($data['lateralidades'] as $lateralidade): ?>
-            <?php
-            $selected = set_select('lateralidade', $lateralidade['id'], ($data['lateralidade'] == $lateralidade['id']));
-            $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
-            ?>
-            <option value="<?php echo $lateralidade['id']; ?>" <?php echo $selected; ?> <?php echo $enabled; ?>>
-                <?php echo $lateralidade['descricao']; ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <?php if ($validation->getError('lateralidade')): ?>
-        <div class="invalid-feedback">
-            <?= $validation->getError('lateralidade') ?>
-        </div>
-    <?php endif; ?>
-</div>
+                                        <select class="form-select select2-dropdown <?php if ($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
+                                            id="lateralidade" name="lateralidade"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?>></option>
+                                            <?php foreach ($data['lateralidades'] as $lateralidade): ?>
+                                                <?php
+                                                $selected = set_select('lateralidade', $lateralidade['id'], ($data['lateralidade'] == $lateralidade['id']));
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                ?>
+                                                <option value="<?php echo $lateralidade['id']; ?>" <?php echo $selected; ?> <?php echo $enabled; ?>>
+                                                    <?php echo $lateralidade['descricao']; ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <?php if ($validation->getError('lateralidade')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('lateralidade') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -467,6 +468,7 @@
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="fila" id="fila" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
+                        <input type="hidden" name="procedimento_hidden" name="procedimento_hidden" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
@@ -795,6 +797,7 @@ function verPacienteNaLista(event) {
                 $('input[name="lateralidade"]').val(lateralidadeValue); // Define o valor do hidden
                 $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
                 $('input[name="ordem_hidden"]').val(ordemValue); // Define o valor do hidden
+                $('input[name="procedimento_hidden"]').val(procedimentoValue); // Define o valor do hidden
                 //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
                 $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
                 $('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true).trigger('change');
@@ -852,6 +855,11 @@ function verPacienteNaLista(event) {
             var selectedFilter = $(this).val();
             $('input[name="lateralidade"]').val(selectedFilter);
         })
+
+        <?php if (isset($data['idlistapac2']) && !empty($data['idlistapac2'])) { ?>
+            $('#candidato').val(<?= $data['idlistapac2']?>).change(); 
+        <?php } ?> 
+
 
     });
 </script>

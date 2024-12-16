@@ -1353,7 +1353,7 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
-        //var_dump($data);die();
+        //var_dump($data['procedimentos']);die();
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                             'data' => $data]);

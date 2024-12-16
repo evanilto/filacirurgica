@@ -71,6 +71,7 @@ class MapaCirurgico extends ResourceController
     private $selectsalascirurgicasaghu;
     private $selectcids;
     private $selectitensprocedhospit;
+    private $selectitensprocedhospitativos;
     private $selectorigempaciente;
     private $selectorigempacienteativos;
     private $selectlateralidade;
@@ -135,8 +136,8 @@ class MapaCirurgico extends ResourceController
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
-        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
-        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
+        $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
+        $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
         //$this->selectcentroscirurgicosaghu = $this->aghucontroller->getCentroCirurgico();
         $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->findAll();
         //$this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
@@ -635,7 +636,7 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
 
@@ -891,6 +892,8 @@ class MapaCirurgico extends ResourceController
      */
     private function carregaMapa($oper = null) {
 
+        //die(var_dump($this->data));
+
         $this->data['especialidade'] = $this->data['especialidade'] ?? (isset($this->data['especialidade_hidden']) ? $this->data['especialidade_hidden'] : '' );
         $this->data['fila'] = $this->data['fila'] ?? (isset($this->data['fila_hidden']) ? $this->data['fila_hidden'] : '' );
         $this->data['procedimento'] = $this->data['procedimento'] ?? (isset($this->data['procedimento_hidden']) ? $this->data['procedimento_hidden'] : '' );
@@ -914,12 +917,12 @@ class MapaCirurgico extends ResourceController
         $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
         $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
 
-        if (isset($this->data['especialidade_hidden'])) {
+        /* if (isset($this->data['especialidade_hidden'])) {
             $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
             $this->data['proced_adic'] = array_filter($this->data['proced_adic']);
         } else {
             $this->data['proced_adic'] = '';
-        }
+        } */
 
         $codToRemove = $this->data['procedimento'];
         $procedimentos = $this->data['procedimentos'];
@@ -1015,7 +1018,7 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
@@ -1354,16 +1357,11 @@ class MapaCirurgico extends ResourceController
 
         $pacatrocar = $this->request->getVar();
 
-        //die(var_dump($data));
-
-        //$mapapac1 = $this->mapacirurgicomodel->find($pac1['idmapa']);
-       
-        //die(var_dump($mapapac1));
-        //$listapac1 = $this->listaesperamodel->find($mapapac1['idlistaespera']);
+        //die(var_dump($pacatrocar));
 
         $data = [];
-        $data['candidatos'] = $this->vwstatusfilacirurgicamodel->where('idfila', $pacatrocar['idfila'])
-                                                               ->whereIn('(campos_mapa).status', ['Aguardando', 'Suspensa'])
+        /* $data['candidatos'] = $this->vwstatusfilacirurgicamodel->where('idfila', $pacatrocar['idfila']) */
+        $data['candidatos'] = $this->vwstatusfilacirurgicamodel->whereIn('(campos_mapa).status', ['Aguardando', 'Suspensa'])
                                                                ->where('idespecialidade', $pacatrocar['idespecialidade'])->findAll();
         //$data['candidatos'] = $this->vwstatusfilacirurgicamodel->getPacientesDaFila($pac1['idfila'], $pac1['idespecialidade']);
 
@@ -1371,9 +1369,18 @@ class MapaCirurgico extends ResourceController
             session()->setFlashdata('failed', 'Não existem candidatos a troca nessa Fila!');
             return redirect()->to(base_url('mapacirurgico/exibir'));
         } else {
+            $data['candidatos'] = array_filter($data['candidatos'], function ($candidato) {
+                // Exclui os candidatos que estão em fila de urgência
+                return !in_array($candidato['idfila'], [178, 179, 180, 181, 189, 190, 191, 192, 193, 194, 195, 196, 197, 201, 202, 203, 204, 205, 206, 210, 177]);
+            });         
+
+            //die(var_dump( $data['candidatos']));
+
+            //foreach ($data['candidatos'] as &$candidato) {
             foreach ($data['candidatos'] as &$candidato) {
                 $ordempaciente = $this->vwordempacientemodel->find($candidato['idlistaespera']);
                 $candidato['ordem_fila'] = $ordempaciente['ordem_fila'];
+                $candidato['fila'] = $this->filamodel->find($ordempaciente['idfila'])['nmtipoprocedimento'];
                 $trimmed = trim($candidato['campos_mapa'], '()');
                 $values = str_getcsv($trimmed);
                 $candidato['riscocirurgico'] = $values[4];
@@ -1384,17 +1391,16 @@ class MapaCirurgico extends ResourceController
                 $candidato['complexidade'] = $values[10];
                 $candidato['infoadicionais'] = $values[11];
                 $candidato['opme'] = $values[14];
-
             }
         }
-        array_multisort(array_column($data['candidatos'], 'ordem_fila'), SORT_ASC, $data['candidatos']);
 
-        /* $input= $data['candidatos'][0]['campos_mapa'];
-        $trimmed = trim($input, '()');
-        $values = str_getcsv($trimmed);
-        $valor = $values[0]; */
-        //die(var_dump($pacatrocar));
+        //die(var_dump($data['candidatos']));
 
+        /* array_multisort(array_column($data['candidatos'], 'ordem_fila'), SORT_ASC, $data['candidatos']); */
+        $filas = array_column($data['candidatos'], 'fila');
+        $ordens = array_column($data['candidatos'], 'ordem_fila');
+        array_multisort($filas, SORT_ASC, $ordens, SORT_ASC, $data['candidatos']);
+      
         unset($candidato);
 
         $data['idlistapacatrocar'] = $pacatrocar['idlista'];
@@ -1409,7 +1415,7 @@ class MapaCirurgico extends ResourceController
         $data['fila'] = $pacatrocar['idfila'];
         $data['origem'] = '';
         $data['congelacao'] = '';
-        $data['procedimento'] = '';
+        $data['procedimento'] = $pacatrocar['idprocedimento'];
         $data['proced_adic'] = [];
         $data['lateralidade'] = '';
         $data['posoperatorio'] = null;
@@ -1435,13 +1441,13 @@ class MapaCirurgico extends ResourceController
         //});
         $data['procedimentos_adicionais'] = $data['procedimentos'];
 
-       //var_dump($data);die();
+        //var_dump($data['candidatos']);die();
 
-        $codToRemove = $pacatrocar['prontuario'];
+        $codToRemove = $pacatrocar['idlista'];
         $candidatos = $data['candidatos'];
         //die(var_dump($candidatos));
         $data['candidatos'] = array_filter($candidatos, function($candidato) use ($codToRemove) {
-            return $candidato['prontuario'] !== $codToRemove;
+            return $candidato['idlistaespera'] !== $codToRemove;
         });
 
         //var_dump($data['procedimentos']);die();
@@ -1468,6 +1474,8 @@ class MapaCirurgico extends ResourceController
         $this->data = [];
 
         $this->data = $this->request->getVar();
+
+        $this->data['procedimento'] = $this->data['procedimento_hidden'];
 
         //die(var_dump($this->data));
 
@@ -1514,6 +1522,7 @@ class MapaCirurgico extends ResourceController
 
             if ($this->data['risco'] != 8) { // Risco Liberado
                 $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
+
                 $this->carregaMapa();
 
                 $this->data['candidatos'] = $_SESSION['candidatos'];                                   
@@ -1589,6 +1598,8 @@ class MapaCirurgico extends ResourceController
                         sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+
+                //die(var_dump($this->data));
 
                 if (isset($this->data['proced_adic'])) {
 
@@ -1945,7 +1956,7 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
-        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['procedimentos_adicionais'] = $data['procedimentos'];
@@ -2388,7 +2399,7 @@ class MapaCirurgico extends ResourceController
             $this->data['posoperatorios'] = $this->selectposoperatorio;
             $this->data['especialidades'] = $this->selectespecialidadeaghu;
             $this->data['cids'] = $this->selectcids;
-            $this->data['procedimentos'] = $this->selectitensprocedhospit;
+            $this->data['procedimentos'] = $this->selectitensprocedhospitativos;
             $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
             $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
             $this->data['procedimentos_adicionais'] = $this->data['procedimentos'];

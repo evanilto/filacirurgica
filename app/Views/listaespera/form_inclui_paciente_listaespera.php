@@ -571,7 +571,7 @@
 
                         $('#janelaAguarde').show();
 
-                        fetch('<?= base_url('listaespera/sincronizarComAghux/') ?>' + prontuarioValue, {
+                        fetch('<?= base_url('listaespera/sincronizaraghux/') ?>' + prontuarioValue, {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json'

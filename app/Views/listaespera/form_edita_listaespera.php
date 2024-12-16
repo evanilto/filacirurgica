@@ -112,12 +112,13 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
                                             id="procedimento" name="procedimento" 
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled> 
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" > 
                                             <option value="" <?php echo set_select('procedimento', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['procedimentos'] as $key => $procedimento) {
                                                 $selected = ($data['procedimento'] == $procedimento->cod_tabela) ? 'selected' : '';
-                                                echo '<option value="'.$procedimento->cod_tabela.'" '.$selected.'>'.$procedimento->cod_tabela.' - '.$procedimento->descricao.'</option>';
+                                                $enabled = ($procedimento->ind_situacao == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$procedimento->cod_tabela.'" '.$selected.' '.$enabled.'>'.$procedimento->cod_tabela.' - '.$procedimento->descricao.'</option>';
                                             }
                                             ?>
                                         </select>
@@ -360,7 +361,7 @@
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
-                        <input type="hidden" name="procedimento" id="fila-procedimento" value="<?php echo $data['procedimento']; ?>">
+                        <!--input type="hidden" name="procedimento" id="fila-procedimento" value="<--?php echo $data['procedimento']; ?>"-->
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
@@ -467,6 +468,7 @@
 
         $('.select2-dropdown').select2({
             //dropdownCssClass: 'custom-dropdown',
+            placeholder: $(this).data('placeholder'), // Utiliza o placeholder definido no HTML
             allowClear: true
         });
 
@@ -483,9 +485,9 @@
             $('input[name="lateralidade"]').val(selectedFilter);
         })
 
-        $('#procedimento').select2().on('select2:opening', function(e) {
-        e.preventDefault(); // Impede a abertura do dropdown
-    });
+      /*   $('#procedimento').select2().on('select2:opening', function(e) {
+         e.preventDefault(); // Impede a abertura do dropdown
+        }); */
 
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {
