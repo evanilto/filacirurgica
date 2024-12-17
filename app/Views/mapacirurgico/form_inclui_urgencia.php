@@ -1012,44 +1012,28 @@
         });
 
         function updateSalasCirurgicas(selectedFilter) {
-            // Mantenha as opções selecionadas
-            var selectedValues = $('#sala').val() || [];
-
-            // Esvaziar o select
+            // Esvaziar o select de salas
             $("#sala").empty();
 
-            // Adicione as opções que já estão selecionadas primeiro para garantir que sejam visíveis
+            // Variável para controle de opções adicionadas
             var addedOptions = [];
-            
-            <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
-                var value = '<?= $sala->seqp ?>';
-                var text = '<?= $sala->nome  ?>';
-                var centrocirurgico = '<?= $sala->unf_seq ?>';
-                
-                /* // Se a sala já está selecionada, adicione-a ao dropdown
-                if (selectedValues.includes(value) && !addedOptions.includes(value)) {
-                    var option = new Option(text, value, true, true);
-                    $("#sala").append(option);
-                    addedOptions.push(value);
-                } */
-            <?php endforeach; ?>
 
-            // Adicione as opções que correspondem ao filtro (mas não estão selecionadas)
+            // Adicione apenas as salas correspondentes ao centro cirúrgico selecionado
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
                 var value = '<?= $sala->seqp ?>';
                 var text = '<?= $sala->nome ?>';
                 var centrocirurgico = '<?= $sala->unf_seq ?>';
-                
-                // Filtra as salas que pertencem ao centro cirúrgico selecionado
-                if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === centrocirurgico)) {
+
+                // Verifica se o filtro corresponde ao centro cirúrgico
+                if (!selectedFilter || selectedFilter === centrocirurgico) {
                     var option = new Option(text, value, false, false);
                     $("#sala").append(option);
                     addedOptions.push(value);
                 }
             <?php endforeach; ?>
 
-            // Atualize a seleção do Select2 para as opções visíveis
-            $('#sala').val(selectedValues).trigger('change');
+            // Reseta a seleção do Select2
+            $('#sala').val(null).trigger('change');
         }
 
         // Atualiza a lista de salas baseado no filtro selecionado
