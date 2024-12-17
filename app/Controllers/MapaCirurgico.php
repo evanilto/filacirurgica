@@ -1475,9 +1475,10 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        $this->data['procedimento'] = $this->data['procedimento_hidden'];
-
         //die(var_dump($this->data));
+
+        $this->data['fila'] = $this->data['fila_hidden'];
+        $this->data['procedimento'] = $this->data['procedimento_hidden'];
 
         $rules = [
             'candidato' => 'required',
