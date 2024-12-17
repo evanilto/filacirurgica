@@ -361,7 +361,7 @@
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
-                        <!--input type="hidden" name="procedimento" id="fila-procedimento" value="<--?php echo $data['procedimento']; ?>"-->
+                        <input type="hidden" name="procedimento" id="procedimento" value="<?php echo $data['procedimento']; ?>">
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
@@ -472,6 +472,10 @@
             allowClear: true
         });
 
+        $('#procedimento').change(function() {
+            var selectedFilter = $(this).val();
+            $('input[name="procedimento"]').val(selectedFilter);
+        })
         $('#risco').change(function() {
             var selectedFilter = $(this).val();
             $('input[name="risco"]').val(selectedFilter);
