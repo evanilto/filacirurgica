@@ -37,7 +37,7 @@
                                             <?php
                                             foreach ($data['candidatos'] as $key => $candidato) {
                                                 $selected = ($data['candidato'] == $candidato['idlistaespera']) ? 'selected' : '';
-                                                echo '<option value="'.$candidato['idlistaespera'].'" data-prontuario="'.$candidato['prontuario'].'" data-fila="'.$candidato['fila'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
+                                                echo '<option value="'.$candidato['idlistaespera'].'" data-prontuario="'.$candidato['prontuario'].'" data-idfila="'.$candidato['idfila'].'" data-fila="'.$candidato['fila'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
                                                 '" data-procedimento="'.$candidato['idprocedimento'].'" data-risco="'.$candidato['riscocirurgico'].'" data-dtrisco="'.$candidato['datariscocirurgico'].
                                                 '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].
                                                 '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].'" data-opme="'.$candidato['opme'].
@@ -466,9 +466,10 @@
                         <input type="hidden" name="fila_pacatrocar" id="fila_pacatrocar" value="<?= $pacatrocar['fila'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
-                        <input type="hidden" name="fila" id="fila" value="<?= $data['fila'] ?>" />
+                        <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
+                        <input type="hidden" name="fila_hidden" id="fila_hidden" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
-                        <input type="hidden" name="procedimento_hidden" name="procedimento_hidden" />
+                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
@@ -768,6 +769,7 @@ function verPacienteNaLista(event) {
             var prontuarioValue = $(this).val();
             var ordemValue = $(this).find('option:selected').data('ordem');
             var idlistaValue = $(this).find('option:selected').data('id');
+            var idFilaValue = $(this).find('option:selected').data('idfila');
             var procedimentoValue = $(this).find('option:selected').data('procedimento');
             var infoValue = $(this).find('option:selected').data('infoadicionais');
             var cidValue = $(this).find('option:selected').data('cid');
@@ -797,6 +799,7 @@ function verPacienteNaLista(event) {
                 $('input[name="lateralidade"]').val(lateralidadeValue); // Define o valor do hidden
                 $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
                 $('input[name="ordem_hidden"]').val(ordemValue); // Define o valor do hidden
+                $('input[name="fila_hidden"]').val(idFilaValue); // Define o valor do hidden
                 $('input[name="procedimento_hidden"]').val(procedimentoValue); // Define o valor do hidden
                 //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
                 $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
@@ -827,6 +830,7 @@ function verPacienteNaLista(event) {
 
                 //document.getElementById('procedimento').value = procedimentoValue;
 
+                $('#fila').val(idFilaValue).change(); // Atualiza o valor e dispara evento change se necessário
                 $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
 
                 $('#proced_adic option[value="' + procedimentoValue + '"]').remove();
