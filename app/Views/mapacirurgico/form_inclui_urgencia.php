@@ -1049,28 +1049,6 @@
             $('#sala').val('<?= $data['sala'] ?>').trigger('change');
         <?php endif; ?>
 
-        // Event listener for when an especialidade is selected
-       /*  $('#especialidade').change(function() {
-            
-                var selectedEspecialidade = $(this).val();
-                
-                // Clear previous options
-                $('#fila').empty().append('<option value="">Selecione uma opção</option>');
-                
-                <--?php foreach ($data['filas'] as $fila): ?>
-                var value = '<--?= $fila['id'] ?>';
-                var text = '<--?= $fila['nmtipoprocedimento']?>';
-                var especie = '<--?= $fila['idespecialidade'] ?>';
-                if (!selectedEspecialidade || selectedEspecialidade === especie) {
-                    var option = new Option(text, value, false, false);
-                    $("#fila").append(option);
-                }
-                <--?php endforeach; ?>
-
-                // Reset and update the Select2 component
-                $('#fila').val('').trigger('change.select2');
-        }); */
-
         // Event listener for when a fila is selected
         $('#fila').change(function() {
             var selectedFila = $(this).val();
