@@ -2698,22 +2698,6 @@ class MapaCirurgico extends ResourceController
                 throw new \Exception('Erro ao decodificar JSON: ' . json_last_error_msg());
             }
 
-            /* if (DateTime::createFromFormat('d/m/Y H:i', $arrayid['idMapa'])->format('Y-m-d') != date('Y-m-d')) {
-                $this->validator->setError('dthrcirurgia', 'A cirurgia não pode ser realizada fora da data prevista!');
-
-                session()->setFlashdata('error', $this->validator);
-
-                $data['especialidades'] = $this->selectespecialidadeaghu;
-                $data['filas'] = $this->selectfilaativas;
-                $data['procedimentos'] = $this->selectitensprocedhospit;
-
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
-                                                    'validation' => $this->validator,
-                                                    'data' => $data]);
-            } */
-
-            //return $this->response->setJSON(['success' => true, 'message' => 'Evento registrado com sucesso no mapa cirúrgico!'.$evento['dthrsaidasala']]);
-
             $db = Database::connect('default');
 
             $db->transStart();

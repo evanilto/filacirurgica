@@ -18,6 +18,7 @@ class MapaCirurgicoModel extends Model
         'updated_at', // for migration */
         'idlistaespera',
         'dthrnocentrocirurgico',
+        'dthrpacientesolicitado',
         'dthremcirurgia',
         'dthrsaidasala',
         'dthrsuspensao',

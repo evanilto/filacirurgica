@@ -3,7 +3,6 @@
 
     //session()->set('parametros_consulta_mapa', $data); 
     $corProgramada = 'yellow';
-    $corPacienteSolicitado = 'gold';
     $corNoCentroCirúrgico = '#97DA4B';
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
@@ -36,60 +35,18 @@ button.habilitado {
     opacity: 1;                /* Opacidade normal */
 }
 
-.lineselected,
-.lineselected td {
-    background-color: #d6f0dc !important; /* Cor de destaque */
-    color: #333 !important; /* Cor do texto */
-}
-
-/* Cor de fundo para todas as linhas não selecionadas */
-#table tbody tr:not(.lineselected) {
-    background-color: #f8f9fa; /* Cor clara para linhas não selecionadas */
-}
-
-/* Cor de fundo para as linhas fixas e não fixas */
-#table tbody tr:not(.lineselected) td,
-#table .DTFC_LeftWrapper tbody tr:not(.lineselected) td,
-#table .DTFC_RightWrapper tbody tr:not(.lineselected) td {
-    background-color: #f8f9fa; /* A mesma cor de fundo para colunas fixas e não fixas */
-}
-
-#table thead tr th,
-#table .DTFC_LeftWrapper thead tr th,
-#table .DTFC_RightWrapper thead tr th {
-    background-color: white !important; /* Cor de fundo branca */
-    color: #000; /* Cor do texto (opcional) */
-    border-color: #dee2e6; /* Cor da borda (opcional) */
-}
-
-/* Estilos para o cabeçalho fixo */
-#table .fixedColumns-LeftWrapper thead tr th {
-    background-color: white !important;
-}
-
-/* Garantir que o cabeçalho da tabela não tenha estilos adicionais */
-#table thead,
-#table .DTFC_LeftWrapper thead,
-#table .DTFC_RightWrapper thead {
-    background-color: white !important;
-}
-
 </style>
 
 <div class="table-container">
-    <table class="table table-hover table-bordered table-smaller-font table-striped">
-        <thead>
-            <tr>
-                <th scope="row" colspan="7" class="bg-light text-start" >
-                    <h5><strong>Mapa Cirúrgico</strong></h5>
-                </th>
-            </tr>
-        </thead>
-    </table>
-       
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
-           
+            <tr>
+                <th scope="row" colspan="4" class="bg-light text-start" style="border-right: none;">
+                    <h5><strong>Mapa Cirúrgico</strong></h5>
+                </th>
+                <th scope="row" colspan="37" class="bg-light text-center" style="border-left: none; vertical-align: middle;">
+                </th>
+            </tr>
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
@@ -97,9 +54,6 @@ button.habilitado {
                 <th scope="col" data-field="fila" >Hora</th>
                 <th scope="col" class="col-0" >Centro Cirúrgico</th>
                 <th scope="col" class="col-0" >Sala</th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
-                        <i class="fa-solid fa-circle" style="color: <?= $corPacienteSolicitado ?>; "></i>
-                </th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
                         <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
                 </th>
@@ -134,6 +88,9 @@ button.habilitado {
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
                 <th scope="col" data-field="nome" >Complex.</th>
+                
+
+                <th scope="col" class="col-0" colspan="9" style="text-align: center;">Ações</th>
             </tr>
         </thead>
         <tbody>
@@ -174,11 +131,6 @@ button.habilitado {
                                 $color =$corProgramada;
                                 $background_color = $color;
                                 $title = 'Cirurgia Programada';
-                                break;
-                            case 'PacienteSolicitado':
-                                $color =$corPacienteSolicitado;
-                                $background_color = $color;
-                                $title = 'Paciente Solicitado';
                                 break;
                             case 'NoCentroCirurgico':
                                 $color =$corNoCentroCirúrgico;
@@ -238,18 +190,12 @@ button.habilitado {
                     }
             ?>
                 <tr
-                    data-idmapa="<?= $itemmapa->id ?>" 
-                    data-idlista="<?= $itemmapa->idlista ?>" 
-                    data-dthrcirurgia="<?= $itemmapa->dthrcirurgia ?>" 
                     data-prontuario="<?= $itemmapa->prontuario ?>" 
                     data-nome_paciente="<?= $itemmapa->nome_paciente ?>" 
-                    data-idfila="<?= $itemmapa->idfila ?>"
                     data-fila="<?= $itemmapa->fila ?>"
-                    data-idespecialidade="<?= $itemmapa->idespecialidade ?>"
                     data-especialidade="<?= $itemmapa->especialidade_descricao ?>"
                     data-cid_codigo="<?= $itemmapa->cid_codigo ?>"
                     data-cid="<?= $itemmapa->cid_descricao ?>"
-                    data-idprocedimento="<?= $itemmapa->idprocedimento ?>"
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
                     data-ordem="<?= $itemmapa->ordem_fila ?>"
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
@@ -264,8 +210,7 @@ button.habilitado {
                     data-orig="<?= htmlspecialchars($itemmapa->origemjustificativa, ENT_QUOTES, 'UTF-8') ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
-                    data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
-                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
+                    data-tempermissao="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
                     >
                     
                     <td><?php echo $itemmapa->dthrcirurgia ?></td>
@@ -284,7 +229,6 @@ button.habilitado {
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->sala); ?>">
                         <?php echo htmlspecialchars($itemmapa->sala); ?>
                     </td>
-                    <td><?php echo $itemmapa->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrpacientesolicitado)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
@@ -341,211 +285,14 @@ button.habilitado {
         <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="pacientesolicitado" disabled> Solicitar Paciente </button>
         <button class="btn btn-primary" id="nocentrocirurgico" disabled> No Centro Cirúrgico </button>
         <button class="btn btn-primary" id="emcirurgia" disabled> Em Cirurgia </button>
         <button class="btn btn-primary" id="saidadasala" disabled> Saída da Sala </button>
         <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button>
-        <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
-        <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
-        <button class="btn btn-primary" id="trocar" disabled> Trocar </button>
-        <button class="btn btn-primary" id="editar" disabled> Editar </button>
-        <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
 </div>
 
 <script>
-
-    document.addEventListener("DOMContentLoaded", function () {
-        const table = document.getElementById("table");
-        const pacientesolicitado = document.getElementById("pacientesolicitado");
-        const nocentrocirurgico = document.getElementById("nocentrocirurgico");
-        const emcirurgia = document.getElementById("emcirurgia");
-        const saidadasala = document.getElementById("saidadasala");
-        const saidadoccirurgico = document.getElementById("saidadoccirurgico");
-
-        let selectedRow = null;
-
-        table.querySelectorAll("tbody tr").forEach(row => {
-            row.addEventListener("click", function () {
-                // Remove a classe "lineselected" de todas as linhas, incluindo colunas fixadas
-                document.querySelectorAll(".lineselected").forEach(selected => {
-                    selected.classList.remove("lineselected");
-                });
-
-                // Atualiza a linha selecionada
-                selectedRow = this;
-                selectedRow.classList.add("lineselected");
-
-                // Atualiza as colunas fixadas com a classe "lineselected"
-                const tableId = "#table"; // Substitua pelo ID real da tabela
-                const rowIndex = $(this).index();
-                $(`${tableId} .DTFC_LeftWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
-                $(`${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
-
-                // Atualize os botões e permissões
-                const statuscirurgia = selectedRow.dataset.statuscirurgia;
-                const permiteatualizar = Number(selectedRow.dataset.permiteatualizar);
-                const tempermissaoalterar = Number(selectedRow.dataset.tempermissaoalterar);
-                const tempermissaoconsultar = Number(selectedRow.dataset.tempermissaoconsultar);
-
-                console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
-
-                // Desabilite todos os botões inicialmente
-                [
-                    pacientesolicitado,
-                    nocentrocirurgico,
-                    emcirurgia,
-                    saidadasala,
-                    saidadoccirurgico,
-                    suspender,
-                    trocar,
-                    atualizarhorarios,
-                    editar,
-                    consultar
-                ].forEach(button => {
-                    button.disabled = true;
-                    button.setAttribute("disabled", true);
-                });
-
-                // Atualize os botões com base nas permissões e status
-                if (statuscirurgia === "Programada" && permiteatualizar && tempermissaoalterar) {
-                    pacientesolicitado.disabled = false;
-                    pacientesolicitado.removeAttribute("disabled");
-                } else if (statuscirurgia === "PacienteSolicitado" && permiteatualizar && tempermissaoalterar) {
-                    nocentrocirurgico.disabled = false;
-                    nocentrocirurgico.removeAttribute("disabled");
-                } else if (statuscirurgia === "NoCentroCirurgico" && permiteatualizar && tempermissaoalterar) {
-                    emcirurgia.disabled = false;
-                    emcirurgia.removeAttribute("disabled");
-                } else if (statuscirurgia === "EmCirurgia" && permiteatualizar && tempermissaoalterar) {
-                    saidadasala.disabled = false;
-                    saidadasala.removeAttribute("disabled");
-                } else if (statuscirurgia === "SaídaDaSala" && permiteatualizar && tempermissaoalterar) {
-                    saidadoccirurgico.disabled = false;
-                    saidadoccirurgico.removeAttribute("disabled");
-                }
-
-                if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) {
-                    suspender.disabled = false;
-                    suspender.removeAttribute("disabled");
-                    trocar.disabled = false;
-                    trocar.removeAttribute("disabled");
-                }
-
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) {
-                    atualizarhorarios.disabled = false;
-                    atualizarhorarios.removeAttribute("disabled");
-                    editar.disabled = false;
-                    editar.removeAttribute("disabled");
-                }
-
-                if (tempermissaoconsultar) {
-                    consultar.disabled = false;
-                    consultar.removeAttribute("disabled");
-                }
-            });
-        });
-
-        function handleButtonHorarios(buttonId) {
-            const button = document.getElementById(buttonId);
-
-            button.addEventListener("click", function () {
-                if (selectedRow) {
-                    const cirurgia = {
-                        status: selectedRow.dataset.statuscirurgia,
-                        dthrcirurgia: selectedRow.dataset.dthrcirurgia,
-                        mapaId: selectedRow.dataset.idmapa,
-                        listaId: selectedRow.dataset.idlista,
-                        time: getFormattedTimestamp()
-                    };
-
-                    console.log(`Botão ${buttonId} clicado com dados:`, cirurgia);
-
-                    confirma(cirurgia);
-                }
-            });
-        }
-
-        function handleButtonOthers(botao, rotaBase) {
-            botao.addEventListener("click", function () {
-                if (selectedRow) {
-                    const mapaId = selectedRow.dataset.idmapa;
-
-                    if (mapaId) {
-                        const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
-                        window.location.href = url;
-                    } else {
-                        console.error('ID do mapa não encontrado na linha selecionada.');
-                        alert('Erro: Não foi possível encontrar o ID do mapa.');
-                    }
-                } else {
-                    console.error('Nenhuma linha foi selecionada.');
-                    alert('Por favor, selecione uma linha antes de continuar.');
-                }
-            });
-        }
-
-        trocar.addEventListener("click", function () {
-            if (selectedRow) {
-                const statusCirurgia = selectedRow.dataset.statuscirurgia;
-                const temPermissao = selectedRow.dataset.tempermissaoalterar;
-
-                if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statusCirurgia) && temPermissao) {
-                    const params = {
-                        idlista: selectedRow.dataset.idlista,
-                        idmapa: selectedRow.dataset.idmapa,
-                        idfila: selectedRow.dataset.idfila,
-                        fila: selectedRow.dataset.fila,
-                        idprocedimento: selectedRow.dataset.idprocedimento,
-                        ordemfila: selectedRow.dataset.ordem,
-                        idespecialidade: selectedRow.dataset.idespecialidade,
-                        prontuario: selectedRow.dataset.prontuario,
-                        dthrcirurgia: selectedRow.dataset.dthrcirurgia,
-                    };
-
-                    const queryString = new URLSearchParams(params).toString();
-
-                    const url = '<?= base_url('mapacirurgico/trocarpaciente') ?>?' + queryString;
-
-                    window.location.href = url;
-
-                } else {
-                    console.error('Condições não atendidas para trocar paciente.');
-                    alert('Não é possível trocar o paciente. Verifique as permissões e o status da cirurgia.');
-                }
-            } else {
-                console.error('Nenhuma linha foi selecionada.');
-                alert('Por favor, selecione uma linha antes de continuar.');
-            }
-        });
-
-        handleButtonHorarios("pacientesolicitado");
-        handleButtonHorarios("nocentrocirurgico");
-        handleButtonHorarios("emcirurgia");
-        handleButtonHorarios("saidadasala");
-        handleButtonHorarios("saidadoccirurgico");
-        handleButtonOthers(suspender, 'suspendercirurgia');
-        handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
-        handleButtonOthers(editar, 'atualizarcirurgia');
-        handleButtonOthers(consultar, 'consultarcirurgia');
-        handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
-
-    });
-
-    function getFormattedTimestamp() {
-
-        const now = new Date();
-
-        const year = now.getFullYear();
-        const month = String(now.getMonth() + 1).padStart(2, '0'); // Meses começam do zero, então adiciona 1
-        const day = String(now.getDate()).padStart(2, '0');
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        
-        return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-    }
 
     function mostrarAguarde(event, href) {
         event.preventDefault(); // Prevenir o comportamento padrão do link
@@ -557,36 +304,32 @@ button.habilitado {
         }, 1000);
     }
 
-    function confirma(cirurgia) {
+    function confirma(link) {
         let message;
         let evento;
 
-        switch (cirurgia.status) {
-            case 'Programada':
-                evento = 'dthrpacientesolicitado';
-                message = 'Confirma a solicitação do paciente para a cirurgia?';
-                break;
-            case 'PacienteSolicitado':
+        switch (link.id) {
+            case 'programada':
                 evento = 'dthrnocentrocirurgico';
-                message = 'Confirma o paciente em cirurgia?';
+                message = 'Confirma a entrada no centro cirúrgico?';
                 break;
-            case 'NoCentroCirurgico':
+            case 'nocentrocirurgico':
                 evento = 'dthremcirurgia';
                 message = 'Confirma o paciente em cirurgia?';
                 break;
-            case 'EmCirurgia':
+            case 'emcirurgia':
                 evento = 'dthrsaidasala';
                 message = 'Confirma a saída da sala?';
                 break;
-            case 'SaídaDaSala':
+            case 'saidadasala':
                 evento = 'dthrsaidacentrocirurgico';
                 message = 'Confirma a saída do centro cirúrgico?';
                 break;
-            case 'Suspensa':
+            case 'suspender':
                 evento = 'dthrsuspensao';
                 message = 'Confirma a suspensão da cirurgia?';
                 break;
-            case 'TrocaPaciente':
+            case 'trocar':
                 evento = 'dthrtroca';
                 message = 'Confirma a troca do paciente?';
                 break;
@@ -595,6 +338,7 @@ button.habilitado {
                 break;
         }
 
+        // Exibe a SweetAlert para confirmar a ação
         Swal.fire({
             title: message,
             icon: 'question',
@@ -604,9 +348,11 @@ button.habilitado {
         }).then((result) => {
             if (result.isConfirmed) {
                 $('#janelaAguarde').show(); // Mostra a janela de aguardo
-                
-                tratarEventos(cirurgia, evento);
+
+                // Chama a função para tratar o link somente após confirmação
+                tratarLink(link, evento);
             } else {
+                // Ação ao cancelar, se necessário
                 $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
             }
         });
@@ -614,16 +360,16 @@ button.habilitado {
         return false; // Queremos prevenir o comportamento padrão do link
     }
 
-    function tratarEventos(link, evento) {
+    function tratarLink(link, evento) {
 
         $('#janelaAguarde').show();
 
         // Previnir o comportamento padrão do link
         event.preventDefault(); 
 
-        const mapaId = link.mapaId;
-        const listaId = link.listaId;
-        const timeValue = link.time;
+        const mapaId = link.dataset.mapaId;
+        const listaId = link.dataset.listaId;
+        const timeValue = link.dataset.time;
 
         var formData = new FormData();
         //formData.append('idMapa', itemId);
@@ -669,65 +415,6 @@ button.habilitado {
         xhr.send(formData);
 
         return false;
-    }
-
-    function tratarCirurgia(cirurgia, url) {
-        // Mostra a janela de espera
-        $('#janelaAguarde').show();
-
-        // Previne o comportamento padrão do evento
-        event.preventDefault();
-
-        const mapaId = cirurgia.mapaId;
-
-        // Prepara os dados para envio
-        var formData = new FormData();
-        const arrayId = { idMapa: mapaId };
-        formData.append('arrayid', JSON.stringify(arrayId));
-
-        // Configura a requisição AJAX
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '<?= base_url('mapacirurgico/') ?>' + url, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-        // Evento para tratar a resposta
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    
-                    if (response.success) {
-                        console.log('Requisição AJAX bem-sucedida.');
-
-                        // Insere o HTML retornado no DOM (substitua "#container" pelo ID correto)
-                        $('#container').html(response.html);
-
-                        // Opcional: Fechar a janela de espera após o carregamento
-                        $('#janelaAguarde').hide();
-                    } else {
-                        console.error('Erro no processamento do servidor:', response.message);
-                        alert('Erro: ' + response.message);
-                    }
-                } catch (e) {
-                    console.error('Erro ao processar a resposta JSON:', e);
-                    alert('Erro no processamento da resposta do servidor.');
-                }
-            } else {
-                console.error('Erro no envio dos dados. Código HTTP:', xhr.status);
-                alert('Erro ao realizar a operação. Por favor, tente novamente.');
-            }
-        };
-
-        // Evento para tratar erros na requisição
-        xhr.onerror = function() {
-            console.error('Erro na requisição AJAX.');
-            alert('Erro na comunicação com o servidor. Por favor, tente novamente.');
-        };
-
-        // Envia os dados
-        xhr.send(formData);
-
-        return false; // Evita o comportamento padrão
     }
 
     function carregarDadosModal(dados) {
@@ -821,169 +508,123 @@ button.habilitado {
         });
     }
 
-    $(document).ready(function() {
-
-        var primeiraVez = true;
-        var voltarPaginaAnterior = <?= json_encode($data['pagina_anterior']) ?>;
-
-        $('#janelaAguarde').show();
-
-        $('[data-toggle="tooltip"]').tooltip();
-        
-        $('#table').DataTable({
-            "order": [[0, 'asc']],
-            "lengthChange": true,
-            "pageLength": 15,
-            "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
-            "language": {
-                "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
-            },
-            "autoWidth": false,
-            "scrollX": true,
-              fixedColumns: {
-            leftColumns: 10 // Número de colunas a serem fixadas
-            },
-            paging: true, // Opcional: desativa paginação se não necessário
-            ordering: true, // Mantém ordenação
-                "columns": [
-                    { "width": "0px" },  // Primeira coluna
-                    { "width": "40px" },       
-                    { "width": "95px" },  // dt
-                    { "width": "65px" },  // hr
-                    { "width": "220px" },  // centro cir
-                    { "width": "100px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "200px" },  // especial
-                    { "width": "95px" },  // pront
-                    { "width": "250px" },  // nome 
-                    { "width": "55px" },  // idade
-                    { "width": "100px" },  // sexo
-                    { "width": "250px" },  // proc prin
-                    { "width": "250px" },  //  proc adic
-                    { "width": "140px" },  // lat
-                    { "width": "60px" },  // cid
-                    { "width": "250px" },  // cid desc
-                    { "width": "250px" },  // necess
-                    { "width": "250px" },  //  info adic
-                    { "width": "250px" },  // equipe
-                    { "width": "250px" },  // fila
-                    { "width": "120px" },  // posoer
-                    { "width": "70px" },  // cong
-                    { "width": "70px" },  // hemod
-                    { "width": "70px" },  // opme
-                    { "width": "150px" },  // risco
-                    { "width": "90px" },  // dt risco
-                    { "width": "130px" },  // origem
-                    { "width": "100px" },  // complex
-                    
-                ],
-            "columnDefs": [
-                { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] },
-                { "visible": false, "targets": [0] }
+  $(document).ready(function() {
+    $('#janelaAguarde').hide();
+    
+    $('#table').DataTable({
+        "order": [[0, 'asc']],
+        "lengthChange": true,
+        "pageLength": 15,
+        "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
+        "language": {
+            "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
+        },
+        "autoWidth": false,
+        "scrollX": true,
+        "columns": [
+            { "width": "0px" },  // Primeira coluna
+                { "width": "40px" },       
+                { "width": "95px" },  // dt
+                { "width": "65px" },  // hr
+                { "width": "250px" },  // centro cir
+                { "width": "100px" }, 
+                { "width": "60px" }, 
+                { "width": "60px" }, 
+                { "width": "60px" }, 
+                { "width": "60px" }, 
+                { "width": "200px" },  // especial
+                { "width": "95px" },  // pront
+                { "width": "250px" },  // nome 
+                { "width": "55px" },  // idade
+                { "width": "100px" },  // sexo
+                { "width": "250px" },  // proc prin
+                { "width": "250px" },  //  proc adic
+                { "width": "140px" },  // lat
+                { "width": "60px" },  // cid
+                { "width": "250px" },  // cid desc
+                { "width": "250px" },  // necess
+                { "width": "250px" },  //  info adic
+                { "width": "250px" },  // equipe
+                { "width": "250px" },  // fila
+                { "width": "120px" },  // posoer
+                { "width": "70px" },  // cong
+                { "width": "70px" },  // hemod
+                { "width": "70px" },  // opme
+                { "width": "150px" },  // risco
+                { "width": "90px" },  // dt risco
+                { "width": "130px" },  // origem
+                { "width": "100px" },  // complex
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                { "width": "35px" },  // 
+                
             ],
-            layout: { topStart: {
-                buttons: [
-                {
-                    extend: 'colvis', // Botão para exibir/inibir colunas
-                    text: 'Colunas', // Texto do botão
-                    columns: [2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
-                },
-                'copy',
-                'csv',
-                'excel',
-                'pdf',
-                'print' 
-            ] } },
-            "deferRender": true,
-                initComplete: function() {
-                    $('#janelaAguarde').hide();
-                    $('#table tbody tr td').addClass('break-line');
-                }
-        });
-
-        var table = $('#table').DataTable();
-
-        table.on('processing.dt', function(e, settings, processing) {
-            if (processing) {
-                $('#janelaAguarde').show(); // Exibir o modal
-            } else {
-                $('#janelaAguarde').hide(); // Esconder o modal
-            }
-        });
-
-        $('#table tbody').on('dblclick', 'tr', function(event) {
-            event.preventDefault();
-
-            var dadosAdicionais = {
-                prontuario: $(this).data('prontuario'),
-                nome_paciente: $(this).data('nome_paciente'),
-                fila: $(this).data('fila'),
-                especialidade: $(this).data('especialidade'),
-                cid: $(this).data('cid'),
-                cid_codigo: $(this).data('cid_codigo'),
-                procedimento: $(this).data('procedimento'),
-                ordem: $(this).data('ordem'),
-                complexidade: $(this).data('complexidade'),
-                risco: $(this).data('risco'),
-                dtrisco: $(this).data('dtrisco'),
-                lateralidade: $(this).data('lateralidade'),
-                congelacao: $(this).data('congelacao'),
-                hemo: $(this).data('hemo'),
-                posoperatorio: $(this).data('posoperatorio'),
-                infoadic: $(this).data('infoadic'),
-                necesspro: $(this).data('necesspro'),
-
-            };
-
-            if (dadosAdicionais.ordem == 0) {
-                dadosAdicionais.ordem = '-';
-            }
-
-            if (dadosAdicionais.complexidade === 'A') {
-                dadosAdicionais.complexidade = 'Alta';
-            } else if (dadosAdicionais.complexidade === 'M') {
-                dadosAdicionais.complexidade = 'Média';
-            } else if (dadosAdicionais.complexidade === 'B') {
-                dadosAdicionais.complexidade = 'Baixa';
-            }
-
-            var data = table.row(this).data();
-
-            var dadosCompletos = {
-                    dthrcir: data[2], 
-                    centrocir: data[4], 
-                    sala: data[5], 
-                    hrpacientesolicitado: data[6], 
-                    hrnocentro: data[7], 
-                    hremcirurgia: data[8], 
-                    hrsaidasl: data[9], 
-                    hrsaidacc: data[10],
-                    ...dadosAdicionais
-            };
-
-            carregarDadosModal(dadosCompletos);
-
-        });
-
-        table.on('draw.dt', function() {
-
-            if (voltarPaginaAnterior === 'S' && primeiraVez) {
-                var paginaAnterior = sessionStorage.getItem('paginaSelecionada');
-
-                if (paginaAnterior !== null) {
-                    primeiraVez = false;
-                    table.page(parseInt(paginaAnterior)).draw(false);
-                }
-            } 
-
-            var paginaAtual = table.page();
-            sessionStorage.setItem('paginaSelecionada', paginaAtual);
-
-        });
-
+        "columnDefs": [
+            { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] },
+            { "visible": false, "targets": [0] }
+        ],
+        layout: { topStart: {
+             buttons: [
+            {
+                extend: 'colvis', // Botão para exibir/inibir colunas
+                text: 'Colunas', // Texto do botão
+                columns: [2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
+            },
+            'copy',
+            'csv',
+            'excel',
+            'pdf',
+            'print' 
+        ] } },
+        
     });
+
+    var table = $('#table').DataTable();
+
+    $('#table tbody').on('click', 'tr', function() {
+        const row = table.row(this);
+        const data = row.data();
+
+        // Acessa os dados do atributo data-* da linha
+        const statuscirurgia = $(this).data('statuscirurgia');
+        const permiteatualizar = $(this).data('permiteatualizar');
+        const tempermissao = $(this).data('tempermissao');
+
+        console.log("Status:", statuscirurgia, "Permite Atualizar:", permiteatualizar, "Tem Permissão:", tempermissao);
+
+        // Manipula os botões de acordo com os dados da linha
+        const nocentrocirurgico = $("#nocentrocirurgico");
+        const emcirurgia = $("#emcirurgia");
+        const saidadasala = $("#saidadasala");
+        const saidadoccirurgico = $("#saidadoccirurgico");
+
+        nocentrocirurgico.prop('disabled', true);
+        emcirurgia.prop('disabled', true);
+        saidadasala.prop('disabled', true);
+        saidadoccirurgico.prop('disabled', true);
+
+        /*  if (statuscirurgia == "EmCirurgia") {
+            alert(statuscirurgia);
+            saidadasala.prop('disabled', false);
+        }  */
+
+        // Condicionais para habilitar os botões
+        if (statuscirurgia === "Programada" && permiteatualizar && tempermissao) {
+            nocentrocirurgico.prop('disabled', false);
+        } else if (statuscirurgia === "NoCentroCirúrgico" && permiteatualizar && tempermissao) {
+            emcirurgia.prop('disabled', false);
+        } else if (statuscirurgia === "EmCirurgia" && permiteatualizar && tempermissao) {
+            saidadasala.prop('disabled', false);
+        } else if (statuscirurgia == "SaídaDaSala" && permiteatualizar && tempermissao) {
+            saidadoccirurgico.prop('disabled', false);
+        }
+    });
+});
+
 </script>
