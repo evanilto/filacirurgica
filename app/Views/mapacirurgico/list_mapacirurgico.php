@@ -206,7 +206,11 @@
 
                     <td><?php echo $itemmapa->dthrcirurgia ?></td>
                     <td style="text-align: center; vertical-align: middle;">
-                        <i class="fa-solid fa-circle" style="color: <?= $color ?>"; background-color: <?= $background_color ?>; title="<?= $title?>"></i>
+                        <i 
+                            class="fa-solid fa-circle" 
+                            style="color: <?= $color ?>; background-color: <?= $background_color ?>; border: <?= $border ?>; border-radius: 50%;" 
+                            title="<?= $title ?>"
+                        ></i>
                     </td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y') ?></td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') ?></td>
