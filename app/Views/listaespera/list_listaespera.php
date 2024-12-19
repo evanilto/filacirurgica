@@ -1,13 +1,22 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
+<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+
 <script>$('#janelaAguarde').show();</script>
 
-<div class="table-container">
+<div class="table-container mt-4">
+    <table class="table">
+        <thead style="border: 1px solid black;">
+            <tr>
+                <th scope="row" colspan="20" class="bg-light text-start" >
+                    <h5><strong>Fila Cirúrgica</strong></h5>
+                </th>
+            </tr>
+        </thead>
+    </table>
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
-            <tr>
-                <th scope="col" colspan="20" class="bg-light text-start"><h5><strong>Fila Cirúrgica</strong></h5></th>
-            </tr>
             <tr>
                 <th scope="col" data-field="" ></th>
                 <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Fila Cirúrgica">#Lista</th>
@@ -45,6 +54,7 @@
                     data-especialidade="<?= $itemlista->especialidade_descricao ?>" 
                     data-justorig="<?= htmlspecialchars($itemlista->just_orig, ENT_QUOTES, 'UTF-8') ?>" 
                     data-risco="<?= $itemlista->risco_descricao ?>" 
+                    data-idprocedimento="<?= $itemlista->idprocedimento ?>" 
                     data-procedimento="<?= $itemlista->procedimento_descricao ?>" 
                     data-cid="<?= $itemlista->cid_codigo ?>" 
                     data-ciddescr="<?= $itemlista->cid_descricao ?>" 
@@ -119,17 +129,17 @@
         <a class="btn btn-warning" href="<?= base_url('listaespera/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
+        <button class="btn btn-primary" id="enviar" disabled>
+            <!-- <i class="fa-solid fa-paper-plane"></i> --> Enviar para Mapa
+        </button>
         <button class="btn btn-primary" id="editar" disabled>
-            <i class="fas fa-pencil-alt"></i> Editar
+            <!-- <i class="fas fa-pencil-alt"></i> --> Editar
         </button>
-        <button class="btn btn-success" id="enviar" disabled>
-            <i class="fa-solid fa-paper-plane"></i> Enviar para Mapa
+        <button class="btn btn-primary" id="excluir" disabled>
+            <!-- <i class="fas fa-trash-alt"></i> --> Excluir
         </button>
-        <button class="btn btn-danger" id="excluir" disabled>
-            <i class="fas fa-trash-alt"></i> Excluir
-        </button>
-        <button class="btn btn-info" id="consultar" disabled>
-            <i class="fa-solid fa-magnifying-glass"></i> Detalhes
+        <button class="btn btn-primary" id="consultar" disabled>
+            <!-- <i class="fa-solid fa-magnifying-glass"></i> --> Consultar
         </button>
 
     </div>
@@ -196,6 +206,7 @@
             especialidade = element.getAttribute('data-especialidade'); 
             infoadic = element.getAttribute('data-infoadic');
             risco = element.getAttribute('data-risco'); 
+            idprocedimento = element.getAttribute('data-idprocedimento'); 
             procedimento = element.getAttribute('data-procedimento'); 
             cid = element.getAttribute('data-cid'); 
             ciddescr = element.getAttribute('data-ciddescr'); 
@@ -276,22 +287,21 @@
                         <strong>Ordem na Fila:</strong> ${ordem}<br>
                         <strong>Especialidade:</strong> ${especialidade}<br>
                         <strong>Fila:</strong> ${fila}<br>
-                        <strong>Procedimento:</strong> ${procedimento}<br>
+                        <strong>Procedimento:</strong> ${idprocedimento} - ${procedimento}<br>
                         <strong>Risco:</strong> ${risco}<br>
                         <strong>Data do Risco:</strong> ${verificarValor(dtrisco)}<br>
-                        <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                     `);
 
                     // Atualiza o conteúdo do modal para a coluna direita
                     $('#colunaDireita2').html(`
-                        <strong>CID:</strong> ${verificarValor(cid)}<br>
-                        <strong>CID Descrição:</strong> ${verificarValor(ciddescr)}<br>
+                        <strong>CID:</strong> ${verificarValor(cid)} - ${verificarValor(ciddescr)}<br>
                         <strong>Origem:</strong> ${origem}<br>
                         <strong>Complexidade:</strong> ${complexidade}<br>
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
                         <strong>OPME:</strong> ${verificarValor(opme)}<br>
                         <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
+                        <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                     `);
 
                     $('#linha').html(`
@@ -380,6 +390,11 @@
             },
             "autoWidth": false,  /* Desative a largura automática */
             "scrollX": true,  /* Ative a rolagem horizontal */
+            fixedColumns: {
+            leftColumns: 5 // Número de colunas a serem fixadas
+            },
+            paging: true, // Opcional: desativa paginação se não necessário
+            ordering: true, // Mantém ordenação
             "columns": [
                 { "width": "0px" },  // Primeira coluna
                 { "width": "90px" },  // Lista
@@ -439,6 +454,18 @@
             } else {
                 $('#janelaAguarde').hide(); // Esconder o modal
             }
+        }).on('draw.dt', function () {
+            $('.DTFC_LeftWrapper thead th tr, .DTFC_RightWrapper thead th').css({
+                'background-color': '#ffffff',
+                'color': '#000',
+                'border-color': '#dee2e6'
+            });
+        });
+
+        $('#table thead th').css({
+            'background-color': '#ffffff', /* Altere para a cor desejada */
+            'color': '#000',
+            'border-color': '#dee2e6'
         });
 
         $('#table tbody').on('dblclick', 'tr', function(event) {

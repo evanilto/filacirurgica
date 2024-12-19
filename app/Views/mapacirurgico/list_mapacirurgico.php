@@ -8,9 +8,9 @@
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
     $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
-    $corTrocaPaciente = '#FF7F7F';//'#E9967A';
-    $corCirurgiaSuspensa = 'red';//'#B54398';
-    $corCirurgiaCancelada = 'red';
+    $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
+    $corCirurgiaSuspensa = 'Red';
+    $corCirurgiaCancelada = $corCirurgiaSuspensa;
 ?>
 
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
@@ -19,66 +19,27 @@
 <script>$('#janelaAguarde').show();</script>
 <style>
 /* Estilo para botão desabilitado */
-button.desabilitado {
-    background-color: #d3d3d3; /* Cor de fundo cinza */
-    color: #999;               /* Texto mais claro */
-    border: 1px solid #ccc;    /* Borda cinza */
-    pointer-events: none;      /* Impede a interação */
-    opacity: 0.5;              /* Opacidade reduzida */
-}
+/*button.desabilitado {
+/*    background-color: #d3d3d3; /* Cor de fundo cinza */
+/*   color: #999;               /* Texto mais claro */
+/*  border: 1px solid #ccc;    /* Borda cinza */
+/*   pointer-events: none;      /* Impede a interação */
+/*   opacity: 0.5;              /* Opacidade reduzida */
+/*}
 
 /* Estilo para botão habilitado */
-button.habilitado {
-    background-color: #4CAF50; /* Cor de fundo verde */
-    color: white;              /* Texto branco */
-    border: 1px solid #4CAF50; /* Borda verde */
-    pointer-events: auto;      /* Permite interação */
-    opacity: 1;                /* Opacidade normal */
-}
-
-.lineselected,
-.lineselected td {
-    background-color: #d6f0dc !important; /* Cor de destaque */
-    color: #333 !important; /* Cor do texto */
-}
-
-/* Cor de fundo para todas as linhas não selecionadas */
-#table tbody tr:not(.lineselected) {
-    background-color: #f8f9fa; /* Cor clara para linhas não selecionadas */
-}
-
-/* Cor de fundo para as linhas fixas e não fixas */
-#table tbody tr:not(.lineselected) td,
-#table .DTFC_LeftWrapper tbody tr:not(.lineselected) td,
-#table .DTFC_RightWrapper tbody tr:not(.lineselected) td {
-    background-color: #f8f9fa; /* A mesma cor de fundo para colunas fixas e não fixas */
-}
-
-#table thead tr th,
-#table .DTFC_LeftWrapper thead tr th,
-#table .DTFC_RightWrapper thead tr th {
-    background-color: white !important; /* Cor de fundo branca */
-    color: #000; /* Cor do texto (opcional) */
-    border-color: #dee2e6; /* Cor da borda (opcional) */
-}
-
-/* Estilos para o cabeçalho fixo */
-#table .fixedColumns-LeftWrapper thead tr th {
-    background-color: white !important;
-}
-
-/* Garantir que o cabeçalho da tabela não tenha estilos adicionais */
-#table thead,
-#table .DTFC_LeftWrapper thead,
-#table .DTFC_RightWrapper thead {
-    background-color: white !important;
-}
-
+/*button.habilitado {
+/*    background-color: #4CAF50; /* Cor de fundo verde */
+/*    color: white;              /* Texto branco */
+/*    border: 1px solid #4CAF50; /* Borda verde */
+/*    pointer-events: auto;      /* Permite interação */
+/*    opacity: 1;                /* Opacidade normal */
+/*} */
 </style>
 
-<div class="table-container">
-    <table class="table table-hover table-bordered table-smaller-font table-striped">
-        <thead>
+<div class="table-container mt-4">
+    <table class="table">
+        <thead style="border: 1px solid black;">
             <tr>
                 <th scope="row" colspan="7" class="bg-light text-start" >
                     <h5><strong>Mapa Cirúrgico</strong></h5>
@@ -86,10 +47,8 @@ button.habilitado {
             </tr>
         </thead>
     </table>
-       
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
-           
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
@@ -100,16 +59,16 @@ button.habilitado {
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
                         <i class="fa-solid fa-circle" style="color: <?= $corPacienteSolicitado ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente no Centro Cirúrgico">
                         <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente em Cirurgia">
                         <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu da Sala">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu do Centro Cirúrgico (cirurgia realizada)">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" >Especialidade</th>
@@ -251,6 +210,8 @@ button.habilitado {
                     data-cid="<?= $itemmapa->cid_descricao ?>"
                     data-idprocedimento="<?= $itemmapa->idprocedimento ?>"
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
+                    data-procedimentosadicionais="<?= $itemmapa->procedimentos_adicionais ?>"
+                    data-equipe="<?= $itemmapa->equipe_cirurgica ?>"
                     data-ordem="<?= $itemmapa->ordem_fila ?>"
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
                     data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
@@ -261,7 +222,8 @@ button.habilitado {
                     data-posoperatorio="<?= $itemmapa->posoperatorio ?>"
                     data-necesspro="<?= htmlspecialchars($itemmapa->necessidadesproced, ENT_QUOTES, 'UTF-8') ?>"
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
-                    data-orig="<?= htmlspecialchars($itemmapa->origemjustificativa, ENT_QUOTES, 'UTF-8') ?>"
+                    data-opme="<?= $itemmapa->opme ?>"
+                    data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
                     data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
@@ -346,9 +308,9 @@ button.habilitado {
         <button class="btn btn-primary" id="emcirurgia" disabled> Em Cirurgia </button>
         <button class="btn btn-primary" id="saidadasala" disabled> Saída da Sala </button>
         <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button>
-        <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
-        <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
         <button class="btn btn-primary" id="trocar" disabled> Trocar </button>
+        <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
+        <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
@@ -406,43 +368,56 @@ button.habilitado {
                 ].forEach(button => {
                     button.disabled = true;
                     button.setAttribute("disabled", true);
+                    button.style.backgroundColor = '';
                 });
 
                 // Atualize os botões com base nas permissões e status
                 if (statuscirurgia === "Programada" && permiteatualizar && tempermissaoalterar) {
                     pacientesolicitado.disabled = false;
                     pacientesolicitado.removeAttribute("disabled");
+                    pacientesolicitado.style.backgroundColor = "<?= $corPacienteSolicitado ?>";
                 } else if (statuscirurgia === "PacienteSolicitado" && permiteatualizar && tempermissaoalterar) {
                     nocentrocirurgico.disabled = false;
                     nocentrocirurgico.removeAttribute("disabled");
+                    nocentrocirurgico.style.backgroundColor = "<?= $corNoCentroCirúrgico ?>";
                 } else if (statuscirurgia === "NoCentroCirurgico" && permiteatualizar && tempermissaoalterar) {
                     emcirurgia.disabled = false;
                     emcirurgia.removeAttribute("disabled");
+                    emcirurgia.style.backgroundColor = "<?= $corEmCirurgia ?>";
                 } else if (statuscirurgia === "EmCirurgia" && permiteatualizar && tempermissaoalterar) {
                     saidadasala.disabled = false;
                     saidadasala.removeAttribute("disabled");
+                    saidadasala.style.backgroundColor = "<?= $corSaídaDaSala ?>";
                 } else if (statuscirurgia === "SaídaDaSala" && permiteatualizar && tempermissaoalterar) {
                     saidadoccirurgico.disabled = false;
                     saidadoccirurgico.removeAttribute("disabled");
+                    saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
                 }
 
                 if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) {
                     suspender.disabled = false;
                     suspender.removeAttribute("disabled");
+                    suspender.style.backgroundColor = "<?= $corCirurgiaSuspensa ?>";
+
                     trocar.disabled = false;
                     trocar.removeAttribute("disabled");
+                    trocar.style.backgroundColor = "<?= $corTrocaPaciente ?>";
+
                 }
 
                 if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) {
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
+
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
+
                 }
 
                 if (tempermissaoconsultar) {
                     consultar.disabled = false;
                     consultar.removeAttribute("disabled");
+
                 }
             });
         });
@@ -568,7 +543,7 @@ button.habilitado {
                 break;
             case 'PacienteSolicitado':
                 evento = 'dthrnocentrocirurgico';
-                message = 'Confirma o paciente em cirurgia?';
+                message = 'Confirma a entrada do paciente no centro cirúrgico?';
                 break;
             case 'NoCentroCirurgico':
                 evento = 'dthremcirurgia';
@@ -796,11 +771,14 @@ button.habilitado {
                     <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
                     <strong>Especialidade:</strong> ${dados.especialidade}<br>
                     <strong>Fila:</strong> ${dados.fila}<br>
-                    <strong>Procedimento:</strong> ${dados.procedimento}<br>
+                    <strong>Procedimento:</strong> ${dados.idprocedimento} - ${dados.procedimento}<br>
+                    <strong>Procedimentos Adicionais:</strong> ${verificarValor(dados.procedimentosadicionais)}<br>
+                    <strong>Equipe:</strong> ${verificarValor(dados.equipe)}<br>
                     <strong>Risco:</strong> ${dados.risco}<br>
                     <strong>Data Risco:</strong> ${dados.dtrisco}<br>
                     <strong>CID:</strong> ${dados.cid_codigo} - ${dados.cid}<br>
                     <strong>Complexidade:</strong> ${dados.complexidade}<br>
+                    <strong>Origem:</strong> ${dados.origem}<br>
                 `);
 
                 // Atualiza o conteúdo do modal para a coluna direita
@@ -808,9 +786,10 @@ button.habilitado {
                     <strong>Lateralidade:</strong> ${dados.lateralidade}<br>
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
                     <strong>Hemoderivados:</strong> ${dados.hemo}<br>
+                    <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
-                    <strong>Informações Adicionais:</strong> ${dados.infoadic}<br>
-                    <strong>Necessidades do Procedimento:</strong> ${dados.necesspro}<br>
+                    <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
+                    <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
                 `);
 
                 $('#modalDetalhes').modal('show');
@@ -840,7 +819,7 @@ button.habilitado {
             },
             "autoWidth": false,
             "scrollX": true,
-              fixedColumns: {
+            fixedColumns: {
             leftColumns: 10 // Número de colunas a serem fixadas
             },
             paging: true, // Opcional: desativa paginação se não necessário
@@ -882,7 +861,7 @@ button.habilitado {
                     
                 ],
             "columnDefs": [
-                { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] },
+                { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 10, 21, 22] },
                 { "visible": false, "targets": [0] }
             ],
             layout: { topStart: {
@@ -909,10 +888,22 @@ button.habilitado {
 
         table.on('processing.dt', function(e, settings, processing) {
             if (processing) {
-                $('#janelaAguarde').show(); // Exibir o modal
+                $('#janelaAguarde').show(); 
             } else {
-                $('#janelaAguarde').hide(); // Esconder o modal
+                $('#janelaAguarde').hide();
             }
+        }).on('draw.dt', function () {
+            $('.DTFC_LeftWrapper thead th tr, .DTFC_RightWrapper thead th').css({
+                'background-color': '#ffffff',
+                'color': '#000',
+                'border-color': '#dee2e6'
+            });
+        });
+
+        $('#table thead th').css({
+            'background-color': '#ffffff', /* Altere para a cor desejada */
+            'color': '#000',
+            'border-color': '#dee2e6'
         });
 
         $('#table tbody').on('dblclick', 'tr', function(event) {
@@ -925,14 +916,19 @@ button.habilitado {
                 especialidade: $(this).data('especialidade'),
                 cid: $(this).data('cid'),
                 cid_codigo: $(this).data('cid_codigo'),
+                idprocedimento: $(this).data('idprocedimento'),
                 procedimento: $(this).data('procedimento'),
+                procedimentosadicionais: $(this).data('procedimentosadicionais'),
+                equipe: $(this).data('equipe'),
                 ordem: $(this).data('ordem'),
+                origem: $(this).data('origem'),
                 complexidade: $(this).data('complexidade'),
                 risco: $(this).data('risco'),
                 dtrisco: $(this).data('dtrisco'),
                 lateralidade: $(this).data('lateralidade'),
                 congelacao: $(this).data('congelacao'),
                 hemo: $(this).data('hemo'),
+                opme: $(this).data('opme'),
                 posoperatorio: $(this).data('posoperatorio'),
                 infoadic: $(this).data('infoadic'),
                 necesspro: $(this).data('necesspro'),

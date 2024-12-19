@@ -48,10 +48,12 @@ body {
 }
 
 .content {
+    margin-left: 2px; /* Margem à esquerda */
+    margin-right: 2px; /* Margem à direita */
     background: #fff;
     padding: 0;
     border: none;
-    max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
+    /*max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
     overflow-y: auto; /* Rolagem apenas vertical */
     overflow-x: hidden; /* Impede a rolagem horizontal */
     height: 100%; /* Garante que use todo o espaço vertical permitido */
@@ -174,16 +176,79 @@ input, textarea {
     height: 30px; /* Ajuste o valor conforme necessário */
 }
 
+.lineselected,
+.lineselected td {
+    background-color: #d6f0dc !important; /* Cor de destaque */
+    color: #333 !important; /* Cor do texto */
+}
+
+/* Cor de fundo para todas as linhas não selecionadas */
+#table tbody tr:not(.lineselected) {
+    background-color: #f8f9fa; /* Cor clara para linhas não selecionadas */
+}
+
+/* Cor de fundo para as linhas fixas e não fixas */
+#table tbody tr:not(.lineselected) td,
+#table .DTFC_LeftWrapper tbody tr:not(.lineselected) td,
+#table .DTFC_RightWrapper tbody tr:not(.lineselected) td {
+    background-color: #f8f9fa; /* A mesma cor de fundo para colunas fixas e não fixas */
+}
+
+/* Estilo uniforme para o cabeçalho */
+#table thead tr th,
+#table .DTFC_LeftWrapper thead tr th,
+#table .DTFC_RightWrapper thead tr th {
+    background-color: #ffffff !important; /* Cor de fundo branca */
+    color: #000 !important; /* Cor do texto */
+    border-color: #dee2e6; /* Cor da borda */
+}
+
+/* Garantir consistência nos wrappers */
+#table .DTFC_LeftWrapper thead tr th,
+#table .DTFC_RightWrapper thead tr th {
+    background-color: #ffffff !important;
+}
+
+/* Ajuste para corrigir possíveis estilos inline */
+#table .DTFC_LeftWrapper thead tr th div,
+#table .DTFC_RightWrapper thead tr th div {
+    background-color: #ffffff !important;
+    color: #000 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Remover qualquer sombra ou sobreposição de estilos */
+#table .DTFC_LeftWrapper,
+#table .DTFC_RightWrapper {
+    box-shadow: none !important;
+    background-color: transparent !important;
+}
+
+/* Alinhar a borda inferior para manter o layout */
+#table thead tr th,
+#table .DTFC_LeftWrapper thead tr th,
+#table .DTFC_RightWrapper thead tr th {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.dataTables_scrollHead th, 
+.dataTables_scrollBody td {
+    resize: horizontal; /* Permite o redimensionamento horizontal */
+    overflow: hidden;   /* Necessário para ativar o resize */
+    min-width: 50px;    /* Largura mínima para evitar colapsos */
+    max-width: 300px;   /* (Opcional) Largura máxima */
+}
+
 .dt-search input { /* campos pesquisar do data-table */
     width: 500px !important;; /* Define o tamanho desejado */
 }
 
 .form-container {
     background-color: #f8f9fa; /* Cor de fundo clara */
-    padding: 20px; /* Preenchimento interno */
+    padding: 10px; /* Preenchimento interno */
     border-radius: 5px; /* Bordas arredondadas */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    margin-top: 20px; /* Margem superior */
+    margin-top: 10px; /* Margem superior */
 }
 .form-check {
     display: flex; /* Flex para os itens de radio */
@@ -217,7 +282,7 @@ table {
     table-layout: fixed; /* Isso ajuda a manter as larguras das colunas */
     page-break-inside: auto;
     width: 100%;
-    margin-top: 20px;
+    /* margin-top: 20px; */
     border-collapse: collapse; /* Remove gaps between table cells */
     background-color: #f8f9fa; /* Cor de fundo clara */
     border-radius: 5px; /* Bordas arredondadas */
@@ -239,7 +304,7 @@ tfoot {
 
 .tabela-60 {
     width: 60% !important; /* Define a largura da tabela apenas para esta classe */
-    margin-top: 30px !important;
+   /*  margin-top: 30px !important; */
     margin: 0 auto; /* Centraliza a tabela horizontalmente */
 }
 
@@ -249,8 +314,8 @@ tfoot {
 }
 
 .table-container {
-    margin-top: 5px; /* Margem superior */
-    margin-bottom: 5px; /* Margem superior */
+   /*  margin-top: 5px; /* Margem superior */
+   /* margin-bottom: 5px; /* Margem superior */ 
     width: 100%; /* Define a largura do contêiner */
     margin-left: auto; /* Centraliza à esquerda */
     margin-right: auto; /* Centraliza à direita */

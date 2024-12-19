@@ -1,7 +1,7 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card form-container">

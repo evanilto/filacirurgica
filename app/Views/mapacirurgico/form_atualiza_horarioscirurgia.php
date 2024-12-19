@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="dthrcirurgia" class="form-label">Data/Hora da Cirurgia</label>
                                     <div class="input-group">
@@ -126,6 +126,21 @@
                                         <?php if ($validation->getError('dthrcirurgia')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dthrcirurgia') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-3">
+                                    <label for="hrpacientesolicitado" class="form-label">Paciente Solicitado</label>
+                                    <div class="input-group">
+                                        <input type="text" id="hrpacientesolicitado" placeholder="HH:MM"
+                                            class="form-control <?php if($validation->getError('hrpacientesolicitado')): ?>is-invalid<?php endif ?>"
+                                            name="hrpacientesolicitado" value="<?= set_value('hrpacientesolicitado', $data['hrpacientesolicitado']) ?>" />
+                                        <?php if ($validation->getError('hrpacientesolicitado')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hrpacientesolicitado') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>

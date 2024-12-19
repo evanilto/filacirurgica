@@ -2451,6 +2451,7 @@ class MapaCirurgico extends ResourceController
         $data['procedimentos'] = $this->selectitensprocedhospit;
 
         $data['dthrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
+        $data['hrpacientesolicitado'] = $mapa->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrpacientesolicitado)->format('H:i') : '';
         $data['hrnocentrocirurgico'] = $mapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrnocentrocirurgico)->format('H:i') : '';
         $data['hremcirurgia'] = $mapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthremcirurgia)->format('H:i') : '';
         $data['hrsaidasala'] = $mapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsaidasala)->format('H:i') : '';
@@ -2479,6 +2480,7 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($data));
 
         $rules = [
+            'hrpacientesolicitado' => 'permit_empty|valid_date[H:i]',
             'hrnocentrocirurgico' => 'permit_empty|valid_date[H:i]',
             'hremcirurgia' => 'permit_empty|valid_date[H:i]',
             'hrsaidasala' => 'permit_empty|valid_date[H:i]',
@@ -2503,16 +2505,25 @@ class MapaCirurgico extends ResourceController
             } */
 
             $mapa = [
+                'dthrpacientesolicitado'  => !empty($data['hrpacientesolicitado']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrpacientesolicitado'] : NULL,
                 'dthrnocentrocirurgico'  => !empty($data['hrnocentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrnocentrocirurgico'] : NULL,
                 'dthremcirurgia'  => !empty($data['hremcirurgia']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hremcirurgia'] : NULL,
                 'dthrsaidasala' => !empty($data['hrsaidasala']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidasala'] : NULL,
                 'dthrsaidacentrocirurgico' => !empty($data['hrsaidacentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidacentrocirurgico'] : NULL,
-                //'dthrsuspensao' => $data['hrsuspensao'],
                 ];
+
+              /*   $mapa = [
+                    'dthrpacientesolicitado'  => !empty($data['hrpacientesolicitado']) ? DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'))->format('Y-m-d').' '.$data['hrpacientesolicitado'] : NULL,
+                    'dthrnocentrocirurgico'  => !empty($data['hrnocentrocirurgico']) ? DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'))->format('Y-m-d').' '.$data['hrnocentrocirurgico'] : NULL,
+                    'dthremcirurgia'  => !empty($data['hremcirurgia']) ? DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'))->format('Y-m-d').' '.$data['hremcirurgia'] : NULL,
+                    'dthrsaidasala' => !empty($data['hrsaidasala']) ? DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'))->format('Y-m-d').' '.$data['hrsaidasala'] : NULL,
+                    'dthrsaidacentrocirurgico' => !empty($data['hrsaidacentrocirurgico']) ?DateTime::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s'))->format('Y-m-d').' '.$data['hrsaidacentrocirurgico'] : NULL,
+                    ]; */
 
                //die(var_dump(DateTime::createFromFormat('Y-m-d H:i', $mapa['dthremcirurgia'])));
                $erro = false;
 
+                $dthrPacienteSolicitado = $this->createDateTime($mapa['dthrpacientesolicitado']);
                 $dthrEntrada = $this->createDateTime($mapa['dthrnocentrocirurgico']);
                 $dthrInicioCirurgia = $this->createDateTime($mapa['dthremcirurgia']);
                 $dthrSaidaSala = $this->createDateTime($mapa['dthrsaidasala']);
@@ -2520,6 +2531,7 @@ class MapaCirurgico extends ResourceController
 
                 // Lista de campos com a ordem esperada
                 $campos = [
+                    'hrnocentrocirurgico' => $dthrPacienteSolicitado,
                     'hrnocentrocirurgico' => $dthrEntrada,
                     'hremcirurgia' => $dthrInicioCirurgia,
                     'hrsaidasala' => $dthrSaidaSala,
@@ -2528,6 +2540,7 @@ class MapaCirurgico extends ResourceController
 
                 // Lista organizada de mensagens de erro
                 $mensagensErro = [
+                    'hrnocentrocirurgico' => 'A hora de entrada no centro cirúrgico não pode ser menor que a hora de solicitação do paciente!',
                     'hremcirurgia' => 'A hora de início da cirurgia não pode ser menor que a hora de entrada no centro cirúrgico!',
                     'hrsaidasala' => 'A hora de saída da sala tem que ser maior que a hora de início de cirurgia!',
                     'hrsaidacentrocirurgico' => 'A hora de saída do centro cirúrgico não pode ser menor que a hora de saída da sala!'
@@ -2536,6 +2549,11 @@ class MapaCirurgico extends ResourceController
                 // Verificações das datas preenchidas quanto à ordem temporal
                 foreach ($campos as $key => $value) {
                     if ($value) {
+                        if ($key === 'hrnocentrocirurgico' && $dthrPacienteSolicitado && $dthrEntrada < $dthrPacienteSolicitado) {
+                            $this->validator->setError('hrnocentrocirurgico', $mensagensErro['hrnocentrocirurgico']);
+                            $erro = true;
+                            break;
+                        }
                         if ($key === 'hremcirurgia' && $dthrEntrada && $dthrInicioCirurgia < $dthrEntrada) {
                             $this->validator->setError('hremcirurgia', $mensagensErro['hremcirurgia']);
                             $erro = true;
@@ -2643,13 +2661,6 @@ class MapaCirurgico extends ResourceController
                 log_message('error', 'Exception: ' . $msg);
                 session()->setFlashdata('exception', $msg);
             }
-
-            /* $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['filas'] = $this->selectfilaativas;
-            $data['procedimentos'] = $this->selectitensprocedhospit;
-
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_horarioscirurgia',
-                                                'data' => $data]); */
 
             return redirect()->to(base_url('mapacirurgico/exibir'));
 

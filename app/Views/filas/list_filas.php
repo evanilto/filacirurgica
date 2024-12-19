@@ -1,6 +1,6 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 
-<div class="table-container tabela-60">
+<div class="table-container tabela-60 mt-5 mb-5">
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>

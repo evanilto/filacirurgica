@@ -2,7 +2,7 @@
 <?php $validation = \Config\Services::validation(); ?>
 
 </style>
-<div class="container" style="padding-top: 0; margin-top: -30px">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card form-container">

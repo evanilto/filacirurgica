@@ -1,40 +1,7 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-<!-- BootStrap Modal -->
-<!-- <script>
-    function confirmarAcao(callback) {
-        // Inicializa o modal
-        var confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-        confirmModal.show();
-
-        // Listener para o botão de confirmação
-        document.getElementById('confirmBtn').onclick = function() {
-            confirmModal.hide(); // Fecha o modal
-            callback(true); // Chama o callback passando 'true'
-        };
-
-        // Listener para o botão de cancelar (ou fechar)
-        document.querySelector('.btn-secondary').onclick = function() {
-            confirmModal.hide(); // Fecha o modal
-            callback(false); // Chama o callback passando 'false'
-        };
-    }
-
-    // Função demonstrativa que chama o modal e submete o formulário após confirmação
-    function demoAcao() {
-        event.preventDefault(); // Prevenir o comportamento padrão do link
-
-        confirmarAcao(function(confirmado) {
-            if (confirmado) {
-                $('#idForm').off('submit'); 
-                $('#idForm').submit(); 
-            }
-        });
-    }
-</script> -->
-
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card form-container">
