@@ -1,6 +1,6 @@
 <script>$('#janelaAguarde').show();</script>
 
-<div class="table-container">
+<div class="table-container mt-3">
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>

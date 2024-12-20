@@ -1102,7 +1102,7 @@ class HUAP_Functions
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','7']));
 
             case 'listaespera-enviar':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['21']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','21']));
 
             case 'listaespera-recuperar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','22']));
@@ -1130,9 +1130,6 @@ class HUAP_Functions
 
             case 'cadastros-consultar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
-
-            case 'resgatar':
-                return ($_SESSION['Sessao']['nmSetor'] == 'ARQUIVO MÉDICO');
 
             default:
                 return false;

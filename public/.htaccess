@@ -47,3 +47,9 @@ Options -Indexes
 # Disable server signature start
 	ServerSignature Off
 # Disable server signature end
+
+<IfModule mod_php.c>
+    php_value session.gc_maxlifetime 7200
+    php_value session.cookie_lifetime 7200
+</IfModule>
+

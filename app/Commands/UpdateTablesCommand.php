@@ -14,11 +14,16 @@ class UpdateTablesCommand extends BaseCommand
 
     public function run(array $params)
     {
+
+        ini_set('display_errors', 1);
+        ini_set('display_startup_errors', 1);
+        error_reporting(E_ALL);
+
         $db = \Config\Database::connect();
 
         $db->transStart(); // Inicia a transação
 
-        // Truncar a tabela local
+        $insertStatus = 'truncing';
         $db->table('local_agh_cids')->truncate();
         $db->table('local_agh_especialidades')->truncate();
         $db->table('local_agh_unidades_funcionais')->truncate();
@@ -29,7 +34,6 @@ class UpdateTablesCommand extends BaseCommand
         $db->table('local_centros_cirurgicos')->truncate();
         $db->table('local_aip_contatos_pacientes')->truncate();
         $db->table('local_vw_detalhes_pacientes')->truncate();
-
 
         $insertStatus = 'starting';
         $insertStatus = $db->query('INSERT INTO local_agh_cids SELECT * FROM remoto.agh_cids');
@@ -43,15 +47,16 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_aip_contatos_pacientes SELECT * FROM remoto.aip_contatos_pacientes;');
         $insertStatus = $db->query('INSERT INTO local_vw_detalhes_pacientes SELECT * FROM remoto.vw_detalhes_pacientes;');
 
+        $insertStatus = 'finishing';
+
         $db->transComplete(); // Completa a transação
 
         if ($db->transStatus() === FALSE) {
-            // Obter a mensagem de erro
             $error = $db->error();
-            echo 'Erro na atualização das tabelas: ' . $error['message'] . PHP_EOL;
-            echo 'InsertStatus: ' . $insertStatus . PHP_EOL;
+            echo 'Erro na transação - ' . $insertStatus . ' - ' . ($error['message'] ?? 'Erro não identificado') . PHP_EOL;
+            echo 'Código do erro: ' . ($error['code'] ?? 'N/A') . PHP_EOL;
         } else {
-            echo 'Tabelas locais atualizadas com sucesso!' . PHP_EOL;
+            echo 'Atualização das tabelas concluídas com sucesso!' . PHP_EOL;
         }
 
     }

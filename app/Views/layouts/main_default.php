@@ -22,9 +22,9 @@
 
         <!-- Favicons -->
         <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/img/doctor-32.png') : base_url('/favicon.ico') ?>" rel="shortcut icon" type="image/png"/>
-        <link href="<?= base_url('/assets/img/caduceus/caduceus-128.png') ?>" sizes="180x180" rel="apple-touch-icon">
-        <link href="<?= base_url('/assets/img/caduceus/caduceus-32.png') ?>" sizes="32x32" type="image/png" rel="icon">
-        <link href="<?= base_url('/assets/img/caduceus/caduceus-16.png') ?>" sizes="16x16" type="image/png" rel="icon">
+        <link href="<?= base_url('/assets/img/doctor/doctor-128.png') ?>" sizes="180x180" rel="apple-touch-icon">
+        <link href="<?= base_url('/assets/img/doctor/doctor-32.png') ?>" sizes="32x32" type="image/png" rel="icon">
+        <link href="<?= base_url('/assets/img/doctor/doctor-16.png') ?>" sizes="16x16" type="image/png" rel="icon">
         <link href="<?= ENVIRONMENT === 'production' ? base_url('/assets/img/doctor-32.png') : base_url('/favicon.ico') ?>" rel="icon">
         <meta name="csrf-token" content="<?= csrf_hash() ?>">
 
