@@ -21,7 +21,21 @@ class UpdateTablesCommand extends BaseCommand
 
         $db = \Config\Database::connect();
 
-        $db->transStart(); // Inicia a transação
+        $db->transStart();
+
+        $insertStatus = 'locking';
+        $db->query('LOCK TABLE
+            local_agh_cids,
+            local_agh_especialidades,
+            local_agh_unidades_funcionais,
+            local_fat_itens_proced_hospitalar,
+            local_mbc_sala_cirurgicas,
+            local_aip_pacientes,
+            local_prof_especialidades,
+            local_centros_cirurgicos,
+            local_aip_contatos_pacientes, 
+            local_vw_detalhes_pacientes
+        IN ACCESS EXCLUSIVE MODE');
 
         $insertStatus = 'truncing';
         $db->table('local_agh_cids')->truncate();
@@ -49,12 +63,14 @@ class UpdateTablesCommand extends BaseCommand
 
         $insertStatus = 'finishing';
 
-        $db->transComplete(); // Completa a transação
+        $db->transComplete();
 
         if ($db->transStatus() === FALSE) {
             $error = $db->error();
+            $db->transRollback();
             echo 'Erro na transação - ' . $insertStatus . ' - ' . ($error['message'] ?? 'Erro não identificado') . PHP_EOL;
             echo 'Código do erro: ' . ($error['code'] ?? 'N/A') . PHP_EOL;
+            echo 'Última query: ' . $db->showLastQuery() . PHP_EOL;
         } else {
             echo 'Atualização das tabelas concluídas com sucesso!' . PHP_EOL;
         }
