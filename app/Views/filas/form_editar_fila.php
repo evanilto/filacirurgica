@@ -12,7 +12,7 @@
                     <form id="FilaForm" method="post" action="<?= base_url("filas/editar/$id") ?>" class="w-100">
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
@@ -36,7 +36,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome da Fila<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3"
@@ -54,7 +54,7 @@
 
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label">Situação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-12 bordered-container">
                                     <div class="form-check form-check-inline">

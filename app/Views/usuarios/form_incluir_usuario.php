@@ -12,7 +12,7 @@
                     <form id="UsuarioForm" method="post" action="<?= base_url('usuarios/incluir') ?>" class="w-100">
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="login" class="form-label">Login<b class="text-danger">*</b></label>
                                     <div class="input-group mb-12">
                                         <input type="text" id="login" maxlength="100"
@@ -31,7 +31,7 @@
 
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="perfis" class="form-label" autofocus>Perfis<b class="text-danger">*</b></label>
                                     <div class="input-group mb-12 bordered-container">
                                         <div style="max-height: 200px; overflow-y: auto;">
@@ -55,9 +55,9 @@
 
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label">Situação<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
+                                    <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="indSituacao" id="indSituacaoA" value="A" checked>
                                             <label class="form-check-label" for="indSituacaoA" style="margin-right: 10px;">&nbsp;Ativo</label>

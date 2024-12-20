@@ -12,7 +12,7 @@
                     <form id="idForm" method="post" action="<?= base_url('listaespera/editar') ?>">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtinclusao" class="form-label">Data/Hora de Inclusão</label>
                                     <div class="input-group">
                                         <input type="text" id="dtinclusao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8" disabled
@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" disabled
@@ -59,7 +59,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown select2-disabled <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
@@ -107,7 +107,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="procedimento" class="form-label">Procedimento<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
@@ -131,7 +131,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="cid" class="form-label">CID</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
@@ -156,7 +156,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
@@ -180,7 +180,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" placeholder="DD/MM/AAAA"
@@ -195,7 +195,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -219,7 +219,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
@@ -243,9 +243,9 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
+                                    <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N"
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
@@ -267,9 +267,9 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
+                                    <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
                                                 <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
@@ -289,9 +289,9 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
+                                    <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
                                                 <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
@@ -318,7 +318,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
                                     <textarea id="justorig" maxlength="255" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
@@ -331,7 +331,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
                                     <textarea id="info" maxlength="255" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"

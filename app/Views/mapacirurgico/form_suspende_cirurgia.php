@@ -12,7 +12,7 @@
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/suspender') ?>">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8" disabled
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-9">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" disabled
@@ -44,7 +44,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-5">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                             <div class="col-md-7">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown select2-disabled <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
@@ -92,7 +92,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="idsuspensao" class="form-label">Justificativa<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('idsuspensao')): ?>is-invalid<?php endif ?>"
@@ -117,7 +117,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label" for="justsuspensao">Observações</label>
                                     <textarea id="justsuspensao" maxlength="255" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"

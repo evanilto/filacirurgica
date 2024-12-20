@@ -12,7 +12,7 @@
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizarhorarios') ?>">
                         <div class="row g-3">
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8" disabled
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-10">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" disabled
@@ -44,7 +44,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
@@ -92,7 +92,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="procedimento" class="form-label">Procedimento Principal</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
@@ -117,7 +117,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dthrcirurgia" class="form-label">Data/Hora da Cirurgia</label>
                                     <div class="input-group">
                                         <input type="text" id="dthrcirurgia" placeholder="DD/MM/YYYY HH:MM"
@@ -132,7 +132,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="hrpacientesolicitado" class="form-label">Paciente Solicitado</label>
                                     <div class="input-group">
                                         <input type="text" id="hrpacientesolicitado" placeholder="HH:MM"
@@ -147,7 +147,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="hrnocentrocirurgico" class="form-label">Entrada C. Cirúrgico</label>
                                     <div class="input-group">
                                         <input type="text" id="hrnocentrocirurgico" placeholder="HH:MM"
@@ -162,7 +162,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="hremcirurgia" class="form-label">Em Cirurgia</label>
                                     <div class="input-group">
                                         <input type="text" id="hremcirurgia" placeholder="HH:MM"
@@ -177,7 +177,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="hrsaidasala" class="form-label">Saída da Sala</label>
                                     <div class="input-group">
                                         <input type="text" id="hrsaidasala" placeholder="HH:MM"

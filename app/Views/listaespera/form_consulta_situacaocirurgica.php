@@ -12,7 +12,7 @@
                     <form id="idForm" method="post" action="<?= base_url('listaespera/exibirsituacao') ?>">
                         <div class="row g-3">
                             <div class="col-md-4">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8"
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3"
@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="col-md-12">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"

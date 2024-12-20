@@ -12,7 +12,7 @@
                     <form id="idForm" method="post" action="<?= base_url('listaespera/incluir') ?>">
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtinclusao" class="form-label">Data/Hora de Inclusão</label>
                                     <div class="input-group">
                                         <input type="text" id="dtinclusao" placeholder="DD/MM/AAAA HH:MM:SS" readonly
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8"
@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" readonly
@@ -60,7 +60,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('especialidade')): ?>is-invalid<?php endif ?>"
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
@@ -110,7 +110,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="procedimento" class="form-label">Procedimento<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('procedimento')): ?>is-invalid<?php endif ?>"
@@ -133,7 +133,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="cid" class="form-label">CID<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
@@ -158,7 +158,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="risco" class="form-label">Risco<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('risco')): ?>is-invalid<?php endif ?>"
@@ -182,7 +182,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
                                         <input type="text" id="dtrisco" maxlength="10" value="" placeholder="DD/MM/AAAA"
@@ -197,7 +197,7 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
@@ -221,7 +221,7 @@
                                 </div>
                             </div>
                             <div class="col-md-2">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
@@ -247,19 +247,22 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label class="form-label">Congelação<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N"
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoS" value="S"
-                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
+                                <div class="mb-2">
+                                    <label class="form-label">Congelação <b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <?php
+                                        $congelacoes = [
+                                            'N' => 'Não',
+                                            'S' => 'Sim',
+                                        ];
+                                        foreach ($congelacoes as $value => $label) :
+                                            $isChecked = (isset($data['congelacao']) && $data['congelacao'] == $value) ? 'checked' : '';
+                                        ?>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="congelacao" id="congelacao<?= $value ?>" value="<?= $value ?>" <?= $isChecked ?>>
+                                                <label class="form-check-label" for="congelacao<?= $value ?>"><?= $label ?></label>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                                 <?php if ($validation->getError('congelacao')): ?>
@@ -268,20 +271,24 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
+
                             <div class="col-md-3">
-                                <div class="mb-3">
-                                    <label class="form-label">OPME<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-3 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
-                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S"
-                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
+                                <div class="mb-2">
+                                    <label class="form-label">OPME <b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <?php
+                                        $opmes = [
+                                            'N' => 'Não',
+                                            'S' => 'Sim',
+                                        ];
+                                        foreach ($opmes as $value => $label) :
+                                            $isChecked = (isset($data['opme']) && $data['opme'] == $value) ? 'checked' : '';
+                                        ?>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="opme" id="opme<?= $value ?>" value="<?= $value ?>" <?= $isChecked ?>>
+                                                <label class="form-check-label" for="opme<?= $value ?>"><?= $label ?></label>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
                                 </div>
                                 <?php if ($validation->getError('opme')): ?>
@@ -290,31 +297,32 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
+
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                   <div class="input-group mb-3 bordered-container">
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
-                                            <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
+                                <div class="mb-2">
+                                    <label class="form-label">Complexidade <b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <?php
+                                        $complexidades = [
+                                            'A' => 'Alta',
+                                            'M' => 'Média',
+                                            'B' => 'Baixa',
+                                        ];
+                                        foreach ($complexidades as $value => $label) : 
+                                            $isChecked = (isset($data['complexidade']) && $data['complexidade'] == $value) ? 'checked' : '';
+                                        ?>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="complexidade" id="complexidade<?= $value ?>" value="<?= $value ?>" <?= $isChecked ?>>
+                                                <label class="form-check-label" for="complexidade<?= $value ?>"> <?= $label ?></label>
+                                            </div>
+                                        <?php endforeach; ?>
                                     </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
-                                            <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
-                                    </div>
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
-                                            <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
-                                        <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
-                                    </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <?php if ($validation->getError('complexidade')): ?>
-                                    <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('complexidade') ?>
-                                    </div>
-                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row g-3">
@@ -322,8 +330,8 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
                                     <textarea id="justorig" maxlength="255" rows="3"
-                                            class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
-                                            name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
+                                        class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
+                                        name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('justorig') ?>
@@ -335,8 +343,8 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="info">Informações adicionais</label>
                                     <textarea id="info" maxlength="255" rows="3"
-                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
+                                        class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
+                                        name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('info') ?>
@@ -348,11 +356,11 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <?php if ($data['habilitasalvar'] ) { ?>
-                                    <button class="btn btn-primary mt-3" onclick="return confirma(this);">
+                                    <button class="btn btn-primary mt-4" onclick="return confirma(this);">
                                         <i class="fa-solid fa-save"></i> Salvar
                                     </button>
                                 <?php } ?>
-                                <a class="btn btn-warning mt-3" href="<?= base_url('home_index') ?>">
+                                <a class="btn btn-warning mt-4" href="<?= base_url('home_index') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
                             </div>

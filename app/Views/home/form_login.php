@@ -10,11 +10,11 @@ Entrar <?= $this->endSection() ?>
         <?= $this->include('layouts/div_flashdata') ?>
 
         <a href="/"><img class="mb-4" src="<?= base_url() ?>/assets/img/doctor-96.png" alt=""></a>
-        <h1 class="h3 mb-3 fw-normal"><?= ENVIRONMENT === 'production' ? HUAP_APPNAME : HUAP_APPNAME.'<br><strong>Desenvolvimento</strong>' ?></h1>
+        <h1 class="h3 mb-2 fw-normal"><?= ENVIRONMENT === 'production' ? HUAP_APPNAME : HUAP_APPNAME.'<br><strong>Desenvolvimento</strong>' ?></h1>
 
 
         <div class="card-body p-4">
-            <div class="form-group mb-3 has-validation text-start">
+            <div class="form-group mb-2 has-validation text-start">
                 <input type="text" class="form-control <?php if($validation->getError('Usuario')): ?>is-invalid<?php endif ?>" name="Usuario" placeholder="Login EBSERH" autofocus value="<?php echo set_value('Usuario'); ?>"/>
                 <?php if ($validation->getError('Usuario')): ?>
                     <div class="invalid-feedback text-center">
@@ -33,7 +33,7 @@ Entrar <?= $this->endSection() ?>
         </div>
 
 		<button class="w-100 btn btn-lg btn-primary" id="submit" type="submit">Entrar</button>
-		<p class="mt-5 mb-3 text-muted">&copy; <?= date('Y') ?></p>
+		<p class="mt-5 mb-2 text-muted">&copy; <?= date('Y') ?></p>
 	</form>
 </main>
 

@@ -253,14 +253,23 @@ input, textarea {
 .form-check {
     display: flex; /* Flex para os itens de radio */
     align-items: center; /* Centraliza verticalmente os radio buttons e suas labels */
-    margin-right: 15px; /* Espaço entre as opções */
+    margin-right: 10px; /* Espaço entre as opções */
     height: 26px; /* Define a altura do contêiner */
 }
 .form-check-input {
     margin-top: 0; /* Remove a margem padrão do input */
+    margin-right: 2px !important;
 }
 .form-check-label {
     margin-bottom: 0; /* Remove a margem padrão da label */
+    margin-left: 2px; /* Ajuste conforme necessário */
+    margin-right: 5px; /* Espaço entre as opções */
+}
+
+/* Forçar o espaçamento entre as colunas e os campos */
+.form-label {
+    margin-top: 0.4rem !important;
+    margin-bottom: 0.2rem !important;
 }
 
 /* Aplica o tamanho da fonte a toda a tabela e aos componentes internos */
@@ -420,6 +429,8 @@ tfoot {
 .select2-selection--multiple {
     height: auto !important;
     min-height: 30px !important; /* Valor que corresponde à altura de um campo de formulário padrão */
+    padding: 0; /* Remove o padding */
+
 }
 
 .select2-selection--single {

@@ -6,13 +6,13 @@
         <div class="col-md-8">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Recuperar Paciente' ?></b>
+                    <b><?= 'Consultar Paciente Excluído' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('listaespera/exibirexcluidos') ?>">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtinicio" class="form-label">Data Início</label>
                                     <div class="input-group">
                                         <input type="text" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
@@ -27,7 +27,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="dtfim" class="form-label">Data Final</label>
                                     <div class="input-group">
                                         <input type="text" id="dtfim" maxlength="10" placeholder="DD/MM/AAAA"
@@ -41,8 +41,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-4">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8"
@@ -57,7 +59,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3"
@@ -71,8 +73,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
@@ -95,7 +99,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
