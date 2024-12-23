@@ -85,14 +85,16 @@
                                 <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown select2-disabled <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
                                             <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['filas'] as $key => $fila) {
-                                                $selected = ($data['fila'] == $fila['id']) ? 'selected' : '';
-                                                echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                                $selected = (set_value('fila') == $fila['id']) ? 'selected' : '';
+                                                echo '<option value="'.$fila['id'].'" data-especialidade="'.$fila['idespecialidade'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
+                                                /* echo "<!-- id: {$fila['id']}, idespecialidade: {$fila['idespecialidade']}, nmtipoprocedimento: {$fila['nmtipoprocedimento']} -->"; */
+
                                             }
                                             ?>
                                         </select>
@@ -416,7 +418,7 @@
             var selectElement = document.getElementById('fila');
             var filaText = selectElement.options[selectElement.selectedIndex].text;
 
-            loadAsideContent(prontuarioValue, ordemfila, filaText);
+            //loadAsideContent(prontuarioValue, ordemfila, filaText);
         } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
@@ -432,25 +434,6 @@
       }
     }
     
-    function loadAsideContent(prontuario, ordem, fila) {
-        $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + prontuario + '/' + ordem + '/' + fila,
-            method: 'GET',
-            beforeSend: function() {
-                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
-            },
-            success: function(response) {
-                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
-            },
-            error: function(xhr, status, error) {
-                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
-                console.error(errorMessage);
-                console.error(xhr.responseText);
-                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
-            }
-        });
-    }
-
     function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
         fetchPacienteNome(prontuarioInput.value);
@@ -472,6 +455,10 @@
             allowClear: true
         });
 
+        $('#fila').on('change', function () {
+            var selectedFilter = $(this).val();
+            $('input[name="fila"]').val(selectedFilter);
+        });
         $('#procedimento').change(function() {
             var selectedFilter = $(this).val();
             $('input[name="procedimento"]').val(selectedFilter);
@@ -501,5 +488,29 @@
         document.getElementById('idForm').addEventListener('submit', function(event) {
             $('#janelaAguarde').show();
         });
+
+        const filas = <?= json_encode($data['filas']) ?>;
+
+        // Atualizar filas ao mudar a especialidade
+        $('#especialidade').change(function () {
+            const selectedEspecialidade = <?= $data['especialidade'] ?>;
+
+            // Limpar opções de fila
+            $('#fila').empty().append('<option value="">Selecione uma opção</option>');
+
+            // Adicionar opções com base na especialidade selecionada
+            filas.forEach(fila => {
+                if (fila.idespecialidade == selectedEspecialidade) {
+                    $('#fila').append(new Option(fila.nmtipoprocedimento, fila.id));
+                }
+            });
+
+            // Atualizar select2
+            $('#fila').val('<?= $data['fila'] ?>').trigger('change.select2');
+            //alert($('#fila').val());
+        });
+
+        // Disparar evento de mudança para inicializar
+        $('#especialidade').trigger('change');
     });
 </script>

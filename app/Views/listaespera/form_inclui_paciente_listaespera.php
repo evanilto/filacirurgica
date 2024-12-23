@@ -94,7 +94,7 @@
                                             foreach ($data['filas'] as $key => $fila) {
                                                 $selected = (set_value('fila') == $fila['id']) ? 'selected' : '';
                                                 echo '<option value="'.$fila['id'].'" data-especialidade="'.$fila['idespecialidade'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
-                                                echo "<!-- id: {$fila['id']}, idespecialidade: {$fila['idespecialidade']}, nmtipoprocedimento: {$fila['nmtipoprocedimento']} -->";
+                                               /*  echo "<!-- id: {$fila['id']}, idespecialidade: {$fila['idespecialidade']}, nmtipoprocedimento: {$fila['nmtipoprocedimento']} -->"; */
 
                                             }
                                             ?>

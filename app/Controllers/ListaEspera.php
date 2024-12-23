@@ -1465,6 +1465,7 @@ class ListaEspera extends ResourceController
                         'txtorigemjustificativa' => $data['justorig']
                         ];
 
+                //dd($lista);
                 $this->listaesperamodel->update($data['id'], $lista);
 
                 if ($db->transStatus() === false) {
