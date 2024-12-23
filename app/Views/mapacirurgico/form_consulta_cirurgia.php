@@ -499,37 +499,37 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <?php if ($data['indurgencia'] == 'S') { ?>
+                        <!-- <div class="row g-3">
+                            <--?php if ($data['indurgencia'] == 'S') { ?>
                                 <div class="col-md-6">
                                     <div class="mb-2">
                                         <label class="form-label" for="justurgencia">Justificativas da Urgência</label>
                                         <textarea id="justurgencia" maxlength="255" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
-                                                name="justurgencia"><?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justurgencia')): ?>
+                                                class="form-control <--?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
+                                                name="justurgencia"><--?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
+                                        <--?php if (isset($validation) && $validation->getError('justurgencia')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('justurgencia') ?>
+                                                <--?= $validation->getError('justurgencia') ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <--?php endif; ?>
                                     </div>
                                 </div>
-                            <?php } ?>
-                        </div>
-                        <?php if ($data['status_fila'] == 'Suspensa') { ?>
+                            <--?php } ?>
+                        </div> -->
+                        <!-- <--?php if ($data['status_fila'] == 'Suspensa') { ?>
                             <div class="row g-3">
                                 <div class="col-md-2">
                                     <div class="mb-2">
                                         <label for="dtsuspensao" class="form-label">Data/Hora Suspensão</label>
                                         <div class="input-group">
                                             <input type="text" id="dtsuspensao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
-                                                class="form-control<?php if($validation->getError('dtsuspensao')): ?>is-invalid<?php endif ?>"
-                                                name="dtsuspensao" value="<?= set_value('dtsuspensao', $data['dtsuspensao']) ?>" disabled/>
-                                            <?php if ($validation->getError('dtsuspensao')): ?>
+                                                class="form-control<--?php if($validation->getError('dtsuspensao')): ?>is-invalid<--?php endif ?>"
+                                                name="dtsuspensao" value="<--?= set_value('dtsuspensao', $data['dtsuspensao']) ?>" disabled/>
+                                            <--?php if ($validation->getError('dtsuspensao')): ?>
                                                 <div class="invalid-feedback">
-                                                    <?= $validation->getError('dtsuspensao') ?>
+                                                    <--?= $validation->getError('dtsuspensao') ?>
                                                 </div>
-                                            <?php endif; ?>
+                                            <--?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -537,22 +537,22 @@
                                     <div class="mb-2">
                                         <label for="idsuspensao" class="form-label">Justificativa para suspensão</label>
                                         <div class="input-group">
-                                            <select class="form-select select2-dropdown <?php if($validation->getError('idsuspensao')): ?>is-invalid<?php endif ?>"
+                                            <select class="form-select select2-dropdown <--?php if($validation->getError('idsuspensao')): ?>is-invalid<--?php endif ?>"
                                                 id="idsuspensao" name="idsuspensao" disabled
                                                 data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                                <option value="" <?php echo set_select('idsuspensao', '', TRUE); ?> ></option>
-                                                <?php
+                                                <option value="" <--?php echo set_select('idsuspensao', '', TRUE); ?> ></option>
+                                                <--?php
                                                 foreach ($data['justificativassuspensao'] as $key => $idsuspensao) {
                                                     $selected = ($data['idsuspensao'] == $idsuspensao['id']) ? 'selected' : '';
                                                     echo '<option value="'.$idsuspensao['id'].'" '.$selected.'>'.$idsuspensao['descricao'].'</option>';
                                                 }
                                                 ?>
                                             </select>
-                                            <?php if ($validation->getError('idsuspensao')): ?>
+                                            <--?php if ($validation->getError('idsuspensao')): ?>
                                                 <div class="invalid-feedback">
-                                                    <?= $validation->getError('idsuspensao') ?>
+                                                    <--?= $validation->getError('idsuspensao') ?>
                                                 </div>
-                                            <?php endif; ?>
+                                            <--?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -560,17 +560,17 @@
                                     <div class="mb-2">
                                         <label class="form-label" for="justsuspensao">Observações sobre a suspenssão</label>
                                         <textarea id="justsuspensao" maxlength="255" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
-                                                name="justsuspensao"><?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justsuspensao')): ?>
+                                                class="form-control <--?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
+                                                name="justsuspensao"><--?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>
+                                        <--?php if (isset($validation) && $validation->getError('justsuspensao')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('justsuspensao') ?>
+                                                <--?= $validation->getError('justsuspensao') ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <--?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        <?php } ?>
+                        <--?php } ?> -->
                         <div class="row g-3">
                             <div class="col-md-12">
                             <a class="btn btn-warning mt-3" href="<?= $data['linkorigem'] === 'situacao_cirurgica' ? base_url('listaespera/exibirsituacao') : base_url('mapacirurgico/exibir') ?>">

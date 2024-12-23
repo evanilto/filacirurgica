@@ -41,6 +41,8 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3"> 
                             <div class="col-md-4">
                                 <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
@@ -71,6 +73,8 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3"> 
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</b></label>
@@ -117,6 +121,8 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3"> 
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="risco" class="form-label">Risco Cirúrgico</b></label>
@@ -159,7 +165,8 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                        </div>
+                        <div class="row g-3"> 
                             <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-search"></i> Consultar

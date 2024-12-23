@@ -121,8 +121,9 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="col-md-12">
+                        </div>
+                        <div class="row g-3">
+                                <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-search"></i> Consultar
                                 </button>

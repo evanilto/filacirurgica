@@ -327,7 +327,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
                                     <textarea id="justorig" maxlength="255" rows="3"
                                         class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
@@ -340,7 +340,7 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
+                                <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
                                     <textarea id="info" maxlength="255" rows="3"
                                         class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"

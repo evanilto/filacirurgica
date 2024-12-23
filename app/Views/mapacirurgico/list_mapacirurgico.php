@@ -299,7 +299,7 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <div class="container-legend mt-3">
+    <div class="container-legend mt-2">
         <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>

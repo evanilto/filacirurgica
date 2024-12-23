@@ -70,8 +70,6 @@
                                 </div>
                             </div>
                         </div>
-                        <hr  />
-
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
