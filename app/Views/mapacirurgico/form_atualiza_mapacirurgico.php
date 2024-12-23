@@ -333,6 +333,11 @@
                                             <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('hemoderivados')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('hemoderivados') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -379,6 +384,11 @@
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

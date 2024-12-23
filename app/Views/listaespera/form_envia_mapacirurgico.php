@@ -383,6 +383,11 @@
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>

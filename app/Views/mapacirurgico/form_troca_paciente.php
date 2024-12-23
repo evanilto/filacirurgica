@@ -272,7 +272,7 @@
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N" checked
+                                            <input class="form-check-input" type="radio" name="congelacao" id="congelacaoN" value="N"
                                                 <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
@@ -282,6 +282,11 @@
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('congelacao')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('congelacao') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -294,11 +299,16 @@
                                             <label class="form-check-label" for="hemoderivadosN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S" checked
+                                            <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S"
                                                 <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('hemoderivados')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('hemoderivados') ?>
+                                    </div>
+                                <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -330,7 +340,7 @@
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" checked
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" 
                                                 <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
                                         </div>
@@ -345,6 +355,11 @@
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
