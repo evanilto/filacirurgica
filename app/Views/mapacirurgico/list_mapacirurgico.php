@@ -303,7 +303,7 @@
         <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="pacientesolicitado" disabled> Solicitar Paciente </button>
+        <button class="btn btn-primary" id="pacientesolicitado" disabled> Paciente Solicitado</button>
         <button class="btn btn-primary" id="nocentrocirurgico" disabled> No Centro Cirúrgico </button>
         <button class="btn btn-primary" id="emcirurgia" disabled> Em Cirurgia </button>
         <button class="btn btn-primary" id="saidadasala" disabled> Saída da Sala </button>
@@ -405,7 +405,8 @@
 
                 }
 
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) {
+                /* if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) { */
+                if (!["Suspensa", "Cancelada", "TrocaPaciente"].includes(statuscirurgia)) {
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
 
