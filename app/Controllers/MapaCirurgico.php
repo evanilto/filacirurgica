@@ -1315,9 +1315,12 @@ class MapaCirurgico extends ResourceController
         $data['justorig'] = $mapa->origemjustificativa;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['idsuspensao'] = $mapa->idsuspensao;
-        $data['dtsuspensao'] = $mapa->dthrsuspensao;
+        //$data['dtsuspensao'] = $mapa->dthrsuspensao;
+        $data['dtsuspensao'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsuspensao)->format('d/m/Y H:i') : NULL;
         $data['justsuspensao'] = $mapa->justificativasuspensao;
         $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+        $data['dttroca'] = $mapa->dthrtroca ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrtroca)->format('d/m/Y H:i') : NULL;
+        $data['justtroca'] = $mapa->justificativatroca;
         $data['justurgencia'] = $mapa->justificativaurgencia;
         $data['indurgencia'] = $mapa->indurgencia;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
