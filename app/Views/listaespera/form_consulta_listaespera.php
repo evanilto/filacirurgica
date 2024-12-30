@@ -199,7 +199,7 @@
 
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
-            loadAsideContent(prontuarioInput.value);
+            //loadAsideContent(prontuarioInput.value);
         });
 
         $('#especialidade').change(function() {

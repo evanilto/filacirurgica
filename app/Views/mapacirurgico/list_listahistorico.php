@@ -105,7 +105,7 @@
             var fila = $firstRecordRow.data('fila');
             var prontuario =$firstRecordRow.data('prontuario');
 
-            loadAsideContent(prontuario, ordemFila, fila); 
+            //loadAsideContent(prontuario, ordemFila, fila); 
 
         });
 
@@ -128,7 +128,7 @@
             var fila = $firstRecordRow.data('fila');
             var prontuario =$firstRecordRow.data('prontuario');
 
-            loadAsideContent(prontuario, ordemFila, fila);
+            //loadAsideContent(prontuario, ordemFila, fila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela

@@ -245,7 +245,7 @@
             var fila = data[9];
             var recordId = data[6];
 
-            loadAsideContent(recordId, ordemFila, fila); 
+            //loadAsideContent(recordId, ordemFila, fila); 
 
         });
 
@@ -265,7 +265,7 @@
             var ordemFila = data[4]; 
             var fila = data[9] 
             
-            loadAsideContent(recordId, ordemFila, fila);
+            //loadAsideContent(recordId, ordemFila, fila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela

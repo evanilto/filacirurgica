@@ -140,7 +140,7 @@
             var ordemFila = "Indefinida";
             var fila = data[4];
 
-            loadAsideContent(recordId, ordemFila, fila); 
+            //loadAsideContent(recordId, ordemFila, fila); 
 
         });
 
@@ -164,7 +164,7 @@
             var recordId = data[2];
             var ordemFila = "Indefinida";
             var fila = data[4];
-            loadAsideContent(recordId, ordemFila, fila);
+            //loadAsideContent(recordId, ordemFila, fila);
         }
 
         // Marcar o primeiro registro como selecionado ao redesenhar a tabela

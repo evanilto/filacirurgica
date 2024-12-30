@@ -193,7 +193,7 @@
             var selectElement = document.getElementById('fila');
             var filaText = selectElement.options[selectElement.selectedIndex].text;
 
-            loadAsideContent(prontuarioValue, ordemfila, filaText);
+            //(prontuarioValue, ordemfila, filaText);
         } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');

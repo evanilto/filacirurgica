@@ -608,7 +608,7 @@
         .then(data => {
           if (data.nome) {
             document.getElementById('nome').value = data.nome;
-            loadAsideContent(prontuarioValue, ordemValue);
+            //loadAsideContent(prontuarioValue, ordemValue);
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');

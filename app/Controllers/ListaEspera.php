@@ -175,7 +175,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    public function getDetailsAside($numProntuario, $ordemFila = 'A Definir', $fila = 'A Definir')
+    /* public function getDetailsAside($numProntuario, $ordemFila = 'A Definir', $fila = 'A Definir')
     {
         // Pegue o registro pelos $id e passe os dados para a view
         $data = [
@@ -188,7 +188,7 @@ class ListaEspera extends ResourceController
         //die(var_dump($data['ordemfila']));
 
         return view('listaespera/exibe_paciente', $data);
-    }
+    } */
     /**
      * Return the properties of a resource object
      *
