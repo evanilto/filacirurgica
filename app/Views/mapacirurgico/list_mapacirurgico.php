@@ -410,9 +410,14 @@
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
 
+                    /* editar.disabled = false;
+                    editar.removeAttribute("disabled"); */
+
+                }
+
+                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"].includes(statuscirurgia)) {
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
-
                 }
 
                 if (tempermissaoconsultar) {
