@@ -12,30 +12,11 @@
     $corCirurgiaSuspensa = 'Red';
     $corCirurgiaCancelada = $corCirurgiaSuspensa;
 ?>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+ 
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.min.css">
 
 <script>$('#janelaAguarde').show();</script>
-<style>
-/* Estilo para botão desabilitado */
-/*button.desabilitado {
-/*    background-color: #d3d3d3; /* Cor de fundo cinza */
-/*   color: #999;               /* Texto mais claro */
-/*  border: 1px solid #ccc;    /* Borda cinza */
-/*   pointer-events: none;      /* Impede a interação */
-/*   opacity: 0.5;              /* Opacidade reduzida */
-/*}
-
-/* Estilo para botão habilitado */
-/*button.habilitado {
-/*    background-color: #4CAF50; /* Cor de fundo verde */
-/*    color: white;              /* Texto branco */
-/*    border: 1px solid #4CAF50; /* Borda verde */
-/*    pointer-events: auto;      /* Permite interação */
-/*    opacity: 1;                /* Opacidade normal */
-/*} */
-</style>
 
 <div class="table-container mt-3">
     <table class="table">
@@ -316,8 +297,10 @@
     </div>
 </div>
 
-<script>
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.min.js"></script>
 
+<script>
     document.addEventListener("DOMContentLoaded", function () {
         const table = document.getElementById("table");
         const pacientesolicitado = document.getElementById("pacientesolicitado");
@@ -817,32 +800,32 @@
         
         $('#table').DataTable({
             "order": [[0, 'asc']],
-            "lengthChange": true,
-            "pageLength": 15,
-            "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
-            "autoWidth": false,
-            "scrollX": true,
             fixedColumns: {
             leftColumns: 10 // Número de colunas a serem fixadas
             },
-            paging: true, // Opcional: desativa paginação se não necessário
-            ordering: true, // Mantém ordenação
+            fixedHeader: true,
+            scrollY: '500px',
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            ordering: true,
+            autoWidth: false,
                 "columns": [
                     { "width": "0px" },  // Primeira coluna
                     { "width": "40px" },       
                     { "width": "95px" },  // dt
-                    { "width": "65px" },  // hr
+                    { "width": "62px" },  // hr
                     { "width": "220px" },  // centro cir
-                    { "width": "100px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "200px" },  // especial
+                    { "width": "85px" }, 
+                    { "width": "55px" }, 
+                    { "width": "55px" }, 
+                    { "width": "55px" }, 
+                    { "width": "55px" }, 
+                    { "width": "55px" }, 
+                    { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
                     { "width": "55px" },  // idade

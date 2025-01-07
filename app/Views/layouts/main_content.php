@@ -15,11 +15,6 @@
             <?php use App\Libraries\HUAP_Functions; HUAP_Functions::limpa_msgs_flash(); ?>
         </div>
 
-        <script>
-            // Limpar o conteúdo do sidebar
-            document.addEventListener('DOMContentLoaded', function() {
-                document.querySelector('#sidebar').innerHTML = '';
-             });
-        </script>
+        
 
 <?= $this->endSection() ?>

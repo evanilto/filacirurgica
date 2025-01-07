@@ -150,7 +150,6 @@
                     </ul>
                 </div>
             </li>
-            <hr>
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">

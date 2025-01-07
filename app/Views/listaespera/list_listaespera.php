@@ -1,7 +1,7 @@
 <?php use App\Libraries\HUAP_Functions; ?>
-
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css">
-<script src="https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js"></script>
+ 
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.min.css">
 
 <script>$('#janelaAguarde').show();</script>
 
@@ -145,8 +145,11 @@
     </div>
 </div>
 
-<script>
 
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.min.js"></script>
+
+<script>
     document.addEventListener("DOMContentLoaded", function () {
         const table = document.getElementById("table");
         const editar = document.getElementById("editar");
@@ -382,19 +385,26 @@
 
         $('#table').DataTable({
             "order": [[0, 'asc']],
-            "lengthChange": true,
+            /* "lengthChange": true,
             "pageLength": 15,
-            "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]],
+            "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]], */
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
-            "autoWidth": false,  /* Desative a largura automática */
-            "scrollX": true,  /* Ative a rolagem horizontal */
+           /*  "autoWidth": false,  
+            "scrollX": true, */ 
             fixedColumns: {
             leftColumns: 5 // Número de colunas a serem fixadas
             },
-            paging: true, // Opcional: desativa paginação se não necessário
-            ordering: true, // Mantém ordenação
+            /* paging: true, 
+            ordering: true,  */
+            fixedHeader: true,
+            scrollY: '525px',
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            ordering: true,
+            autoWidth: false,
             "columns": [
                 { "width": "0px" },  // Primeira coluna
                 { "width": "90px" },  // Lista
@@ -402,8 +412,8 @@
                 { "width": "130px" },                
                 { "width": "100px" },  // prontuario
                 { "width": "300px" }, 
-                { "width": "300px" },  // fila
-                { "width": "190px" }, 
+                { "width": "200px" },  // especialidade
+                { "width": "250px" }, 
                 { "width": "300px" },  // infoadicionais
                 { "width": "120px" },  // risco
                 { "width": "300px" },
