@@ -302,7 +302,10 @@ class Usuarios extends ResourceController
 
             if(!empty($this->usuariomodel->Where('idlogin', $login)->findAll())) {
                 session()->setFlashdata('failed', 'Usuário já cadastrado!');
-                return view('usuarios/incluir_usuario', ['validation' => $this->validator, 'selectPerfil' => $this->perfilcontroller->getPerfis()]);
+                /* return view('usuarios/incluir_usuario', ['validation' => $this->validator,
+                 'selectPerfil' => $this->perfilcontroller->getPerfis()]); */
+                return view('layouts/sub_content', ['view' => 'usuarios/form_incluir_usuario',
+                'selectPerfil' => $this->perfilcontroller->getPerfis()]);
             } 
 
             $db = \Config\Database::connect('default');
@@ -401,8 +404,10 @@ class Usuarios extends ResourceController
 
             //die(var_dump($this->validator->getError('perfil')));
 
-            return view('usuarios/incluir_usuario', ['validation' => $this->validator,
-                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]);
+            /* return view('usuarios/incluir_usuario', ['validation' => $this->validator,
+                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]); */
+            return view('layouts/sub_content', ['view' => 'usuarios/form_incluir_usuario',
+                                                'selectPerfil' => $this->perfilcontroller->getPerfis()]);
         }
 
     }
