@@ -126,7 +126,7 @@ class Home extends ResourceController
         
         //var_dump( $_SESSION);die();
 
-        $_SESSION['Sessao']['NomeCompleto'] = $this->getLDAPUserName($v['Usuario']);
+        //$_SESSION['Sessao']['NomeCompleto'] = $this->getLDAPUserName($v['Usuario']);
         $_SESSION['Sessao']['Nome'] = $v['Usuario'];
         //die(var_dump($v['Usuario']));
        // var_dump($_SESSION['Sessao']);die();
@@ -206,7 +206,7 @@ class Home extends ResourceController
     */
     private function validate_ldap($usr, $pwd){
 
-        #Apenas para testar o sistema sem a necessidade de consultar o AD - APAGAR
+        /* #Apenas para testar o sistema sem a necessidade de consultar o AD - APAGAR
         #return TRUE;
 
         #Tenta se conectar com o servidor LDAP Master
@@ -217,6 +217,28 @@ class Home extends ResourceController
             $ldap_conn = $ldap2;
         else
             return FALSE;
+
+        # Tenta autenticar no servidor
+        return (!@ldap_bind($ldap_conn, $usr.'@ebserh.gov.br', $pwd)) ? FALSE : TRUE; */
+
+        $ldapPort = 389; // 636 para conexão segura exigida
+
+        $ldapHost = env('srv.ldap1');
+        $ldap1 = @ldap_connect($ldapHost, $ldapPort);
+        ldap_set_option($ldap1, LDAP_OPT_NETWORK_TIMEOUT, 2); // 2 segundos de timeout
+        if ($ldap1 && @ldap_bind($ldap1)) {
+            $ldap_conn = $ldap1;
+        #Tenta se conectar com o servidor LDAP Slave caso não consiga conexão com o Master
+        } else {
+            $ldapHost = env('srv.ldap2');
+            $ldap2 = @ldap_connect($ldapHost, $ldapPort);
+            ldap_set_option($ldap2, LDAP_OPT_NETWORK_TIMEOUT, 5); // 5 segundos de timeout
+            if ($ldap2 && @ldap_bind($ldap2)) {
+                $ldap_conn = $ldap2;
+            } else {
+                return FALSE;
+            }
+        }
 
         # Tenta autenticar no servidor
         return (!@ldap_bind($ldap_conn, $usr.'@ebserh.gov.br', $pwd)) ? FALSE : TRUE;

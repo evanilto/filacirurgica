@@ -1,6 +1,8 @@
 <?php
     use App\Libraries\HUAP_Functions;
 
+use function PHPUnit\Framework\isEmpty;
+
     //session()->set('parametros_consulta_mapa', $data); 
     $corProgramada = 'yellow';
     $corPacienteSolicitado = 'gold';
@@ -33,8 +35,9 @@
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
-                <th scope="col" data-field="fila" >Data Cirurgia</th>
-                <th scope="col" data-field="fila" >Hora</th>
+                <th scope="col" data-field="col-0" >Data Cirurgia</th>
+                <th scope="col" data-field="col-0" >Hora</th>
+                <th scope="col" data-field="col-0" >Tempo Previsto</th>
                 <th scope="col" class="col-0" >Centro Cirúrgico</th>
                 <th scope="col" class="col-0" >Sala</th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
@@ -83,13 +86,8 @@
                     $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
                     $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
 
-                    //die(var_dump($itemmapa));
-                    //if (DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('Y-m-d') != date('Y-m-d')) {
-                        //$permiteatualizar = false;
-                    //} else {
-                        $permiteatualizar = true;
-                    //}
-
+                    $permiteatualizar = true;
+                    
                     if ($itemmapa->dthrsuspensao) {
                         $color =$corCirurgiaSuspensa;
                         $background_color = $color;
@@ -221,6 +219,7 @@
                     </td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y') ?></td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') ?></td>
+                    <td><?php echo !is_null($itemmapa->tempoprevisto) ? DateTime::createFromFormat('H:i:s', $itemmapa->tempoprevisto)->format('H:i') : ''; ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>">
                         <?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>
                     </td>
@@ -804,7 +803,7 @@
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
             fixedColumns: {
-            leftColumns: 10 // Número de colunas a serem fixadas
+            leftColumns: 11 // Número de colunas a serem fixadas
             },
             fixedHeader: true,
             scrollY: '500px',
@@ -818,6 +817,7 @@
                     { "width": "40px" },       
                     { "width": "95px" },  // dt
                     { "width": "62px" },  // hr
+                    { "width": "75px" },  // tp
                     { "width": "220px" },  // centro cir
                     { "width": "85px" }, 
                     { "width": "55px" }, 
@@ -858,7 +858,7 @@
                 {
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
-                    columns: [2, 3, 4, 5, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
+                    columns: [2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
                 },
                 'copy',
                 'csv',

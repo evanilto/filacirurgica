@@ -550,10 +550,10 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-2">
-                                    <label class="form-label" for="justurgencia">Justificativas da Urgência<b class="text-danger">*</b></label>
+                                    <label class="form-label" for="info">Justificativas da Urgência<b class="text-danger">*</b></label>
                                     <textarea id="justurgencia" maxlength="255" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
-                                            name="justurgencia" autocomplete="off"> <?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
+                                            name="justurgencia"><?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justurgencia')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('justurgencia') ?>
@@ -565,7 +565,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label class="form-label" for="nec_proced">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
                                     <textarea id="nec_proced" maxlength="2048" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
@@ -657,7 +657,7 @@
           } else {
             document.getElementById('nome').value = data.error;
             console.error(data.error || 'Nome não encontrado');
-            $('#sidebar').html('<p>'+data.error+'</p>'); 
+            /* $('#sidebar').html('<p>'+data.error+'</p>');  */
           }
         })
         .catch(error => {
@@ -669,8 +669,8 @@
       }
     }
     
-    function loadAsideContent(recordId, ordemFila) {
-        var baseUrl = '<?= base_url('listaespera/carregaaside/') ?>';
+    /* function loadAsideContent(recordId, ordemFila) {
+        var baseUrl = '<--?= base_url('listaespera/carregaaside/') ?>';
         var endUrl = ordemFila ? baseUrl + recordId + '/' + ordemFila : baseUrl + recordId;
         
         $.ajax({
@@ -689,90 +689,9 @@
                 $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
             }
         });
-    }
+    } */
 
-    function updatelistapaciente(prontuario, valorSelecionado = null) {
-
-        const listapacienteSelect = document.getElementById('listapaciente');
-
-        listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
-
-        //alert(valorSelecionado);
-
-        if (prontuario) {
-
-            $('#janelaAguarde').show();
-
-            $.ajax({
-                url: '<?= base_url('listaespera/getlista') ?>',
-                type: 'POST',
-                data: {prontuario: prontuario},
-                dataType: 'json',
-                success: function(data) {
-                    //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
-                    const option = document.createElement("option"); // Usando createElement para criar uma nova opção
-                    option.value = 0; // ID que será usado como valor da opção
-                    option.text = `Paciente não está na Fila Cirúrgica`;
-                    if (valorSelecionado == "0") { // Verifica se "0" foi o valor selecionado
-                        option.selected = true;
-                    }
-                    listapacienteSelect.add(option); // Adiciona a nova opção ao select
-
-                    // Preencher o select com os dados recebidos
-                    data.forEach(item => {
-                        const option = document.createElement("option");
-                        option.value = item.id; // ID que será usado como valor da opção
-                        option.text = `Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_descricao}`;
-                        
-                        // Adicionando atributos data para os IDs
-                        //option.setAttribute('data-id', item.id);
-                        option.setAttribute('data-especialidade-id', item.idespecialidade);
-                        option.setAttribute('data-fila-id', item.idtipoprocedimento);
-                        option.setAttribute('data-procedimento-id', item.idprocedimento);
-                        option.setAttribute('data-origempaciente-id', item.idorigempaciente);
-                        option.setAttribute('data-justorig', item.just_orig);
-                        option.setAttribute('data-info', item.info_adicionais);
-
-                        option.setAttribute('data-risco', item.idriscocirurgico);
-                        option.setAttribute('data-cid', item.cid);
-                        option.setAttribute('data-lateralidade', item.lateralidade);
-                        option.setAttribute('data-congelacao', item.indcongelacao);
-                        option.setAttribute('data-opme', item.opme);
-                        option.setAttribute('data-complexidade', item.complexidade);
-
-                        if (item.data_risco) {
-                            const dataOriginal = item.data_risco;
-                            const [ano, mes, dia] = dataOriginal.split('-');
-                            const dataFormatada = `${dia}/${mes}/${ano}`;
-                            option.setAttribute('data-dtrisco', dataFormatada);
-                        }
-
-                        if (valorSelecionado == item.id) {
-                            option.selected = true;
-                            if (valorSelecionado != "0") { // Verifica se "0" foi o valor selecionado
-                                $('#origem').prop('disabled', true);
-                            }
-                        }
-
-                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
-                    });
-
-                    $('#janelaAguarde').hide();
-
-                },
-                error: function(xhr, status, error) {
-                    console.error('Erro ao buscar Fila Cirúrgica:', error);
-                }
-            });
-
-        } else {
-            // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
-            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
-        }
-
-    }
-
-    function preencherSelectListaPaciente(dadosServidor) {
+    /* function preencherSelectListaPaciente(dadosServidor) {
         const lista = document.getElementById('listapaciente');
 
         // Limpar o select antes de adicionar novas opções
@@ -798,62 +717,51 @@
         } else {
             console.warn("Nenhum dado disponível para preencher o select.");
         }
-    }
+    } */
 
-    function fetchPacienteNomeOnLoad() {
-        const prontuarioInput = document.getElementById('prontuario');
-        const ordemInput = document.getElementById('ordem');
-
-        //const listapacienteSelect = <--?php echo json_encode(!empty($data['listapacienteSelect']) ? $data['listapacienteSelect'] : ''); ?>;
-        //preencherSelectListaPaciente(listapacienteSelect);
-
-        fetchPacienteNome(prontuarioInput.value, ordemInput.value);
-        //updatelistapaciente(prontuarioInput.value);
-    }
-
-    //fetchPacienteNomeOnLoad();
-
-    document.addEventListener('DOMContentLoaded', function() {
+    /* document.addEventListener('DOMContentLoaded', function() {
         const prontuarioInput = document.getElementById('prontuario');
         const prontuario = prontuarioInput.value;
 
-        //alert(<--?= $data['listapaciente'] ?>); 
-        const valorSelecionado = <?= $data['listapaciente'] == '' ? 99 : $data['listapaciente']?>; //document.getElementById('listapaciente');
+        //const valorSelecionado = document.getElementById('listapaciente').value;
 
+        const valorSelecionado = this.value || <--?= $data['listapaciente'] ?? '0'?>;
 
-        if (prontuario) {
+        alert('valorSelecionado do evento Load: ' + valorSelecionado); 
+        alert('prontuario do load: ' + prontuario); 
+
+        //if (valorSelecionado && prontuario) {
+        if (valorSelecionado !== null && prontuario) {  
+
+            alert('executa o updatelistapaciente'); 
             updatelistapaciente(prontuario, valorSelecionado);
         }
 
-        const listapacienteSelect = document.getElementById('listapaciente');
+        //const listapacienteSelect = document.getElementById('listapaciente');
+        //listapacienteSelect.value = valorSelecionado;
+        //alert('listapacienteSelect.value: ' + listapacienteSelect.value); 
 
-        if (listapacienteSelect.value) {
+        //if (listapacienteSelect.value) {
+        //if (valorSelecionado) {
+        if (valorSelecionado !== '') {  // Apenas impede valores vazios
+
+            alert('executa o change listapacienteselect'); 
             $(listapacienteSelect).trigger('change'); // Dispara o evento de alteração para aplicar a lógica existente
         }
-    });
+
+        alert('saí do load');
+    }); */
 
     // Função para atualizar o select da Fila Cirúrgica
 
     $(document).ready(function() {
-        
         $('.select2-dropdown').select2({
-            //placeholder: "",
+            placeholder: "",
             allowClear: true,
-            //width: 'resolve' // Corrigir a largura
+            width: 'resolve' // Corrigir a largura
         });
 
-        $('#justurgencia').on('blur', function() {
-            setTimeout(() => {
-                let ativo = document.activeElement;
-                
-                // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
-                if (ativo.classList.contains('select2-search__field')) {
-                    $('#justurgencia').focus();
-                }
-            }, 10);
-        });
-
-       /* $('#confirmButton').click(function() {
+        $('#confirmButton').click(function() {
             event.preventDefault();
             Swal.fire({
                 title: 'Confirma a exclusão?',
@@ -874,7 +782,7 @@
                     );
                 }
             });
-        }); */
+        });
 
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------
         function updateProfEspecialidades(selectedFilter) {
@@ -927,6 +835,7 @@
         });
 
         $('#origem').change(function() {
+            //alert('(this).val() do change origem: ' + $(this).val());
             $('#origem_hidden').val($(this).val());
         });
 
@@ -955,110 +864,217 @@
             }, 1000);
         }); */
         
+        function updatelistapaciente(prontuario, valorSelecionado = null) {
+
+            const listapacienteSelect = document.getElementById('listapaciente');
+
+            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
+
+            //alert('prontuario de updatelistapaciente: ' + prontuario);
+
+            if (prontuario) {
+
+                $('#janelaAguarde').show();
+
+                //alert('entrei'); 
+
+                $.ajax({
+                    url: '<?= base_url('listaespera/getlista') ?>',
+                    type: 'POST',
+                    data: {prontuario: prontuario},
+                    dataType: 'json',
+                    success: function(data) {
+                        //alert('success do ajax de updatelistapaciente');
+                        //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
+                        const option = document.createElement("option"); // Usando createElement para criar uma nova opção
+                        option.value = 0; // ID que será usado como valor da opção
+                        option.text = `Paciente não está na Fila Cirúrgica`;
+                        if (valorSelecionado == "0") { // Verifica se "0" foi o valor selecionado
+                            option.selected = true;
+                        }
+                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
+
+                        // Preencher o select com os dados recebidos
+                        data.forEach(item => {
+                            const option = document.createElement("option");
+                            option.value = item.id; // ID que será usado como valor da opção
+                            option.text = `Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_descricao}`;
+                            
+                            // Adicionando atributos data para os IDs
+                            //option.setAttribute('data-id', item.id);
+                            option.setAttribute('data-especialidade-id', item.idespecialidade);
+                            option.setAttribute('data-fila-id', item.idtipoprocedimento);
+                            option.setAttribute('data-procedimento-id', item.idprocedimento);
+                            option.setAttribute('data-origempaciente-id', item.idorigempaciente);
+                            option.setAttribute('data-justorig', item.just_orig);
+                            option.setAttribute('data-info', item.info_adicionais);
+
+                            option.setAttribute('data-risco', item.idriscocirurgico);
+                            option.setAttribute('data-lateralidade', item.lateralidade);
+                            option.setAttribute('data-congelacao', item.indcongelacao);
+                            option.setAttribute('data-opme', item.opme);
+                            option.setAttribute('data-complexidade', item.complexidade);
+
+                            if (item.data_risco) {
+                                const dataOriginal = item.data_risco;
+                                const [ano, mes, dia] = dataOriginal.split('-');
+                                const dataFormatada = `${dia}/${mes}/${ano}`;
+                                option.setAttribute('data-dtrisco', dataFormatada);
+                            }
+
+                            //alert('valorSelecionado do updatelistapaciente: ' + valorSelecionado);
+                            //alert('item.id do updatelistapaciente: ' + item.id);
+
+                            if (valorSelecionado == item.id) {
+                            //if (item.id == 10399) {
+                                option.selected = true;
+                                if (valorSelecionado != "0") { // Verifica se "0" foi o valor selecionado
+                                    $('#origem').prop('disabled', true);
+                                }
+                            }
+
+                            listapacienteSelect.add(option); // Adiciona a nova opção ao select
+                        });
+
+                        $('#janelaAguarde').hide();
+
+                    },
+                    error: function(xhr, status, error) {
+                        //alert('erro no ajax de updatelistapaciente');
+                        console.error('Erro ao buscar Fila Cirúrgica:', error);
+                    }
+                });
+
+                //alert('saí');
+
+            } else {
+                // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
+                listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
+            }
+        }
+        
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
 
         prontuarioInput.addEventListener('change', function() {
-            //alert(prontuarioInput.value);
             fetchPacienteNome(prontuarioInput.value, ordemInput.value);
             updatelistapaciente(prontuarioInput.value);
         });
 
         $('#listapaciente').on('change', function() {
-            const selectedValue = this.value;
 
-            //alert(this.value);
+            const selectedValue = this.value || <?= $data['listapaciente'] ?? '0' ?>;
+            const indiceSelecionado = $("#listapaciente option").filter(function() {
+                        return $(this).val() === selectedValue;
+                        }).index();
 
-            if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
-                // Encontrar a opção correspondente que foi selecionada
-                const selectedOption = this.options[this.selectedIndex];
+             if (this.value) {
+                //alert('this.value verd');
+                if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
+                    // Encontrar a opção correspondente que foi selecionada
 
-                // Obter os IDs armazenados nos atributos data
-                const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
-                const filaId = selectedOption.getAttribute('data-fila-id');
-                const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
-                const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
-                const justorig = selectedOption.getAttribute('data-justorig');
-                const info = selectedOption.getAttribute('data-info');
+                    let selectedOption;
 
-                const risco = selectedOption.getAttribute('data-risco');
-                const dtrisco = selectedOption.getAttribute('data-dtrisco');
-                const cid = selectedOption.getAttribute('data-cid');
-                const lateralidade = selectedOption.getAttribute('data-lateralidade');
-                const congelacao = selectedOption.getAttribute('data-congelacao');
-                const opme = selectedOption.getAttribute('data-opme');
-                const complexidade = selectedOption.getAttribute('data-complexidade');
+                    if (this.selectedIndex) {
+                        selectedOption = this.options[this.selectedIndex];
 
-                //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
-                //alert("ID do item selecionado:", dataId);
-                //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
+                    } else {
 
-                // Preencher os campos do formulário com os IDs
-                $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
-                $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
-                $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                $('#risco').val(risco).trigger('change'); 
-                $('#justorig').val(justorig);
-                $('#info').val(info);
+                        const indiceSelecionado = $("#listapaciente option").filter(function() {
+                        return $(this).val() === selectedValue;
+                        }).index();
 
-                $('#lateralidade').val(lateralidade).trigger('change'); 
-                $('#cid').val(cid).trigger('change'); 
-                $('input[name="congelacao"][value="' + congelacao + '"]').prop('checked', true);
-                $('input[name="opme"][value="' + opme + '"]').prop('checked', true);
-                $('input[name="complexidade"][value="' + complexidade + '"]').prop('checked', true);
-                $('#dtrisco').val(dtrisco);
-                $('input[name="hemoderivados"]').prop('checked', false);
+                        //alert('ÍndiceSelecionado do ListapacienteChange2: ' + indiceSelecionado);
 
-                $('#especialidade_hidden').val(especialidadeId);
-                $('#fila').val(filaId);
-                $('#fila_hidden').val(filaId);
-                $('#procedimento_hidden').val(procedimentoId);
-                $('#origem').val(origempacienteId);
-                $('#origem_hidden').val(origempacienteId);
-                $('#risco').val(risco); 
-                $('#risco_hidden').val(risco);
-                /* $('#infoadic_hidden').val(info);
-                $('#justorig_hidden').val(justorig); */
+                        selectedOption = this.options[indiceSelecionado];
+                    }
 
-                // Desabilitar os campos após preencher
-                $('#especialidade').prop('disabled', true);
-                $('#fila').prop('disabled', true);
-                $('#procedimento').prop('disabled', true);
-                $('#origem').prop('disabled', true);
-                $('#justorig').prop('readonly', true);
-                $('#risco').prop('disabled', false);
-                $('#dtrisco').prop('readonly', false);
-            } else {
-                // Limpar os campos se a opção selecionada não for válida
-                $('#especialidade').val('').trigger('change');
-                $('#fila').val(177).trigger('change');
-                $('#origem').val(9).trigger('change');
-                $('#risco').val(11).trigger('change');
-                $('#dtrisco').val("");
-                $('#procedimento').val('').trigger('change');
+                    //alert('selectedOption ListapacienteChange: ' + selectedOption);
 
-                $('#lateralidade').val('').trigger('change'); 
-                $('#cid').val('').trigger('change'); 
-                $('#dtrisco').val('');
-                $('input[name="congelacao"]').prop('checked', false);
-                $('input[name="opme"]').prop('checked', false);
-                $('input[name="complexidade"]').prop('checked', false);
-                $('input[name="hemoderivados"]').prop('checked', false);
+                    // Obter os IDs armazenados nos atributos data
+                    const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
+                    const filaId = selectedOption.getAttribute('data-fila-id');
+                    const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
+                    const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
+                    const justorig = selectedOption.getAttribute('data-justorig');
+                    const info = selectedOption.getAttribute('data-info');
 
-                $('#fila_hidden').val(177);
-                $('#origem_hidden').val(9);
-                $('#risco_hidden').val(11);
-                $('#info').val("");
+                    const risco = selectedOption.getAttribute('data-risco');
+                    const dtrisco = selectedOption.getAttribute('data-dtrisco');
+                    const lateralidade = selectedOption.getAttribute('data-lateralidade');
+                    const congelacao = selectedOption.getAttribute('data-congelacao');
+                    const opme = selectedOption.getAttribute('data-opme');
+                    const complexidade = selectedOption.getAttribute('data-complexidade');
 
-                // Habilitar os campos para nova seleção
-                $('#especialidade').prop('disabled', false);
-                $('#fila').prop('disabled', true);
-                $('#procedimento').prop('disabled', false);
-                $('#origem').prop('disabled', true);
-                $('#justorig').prop('readonly', true);
-                $('#risco').prop('disabled', true);
-                $('#dtrisco').prop('readonly', true);
+                    //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
+                    //alert("ID do item selecionado:", dataId);
+                    //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
+
+                    // Preencher os campos do formulário com os IDs
+                    $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
+                    $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
+                    $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                    $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                    $('#risco').val(risco).trigger('change'); 
+                    $('#justorig').val(justorig);
+                    $('#info').val(info);
+
+                    $('#lateralidade').val(lateralidade).trigger('change'); 
+                    $('input[name="congelacao"][value="' + congelacao + '"]').prop('checked', true);
+                    $('input[name="opme"][value="' + opme + '"]').prop('checked', true);
+                    $('input[name="complexidade"][value="' + complexidade + '"]').prop('checked', true);
+                    $('#dtrisco').val(dtrisco);
+                    $('input[name="hemoderivados"]').prop('checked', false);
+
+                    $('#especialidade_hidden').val(especialidadeId);
+                    $('#fila').val(filaId);
+                    $('#fila_hidden').val(filaId);
+                    $('#procedimento_hidden').val(procedimentoId);
+                    $('#origem').val(origempacienteId);
+                    $('#origem_hidden').val(origempacienteId);
+                    $('#risco').val(risco); 
+                    $('#risco_hidden').val(risco);
+                    /* $('#infoadic_hidden').val(info);
+                    $('#justorig_hidden').val(justorig); */
+
+                    // Desabilitar os campos após preencher
+                    $('#especialidade').prop('disabled', true);
+                    $('#fila').prop('disabled', true);
+                    $('#procedimento').prop('disabled', true);
+                    $('#origem').prop('disabled', true);
+                    $('#justorig').prop('readonly', true);
+                    $('#risco').prop('disabled', false);
+                    $('#dtrisco').prop('readonly', false);
+                } else {
+                    // Limpar os campos se a opção selecionada não for válida
+                    $('#especialidade').val('').trigger('change');
+                    $('#fila').val(177).trigger('change');
+                    $('#origem').val(9).trigger('change');
+                    $('#risco').val(11).trigger('change');
+                    $('#dtrisco').val("");
+                    $('#procedimento').val('').trigger('change');
+
+                    $('#lateralidade').val('').trigger('change'); 
+                    $('#dtrisco').val('');
+                    $('input[name="congelacao"]').prop('checked', false);
+                    $('input[name="opme"]').prop('checked', false);
+                    $('input[name="complexidade"]').prop('checked', false);
+                    $('input[name="hemoderivados"]').prop('checked', false);
+
+                    $('#fila_hidden').val(177);
+                    $('#origem_hidden').val(9);
+                    $('#risco_hidden').val(11);
+                    $('#info').val("");
+
+                    // Habilitar os campos para nova seleção
+                    $('#especialidade').prop('disabled', false);
+                    $('#fila').prop('disabled', true);
+                    $('#procedimento').prop('disabled', false);
+                    $('#origem').prop('disabled', true);
+                    $('#justorig').prop('readonly', true);
+                    $('#risco').prop('disabled', true);
+                    $('#dtrisco').prop('readonly', true);
+                }
             }
         });
 
@@ -1133,5 +1149,37 @@
             // event.currentTarget.submit(); // Descomente para executar envio padrão após processamento
         });
 
+        //$('#listapaciente').change();
+
+        //++++++++++++++++++++++++++++++++ inclusão dos eventos do loaded aqui
+
+        //const prontuarioInput = document.getElementById('prontuario');
+        const prontuario = prontuarioInput.value;
+
+        const valorSelecionado = this.value // || <--?= $data['listapaciente'] ?? '0'?>;
+
+        //if (valorSelecionado && prontuario) {
+        if (valorSelecionado !== null && prontuario) {  
+            //alert('valorSelecionado: ' + valorSelecionado); 
+            updatelistapaciente(prontuario, valorSelecionado);
+        }
+
+        if (valorSelecionado !== '') {  // Apenas impede valores vazios
+            //alert('executa o change listapacienteselect'); 
+            $(listapacienteSelect).trigger('change'); // Dispara o evento de alteração para aplicar a lógica existente
+        }
+
+       /*  function fetchPacienteNomeOnLoad() {
+            const prontuarioInput = document.getElementById('prontuario');
+            const ordemInput = document.getElementById('ordem');
+
+            //const listapacienteSelect = <--?php echo json_encode(!empty($data['listapacienteSelect']) ? $data['listapacienteSelect'] : ''); ?>;
+            //preencherSelectListaPaciente(listapacienteSelect);
+
+            fetchPacienteNome(prontuarioInput.value, ordemInput.value);
+            updatelistapaciente(prontuarioInput.value);
+        }
+
+        fetchPacienteNomeOnLoad(); */
     });
 </script>

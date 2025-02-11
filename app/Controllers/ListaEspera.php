@@ -1715,7 +1715,9 @@ class ListaEspera extends ResourceController
         $data = [];
         $data['ordemfila'] = $this->getListaEspera(['idlista' => $id])[0]->ordem_fila;
         $data['id'] = $lista['id'];
-        $data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['dtcirurgia'] = date('d/m/Y', strtotime('+3 days'));
+        $data['hrcirurgia'] = '';
+        $data['tempoprevisto'] = '';
         $data['prontuario'] = $lista['numprontuario'];
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
@@ -1777,7 +1779,9 @@ class ListaEspera extends ResourceController
         $rules = [
             'especialidade' => 'required',
             //'dtrisco' => 'required|valid_date[d/m/Y]',
-            'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
+            'dtcirurgia' => 'required|valid_date[d/m/Y]',
+            'hrcirurgia' => 'required|valid_time[H:i]',
+            'tempoprevisto' => 'required|valid_time[H:i]',
             'hemoderivados' => 'required',
             //'risco' => 'required',
             'procedimento' => 'required',
@@ -1796,7 +1800,10 @@ class ListaEspera extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            $dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->setTime(0, 0);
+            //$dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->setTime(0, 0);
+            $dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5));
+
+            //dd($dataCirurgia);
 
             $dataComparacao = new DateTime();
             $dataComparacao->modify('+'.DIAS_AGENDA_CIRURGICA.' days')->setTime(0, 0);
@@ -1850,7 +1857,8 @@ class ListaEspera extends ResourceController
 
             $data_clone = $this->data;
             $data_clone['listapaciente'] = $this->data['id'];
-            $data_clone['dtcirurgia'] = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d');
+            //$data_clone['dtcirurgia'] = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d');
+            $data_clone['dtcirurgia'] = $dataCirurgia->format('Y-m-d');
             if ($this->mapacirurgicocontroller->getPacienteNoMapa($data_clone)) {
                 session()->setFlashdata('failed', 'Esse paciente já tem uma cirurgia programada para esse dia!');
 
@@ -1887,6 +1895,16 @@ class ListaEspera extends ResourceController
                                                     'data' => $this->data]);
             }
 
+            if ($this->data['tempoprevisto'] == '00:00') {
+                $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
+
             $db->transStart();
 
             try {
@@ -1918,7 +1936,10 @@ class ListaEspera extends ResourceController
 
                 $mapa = [
                     'idlistaespera' => $this->data['id'],
-                    'dthrcirurgia' => $this->data['dtcirurgia'],
+                    //'dthrcirurgia' => $this->data['dtcirurgia'],
+                    'dthrcirurgia' => $dataCirurgia->format('d/m/Y H:i:s'),
+                    'tempoprevisto' => $this->data['tempoprevisto'],
+                    //'tempoprevisto' => $tempoprevisto = DateTime::createFromFormat('H:i', $this->data['tempoprevisto']),
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],

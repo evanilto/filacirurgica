@@ -26,7 +26,22 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM" disabled
+                                            class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
+                                            name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
+                                        <?php if ($validation->getError('tempoprevisto')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('tempoprevisto') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
@@ -41,7 +56,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">

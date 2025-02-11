@@ -9,7 +9,8 @@
  * the LICENSE file that was distributed with this source code.
  */
 
-namespace CodeIgniter\Validation\StrictRules\MyRules;
+//namespace CodeIgniter\Validation\StrictRules\MyRules;
+namespace App\Config;
 
 use DateTime;
 
@@ -31,5 +32,12 @@ class MyRules
         $errors = DateTime::getLastErrors();
 
         return $date !== false && $errors !== false && $errors['warning_count'] === 0 && $errors['error_count'] === 0;
+    }
+    /**
+     * Checks for a valid hour and matches a given date format and greater than today
+     */
+    public function valid_time($str): bool
+    {
+        return (bool) preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d$/', $str);
     }
 }

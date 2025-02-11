@@ -1,7 +1,6 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
-</style>
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -12,12 +11,12 @@
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('listaespera/enviar') ?>">
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="dtcirurgia" class="form-label">Data/Hora da Cirurgia<b class="text-danger">*</b></label>
+                                    <label for="dtcirurgia" class="form-label">Data Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM"
-                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
+                                        <input type="text" id="dtcirurgia" maxlength="10" placeholder="DD/MM/AAAA"
+                                            class="form-control input-data <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
                                             <div class="invalid-feedback">
@@ -27,7 +26,37 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="hrcirurgia" class="form-label">Hora Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
+                                            class="form-control input-hora <?php if($validation->getError('hrcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="hrcirurgia" value="<?= set_value('hrcirurgia', $data['hrcirurgia']) ?>" />
+                                        <?php if ($validation->getError('hrcirurgia')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hrcirurgia') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                            class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
+                                            name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
+                                        <?php if ($validation->getError('tempoprevisto')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('tempoprevisto') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
                                 <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
@@ -42,7 +71,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
@@ -527,6 +556,24 @@
         </div>
     </div>
 </div>
+<script>
+function formatarHora(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remove não numéricos
+    if (valor.length >= 2) {
+        input.value = valor.substring(0, 2) + (valor.length > 2 ? ":" : "") + valor.substring(2, 4);
+    }
+}
+
+function formatarData(input) {
+    let valor = input.value.replace(/\D/g, ""); // Remove tudo que não for número
+
+    if (valor.length >= 2) {
+        valor = valor.substring(0, 2) + (valor.length > 2 ? "/" : "") + valor.substring(2, 4) + (valor.length > 4 ? "/" : "") + valor.substring(4, 8);
+    }
+
+    input.value = valor;
+}
+</script>
 
 <script>
      window.onload = function() {
@@ -603,6 +650,17 @@
         $('.select2-dropdown').select2({
             //dropdownCssClass: 'custom-dropdown',
             allowClear: true,
+        });
+
+        $('#justurgencia').on('blur', function() {
+            setTimeout(() => {
+                let ativo = document.activeElement;
+                
+                // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
+                if (ativo.classList.contains('select2-search__field')) {
+                    $('#justurgencia').focus();
+                }
+            }, 10);
         });
 
         $('#risco').change(function() {

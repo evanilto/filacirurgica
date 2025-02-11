@@ -58,6 +58,7 @@ return [
     'valid_ip'              => 'O campo {field} deve conter um IP válido.',
     'valid_url'             => 'O campo {field} deve conter uma URL válida.',
     'valid_date'            => 'O campo {field} deve conter uma data válida.',
+    'valid_time'            => 'O campo {field} deve conter uma hora válida.',
 
     // Credit Cards
     'valid_cc_num' => '{field} não parece ser um número de cartão de crédito válido.',

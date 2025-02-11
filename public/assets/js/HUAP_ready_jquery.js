@@ -52,3 +52,30 @@ $(document).on('select2:open', () => {
         },0);
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("input", function (event) {
+        let input = event.target;
+
+        // Formatação automática para campos de data
+        if (input.classList.contains("input-data")) {
+            let valor = input.value.replace(/\D/g, ""); // Remove tudo que não for número
+
+            if (valor.length >= 2) {
+                valor = valor.substring(0, 2) + (valor.length > 2 ? "/" : "") + valor.substring(2, 4) + (valor.length > 4 ? "/" : "") + valor.substring(4, 8);
+            }
+
+            input.value = valor;
+        }
+
+        // Formatação automática para campos de hora
+        if (input.classList.contains("input-hora")) {
+            let valor = input.value.replace(/\D/g, ""); // Remove tudo que não for número
+
+            if (valor.length >= 2) {
+                input.value = valor.substring(0, 2) + (valor.length > 2 ? ":" : "") + valor.substring(2, 4);
+            }
+        }
+    });
+});
+

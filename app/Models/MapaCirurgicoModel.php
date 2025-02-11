@@ -20,6 +20,7 @@ class MapaCirurgicoModel extends Model
         'dthrnocentrocirurgico',
         'dthrpacientesolicitado',
         'dthremcirurgia',
+        'tempoprevisto',
         'dthrsaidasala',
         'dthrsuspensao',
         'dthrcirurgia',
