@@ -818,7 +818,7 @@
         const prontuario = prontuarioInput.value;
 
         //alert(<--?= $data['listapaciente'] ?>); 
-        const valorSelecionado = <?= $data['listapaciente'] == '' ? 99 : $data['listapaciente']?>; //document.getElementById('listapaciente');
+        const valorSelecionado = <?= $data['listapaciente'] == '' ? 9999 : $data['listapaciente']?>; //document.getElementById('listapaciente');
 
 
         if (prontuario) {
