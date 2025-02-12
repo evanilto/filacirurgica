@@ -742,7 +742,7 @@ class MapaCirurgico extends ResourceController
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y');
         $data['hrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('H:i');
-        $data['tempoprevisto'] = DateTime::createFromFormat('H:i:s', $mapa->tempoprevisto)->format('H:i');
+        $data['tempoprevisto'] = !is_null($mapa->tempoprevisto) ? DateTime::createFromFormat('H:i:s', $mapa->tempoprevisto)->format('H:i') : NULL;
         $data['prontuario'] = $mapa->prontuario;
         $data['nome'] = $mapa->nome_paciente;
         $data['especialidade'] = $mapa->idespecialidade;

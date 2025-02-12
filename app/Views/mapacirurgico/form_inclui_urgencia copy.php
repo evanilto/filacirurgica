@@ -45,7 +45,7 @@
                                 <div class="mb-2">
                                     <label for="hrcirurgia" class="form-label">Hora Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
+                                        <input type="time" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
                                             class="form-control input-hora <?php if($validation->getError('hrcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="hrcirurgia" value="<?= set_value('hrcirurgia', $data['hrcirurgia']) ?>" />
                                         <?php if ($validation->getError('hrcirurgia')): ?>
@@ -60,7 +60,7 @@
                                 <div class="mb-2">
                                     <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                        <input type="time" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
                                             class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
                                             name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
                                         <?php if ($validation->getError('tempoprevisto')): ?>
@@ -75,7 +75,7 @@
                                 <div class="mb-2">
                                 <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                    <input type="text" id="prontuario" maxlength="8"
+                                    <input type="number" id="prontuario" maxlength="8"
                                     class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                     name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
                                     <?php if ($validation->getError('prontuario')): ?>

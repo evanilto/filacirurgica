@@ -59,7 +59,7 @@
                                     <div class="mb-2">
                                         <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
                                         <div class="input-group">
-                                            <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                            <input type="time" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
                                                 class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
                                                 name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
                                             <?php if ($validation->getError('tempoprevisto')): ?>

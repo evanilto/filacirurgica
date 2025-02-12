@@ -15,7 +15,7 @@
                                 <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
-                                        <input type="text" id="prontuario" maxlength="8" disabled
+                                        <input type="number" id="prontuario" maxlength="8" disabled
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                         name="prontuario" value="<?= set_value('prontuario', $data['prontuario']) ?>" disabled/>
                                         <?php if ($validation->getError('prontuario')): ?>
