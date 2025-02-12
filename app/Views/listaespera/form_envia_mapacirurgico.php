@@ -652,13 +652,29 @@ function formatarData(input) {
             allowClear: true,
         });
 
-        $('#justurgencia').on('blur', function() {
+        /* $('#justurgencia').on('blur', function() {
             setTimeout(() => {
                 let ativo = document.activeElement;
                 
                 // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
                 if (ativo.classList.contains('select2-search__field')) {
                     $('#justurgencia').focus();
+                }
+            }, 10);
+        }); */
+
+        let lastFocusedInput = null;
+        // Captura o último campo de entrada (input ou textarea) focado
+        $(document).on('focus', 'input[type="text"], textarea', function() {
+            lastFocusedInput = this;
+        });
+        $(document).on('blur', 'input[type="text"], textarea', function() {
+            setTimeout(() => {
+                let activeElement = document.activeElement;
+
+                // Se o foco foi para o campo de busca do Select2, retorna o foco ao último campo
+                if (activeElement.classList.contains('select2-search__field') && lastFocusedInput) {
+                    lastFocusedInput.focus();
                 }
             }, 10);
         });

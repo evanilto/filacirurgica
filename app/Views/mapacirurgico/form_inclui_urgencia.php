@@ -45,7 +45,7 @@
                                 <div class="mb-2">
                                     <label for="hrcirurgia" class="form-label">Hora Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
+                                        <input type="time" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
                                             class="form-control input-hora <?php if($validation->getError('hrcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="hrcirurgia" value="<?= set_value('hrcirurgia', $data['hrcirurgia']) ?>" />
                                         <?php if ($validation->getError('hrcirurgia')): ?>
@@ -60,7 +60,7 @@
                                 <div class="mb-2">
                                     <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                        <input type="time" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
                                             class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
                                             name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
                                         <?php if ($validation->getError('tempoprevisto')): ?>
@@ -75,7 +75,7 @@
                                 <div class="mb-2">
                                 <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                    <input type="text" id="prontuario" maxlength="8"
+                                    <input type="number" id="prontuario" maxlength="8"
                                     class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                     name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
                                     <?php if ($validation->getError('prontuario')): ?>
@@ -842,39 +842,21 @@
             //width: 'resolve' // Corrigir a largura
         });
 
-        $('#justurgencia').on('blur', function() {
+        let lastFocusedInput = null;
+        // Captura o último campo de entrada (input ou textarea) focado
+        $(document).on('focus', 'input[type="text"], textarea', function() {
+            lastFocusedInput = this;
+        });
+        $(document).on('blur', 'input[type="text"], textarea', function() {
             setTimeout(() => {
-                let ativo = document.activeElement;
-                
-                // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
-                if (ativo.classList.contains('select2-search__field')) {
-                    $('#justurgencia').focus();
+                let activeElement = document.activeElement;
+
+                // Se o foco foi para o campo de busca do Select2, retorna o foco ao último campo
+                if (activeElement.classList.contains('select2-search__field') && lastFocusedInput) {
+                    lastFocusedInput.focus();
                 }
             }, 10);
         });
-
-       /* $('#confirmButton').click(function() {
-            event.preventDefault();
-            Swal.fire({
-                title: 'Confirma a exclusão?',
-                icon: 'question', //'info', 'error', 'success','warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ok',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-
-                    $('#idForm').off('submit'); 
-                    $('#idForm').submit(); 
-
-                    Swal.fire(
-                        'Excluído!',
-                        'O item foi excluído com sucesso.',
-                        'success'
-                    );
-                }
-            });
-        }); */
 
         // Filtro de prof_especs adicionais baseado no filtro selecionado ----------------
         function updateProfEspecialidades(selectedFilter) {

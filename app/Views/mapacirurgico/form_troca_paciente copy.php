@@ -496,12 +496,12 @@
                         <input type="hidden" name="prontuario_pacatrocar" id="prontuario_pacatrocar" value="<?= $pacatrocar['prontuario'] ?>" />
                         <input type="hidden" name="ordemfila_pacatrocar" id="ordemfila_pacatrocar" value="<?= $pacatrocar['ordemfila'] ?>" />
                         <input type="hidden" name="fila_pacatrocar" id="fila_pacatrocar" value="<?= $pacatrocar['fila'] ?>" />
-                        <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
+                        <input type="hidden" name="dtcirurgia" value="<?= $data['dtcirurgia'] ?>" />
                         <input type="hidden" name="fila" value="<?= $data['fila'] ?>" />
-                        <input type="hidden" name="fila_hidden" id="fila_hidden" value="<?= $data['fila'] ?>"/>
+                        <input type="hidden" name="fila_hidden" id="fila_hidden" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
-                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
+                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
@@ -597,6 +597,65 @@
         }
     };
 
+    function trocarpaciente() {
+        const formulario = document.getElementById('idForm');
+
+        const formData = new FormData(formulario);
+        
+        // Para converter FormData em um objeto simples (opcional)
+       /*  const dados = {};
+        formData.forEach((value, key) => {
+            dados[key] = value;
+        }); */
+
+        //console.log(dados); // Para verificar os dados no console (opcional)
+        fetch('<?=base_url('mapacirurgico/trocar')?>', {
+            method: 'POST',
+            body: formData // ou pode usar JSON.stringify(dados) se necessário
+        })
+        .then(response => {
+
+            if (!response.ok) {
+                    throw new Error('Erro na resposta da rede');
+            }
+
+            return response.text(); // ou response.text() dependendo do que o servidor retorna
+        })
+        .then(data => {
+            console.log('Success:', data); 
+            alert('okk');
+
+           /*  setTimeout(() => {
+                //window.history.back(3);
+              //  window.location.href = '<--?=base_url('mapacirurgico/resultado')?>'; // Mude para a URL que deseja acessar
+                //window.location.reload(); // Recarregar a página após 1 segundo
+            }, 1000); */
+            window.location.href = '<?=base_url('mapacirurgico/exibir')?>'; 
+        })
+        .catch((error) => {
+            console.error('Error:', error); 
+        });
+    }
+    
+   /*  function loadAsideContent(recordId, ordemFila, fila) {
+        $.ajax({
+            url: '<--?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
+            method: 'GET',
+            beforeSend: function() {
+                $('#sidebar').html('<p>Carregando...</p>'); 
+            },
+            success: function(response) {
+                $('#sidebar').html(response);
+            },
+            error: function(xhr, status, error) {
+                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
+                console.error(errorMessage);
+                console.error(xhr.responseText);
+                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
+            }
+        });
+    } */
+
     $(document).ready(function() {
         $('.select2-dropdown').select2({
             placeholder: "",
@@ -604,18 +663,19 @@
             width: 'resolve' // Corrigir a largura
         });
 
-        let lastFocusedInput = null;
-        // Captura o último campo de entrada (input ou textarea) focado
-        $(document).on('focus', 'input[type="text"], textarea', function() {
-            lastFocusedInput = this;
+        $('.select2-dropdown').select2({
+            //placeholder: "",
+            allowClear: true,
+            //width: 'resolve' // Corrigir a largura
         });
-        $(document).on('blur', 'input[type="text"], textarea', function() {
-            setTimeout(() => {
-                let activeElement = document.activeElement;
 
-                // Se o foco foi para o campo de busca do Select2, retorna o foco ao último campo
-                if (activeElement.classList.contains('select2-search__field') && lastFocusedInput) {
-                    lastFocusedInput.focus();
+        $('#nec_proced').on('blur', function() {
+            setTimeout(() => {
+                let ativo = document.activeElement;
+                
+                // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
+                if (ativo.classList.contains('select2-search__field')) {
+                    $('#nec_proced').focus();
                 }
             }, 10);
         });
@@ -628,6 +688,10 @@
 
         var lateralidadeValue = $('input[name="lateralidade"]').val(); // O valor deve ser definido aqui para o hidden
         $('select[name="lateralidade"]').val(lateralidadeValue).change(); // 
+
+        $('#seu-select2').on('select2:select', function (e) {
+            $(this).select2('close'); // Fecha o dropdown manualmente
+        });
 
         // Atualiza a lista de profissionais baseado no filtro selecionado
         $('#filtro_especialidades').change(function() {
@@ -744,9 +808,9 @@
          // Inicializa os profissionais adicionais já selecionados
          updateProfEspecialidades($('#filtro_especialidades').val());
 
-        /* <--?php if (isset($data['idlistapac2']) && !empty($data['idlistapac2'])) { ?>
-            $('#candidato').val(<--?= $data['idlistapac2']?>).change(); 
-        <--?php } ?>  */
+        <?php if (isset($data['idlistapac2']) && !empty($data['idlistapac2'])) { ?>
+            $('#candidato').val(<?= $data['idlistapac2']?>).change(); 
+        <?php } ?> 
 
     });
 </script>

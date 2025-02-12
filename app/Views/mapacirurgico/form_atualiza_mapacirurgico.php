@@ -16,13 +16,13 @@
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
                         <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="dtcirurgia" class="form-label">Data/Hora da Cirurgia<b class="text-danger">*</b></label>
+                                    <label for="dtcirurgia" class="form-label">Data Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM:SS"
-                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
-                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" <?= $data['status_fila'] ?> />
+                                        <input type="text" id="dtcirurgia" maxlength="10" placeholder="DD/MM/AAAA"
+                                            class="form-control input-data <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtcirurgia') ?>
@@ -31,14 +31,44 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="prontuario" class="form-label">Prontuario</label>
+                                    <label for="hrcirurgia" class="form-label">Hora Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="prontuario" maxlength="8" disabled
-                                        class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
-                                        name="prontuario" value="<?= set_value('prontuario', $data['prontuario']) ?>" disabled/>
-                                        <?php if ($validation->getError('prontuario')): ?>
+                                        <input type="text" id="hrcirurgia" maxlength="5" placeholder="HH:MM"
+                                            class="form-control input-hora <?php if($validation->getError('hrcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="hrcirurgia" value="<?= set_value('hrcirurgia', $data['hrcirurgia']) ?>" />
+                                        <?php if ($validation->getError('hrcirurgia')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hrcirurgia') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                            class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
+                                            name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
+                                        <?php if ($validation->getError('tempoprevisto')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('tempoprevisto') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-1">
+                                <div class="mb-2">
+                                <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                    <input type="text" id="prontuario" maxlength="8"
+                                    class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
+                                    name="prontuario" value="<?= set_value('prontuario', isset($data['prontuario']) ? $data['prontuario'] : '') ?>" <?= isset($data['prontuario']) ? 'readonly' : '' ?> />
+                                    <?php if ($validation->getError('prontuario')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('prontuario') ?>
                                             </div>
@@ -46,13 +76,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-5">
                                 <div class="mb-2">
-                                    <label for="nome" class="form-label">Nome</label>
-                                    <div class="input-group">
-                                        <input type="text" id="nome" minlength="3" disabled
+                                    <label for="nome" class="form-label">Nome do Paciente</b></label>
+                                    <div class="input-group mb-12">
+                                        <input type="text" id="nome" maxlength="100" 
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                        name="nome" value="" />
+                                        name="nome" value="<?= set_value('nome', isset($data['nome']) ? $data['nome'] : '') ?>" <?= isset($data['nome']) ? 'readonly' : '' ?> />
                                         <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('nome') ?>

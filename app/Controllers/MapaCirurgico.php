@@ -740,8 +740,11 @@ class MapaCirurgico extends ResourceController
         $data['idlistaespera'] = $mapa->idlista;
         $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
-        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
+        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y');
+        $data['hrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('H:i');
+        $data['tempoprevisto'] = DateTime::createFromFormat('H:i:s', $mapa->tempoprevisto)->format('H:i');
         $data['prontuario'] = $mapa->prontuario;
+        $data['nome'] = $mapa->nome_paciente;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['risco'] = $mapa->idriscocirurgico;
         $data['dtrisco'] = $mapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $mapa->dtrisco)->format('d/m/Y') : NULL;
@@ -781,7 +784,7 @@ class MapaCirurgico extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-       //var_dump($data['sala']);die();
+       //var_dump($data);die();
        //var_dump($data['salas_cirurgicas']);die();
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
@@ -807,7 +810,9 @@ class MapaCirurgico extends ResourceController
         $rules = [
             'especialidade' => 'required',
             //'dtrisco' => 'required|valid_date[d/m/Y]',
-            'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
+            'dtcirurgia' => 'required|valid_date[d/m/Y]',
+            'hrcirurgia' => 'required|valid_time[H:i]',
+            'tempoprevisto' => 'required|valid_time[H:i]',
             'fila' => 'required',
             'procedimento' => 'required',
             'posoperatorio' => 'required',
@@ -838,6 +843,15 @@ class MapaCirurgico extends ResourceController
                                                     'data' => $this->data]);
             } */
 
+            if ($this->data['tempoprevisto'] == '00:00') {
+                $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
             $db = \Config\Database::connect('default');
 
             $db->transStart();
@@ -867,9 +881,12 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
+                $dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5));
+
                 $mapa = [
                     'idlistaespera' => $this->data['idlistaespera'],
-                    'dthrcirurgia' => $this->data['dtcirurgia'],
+                    'dthrcirurgia' => $dataCirurgia->format('d/m/Y H:i:s'),
+                    'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
@@ -1164,6 +1181,7 @@ class MapaCirurgico extends ResourceController
         $data['idlistapacatrocar'] = $pacatrocar['idlista'];
         $data['idmapapacatrocar'] = $pacatrocar['idmapa'];
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $pacatrocar['dthrcirurgia'])->format('d/m/Y H:i');
+        $data['tempoprevisto'] = '';
         $data['candidato'] = '';
         $data['especialidade'] = $pacatrocar['idespecialidade'];
         $data['risco'] = '';
@@ -1181,7 +1199,7 @@ class MapaCirurgico extends ResourceController
         $data['nec_proced'] = '';
         $data['justtroca'] = '';
         $data['profissional'] = [];
-        $data['filas'] = $this->selectfilaativas;
+        $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
@@ -1244,6 +1262,7 @@ class MapaCirurgico extends ResourceController
             'risco' => 'required',
             'dtrisco' => 'required|valid_date[d/m/Y]',
             'dtcirurgia' => 'required|valid_date[d/m/Y H:i]',
+            'tempoprevisto' => 'required|valid_time[H:i]',
             'fila' => 'required',
             'posoperatorio' => 'required',
             'profissional' => 'required',
@@ -1281,6 +1300,18 @@ class MapaCirurgico extends ResourceController
 
             if ($this->data['risco'] != 8) { // Risco Liberado
                 $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
+
+                $this->carregaMapa();
+
+                $this->data['candidatos'] = $_SESSION['candidatos'];                                   
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                                    'data' => $this->data,
+                                                    'pacatrocar' => $_SESSION['pacatrocar']]);   
+            }
+
+            if ($this->data['tempoprevisto'] == '00:00') {
+                $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
 
                 $this->carregaMapa();
 
