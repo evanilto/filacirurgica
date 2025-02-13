@@ -1619,10 +1619,22 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
-                $lista = [
-                    'deleted_at' => NULL,
-                    'indsituacao' => 'A'
-                    ];
+                $listaespera = $this->listaesperamodel->withDeleted()->find($data['idlista']);
+
+                if ($listaespera['indurgencia'] == 'S') {
+
+                    $lista = [
+                        'indsituacao' => 'E' // Excluído
+                        ];
+
+                } else {
+
+                    $lista = [
+                        'deleted_at' => NULL,
+                        'indsituacao' => 'A' // Aguardando
+                        ];
+                    
+                }
 
                 $this->listaesperamodel->withDeleted()->update($data['idlista'], $lista);
 
@@ -1636,12 +1648,25 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
-                $array = [
-                    'dthrevento' => date('Y-m-d H:i:s'),
-                    'idlistaespera' => $data['idlista'],
-                    'idevento' => 2,
-                    'idlogin' => session()->get('Sessao')['login']
-                ];
+                if ($listaespera['indurgencia'] == 'S') {
+
+                    $array = [
+                        'dthrevento' => date('Y-m-d H:i:s'),
+                        'idlistaespera' => $data['idlista'],
+                        'idevento' => 11,
+                        'idlogin' => session()->get('Sessao')['login']
+                    ];
+
+                } else {
+
+                    $array = [
+                        'dthrevento' => date('Y-m-d H:i:s'),
+                        'idlistaespera' => $data['idlista'],
+                        'idevento' => 2,
+                        'idlogin' => session()->get('Sessao')['login']
+                    ];
+
+                }
 
                 $this->historicomodel->insert($array);
 

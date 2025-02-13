@@ -203,6 +203,7 @@ use function PHPUnit\Framework\isEmpty;
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
                     data-opme="<?= $itemmapa->opme ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
+                    data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
                     data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
@@ -333,6 +334,8 @@ use function PHPUnit\Framework\isEmpty;
                 const tempermissaoalterar = Number(selectedRow.dataset.tempermissaoalterar);
                 const tempermissaoconsultar = Number(selectedRow.dataset.tempermissaoconsultar);
 
+                const cirurgiaurgente = selectedRow.dataset.indurgencia;
+
                 console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
 
                 // Desabilite todos os botões inicialmente
@@ -381,9 +384,11 @@ use function PHPUnit\Framework\isEmpty;
                     suspender.removeAttribute("disabled");
                     suspender.style.backgroundColor = "<?= $corCirurgiaSuspensa ?>";
 
-                    trocar.disabled = false;
-                    trocar.removeAttribute("disabled");
-                    trocar.style.backgroundColor = "<?= $corTrocaPaciente ?>";
+                    if (cirurgiaurgente == 'N') {
+                        trocar.disabled = false;
+                        trocar.removeAttribute("disabled");
+                        trocar.style.backgroundColor = "<?= $corTrocaPaciente ?>";
+                    }
 
                 }
 

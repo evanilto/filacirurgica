@@ -712,7 +712,7 @@ class ListaEspera extends ResourceController
                 $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
                 $data['especialidades'] = $this->selectespecialidadeaghu;
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente excluído localizado com os parâmetros informados!');
+                session()->setFlashdata('warning_message', 'Nenhum paciente a recuperar localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
