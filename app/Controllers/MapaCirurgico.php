@@ -1924,6 +1924,7 @@ class MapaCirurgico extends ResourceController
                                         'indopme' => $this->data['opme'],
                                         'idlateralidade' => $this->data['lateralidade'],
                                         'txtinfoadicionais' => $this->data['info'],
+                                        'indsituacao' => 'P' // Programada
                                         ];
 
                                     if ($this->data['listapaciente'] != 0) {
@@ -1971,7 +1972,8 @@ class MapaCirurgico extends ResourceController
                                             'dtriscocirurgico' => $this->data['dtrisco'],
                                             'idorigempaciente' => $this->data['origem'],
                                             'txtorigemjustificativa' => $this->data['justorig'],
-                                            'indsituacao' => 'A',
+                                            //'indsituacao' => 'A',
+                                            'indsituacao' => 'P', // Programada
                                             'indurgencia' => 'S'
                                             ];
 

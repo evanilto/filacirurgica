@@ -960,8 +960,8 @@
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
                 const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
-                const justorig = selectedOption.getAttribute('data-justorig');
-                const info = selectedOption.getAttribute('data-info');
+                const justorig = selectedOption.getAttribute('data-justorig') == 'null' ? '' : selectedOption.getAttribute('data-justorig');
+                const info = selectedOption.getAttribute('data-info') == 'null' ? '' : selectedOption.getAttribute('data-info');
 
                 const risco = selectedOption.getAttribute('data-risco');
                 const dtrisco = selectedOption.getAttribute('data-dtrisco');
