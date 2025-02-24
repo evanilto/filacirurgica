@@ -14,7 +14,9 @@ use App\Models\OrigemPacienteModel;
 use App\Models\LateralidadeModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
+use App\Models\EquipamentosModel;
 use App\Models\EquipeMedicaModel;
+use App\Models\EquipamentosCirurgiaModel;
 use App\Models\FilasModel;
 use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
@@ -60,7 +62,9 @@ class ListaEspera extends ResourceController
     private $localaipcontatospacientesmodel;
     private $localvwdetalhespacientesmodel;
     private $procedimentosadicionaismodel;
+    private $equipamentosmodel;
     private $equipemedicamodel;
+    private $equipamentoscirurgiamodel;
     private $historicomodel;
     private $usuariocontroller;
     private $mapacirurgicocontroller;
@@ -73,6 +77,7 @@ class ListaEspera extends ResourceController
     private $selectprofespecialidadeaghu;
     private $selectcids;
     private $selectitensprocedhospit;
+    private $selectequipamentos;
     private $selectitensprocedhospitativos;
     private $selectorigempaciente;
     private $selectorigempacienteativos;
@@ -102,7 +107,9 @@ class ListaEspera extends ResourceController
         //$this->justificativasexclusaomodel = new JustificativasExclusaoModel();
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
+        $this->equipamentosmodel = new EquipamentosModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
+        $this->equipamentoscirurgiamodel = new EquipamentosCirurgiaModel();
         $this->localfatitensprocedhospitalarmodel = new LocalFatItensProcedHospitalarModel();
         $this->localaghcidsmodel = new LocalAghCidsModel();
         $this->localaghespecialidadesmodel = new LocalAghEspecialidadesModel();
@@ -136,6 +143,7 @@ class ListaEspera extends ResourceController
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
+        $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
 
     }
@@ -533,6 +541,77 @@ class ListaEspera extends ResourceController
                 'message' => 'Paciente não encontrado.'
             ]);
         }
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function verificaUsoEquipamentos()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Requisição inválida.'
+            ])->setStatusCode(400);
+        }
+
+        //$data = $this->request->getJSON(true);
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        $dtcirurgia = $data['dtcirurgia'];
+        $equipamentos = $data['equipamentos'];
+
+        foreach ($equipamentos as $equip) {
+            $id = (int) $equip['id'];
+            $qtd = (int) $equip['qtd'];
+
+            $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, $id);
+            
+            if ( $qtdEmUso >= $qtd) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Equipamento Reservado',
+                    'data' => "id=$id qtd=$qtdEmUso"
+                ]);
+            }
+        }
+
+        return $this->response->setJSON([
+            'success' => false,
+            'message' => 'Equipamento liberado.'
+        ]);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    private function getQtdEquipamentoReservado ($dtcirurgia, $idequipamento) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('equipamentos_cirurgia as ec');
+        $builder->select('COUNT(*) as total');
+        $builder->join('mapa_cirurgico as mc', 'mc.id = ec.idmapacirurgico');
+        $builder->where('ec.idequipamento', $idequipamento);
+        $builder->where('ec.deleted_at IS NULL'); 
+        //$builder->where('mc.dthrcirurgia::DATE', DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d')); 
+        $builder->where("DATE(mc.dthrcirurgia) =", DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d'));
+        $builder->where('mc.deleted_at IS NULL'); 
+        $builder->where('mc.dthrsuspensao IS NULL'); 
+        $builder->where('mc.dthrtroca IS NULL'); 
+        //$builder->where('mc.dthrsaidacentrocirurgico IS NULL'); 
+
+        $query = $builder->get();
+        $result = $query->getRow();
+
+        return $result->total ?? 0;
+
+        //die(var_dump($builder->get()->getResult()));
     }
     /**
      * Return a new resource object, with default properties
@@ -1730,6 +1809,7 @@ class ListaEspera extends ResourceController
         $data['opme'] = $lista['indopme'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['proced_adic'] = [];
+        $data['eqpts'] = [];
         $data['lateralidade'] = $lista['idlateralidade'];
         $data['posoperatorio'] = null;
         $data['info'] = $lista['txtinfoadicionais'];
@@ -1744,6 +1824,8 @@ class ListaEspera extends ResourceController
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
+        $data['usarEquipamentos'] = 'N';
+        $data['equipamentos'] = $this->selectequipamentos;
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
@@ -1754,7 +1836,7 @@ class ListaEspera extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['filas']);die();
+        //var_dump($data);die();
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                             'data' => $data]);
@@ -1791,6 +1873,7 @@ class ListaEspera extends ResourceController
             'complexidade' => 'required',
             'congelacao' => 'required',
             'opme' => 'required',
+            'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'justorig' => 'max_length[1024]|min_length[0]',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
@@ -1904,7 +1987,6 @@ class ListaEspera extends ResourceController
                                                     'data' => $this->data]);
             }
 
-
             $db->transStart();
 
             try {
@@ -1919,7 +2001,7 @@ class ListaEspera extends ResourceController
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig'],
-                        'indsituacao' => 'P' // Programada
+                        'indsituacao' => $this->data['idsituacao_cirurgia_hidden'] // (P) Programada ou (EA) Em Aprovação
                         ];
 
                 $this->listaesperamodel->update($this->data['id'], $lista);
@@ -2003,7 +2085,33 @@ class ListaEspera extends ResourceController
                     }
                 }
 
+                if (isset($this->data['eqpts'])) {
+
+                    foreach ($this->data['eqpts'] as $key => $equipamento) {
+
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['idequipamento'] = (int) $equipamento;
+
+                        $this->equipamentoscirurgiamodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir equipamento cirúrgico [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
                 $this->listaesperamodel->delete($this->data['id']);
+
+                if ($this->data['idsituacao_cirurgia_hidden'] === 'EA') { // Em Aprovação
+                    $this->mapacirurgicomodel->delete($idmapa);
+                }
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -2018,7 +2126,7 @@ class ListaEspera extends ResourceController
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
                     'idlistaespera' => $this->data['id'],
-                    'idevento' => 1,
+                    'idevento' => $this->data['idsituacao_cirurgia_hidden'] === 'P' ? 1 : 12,
                     'idlogin' => session()->get('Sessao')['login']
                 ];
 
@@ -2212,6 +2320,7 @@ class ListaEspera extends ResourceController
         $this->data['posoperatorios'] = $this->selectposoperatorio;
         $this->data['especialidades'] = $this->selectespecialidadeaghu;
         $this->data['cids'] = $this->selectcids;
+        $this->data['equipamentos'] = $this->selectequipamentos;
         $this->data['procedimentos'] = $this->selectitensprocedhospit;
         $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
         $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;

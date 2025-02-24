@@ -1,6 +1,13 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<?php
+    // Inicializando valores padrão
+    $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
+    $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
+    //dd($data);
+?>
+
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -393,7 +400,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -419,12 +426,50 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                id="eqpts" name="eqpts[]" multiple="multiple"
+                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                            <?php
+                                            foreach ($data['equipamentos'] as $equipamento) {
+                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->hasError('eqpts')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('eqpts') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="container bordered-container mb-2">
+                        <div class="row g-2">
+                            <div class="container bordered-container" >
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <div class="mb-2">
+                                        <div class="mb-3">
                                             <label for="filtro_especialidades" class="form-label">Especialidade</label>
                                             <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades">
                                                 <option value="">Todas</option>
@@ -435,9 +480,9 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <div class="mb-2">
+                                        <div class="mb-3">
                                             <label for="profissional" class="form-label">Equipe Cirúrgica<b class="text-danger">*</b></label>
-                                            <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
+                                            <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>" 
                                                     id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
                                                 <?php
                                                 // Certifique-se de que $data['profissional'] está definido como um array
@@ -468,11 +513,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-12">
+                        <div class="row g-3" style="margin-top: -8px;">
+                            <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="2048" rows="5"
+                                    <textarea id="nec_proced" maxlength="2048" rows="3" 
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -482,17 +527,30 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
-                                    <textarea id="justenvio" maxlength="255" rows="3"
+                                    <textarea id="justenvio" maxlength="255" rows="3"  
                                             class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
                                             name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justenvio')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('justenvio') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3" style="margin-top: -13px;">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" for="info">Informações adicionais</label>
+                                    <textarea id="info" maxlength="255" rows="3" readonly 
+                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
+                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('info')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('info') ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>
@@ -512,23 +570,9 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="mb-2">
-                                    <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" readonly
-                                            class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('info')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('info') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                <!--button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1"-->
+                                <button class="btn btn-primary mt-3" onclick="return confirma(this);">
                                     <i class="fa-solid fa-paper-plane"></i> Enviar
                                 </button>
                                 <a class="btn btn-warning mt-3" href="<?= base_url('listaespera/exibir') ?>">
@@ -548,6 +592,8 @@
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
+                        <input type="hidden" name="eqpts_hidden" id="eqpts_hidden" />
+                        <input type="hidden" name="idsituacao_cirurgia_hidden" id="idsituacao_cirurgia_hidden" value='P' /> <!-- Programada por default --> 
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
 
                     </form>
@@ -582,6 +628,90 @@ function formatarData(input) {
             input.addEventListener('keydown', disableEnter);
         });
     };
+
+    function confirma(button) {
+        event.preventDefault(); // Previne a submissão padrão do formulário
+
+        const equipamentos = $('#eqpts').val();
+
+        if (equipamentos && equipamentos.length > 0) {
+
+            const form = button.form;
+
+            const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
+
+            let equipamentosSelecionados = [];
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val();
+                let qtd = $(this).data('qtd');
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            // Objeto de dados para enviar ao servidor
+            const data = {
+                dtcirurgia: dtcirurgia,
+                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
+            };
+
+            if (!dtcirurgia || dtcirurgia.trim() === "") {
+                return true;
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?= base_url('listaespera/verificaequipamentos') ?>', true); 
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Limite excedido para reserva de equipamento. A cirurgia ficará pendente de aprovação pela equipe cirúrgica. Deseja prosseguir mesmo assim?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ok',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
+                                    $('#janelaAguarde').show();
+                                    $('#idForm').off('submit'); 
+                                    $('#idForm').submit(); 
+                                } else {
+                                    $('#janelaAguarde').hide();
+                                }
+                            });
+                        } else {
+                            $('#janelaAguarde').show();
+                            $('#idForm').off('submit'); 
+                            $('#idForm').submit();        
+                        }
+                    } else {
+                        console.error('Erro ao enviar os dados:', xhr.statusText);
+                        alert('Erro na comunicação com o servidor.');
+                        $('#janelaAguarde').hide();
+                        return false;  
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Erro ao enviar os dados:', xhr.statusText);
+                    alert('Erro na comunicação com o servidor.');
+                    $('#janelaAguarde').hide();
+                    return false;
+                };
+
+                // Envia os dados como JSON, incluindo equipamentos
+                xhr.send(JSON.stringify(data));
+            }
+        } else {
+            $('#janelaAguarde').show();
+            $('#idForm').off('submit'); 
+            $('#idForm').submit(); 
+        }
+    }
+
 
     function fetchPacienteNome(prontuarioValue, ordemValue) {
       if (prontuarioValue) {
@@ -652,16 +782,29 @@ function formatarData(input) {
             allowClear: true,
         });
 
-        /* $('#justurgencia').on('blur', function() {
-            setTimeout(() => {
-                let ativo = document.activeElement;
-                
-                // Se o foco foi para o campo de busca do Select2, devolve para justurgencia
-                if (ativo.classList.contains('select2-search__field')) {
-                    $('#justurgencia').focus();
-                }
-            }, 10);
-        }); */
+        $('#eqpts').select2();
+
+        if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
+            $('#eqpts').prop('disabled', false);
+        } else {
+            $('#eqpts').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarEquipamentos"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#eqpts').prop('disabled', false); // Habilita o campo eqpts
+                $('#eqpts').select2(); // Inicializa o Select2
+            } else {
+                $('#eqpts').prop('disabled', true); // Desabilita o campo eqpts
+                $('#eqpts').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#eqpts').prop('disabled')) {
+            $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
 
         let lastFocusedInput = null;
         // Captura o último campo de entrada (input ou textarea) focado
@@ -753,18 +896,46 @@ function formatarData(input) {
             $('#proced_adic_hidden').val($(this).val());
         });
 
+       /*  $('#eqpts').on('change', function() {
+            $('#eqpts_hidden').val($(this).val());
+        }); */
+
+        $('#eqpts').change(function() {
+            let equipamentosSelecionados = [];
+
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val(); // ID do equipamento
+                let qtd = $(this).data('qtd'); // Pega o valor do atributo data-qtd
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            //console.log(equipamentosSelecionados); // Apenas para debug
+        });
+
+        $(document).ready(function() {
+            $('#eqpts').change(function() {
+                if ($(this).val().includes("0")) {
+                    $(this).val(["0"]).trigger("change"); // Mantém apenas a opção "Não utilizará equipamentos cirúrgicos"
+                }
+            });
+        });
+
+
         // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
         $('#proced_adic_hidden').val($('#proced_adic').val());
+
+        $('#eqpts_hidden').val($('#eqpts').val());
+
         
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
-        $('#idForm').submit(function() {
+        /* $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
                 window.location.href = href;
             }, 1000);
-        });
-        
+        }); */
+
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
         prontuarioInput.addEventListener('change', function() {
