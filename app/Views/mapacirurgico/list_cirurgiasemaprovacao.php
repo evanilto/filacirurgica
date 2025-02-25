@@ -1,76 +1,33 @@
 <?php
     use App\Libraries\HUAP_Functions;
 
-    //session()->set('parametros_consulta_mapa', $data); 
-    $corProgramada = 'yellow';
-    $corPacienteSolicitado = 'gold';
-    $corNoCentroCirúrgico = '#97DA4B';
-    $corEmCirurgia = '#277534';//'#804616';
-    $corSaídaDaSala = '#87CEFA';
-    $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
-    $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
-    $corCirurgiaSuspensa = 'Red';
-    $corCirurgiaCancelada = $corCirurgiaSuspensa;
+    $corAprovar = 'Green';
+    $corDesaprovar = 'Red';
 ?>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<link href="https://cdn.datatables.net/fixedheader/3.2.3/css/fixedHeader.dataTables.min.css" rel="stylesheet">
+ 
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.min.css">
 
 <script>$('#janelaAguarde').show();</script>
-<style>
-/* Estilo para botão desabilitado */
-/*button.desabilitado {
-/*    background-color: #d3d3d3; /* Cor de fundo cinza */
-/*   color: #999;               /* Texto mais claro */
-/*  border: 1px solid #ccc;    /* Borda cinza */
-/*   pointer-events: none;      /* Impede a interação */
-/*   opacity: 0.5;              /* Opacidade reduzida */
-/*}
 
-/* Estilo para botão habilitado */
-/*button.habilitado {
-/*    background-color: #4CAF50; /* Cor de fundo verde */
-/*    color: white;              /* Texto branco */
-/*    border: 1px solid #4CAF50; /* Borda verde */
-/*    pointer-events: auto;      /* Permite interação */
-/*    opacity: 1;                /* Opacidade normal */
-/*} */
-</style>
-
-<div class="container mt-3">
+<div class="table-container mt-3">
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
                 <th scope="row" colspan="7" class="bg-light text-start" >
-                    <h5><strong>Mapa Cirúrgico</strong></h5>
+                    <h5><strong>Cirurgias Em Aprovação</strong></h5>
                 </th>
             </tr>
         </thead>
     </table>
-    <table id="table" class="display nowrap" style="width:100%">
+    <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
                 <th scope="col" class="col-0" >idMapa</th>
                 <th scope="col" class="col-0" title='Situação do Paciente'>Sit.</th>
-                <th scope="col" data-field="fila" >Data Cirurgia</th>
-                <th scope="col" data-field="fila" >Hora</th>
-                <th scope="col" class="col-0" >Centro Cirúrgico</th>
-                <th scope="col" class="col-0" >Sala</th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
-                        <i class="fa-solid fa-circle" style="color: <?= $corPacienteSolicitado ?>; "></i>
-                </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente no Centro Cirúrgico">
-                        <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
-                </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente em Cirurgia">
-                        <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
-                </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu da Sala">
-                        <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
-                </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu do Centro Cirúrgico (cirurgia realizada)">
-                        <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
-                </th>
+                <th scope="col" data-field="col-0" >Data Cirurgia</th>
+                <th scope="col" data-field="col-0" >Hora</th>
+                <th scope="col" data-field="col-0" >Tempo Previsto</th>
                 <th scope="col" class="col-0" >Especialidade</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
@@ -102,96 +59,16 @@
                     $itemmapa->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->created_at)->format('d/m/Y H:i');
                     $itemmapa->data_risco = $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : '';
 
-                    //die(var_dump($itemmapa));
-                    //if (DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('Y-m-d') != date('Y-m-d')) {
-                        //$permiteatualizar = false;
-                    //} else {
-                        $permiteatualizar = true;
-                    //}
-
-                    if ($itemmapa->dthrsuspensao) {
-                        $color =$corCirurgiaSuspensa;
-                        $background_color = $color;
-                        $status_cirurgia = 'Suspensa';
-                        $title = 'Cirurgia Suspensa';
-
-                    } elseif ($itemmapa->dthrtroca) {
-                        $color =$corTrocaPaciente;
-                        $background_color = $color;
-                        $status_cirurgia = 'TrocaPaciente';
-                        $title = 'Troca de Paciente';
-
-                    } elseif ($itemmapa->dthrsaidacentrocirurgico) {
-                        $color = $corSaídaCentroCirúrgico;
-                        $background_color = $color;
-                        $status_cirurgia = 'Realizada';
-                        $title = 'Cirurgia Realizada';
-                    } else {
-
-                        switch ($itemmapa->status_fila) {
-                            case 'Programada':
-                                $color =$corProgramada;
-                                $background_color = $color;
-                                $title = 'Cirurgia Programada';
-                                break;
-                            case 'PacienteSolicitado':
-                                $color =$corPacienteSolicitado;
-                                $background_color = $color;
-                                $title = 'Paciente Solicitado';
-                                break;
-                            case 'NoCentroCirurgico':
-                                $color =$corNoCentroCirúrgico;
-                                $background_color = $color;
-                                $title = 'Paciente no Centro Cirúrgico';
-                                break;
-                            case 'EmCirurgia':
-                                $color =$corEmCirurgia;
-                                $background_color = $color;
-                                $title = 'Paciente em Cirurgia';
-                                break;
-                            case 'SaídaDaSala':
-                                $color =$corSaídaDaSala;
-                                $background_color = $color;
-                                $title = 'Paciente saiu da Sala';
-                                break;
-                            case 'SaídaCentroCirúrgico':
-                                $color = $corSaídaCentroCirúrgico;
-                                $background_color = $color;
-                                $title = 'Cirurgia Realizada';
-                                break;
-                            /* case 'TrocaPaciente':
-                                $color =$corTrocaPaciente;
-                                $background_color = $color;
-                                $title = 'Troca de Paciente';
-                                break;
-                            case 'Suspensa':
-                                $color =$corCirurgiaSuspensa;
-                                $background_color = $color;
-                                $title = 'Cirurgia Suspensa';
-                                break; */
-                            case 'Cancelada':
-                                $color = $corCirurgiaCancelada;
-                                $background_color = $color;
-                                $title = 'Cirurgia Cancelada';
-                                break;
-                        /*  case 'Realizada':
-                                $color = $corSaídaCentroCirúrgico;
-                                $background_color = $color;
-                                $title = 'Cirurgia Realizada';
-                                break; */
-                            default:
-                                $color = 'gray';
-                                $background_color = $color;
-                                $title = 'Undefined';
-                        }
-
-                        $status_cirurgia = $itemmapa->status_fila;
-
-                    }
-
+                    $permiteatualizar = true;
+                    
+                    $color = 'gray';
+                    $background_color = $color;
+                    $title = 'Em Aprovação';
+                      
+                    $status_cirurgia = $itemmapa->status_fila;
+                
                     if ($itemmapa->indurgencia == 'S') {
                         $border = '2px solid white; box-shadow: 0 0 0 3px red;';
-                        //$title = $title.' Urgente';
                     } else {
                         $border = 'none;';
                     }
@@ -224,10 +101,11 @@
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
                     data-opme="<?= $itemmapa->opme ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
+                    data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
                     data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
-                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
+                    data-tempermissaoaprovar="<?= HUAP_Functions::tem_permissao('mapacirurgico-aprovar') ?>"
                     >
                     
                     <td><?php echo $itemmapa->dthrcirurgia ?></td>
@@ -240,17 +118,7 @@
                     </td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y') ?></td>
                     <td><?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('H:i') ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>">
-                        <?php echo htmlspecialchars($itemmapa->centrocirurgico); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->sala); ?>">
-                        <?php echo htmlspecialchars($itemmapa->sala); ?>
-                    </td>
-                    <td><?php echo $itemmapa->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrpacientesolicitado)->format('H:i') : ' ' ?></td>
-                    <td><?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
-                    <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
-                    <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
-                    <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                    <td><?php echo !is_null($itemmapa->tempoprevisto) ? DateTime::createFromFormat('H:i:s', $itemmapa->tempoprevisto)->format('H:i') : ''; ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>">
                         <?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>
                     </td>
@@ -300,26 +168,19 @@
         </tbody>
     </table>
     <div class="container-legend mt-2">
-        <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
+        <a class="btn btn-warning" href="<?= base_url('mapacirurgico/avaliarcirurgias') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="pacientesolicitado" disabled> Paciente Solicitado</button>
-        <button class="btn btn-primary" id="nocentrocirurgico" disabled> No Centro Cirúrgico </button>
-        <button class="btn btn-primary" id="emcirurgia" disabled> Em Cirurgia </button>
-        <button class="btn btn-primary" id="saidadasala" disabled> Saída da Sala </button>
-        <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button>
-        <button class="btn btn-primary" id="trocar" disabled> Trocar </button>
-        <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
-        <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
-        <button class="btn btn-primary" id="editar" disabled> Editar </button>
+        <button class="btn btn-primary" id="aprovar" disabled> Aprovar</button>
+        <button class="btn btn-primary" id="desaprovar" disabled> Desaprovar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
 </div>
 
-<script src="https://cdn.datatables.net/fixedheader/3.2.3/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
+<script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.min.js"></script>
 
 <script>
-
     document.addEventListener("DOMContentLoaded", function () {
         const table = document.getElementById("table");
         const pacientesolicitado = document.getElementById("pacientesolicitado");
@@ -350,22 +211,15 @@
                 // Atualize os botões e permissões
                 const statuscirurgia = selectedRow.dataset.statuscirurgia;
                 const permiteatualizar = Number(selectedRow.dataset.permiteatualizar);
-                const tempermissaoalterar = Number(selectedRow.dataset.tempermissaoalterar);
+                const tempermissaoaprovar = Number(selectedRow.dataset.tempermissaoaprovar);
                 const tempermissaoconsultar = Number(selectedRow.dataset.tempermissaoconsultar);
 
-                console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
+                const cirurgiaurgente = selectedRow.dataset.indurgencia;
 
                 // Desabilite todos os botões inicialmente
                 [
-                    pacientesolicitado,
-                    nocentrocirurgico,
-                    emcirurgia,
-                    saidadasala,
-                    saidadoccirurgico,
-                    suspender,
-                    trocar,
-                    atualizarhorarios,
-                    editar,
+                    aprovar,
+                    desaprovar,
                     consultar
                 ].forEach(button => {
                     button.disabled = true;
@@ -373,53 +227,15 @@
                     button.style.backgroundColor = '';
                 });
 
-                // Atualize os botões com base nas permissões e status
-                if (statuscirurgia === "Programada" && permiteatualizar && tempermissaoalterar) {
-                    pacientesolicitado.disabled = false;
-                    pacientesolicitado.removeAttribute("disabled");
-                    pacientesolicitado.style.backgroundColor = "<?= $corPacienteSolicitado ?>";
-                } else if (statuscirurgia === "PacienteSolicitado" && permiteatualizar && tempermissaoalterar) {
-                    nocentrocirurgico.disabled = false;
-                    nocentrocirurgico.removeAttribute("disabled");
-                    nocentrocirurgico.style.backgroundColor = "<?= $corNoCentroCirúrgico ?>";
-                } else if (statuscirurgia === "NoCentroCirurgico" && permiteatualizar && tempermissaoalterar) {
-                    emcirurgia.disabled = false;
-                    emcirurgia.removeAttribute("disabled");
-                    emcirurgia.style.backgroundColor = "<?= $corEmCirurgia ?>";
-                } else if (statuscirurgia === "EmCirurgia" && permiteatualizar && tempermissaoalterar) {
-                    saidadasala.disabled = false;
-                    saidadasala.removeAttribute("disabled");
-                    saidadasala.style.backgroundColor = "<?= $corSaídaDaSala ?>";
-                } else if (statuscirurgia === "SaídaDaSala" && permiteatualizar && tempermissaoalterar) {
-                    saidadoccirurgico.disabled = false;
-                    saidadoccirurgico.removeAttribute("disabled");
-                    saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
-                }
+                if (tempermissaoaprovar) {
+                    aprovar.disabled = false;
+                    aprovar.removeAttribute("disabled");
+                    aprovar.style.backgroundColor = "<?= $corAprovar ?>";
 
-                if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) {
-                    suspender.disabled = false;
-                    suspender.removeAttribute("disabled");
-                    suspender.style.backgroundColor = "<?= $corCirurgiaSuspensa ?>";
-
-                    trocar.disabled = false;
-                    trocar.removeAttribute("disabled");
-                    trocar.style.backgroundColor = "<?= $corTrocaPaciente ?>";
-
-                }
-
-                /* if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) { */
-                if (!["Suspensa", "Cancelada", "TrocaPaciente"].includes(statuscirurgia)) {
-                    atualizarhorarios.disabled = false;
-                    atualizarhorarios.removeAttribute("disabled");
-
-                    /* editar.disabled = false;
-                    editar.removeAttribute("disabled"); */
-
-                }
-
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"].includes(statuscirurgia)) {
-                    editar.disabled = false;
-                    editar.removeAttribute("disabled");
+                    desaprovar.disabled = false;
+                    desaprovar.removeAttribute("disabled");
+                    desaprovar.style.backgroundColor = "<?= $corDesaprovar ?>";
+               
                 }
 
                 if (tempermissaoconsultar) {
@@ -429,26 +245,6 @@
                 }
             });
         });
-
-        function handleButtonHorarios(buttonId) {
-            const button = document.getElementById(buttonId);
-
-            button.addEventListener("click", function () {
-                if (selectedRow) {
-                    const cirurgia = {
-                        status: selectedRow.dataset.statuscirurgia,
-                        dthrcirurgia: selectedRow.dataset.dthrcirurgia,
-                        mapaId: selectedRow.dataset.idmapa,
-                        listaId: selectedRow.dataset.idlista,
-                        time: getFormattedTimestamp()
-                    };
-
-                    console.log(`Botão ${buttonId} clicado com dados:`, cirurgia);
-
-                    confirma(cirurgia);
-                }
-            });
-        }
 
         function handleButtonOthers(botao, rotaBase) {
             botao.addEventListener("click", function () {
@@ -469,51 +265,9 @@
             });
         }
 
-        trocar.addEventListener("click", function () {
-            if (selectedRow) {
-                const statusCirurgia = selectedRow.dataset.statuscirurgia;
-                const temPermissao = selectedRow.dataset.tempermissaoalterar;
-
-                if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statusCirurgia) && temPermissao) {
-                    const params = {
-                        idlista: selectedRow.dataset.idlista,
-                        idmapa: selectedRow.dataset.idmapa,
-                        idfila: selectedRow.dataset.idfila,
-                        fila: selectedRow.dataset.fila,
-                        idprocedimento: selectedRow.dataset.idprocedimento,
-                        ordemfila: selectedRow.dataset.ordem,
-                        idespecialidade: selectedRow.dataset.idespecialidade,
-                        prontuario: selectedRow.dataset.prontuario,
-                        dthrcirurgia: selectedRow.dataset.dthrcirurgia,
-                    };
-
-                    const queryString = new URLSearchParams(params).toString();
-
-                    const url = '<?= base_url('mapacirurgico/trocarpaciente') ?>?' + queryString;
-
-                    window.location.href = url;
-
-                } else {
-                    console.error('Condições não atendidas para trocar paciente.');
-                    alert('Não é possível trocar o paciente. Verifique as permissões e o status da cirurgia.');
-                }
-            } else {
-                console.error('Nenhuma linha foi selecionada.');
-                alert('Por favor, selecione uma linha antes de continuar.');
-            }
-        });
-
-        handleButtonHorarios("pacientesolicitado");
-        handleButtonHorarios("nocentrocirurgico");
-        handleButtonHorarios("emcirurgia");
-        handleButtonHorarios("saidadasala");
-        handleButtonHorarios("saidadoccirurgico");
-        handleButtonOthers(suspender, 'suspendercirurgia');
-        handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
-        handleButtonOthers(editar, 'atualizarcirurgia');
-        handleButtonOthers(consultar, 'consultarcirurgia');
-        handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
-
+        handleButtonOthers(aprovar, 'aprovarcirurgia');
+        handleButtonOthers(desaprovar, 'desaprovarcirurgia');
+        handleButtonOthers(consultar, 'consultarcirurgiaemaprovacao');
     });
 
     function getFormattedTimestamp() {
@@ -538,179 +292,6 @@
         setTimeout(function() {
         window.location.href = href;
         }, 1000);
-    }
-
-    function confirma(cirurgia) {
-        let message;
-        let evento;
-
-        switch (cirurgia.status) {
-            case 'Programada':
-                evento = 'dthrpacientesolicitado';
-                message = 'Confirma a solicitação do paciente para a cirurgia?';
-                break;
-            case 'PacienteSolicitado':
-                evento = 'dthrnocentrocirurgico';
-                message = 'Confirma a entrada do paciente no centro cirúrgico?';
-                break;
-            case 'NoCentroCirurgico':
-                evento = 'dthremcirurgia';
-                message = 'Confirma o paciente em cirurgia?';
-                break;
-            case 'EmCirurgia':
-                evento = 'dthrsaidasala';
-                message = 'Confirma a saída da sala?';
-                break;
-            case 'SaídaDaSala':
-                evento = 'dthrsaidacentrocirurgico';
-                message = 'Confirma a saída do centro cirúrgico?';
-                break;
-            case 'Suspensa':
-                evento = 'dthrsuspensao';
-                message = 'Confirma a suspensão da cirurgia?';
-                break;
-            case 'TrocaPaciente':
-                evento = 'dthrtroca';
-                message = 'Confirma a troca do paciente?';
-                break;
-            default:
-                message = '';
-                break;
-        }
-
-        Swal.fire({
-            title: message,
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ok',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $('#janelaAguarde').show(); // Mostra a janela de aguardo
-                
-                tratarEventos(cirurgia, evento);
-            } else {
-                $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
-            }
-        });
-
-        return false; // Queremos prevenir o comportamento padrão do link
-    }
-
-    function tratarEventos(link, evento) {
-
-        $('#janelaAguarde').show();
-
-        // Previnir o comportamento padrão do link
-        event.preventDefault(); 
-
-        const mapaId = link.mapaId;
-        const listaId = link.listaId;
-        const timeValue = link.time;
-
-        var formData = new FormData();
-        //formData.append('idMapa', itemId);
-
-        const arrayId = {};
-        arrayId['idMapa'] = mapaId;
-        arrayId['idLista'] = listaId;
-        formData.append('arrayid', JSON.stringify(arrayId));
-
-        //const array = { evento: timeValue };
-        const arrayevento = {};
-        arrayevento[evento] = timeValue;
-        formData.append('evento', JSON.stringify(arrayevento));
-
-        // Configurar a requisição AJAX
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '<?= base_url('mapacirurgico/tratareventocirurgico') ?>', true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-        // Tratar a resposta da requisição AJAX
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                var response = JSON.parse(xhr.responseText);
-                console.log(response); 
-
-                if (response.success) {
-                    console.log('Evento registrado com sucesso.');
-                  
-                    window.location.href = "<?= base_url('mapacirurgico/exibir') ?>";
-                } else {
-                    console.error('Erro ao redirecionar.');
-                }
-            } else {
-                console.error('Erro ao enviar os dados.');
-            }
-        };
-
-        xhr.onerror = function() {
-            console.error('Erro na requisição AJAX.');
-        };
-        
-        // Enviar o FormData com a requisição AJAX
-        xhr.send(formData);
-
-        return false;
-    }
-
-    function tratarCirurgia(cirurgia, url) {
-        // Mostra a janela de espera
-        $('#janelaAguarde').show();
-
-        // Previne o comportamento padrão do evento
-        event.preventDefault();
-
-        const mapaId = cirurgia.mapaId;
-
-        // Prepara os dados para envio
-        var formData = new FormData();
-        const arrayId = { idMapa: mapaId };
-        formData.append('arrayid', JSON.stringify(arrayId));
-
-        // Configura a requisição AJAX
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', '<?= base_url('mapacirurgico/') ?>' + url, true);
-        xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-
-        // Evento para tratar a resposta
-        xhr.onload = function() {
-            if (xhr.status >= 200 && xhr.status < 400) {
-                try {
-                    var response = JSON.parse(xhr.responseText);
-                    
-                    if (response.success) {
-                        console.log('Requisição AJAX bem-sucedida.');
-
-                        // Insere o HTML retornado no DOM (substitua "#container" pelo ID correto)
-                        $('#container').html(response.html);
-
-                        // Opcional: Fechar a janela de espera após o carregamento
-                        $('#janelaAguarde').hide();
-                    } else {
-                        console.error('Erro no processamento do servidor:', response.message);
-                        alert('Erro: ' + response.message);
-                    }
-                } catch (e) {
-                    console.error('Erro ao processar a resposta JSON:', e);
-                    alert('Erro no processamento da resposta do servidor.');
-                }
-            } else {
-                console.error('Erro no envio dos dados. Código HTTP:', xhr.status);
-                alert('Erro ao realizar a operação. Por favor, tente novamente.');
-            }
-        };
-
-        // Evento para tratar erros na requisição
-        xhr.onerror = function() {
-            console.error('Erro na requisição AJAX.');
-            alert('Erro na comunicação com o servidor. Por favor, tente novamente.');
-        };
-
-        // Envia os dados
-        xhr.send(formData);
-
-        return false; // Evita o comportamento padrão
     }
 
     function carregarDadosModal(dados) {
@@ -819,29 +400,26 @@
         
         $('#table').DataTable({
             "order": [[0, 'asc']],
-           
             "language": {
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
-            
             fixedColumns: {
-            leftColumns: 10 // Número de colunas a serem fixadas
+            leftColumns: 11 // Número de colunas a serem fixadas
             },
-            paging: false, // Opcional: desativa paginação se não necessário
-            ordering: true, // Mantém ordenação
+            fixedHeader: true,
+            scrollY: '500px',
+            scrollX: true,
+            scrollCollapse: true,
+            paging: false,
+            ordering: true,
+            autoWidth: false,
                 "columns": [
                     { "width": "0px" },  // Primeira coluna
                     { "width": "40px" },       
                     { "width": "95px" },  // dt
-                    { "width": "65px" },  // hr
-                    { "width": "220px" },  // centro cir
-                    { "width": "100px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "60px" }, 
-                    { "width": "200px" },  // especial
+                    { "width": "62px" },  // hr
+                    { "width": "75px" },  // tp
+                    { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
                     { "width": "55px" },  // idade
@@ -869,18 +447,19 @@
                 { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 10, 21, 22] },
                 { "visible": false, "targets": [0] }
             ],
-            dom: 'Bfrtip',
+            layout: { topStart: {
                 buttons: [
-                    {
-                        extend: 'colvis',
-                        text: 'Colunas'
-                    },
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ],
-                fixedHeader: true, // Ativa o cabeçalho fixo
-                scrollY: '400px', // Define a altura da rolagem vertical
-                scrollX: true,    // Ativa a rolagem horizontal
-                scrollCollapse: true,
+                {
+                    extend: 'colvis', // Botão para exibir/inibir colunas
+                    text: 'Colunas', // Texto do botão
+                    columns: [2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] // Especifica quais colunas são visíveis
+                },
+                'copy',
+                'csv',
+                'excel',
+                'pdf',
+                'print' 
+            ] } },
             "deferRender": true,
                 initComplete: function() {
                     $('#janelaAguarde').hide();

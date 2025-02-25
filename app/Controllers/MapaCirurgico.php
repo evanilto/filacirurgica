@@ -444,6 +444,124 @@ class MapaCirurgico extends ResourceController
         }
     }
     /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirCirurgiasEmAprovacao()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $dataflash = session()->getFlashdata('dataflash');
+        if ($dataflash) {
+            $data = $dataflash;
+        } else {
+            $data = $this->request->getVar();
+        }
+
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+            $data = $_SESSION['mapacirurgico'];
+        }
+
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'nome' => 'permit_empty|min_length[3]',
+        ];
+
+        if (!$dataflash) {
+            if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
+                $rules = $rules + [
+                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                ];
+            }
+        }
+
+        if ($this->validate($rules)) {
+            if ($data['dtinicio'] || $data['dtfim']) {
+
+                $data['filas'] = $this->selectfilaativas;
+                $data['riscos'] = $this->selectrisco;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                if (empty($data['dtinicio'])) {
+                    $this->validator->setError('dtinicio', 'Informe a data de início!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (!$data['dtfim']) {
+                    $this->validator->setError('dtfim', 'Informe a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
+ 
+            }
+            
+            $this->validator->reset();
+
+            $result = $this->getCirurgiaEmAprovacao($data);
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['mapacirurgico'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_cirurgiasemaprovacao',
+                                               'mapacirurgico' => $result,
+                                               'data' => $data]);
+
+        } else {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
+    /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -522,7 +640,102 @@ class MapaCirurgico extends ResourceController
 
     return $builder->get()->getResult();
 }
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function avaliarCirurgias(string $idmapacirurgico = null)
+    {
+        HUAP_Functions::limpa_msgs_flash();
 
+        $_SESSION['mapacirurgico'] = NULL;
+
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
+        $data['filas'] = $this->selectfilaativas;
+        $data['riscos'] = $this->selectrisco;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getCirurgiaEmAprovacao($data) 
+{
+    $db = \Config\Database::connect('default');
+
+    $builder = $db->table('vw_cirurgiasemaprovacao');
+
+    $builder->join('vw_statusfilacirurgica', 'vw_cirurgiasemaprovacao.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
+    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_cirurgiasemaprovacao.idlista', 'left');
+
+    $builder->select('
+        vw_cirurgiasemaprovacao.*,
+        (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+        COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
+    ');
+   
+    if (!empty($data['idmapa'])) {
+    
+        $builder->where('vw_cirurgiasemaprovacao.id', $data['idmapa']);
+
+    } else {
+
+        $builder->where('(vw_statusfilacirurgica.campos_mapa).status', 'Em Avaliação');
+
+        if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+            $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+            $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+            $builder->where("vw_cirurgiasemaprovacao.dthrcirurgia >=", $dtInicio);
+            $builder->where("vw_cirurgiasemaprovacao.dthrcirurgia <=", $dtFim);
+        }
+
+        if (!empty($data['prontuario'])) {
+            $builder->where('vw_cirurgiasemaprovacao.prontuario', $data['prontuario']);
+        }
+
+        if (!empty($data['nome'])) {
+            $builder->like('vw_cirurgiasemaprovacao.nome_paciente', strtoupper($data['nome']));
+        }
+
+        if (!empty($data['especialidade'])) {
+            $builder->where('vw_cirurgiasemaprovacao.idespecialidade', $data['especialidade']);
+        }
+
+        if (!empty($data['fila'])) {
+            $builder->where('vw_cirurgiasemaprovacao.idfila', $data['fila']);
+        }
+
+        if (!empty($data['risco'])) {
+            $builder->where('vw_cirurgiasemaprovacao.idriscocirurgico', $data['risco']);
+        }
+
+        if (!empty($data['complexidades'])) {
+            $builder->whereIn('vw_cirurgiasemaprovacao.complexidade', $data['complexidades']);
+        }
+
+        if (!empty($data['indsituacao']) && $data['indsituacao'] === 'EA') {
+            $builder->whereIn('vw_cirurgiasemaprovacao.complexidade', $data['complexidades']);
+        }
+
+       $builder->orderBy('vw_cirurgiasemaprovacao.dthrcirurgia', 'ASC');
+
+    }
+    
+    return $builder->get()->getResult();
+}
     /**
      * Return a new resource object, with default properties
      *
@@ -1119,6 +1332,87 @@ class MapaCirurgico extends ResourceController
         //var_dump($data['salas_cirurgicas']);die();
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
+                                            'data' => $data]);
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function consultarCirurgiaEmAprovacao(int $id, $linkorigem = null)
+    {
+       
+        HUAP_Functions::limpa_msgs_flash();
+
+        $mapa = $this->getCirurgiaEmAprovacao(['idmapa' => $id])[0];
+
+        //die(var_dump($mapa));
+
+        $data = [];
+        //$data['ordemfila'] = $mapa->ordem_fila;
+        $data['linkorigem'] = $linkorigem;
+        $array = $this->vwordempacientemodel->select('ordem_fila')->where('id', $mapa->idlista)->first();
+        $data['ordemfila'] = !is_null($array) ? $array['ordem_fila'] : 0;
+        $data['idmapa'] = $mapa->id;
+        $data['idlistaespera'] = $mapa->idlista;
+        //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
+        $data['enable_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
+        $data['status_fila'] = $mapa->status_fila;
+        $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
+        $data['tempoprevisto'] = $mapa->tempoprevisto ? DateTime::createFromFormat('H:i:s', $mapa->tempoprevisto)->format('H:i') : '';
+        $data['prontuario'] = $mapa->prontuario;
+        $data['especialidade'] = $mapa->idespecialidade;
+        $data['risco'] = $mapa->idriscocirurgico;
+        $data['dtrisco'] = $mapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $mapa->dtrisco)->format('d/m/Y') : NULL;
+        $data['cid'] = $mapa->cid;
+        $data['complexidade'] = $mapa->complexidade;
+        $data['fila'] = $mapa->idfila;
+        $data['origem'] = $mapa->idorigempaciente;
+        $data['congelacao'] = $mapa->indcongelacao;
+        $data['opme'] = $mapa->indopme;
+        $data['procedimento'] = $mapa->idprocedimento;
+        $data['lateralidade'] = $mapa->lateralidade;
+        $data['hemoderivados'] = $mapa->indhemoderivados;
+        $data['posoperatorio'] = $mapa->idposoperatorio;
+        $data['info'] = $mapa->infoadicionais;
+        $data['nec_proced'] = $mapa->necessidadesproced;
+        $data['justorig'] = $mapa->origemjustificativa;
+        $data['justenvio'] = $mapa->justificativaenvio;
+        $data['idsuspensao'] = $mapa->idsuspensao;
+        //$data['dtsuspensao'] = $mapa->dthrsuspensao;
+        $data['dtsuspensao'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsuspensao)->format('d/m/Y H:i') : NULL;
+        $data['justsuspensao'] = $mapa->justificativasuspensao;
+        $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+        $data['dttroca'] = $mapa->dthrtroca ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrtroca)->format('d/m/Y H:i') : NULL;
+        $data['justtroca'] = $mapa->justificativatroca;
+        $data['justurgencia'] = $mapa->justificativaurgencia;
+        $data['indurgencia'] = $mapa->indurgencia;
+        $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
+        $data['sala'] =  $mapa->idsala;
+        $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
+        $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
+        $data['filas'] = $this->selectfila;
+        $data['riscos'] = $this->selectrisco;
+        $data['origens'] = $this->selectorigempaciente;
+        $data['lateralidades'] = $this->selectlateralidade;
+        $data['posoperatorios'] = $this->selectposoperatorio;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['cids'] = $this->selectcids;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['especialidades_med'] = $this->selectespecialidadeaghu;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $codToRemove = $mapa->idprocedimento;
+        $procedimentos = $data['procedimentos'];
+        $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
+            return $procedimento->cod_tabela !== $codToRemove;
+        });
+
+        //var_dump($data['salas_cirurgicas'][0]['salas']);die();
+        //var_dump($data['salas_cirurgicas']);die();
+        
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgiaemaprovacao',
                                             'data' => $data]);
     }
     /**

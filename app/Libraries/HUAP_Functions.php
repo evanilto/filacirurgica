@@ -1131,6 +1131,9 @@ class HUAP_Functions
             case 'cadastros-consultar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
 
+            case 'mapacirurgico-aprovar':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '30']));
+
             default:
                 return false;
         }

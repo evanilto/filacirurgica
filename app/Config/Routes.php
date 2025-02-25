@@ -55,6 +55,7 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->get('atualizarcirurgia/(:num)', 'MapaCirurgico::atualizarCirurgia/$1');
     $routes->get('consultarcirurgia/(:num)', 'MapaCirurgico::consultarCirurgia/$1');
     $routes->get('consultarcirurgia/(:num)/(:any)', 'MapaCirurgico::consultarCirurgia/$1/$2');
+    $routes->get('consultarcirurgiaemaprovacao/(:num)', 'MapaCirurgico::consultarCirurgiaEmAprovacao/$1');
     $routes->post('atualizar', 'MapaCirurgico::atualizar');
     $routes->post('tratareventocirurgico', 'MapaCirurgico::tratarEventoCirurgico');
     $routes->get('atualizarhorarioscirurgia/(:num)', 'MapaCirurgico::atualizarHorariosCirurgia/$1');
@@ -67,6 +68,8 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->add('exibirhistorico/(:num)', 'MapaCirurgico::exibirHistorico/$1');
     $routes->get('suspendercirurgia/(:num)', 'MapaCirurgico::SuspenderCirurgia/$1');
     $routes->post('suspender/', 'MapaCirurgico::suspender');
+    $routes->get('avaliarcirurgias', 'MapaCirurgico::avaliarCirurgias');
+    $routes->add('exibircirurgiasemaprovacao', 'MapaCirurgico::exibirCirurgiasEmAprovacao');
 });
 
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {

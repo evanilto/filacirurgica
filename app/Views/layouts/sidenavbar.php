@@ -42,17 +42,24 @@
                 </a>
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { ?>
+                        <li>
+                            <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Consultar
+                            </a>
+                        </li>
+                        <?php } ?>
                         <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
                             </a>
-                        <?php } ?>
                         </li>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { ?>
+                        <?php } ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-aprovar')) { ?>
                         <li>
-                            <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Consultar
+                            <a href="<?= base_url('mapacirurgico/avaliarcirurgias') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Avaliar Cirurgia
                             </a>
                         </li>
                         <?php } ?>
