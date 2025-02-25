@@ -172,7 +172,7 @@
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
         <button class="btn btn-primary" id="aprovar" disabled> Aprovar</button>
-        <button class="btn btn-primary" id="desaprovar" disabled> Desaprovar </button>
+        <button class="btn btn-primary" id="desaprovar" disabled> Reprovar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
 </div>
@@ -249,15 +249,40 @@
         function handleButtonOthers(botao, rotaBase) {
             botao.addEventListener("click", function () {
                 if (selectedRow) {
+                    const listaId = selectedRow.dataset.idlista;
                     const mapaId = selectedRow.dataset.idmapa;
 
-                    if (mapaId) {
-                        const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
-                        window.location.href = url;
+                    let message;
+
+                    if (rotaBase === 'aprovarcirurgia') {
+                        message = 'Confirma a aprovação dessa cirurgia?'
                     } else {
-                        console.error('ID do mapa não encontrado na linha selecionada.');
-                        alert('Erro: Não foi possível encontrar o ID do mapa.');
+                        message = 'Confirma a NÃO aprovação dessa cirurgia?'
                     }
+
+                    Swal.fire({
+                    title: message,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ok',
+                    cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#janelaAguarde').show(); 
+
+                            if (mapaId) {
+                                const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + listaId + '/' + mapaId;
+                                window.location.href = url;
+                            } else {
+                                console.error('ID do mapa não encontrado na linha selecionada.');
+                                alert('Erro: Não foi possível encontrar o ID do mapa.');
+                            }
+                            
+                        } else {
+                            $('#janelaAguarde').hide(); 
+                        }
+                    });
+
                 } else {
                     console.error('Nenhuma linha foi selecionada.');
                     alert('Por favor, selecione uma linha antes de continuar.');

@@ -16,6 +16,7 @@ class MapaCirurgicoModel extends Model
         /*'id', // include for migration
         'created_at', // for migration
         'updated_at', // for migration */
+        'deleted_at',
         'idlistaespera',
         'dthrnocentrocirurgico',
         'dthrpacientesolicitado',

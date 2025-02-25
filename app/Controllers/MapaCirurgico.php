@@ -692,8 +692,6 @@ class MapaCirurgico extends ResourceController
 
     } else {
 
-        $builder->where('(vw_statusfilacirurgica.campos_mapa).status', 'Em Avaliação');
-
         if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
             $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
             $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
@@ -2005,6 +2003,160 @@ class MapaCirurgico extends ResourceController
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
                                                 'data' => $data]);
         }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function aprovarCirurgia(int $idlista, int $idmapa)
+    {
+        
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $db->transStart();
+
+            $this->mapacirurgicomodel->onlyDeleted()->update($idmapa, ['deleted_at' => NULL]);
+           /*  $builder = $db->table('mapa_cirurgico');
+            $builder->set('deleted_at', NULL)
+                    ->where('id', $idmapa)
+                    ->update(); */
+            
+            //dd($db->getLastQuery());
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao aprovar cirurgia! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+                
+            $this->listaesperamodel->withDeleted()->update($idlista, ['indsituacao' => 'P']); // Programada
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao aprovar cirurgia! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $array = [
+                'dthrevento' => date('Y-m-d H:i:s'),
+                'idlistaespera' => $idlista,
+                'idevento' => 13,
+                'idlogin' => session()->get('Sessao')['login']
+            ];
+
+            $this->historicomodel->insert($array);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $db->transComplete();
+    
+        } catch (\Throwable $e) {
+            $db->transRollback(); // Reverte a transação em caso de erro
+            $msg = 'Erro na aprovação da cirurgia';
+            $msg .= ' - '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            session()->setFlashdata('failed', $msg);
+        }
+
+        if ($db->transStatus() === false) {
+            $dataflash['idlista'] = $idlista;
+            session()->setFlashdata('dataflash', $dataflash);
+
+        } else {
+            session()->setFlashdata('success', 'Cirurgia aprovada com sucesso!');
+        }
+
+        return redirect()->to(base_url('mapacirurgico/exibircirurgiasemaprovacao'));
+
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function desaprovarCirurgia(int $idlista, int $idmapa)
+    {
+        
+        try {
+
+            $db = \Config\Database::connect('default');
+
+            $db->transStart();
+
+            $lista = [
+                'deleted_at' => NULL,
+                'indsituacao' => 'A' // Aguardando
+            ];
+
+            $this->listaesperamodel->withDeleted()->update($idlista, $lista); // Programada
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao não aprovar cirurgia! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $array = [
+                'dthrevento' => date('Y-m-d H:i:s'),
+                'idlistaespera' => $idlista,
+                'idevento' => 14,
+                'idlogin' => session()->get('Sessao')['login']
+            ];
+
+            $this->historicomodel->insert($array);
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            $db->transComplete();
+    
+        } catch (\Throwable $e) {
+            $db->transRollback(); // Reverte a transação em caso de erro
+            $msg = 'Erro na não aprovação da cirurgia';
+            $msg .= ' - '.$e->getMessage();
+            log_message('error', $msg.': ' . $e->getMessage());
+            session()->setFlashdata('failed', $msg);
+        }
+
+        if ($db->transStatus() === false) {
+            $dataflash['idlista'] = $idlista;
+            session()->setFlashdata('dataflash', $dataflash);
+
+        } else {
+            session()->setFlashdata('success', 'Cirurgia reprovada com sucesso!');
+        }
+
+        return redirect()->to(base_url('mapacirurgico/exibircirurgiasemaprovacao'));
 
     }
     /**
