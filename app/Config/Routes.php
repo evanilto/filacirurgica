@@ -72,6 +72,7 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->add('exibircirurgiasemaprovacao', 'MapaCirurgico::exibirCirurgiasEmAprovacao');
     $routes->get('aprovarcirurgia/(:num)/(:num)', 'MapaCirurgico::aprovarCirurgia/$1/$2');
     $routes->get('desaprovarcirurgia/(:num)/(:num)', 'MapaCirurgico::desaprovarCirurgia/$1/$2');
+    $routes->get('vercirurgiasemaprovacao', 'MapaCirurgico::verCirurgiasEmAprovacao');
 });
 
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {

@@ -33,6 +33,24 @@
         </div>
 
         <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    title: 'Há cirurgia(s) em aprovação. Deseja verificar agora?',
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Não'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $('#janelaAguarde').show(); 
+                                const url = '<?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
+                                window.location.href = url;
+                        } else {
+                            $('#janelaAguarde').hide(); 
+                        }
+                    });
+            });
+
             $(document).ready(function() {
                 $('#idForm').submit(function() {
                     $('#janelaAguarde').show();

@@ -13,6 +13,8 @@ use App\Models\FilaModel;
 use App\Models\RiscoModel;
 use App\Models\OrigemPacienteModel;
 use App\Models\LateralidadeModel;
+use App\Models\EquipamentosModel;
+use App\Models\EquipamentosCirurgiaModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
@@ -51,6 +53,7 @@ class MapaCirurgico extends ResourceController
     private $equipemedicamodel;
     private $historicomodel;
     private $localfatitensprocedhospitalarmodel;
+    private $selectequipamentos;
     private $localaghcidsmodel;
     private $localaghespecialidadesmodel;
     private $localprofespecialidadesmodel;
@@ -80,6 +83,8 @@ class MapaCirurgico extends ResourceController
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
     private $data;
+    private $equipamentosmodel;
+    private $equipamentoscirurgiamodel;
 
 
     public function __construct()
@@ -110,6 +115,9 @@ class MapaCirurgico extends ResourceController
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->justificativasmodel = new JustificativasModel();
         $this->usuariocontroller = new Usuarios();
+        $this->equipamentosmodel = new EquipamentosModel();
+        $this->equipamentoscirurgiamodel = new EquipamentosCirurgiaModel();
+
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -142,6 +150,7 @@ class MapaCirurgico extends ResourceController
         $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->findAll();
         //$this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
         $this->selectsalascirurgicasaghu = $this->localmbcsalascirurgicasmodel->Where('situacao', 'A')->orderBy('nome', 'ASC')->findAll();
+        $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
 
     }
 
@@ -640,7 +649,7 @@ class MapaCirurgico extends ResourceController
 
     return $builder->get()->getResult();
 }
-/**
+    /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -664,6 +673,30 @@ class MapaCirurgico extends ResourceController
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
                                             'data' => $data]);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function verCirurgiasEmAprovacao()
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['mapacirurgico'] = NULL;
+
+        $dataflash['dtinicio'] = NULL;
+        $dataflash['dtfim'] = NULL;
+        $dataflash['fila'] = NULL;
+        $dataflash['risco'] = NULL;
+        $dataflash['especialidade'] = NULL;
+        $dataflash['complexidades'] = NULL;
+        session()->setFlashdata('dataflash', $dataflash);
+
+        //die(var_dump($data));
+
+        return redirect()->to(base_url('mapacirurgico/exibircirurgiasemaprovacao'));
 
     }
     /**
@@ -1320,6 +1353,8 @@ class MapaCirurgico extends ResourceController
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $data['equipamentos'] = $this->selectequipamentos;
+        $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
@@ -1401,6 +1436,9 @@ class MapaCirurgico extends ResourceController
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $data['equipamentos'] = $this->selectequipamentos;
+        $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
+
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {

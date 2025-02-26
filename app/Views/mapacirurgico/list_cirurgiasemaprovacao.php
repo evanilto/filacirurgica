@@ -1,7 +1,7 @@
 <?php
     use App\Libraries\HUAP_Functions;
 
-    $corAprovar = 'Green';
+    $corAprovar = '#3085d6';
     $corDesaprovar = 'Red';
 ?>
  
@@ -31,6 +31,7 @@
                 <th scope="col" class="col-0" >Especialidade</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
+                <th scope="col" data-field="eqpts" >Equipamentos Necessários</th>
                 <th scope="col" data-field="nome" >Idade</th>
                 <th scope="col" data-field="nome" >Sexo</th>
                 <th scope="col" data-field="nome" >Procedimento Principal</th>
@@ -89,6 +90,7 @@
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
                     data-procedimentosadicionais="<?= $itemmapa->procedimentos_adicionais ?>"
                     data-equipe="<?= $itemmapa->equipe_cirurgica ?>"
+                    data-equipamentos="<?= $itemmapa->equipamentos_cirurgia ?>"
                     data-ordem="<?= $itemmapa->ordem_fila ?>"
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
                     data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
@@ -125,6 +127,9 @@
                     <td><?php echo $itemmapa->prontuario ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>">
+                        <?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>
                     </td>
                     <td><?php echo $itemmapa->idade ?></td>
                     <td><?php echo $itemmapa->sexo ?></td>
@@ -252,36 +257,43 @@
                     const listaId = selectedRow.dataset.idlista;
                     const mapaId = selectedRow.dataset.idmapa;
 
-                    let message;
+                    if (botao.innerText === 'Consultar') {
+                        const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
+                        window.location.href = url;
 
-                    if (rotaBase === 'aprovarcirurgia') {
-                        message = 'Confirma a aprovação dessa cirurgia?'
                     } else {
-                        message = 'Confirma a NÃO aprovação dessa cirurgia?'
-                    }
 
-                    Swal.fire({
-                    title: message,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Ok',
-                    cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $('#janelaAguarde').show(); 
+                        let message;
 
-                            if (mapaId) {
-                                const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + listaId + '/' + mapaId;
-                                window.location.href = url;
-                            } else {
-                                console.error('ID do mapa não encontrado na linha selecionada.');
-                                alert('Erro: Não foi possível encontrar o ID do mapa.');
-                            }
-                            
+                        if (botao.innerText === 'Aprovar') {
+                            message = 'Confirma a aprovação dessa cirurgia?'
                         } else {
-                            $('#janelaAguarde').hide(); 
+                            message = 'Confirma a NÃO aprovação dessa cirurgia?'
                         }
-                    });
+
+                        Swal.fire({
+                        title: message,
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ok',
+                        cancelButtonText: 'Cancelar'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                $('#janelaAguarde').show(); 
+
+                                if (mapaId) {
+                                    const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + listaId + '/' + mapaId;
+                                    window.location.href = url;
+                                } else {
+                                    console.error('ID do mapa não encontrado na linha selecionada.');
+                                    alert('Erro: Não foi possível encontrar o ID do mapa.');
+                                }
+                                
+                            } else {
+                                $('#janelaAguarde').hide(); 
+                            }
+                        });
+                    }
 
                 } else {
                     console.error('Nenhuma linha foi selecionada.');
@@ -382,7 +394,6 @@
                     ${telefonesHtml}
                 `);
                 $('#colunaEsquerda2').html(`
-                    <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
                     <strong>Especialidade:</strong> ${dados.especialidade}<br>
                     <strong>Fila:</strong> ${dados.fila}<br>
                     <strong>Procedimento:</strong> ${dados.idprocedimento} - ${dados.procedimento}<br>
@@ -401,6 +412,7 @@
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
                     <strong>Hemoderivados:</strong> ${dados.hemo}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
+                    <strong>Equipamentos Necessários:</strong> ${verificarValor(dados.equipamentos)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
@@ -429,7 +441,7 @@
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
             fixedColumns: {
-            leftColumns: 11 // Número de colunas a serem fixadas
+            leftColumns: 8 // Número de colunas a serem fixadas
             },
             fixedHeader: true,
             scrollY: '500px',
@@ -447,6 +459,7 @@
                     { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
+                    { "width": "350px" },  // equipamentos
                     { "width": "55px" },  // idade
                     { "width": "100px" },  // sexo
                     { "width": "250px" },  // proc prin
@@ -528,6 +541,7 @@
                 procedimento: $(this).data('procedimento'),
                 procedimentosadicionais: $(this).data('procedimentosadicionais'),
                 equipe: $(this).data('equipe'),
+                equipamentos: $(this).data('equipamentos'),
                 ordem: $(this).data('ordem'),
                 origem: $(this).data('origem'),
                 complexidade: $(this).data('complexidade'),
@@ -559,13 +573,6 @@
 
             var dadosCompletos = {
                     dthrcir: data[2], 
-                    centrocir: data[4], 
-                    sala: data[5], 
-                    hrpacientesolicitado: data[6], 
-                    hrnocentro: data[7], 
-                    hremcirurgia: data[8], 
-                    hrsaidasl: data[9], 
-                    hrsaidacc: data[10],
                     ...dadosAdicionais
             };
 

@@ -73,6 +73,7 @@ use function PHPUnit\Framework\isEmpty;
                 <th scope="col" data-field="nome" >Congel.</th>
                 <th scope="col" data-field="nome" >Hemod.</th>
                 <th scope="col" data-field="nome" >OPME</th>
+                <th scope="col" data-field="eqpts" >Equipamentos Necessários</th>
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
@@ -202,6 +203,7 @@ use function PHPUnit\Framework\isEmpty;
                     data-necesspro="<?= htmlspecialchars($itemmapa->necessidadesproced, ENT_QUOTES, 'UTF-8') ?>"
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
                     data-opme="<?= $itemmapa->opme ?>"
+                    data-equipamentos="<?= $itemmapa->equipamentos_cirurgia ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
@@ -268,6 +270,9 @@ use function PHPUnit\Framework\isEmpty;
                     <td><?php echo $itemmapa->congelacao ?></td>
                     <td><?php echo $itemmapa->hemoderivados ?></td>
                     <td><?php echo $itemmapa->opme ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>">
+                        <?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>
+                    </td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
@@ -780,6 +785,7 @@ use function PHPUnit\Framework\isEmpty;
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
                     <strong>Hemoderivados:</strong> ${dados.hemo}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
+                    <strong>Equipamentos Necessários:</strong> ${verificarValor(dados.equipamentos)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
@@ -848,6 +854,7 @@ use function PHPUnit\Framework\isEmpty;
                     { "width": "70px" },  // cong
                     { "width": "70px" },  // hemod
                     { "width": "70px" },  // opme
+                    { "width": "350px" },  // equipamentos
                     { "width": "150px" },  // risco
                     { "width": "90px" },  // dt risco
                     { "width": "130px" },  // origem
@@ -923,6 +930,7 @@ use function PHPUnit\Framework\isEmpty;
                 congelacao: $(this).data('congelacao'),
                 hemo: $(this).data('hemo'),
                 opme: $(this).data('opme'),
+                equipamentos: $(this).data('equipamentos'),
                 posoperatorio: $(this).data('posoperatorio'),
                 infoadic: $(this).data('infoadic'),
                 necesspro: $(this).data('necesspro'),
@@ -945,13 +953,13 @@ use function PHPUnit\Framework\isEmpty;
 
             var dadosCompletos = {
                     dthrcir: data[2], 
-                    centrocir: data[4], 
-                    sala: data[5], 
-                    hrpacientesolicitado: data[6], 
-                    hrnocentro: data[7], 
-                    hremcirurgia: data[8], 
-                    hrsaidasl: data[9], 
-                    hrsaidacc: data[10],
+                    centrocir: data[5], 
+                    sala: data[6], 
+                    hrpacientesolicitado: data[7], 
+                    hrnocentro: data[8], 
+                    hremcirurgia: data[9], 
+                    hrsaidasl: data[10], 
+                    hrsaidacc: data[11],
                     ...dadosAdicionais
             };
 

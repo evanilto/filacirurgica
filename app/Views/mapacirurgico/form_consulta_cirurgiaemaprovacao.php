@@ -9,7 +9,7 @@
                     <b><?= 'Informações da Cirurgia' ?></b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
+                    <form id="idForm" method="post" action="">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-2">
@@ -384,90 +384,66 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="container bordered-container mb-2">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <label for="filtro_especialidades" class="form-label">Especialidade</label>
-                                            <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades" disabled> 
-                                                <option value="">Todas</option> 
-                                                <?php foreach ($data['especialidades_med'] as $filtro): ?>
-                                                    <option value="<?= $filtro->seq ?>"><?= $filtro->nome_especialidade ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <label for="profissional" class="form-label">Equipe Cirúrgica</label>
-                                            <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>" disabled
-                                                    id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
-                                                <?php
-                                                // Certifique-se de que $data['profissional'] está definido como um array
-                                                $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>" disabled
+                                            id="eqpts" name="eqpts[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
+                                        <?php
+                                        // Certifique-se de que $data['eqpts'] está definido como um array
+                                        $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
 
-                                                // Certifique-se de que o array não tenha valores vazios
-                                                $data['profissional'] = array_filter($data['profissional']);
+                                        // Certifique-se de que o array não tenha valores vazios
+                                        $data['eqpts'] = array_filter($data['eqpts']);
 
-                                                $array_selected = [];
-                                                foreach ($data['prof_especialidades'] as $prof_espec) {
-                                                    if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
-                                                        $selected = 'selected';
-                                                        $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
-                                                    } else {
-                                                        $selected = '';
-                                                    }
-                                                    echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                            <?php if ($validation->hasError('profissional')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('profissional') ?>
-                                                </div>
-                                            <?php endif; ?>
+                                        $array_selected = [];
+                                        foreach ($data['equipamentos'] as $equipamento) {
+                                            if (in_array($equipamento->id, $data['eqpts'], true) && !in_array($equipamento->id, $array_selected, true)) {
+                                                $selected = 'selected';
+                                                $array_selected[] = $equipamento->id; // Adicione ao array de selecionados
+                                            } else {
+                                                $selected = '';
+                                            }
+                                            echo '<option value="'.$equipamento->id.'" '.$selected.'>'.$equipamento->descricao.'</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                    <?php if ($validation->hasError('eqpts')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('eqpts') ?>
                                         </div>
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="container bordered-container mb-2">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                            <label for="centrocirurgico" class="form-label">Centro Cirúrgico</label>
-                                            <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>" disabled
-                                                 id="centrocirurgico" name="centrocirurgico">
-                                                <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
-                                                <?php 
-                                                    foreach ($data['centros_cirurgicos'] as $filtro):
-                                                        $selected = ($data['centrocirurgico'] == $filtro->seq) ? 'selected' : '';
-                                                        echo '<option value="'.$filtro->seq.'" '.$selected.'>'.$filtro->descricao.'</option>';
-                                                    endforeach 
-                                                 ?>
-                                            </select>
-                                            <?php if ($validation->hasError('centrocirurgico')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('centrocirurgico') ?>
-                                                </div>
-                                            <?php endif; ?>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label for="profissional" class="form-label">Equipe Cirúrgica</label>
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>" disabled
+                                            id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1">
+                                        <?php
+                                        // Certifique-se de que $data['profissional'] está definido como um array
+                                        $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
+
+                                        // Certifique-se de que o array não tenha valores vazios
+                                        $data['profissional'] = array_filter($data['profissional']);
+
+                                        $array_selected = [];
+                                        foreach ($data['prof_especialidades'] as $prof_espec) {
+                                            if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
+                                                $selected = 'selected';
+                                                $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
+                                            } else {
+                                                $selected = '';
+                                            }
+                                            echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                    <?php if ($validation->hasError('profissional')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('profissional') ?>
                                         </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-2">
-                                        <label for="sala" class="form-label">Salas</label>
-                                            <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>" disabled
-                                                    id="sala" name="sala" data-placeholder="" data-allow-clear="1">
-                                                <!-- As salas irão aparecer aqui dinamicamente -->
-                                            </select>
-                                            <?php if ($validation->hasError('sala')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('sala') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -475,7 +451,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="nec_proced">Necessidades do Procedimento</label>
-                                    <textarea id="nec_proced" maxlength="255" rows="5" disabled
+                                    <textarea id="nec_proced" maxlength="255" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
