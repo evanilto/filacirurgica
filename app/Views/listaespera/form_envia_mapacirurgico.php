@@ -712,7 +712,6 @@ function formatarData(input) {
         }
     }
 
-
     function fetchPacienteNome(prontuarioValue, ordemValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {

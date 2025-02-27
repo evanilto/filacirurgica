@@ -1456,6 +1456,38 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function verificaCirurgiasEmAprovacao()
+    {
+       
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Requisição inválida.'
+            ])->setStatusCode(400);
+        }
+
+        $data = [];
+        $cirurgias = $this->getCirurgiaEmAprovacao($data);
+
+        //die(var_dump($mapa));
+
+        if ($cirurgias) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Existe Cirurgias'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Não Existem Cirurgias Em Aprovação.'
+            ]);
+        }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
     public function trocarPaciente()
     {
         HUAP_Functions::limpa_msgs_flash();
@@ -2252,6 +2284,8 @@ class MapaCirurgico extends ResourceController
         $data['procedimentos_adicionais'] = $data['procedimentos'];
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $data['equipamentos'] = $this->selectequipamentos;
+        $data['eqpts'] = [];
 
         $data['listapacienteSelect'] = [];
 

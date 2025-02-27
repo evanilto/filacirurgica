@@ -1,6 +1,13 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<?php
+    // Inicializando valores padrão
+    $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
+    $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
+    //dd($data);
+?>
+
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -424,7 +431,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -448,6 +455,44 @@
                                             <?= $validation->getError('complexidade') ?>
                                         </div>
                                     <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                id="eqpts" name="eqpts[]" multiple="multiple"
+                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                            <?php
+                                            foreach ($data['equipamentos'] as $equipamento) {
+                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->hasError('eqpts')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('eqpts') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -566,7 +611,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="nec_proced">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="2048" rows="5"
+                                    <textarea id="nec_proced" maxlength="2048" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -618,6 +663,7 @@
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
                         <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="risco_hidden" id="risco_hidden"  value="<?= $data['risco'] ?>" />
+                        <input type="hidden" name="eqpts_hidden" id="eqpts_hidden" />
                     </form>
                 </div>
             </div>
@@ -632,6 +678,89 @@
             input.addEventListener('keydown', disableEnter);
         });
     };
+
+    function confirma(button) {
+        event.preventDefault(); // Previne a submissão padrão do formulário
+
+        const equipamentos = $('#eqpts').val();
+
+        if (equipamentos && equipamentos.length > 0) {
+
+            const form = button.form;
+
+            const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
+
+            let equipamentosSelecionados = [];
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val();
+                let qtd = $(this).data('qtd');
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            // Objeto de dados para enviar ao servidor
+            const data = {
+                dtcirurgia: dtcirurgia,
+                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
+            };
+
+            if (!dtcirurgia || dtcirurgia.trim() === "") {
+                return true;
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?= base_url('listaespera/verificaequipamentos') ?>', true); 
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Limite excedido para reserva de equipamento. A cirurgia ficará pendente de aprovação pela equipe cirúrgica. Deseja prosseguir mesmo assim?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ok',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    $('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
+                                    $('#janelaAguarde').show();
+                                    $('#idForm').off('submit'); 
+                                    $('#idForm').submit(); 
+                                } else {
+                                    $('#janelaAguarde').hide();
+                                }
+                            });
+                        } else {
+                            $('#janelaAguarde').show();
+                            $('#idForm').off('submit'); 
+                            $('#idForm').submit();        
+                        }
+                    } else {
+                        console.error('Erro ao enviar os dados:', xhr.statusText);
+                        alert('Erro na comunicação com o servidor.');
+                        $('#janelaAguarde').hide();
+                        return false;  
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Erro ao enviar os dados:', xhr.statusText);
+                    alert('Erro na comunicação com o servidor.');
+                    $('#janelaAguarde').hide();
+                    return false;
+                };
+
+                // Envia os dados como JSON, incluindo equipamentos
+                xhr.send(JSON.stringify(data));
+            }
+        } else {
+            $('#janelaAguarde').show();
+            $('#idForm').off('submit'); 
+            $('#idForm').submit(); 
+        }
+    }
 
     function fetchPacienteNome(prontuarioValue, ordemValue) {
         //alert(ordemValue);
@@ -842,6 +971,30 @@
             //width: 'resolve' // Corrigir a largura
         });
 
+        $('#eqpts').select2();
+
+        if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
+            $('#eqpts').prop('disabled', false);
+        } else {
+            $('#eqpts').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarEquipamentos"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#eqpts').prop('disabled', false); // Habilita o campo eqpts
+                $('#eqpts').select2(); // Inicializa o Select2
+            } else {
+                $('#eqpts').prop('disabled', true); // Desabilita o campo eqpts
+                $('#eqpts').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#eqpts').prop('disabled')) {
+            $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
+
         let lastFocusedInput = null;
         // Captura o último campo de entrada (input ou textarea) focado
         $(document).on('focus', 'input[type="text"], textarea', function() {
@@ -917,6 +1070,26 @@
 
         // Fim do filtro de profissionais -----------------------------------------------------------------------
 
+        $('#eqpts').change(function() {
+            let equipamentosSelecionados = [];
+
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val(); // ID do equipamento
+                let qtd = $(this).data('qtd'); // Pega o valor do atributo data-qtd
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            //console.log(equipamentosSelecionados); // Apenas para debug
+        });
+
+        $(document).ready(function() {
+            $('#eqpts').change(function() {
+                if ($(this).val().includes("0")) {
+                    $(this).val(["0"]).trigger("change"); // Mantém apenas a opção "Não utilizará equipamentos cirúrgicos"
+                }
+            });
+        });
+
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
         $('#proced_adic').on('change', function() {
@@ -925,6 +1098,9 @@
 
         // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
         $('#proced_adic_hidden').val($('#proced_adic').val());
+
+        $('#eqpts_hidden').val($('#eqpts').val());
+
 
         //$('#origem').prop('disabled', true);
         

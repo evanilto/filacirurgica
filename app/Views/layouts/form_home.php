@@ -33,22 +33,49 @@
         </div>
 
         <script>
+
             document.addEventListener("DOMContentLoaded", function() {
-                Swal.fire({
-                    title: 'Há cirurgia(s) em aprovação. Deseja verificar agora?',
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sim',
-                    cancelButtonText: 'Não'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            $('#janelaAguarde').show(); 
-                                const url = '<?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
-                                window.location.href = url;
-                        } else {
-                            $('#janelaAguarde').hide(); 
+
+                event.preventDefault(); // Previne a submissão padrão do formulário
+
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?= base_url('mapacirurgico/verificacirurgiasemaprovacao') ?>', true); 
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        if (response.success) {
+
+                            Swal.fire({
+                                title: 'Há cirurgia(s) em aprovação. Deseja verificar agora?',
+                                icon: 'question',
+                                showCancelButton: true,
+                                confirmButtonText: 'Sim',
+                                cancelButtonText: 'Não'
+                            }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $('#janelaAguarde').show(); 
+                                            const url = '<?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
+                                            window.location.href = url;
+                                    } else {
+                                        $('#janelaAguarde').hide(); 
+                                    }
+                            });
+
                         }
-                    });
+
+                    } else {
+                        console.error('Erro ao enviar os dados:', xhr.statusText);
+                        alert('Erro na comunicação com o servidor.');
+                        $('#janelaAguarde').hide();
+                        return false;  
+                    }
+                };
+
+                xhr.send();
             });
 
             $(document).ready(function() {
