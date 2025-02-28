@@ -618,6 +618,40 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
+    private function atualizaLimiteExcedidoEquipamento ($dtcirurgia, $idequipamento) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $sql = "
+            UPDATE equipamentos_cirurgia ec
+            SET indexcedente = TRUE
+            FROM mapa_cirurgico mc
+            WHERE mc.id = ec.idmapacirurgico
+            AND ec.idequipamento = ?
+            AND ec.deleted_at IS NULL
+            AND mc.deleted_at IS NULL
+            AND mc.dthrsuspensao IS NULL
+            AND mc.dthrtroca IS NULL
+            AND CAST(mc.dthrcirurgia AS DATE) = ?
+        ";
+
+        $db->query($sql, [
+            (int) $idequipamento,
+            DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d')
+        ]);
+
+        //die(var_dump($builder->getCompiledSelect()));
+
+       return $db->affectedRows() > 0;
+    
+    }
+        /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function getSituacaoCirurgica ($data) 
     {
         //die(var_dump($data));
@@ -2001,7 +2035,8 @@ class ListaEspera extends ResourceController
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig'],
-                        'indsituacao' => $this->data['idsituacao_cirurgia_hidden'] // (P) Programada ou (EA) Em Aprovação
+                        //'indsituacao' => $this->data['idsituacao_cirurgia_hidden'] // (P) Programada ou (EA) Em Aprovação
+                        'indsituacao' => 'P' // Programada
                         ];
 
                 $this->listaesperamodel->update($this->data['id'], $lista);
@@ -2089,8 +2124,32 @@ class ListaEspera extends ResourceController
 
                     foreach ($this->data['eqpts'] as $key => $equipamento) {
 
+                        $dtcirurgia = $dataCirurgia->format('d/m/Y');
+
+                        $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, (int) $equipamento);
+
+                        $eqpto = $this->equipamentosmodel->find((int) $equipamento);
+
+                        $eqpExcedente = ($qtdEmUso >= $eqpto->qtd);
+
+                        if ($eqpExcedente) {
+                        
+                            if (!$this->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento)) {
+
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+            
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao informar equipamento cirúrgico excedido [%d] %s', $errorCode, $errorMessage)
+                                );
+
+                            }
+                        }
+
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['idequipamento'] = (int) $equipamento;
+                        $array['indexcedente'] = $eqpExcedente;
 
                         $this->equipamentoscirurgiamodel->insert($array);
 
@@ -2109,9 +2168,9 @@ class ListaEspera extends ResourceController
 
                 $this->listaesperamodel->delete($this->data['id']);
 
-                if ($this->data['idsituacao_cirurgia_hidden'] === 'EA') { // Em Aprovação
+                /* if ($this->data['idsituacao_cirurgia_hidden'] === 'EA') { // Em Aprovação
                     $this->mapacirurgicomodel->delete($idmapa);
-                }
+                } */
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -2126,7 +2185,8 @@ class ListaEspera extends ResourceController
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
                     'idlistaespera' => $this->data['id'],
-                    'idevento' => $this->data['idsituacao_cirurgia_hidden'] === 'P' ? 1 : 12,
+                    //'idevento' => $this->data['idsituacao_cirurgia_hidden'] === 'P' ? 1 : 12,
+                    'idevento' => 1,
                     'idlogin' => session()->get('Sessao')['login']
                 ];
 

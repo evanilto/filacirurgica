@@ -667,14 +667,14 @@ function formatarData(input) {
 
                         if (response.success) {
                             Swal.fire({
-                                title: 'Limite excedido para reserva de equipamento. A cirurgia ficará pendente de aprovação pela equipe cirúrgica. Deseja prosseguir mesmo assim?',
+                                title: 'Limite excedido para reserva de equipamento. Deseja prosseguir mesmo assim?',
                                 icon: 'warning',
                                 showCancelButton: true,
                                 confirmButtonText: 'Ok',
                                 cancelButtonText: 'Cancelar'
                             }).then((result) => {
                                 if (result.isConfirmed) {
-                                    $('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
+                                    //$('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
                                     $('#janelaAguarde').show();
                                     $('#idForm').off('submit'); 
                                     $('#idForm').submit(); 

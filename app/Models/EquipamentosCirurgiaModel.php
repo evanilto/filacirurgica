@@ -15,6 +15,7 @@ class EquipamentosCirurgiaModel extends Model
     protected $allowedFields    = [
         'idequipamento',
 	    'idmapacirurgico',
+        'indexcedente'
     ];
 
     // Dates

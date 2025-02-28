@@ -74,6 +74,7 @@ use function PHPUnit\Framework\isEmpty;
                 <th scope="col" data-field="nome" >Hemod.</th>
                 <th scope="col" data-field="nome" >OPME</th>
                 <th scope="col" data-field="eqpts" >Equipamentos Necessários</th>
+                <th scope="col" data-field="eqpts" >Equipamentos Excedente</th>
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
@@ -175,6 +176,22 @@ use function PHPUnit\Framework\isEmpty;
                     } else {
                         $border = 'none;';
                     }
+
+                    $equipamentos = json_decode($itemmapa->equipamentos_cirurgia_info, true);
+
+                    $equipamentoexcedente = 0;
+
+                    if ($equipamentos) {
+                        foreach ($equipamentos as $key => $equipamento) {
+                            //die(var_dump($equipamento['descricao']));
+                            if ($equipamento['indexcedente']) {
+                                $equipamentoexcedente = 1;
+                            };
+                        }
+                    }
+
+                    $itemmapa->equipamento_excedente = $equipamentoexcedente;
+
             ?>
                 <tr
                     data-idmapa="<?= $itemmapa->id ?>" 
@@ -204,6 +221,8 @@ use function PHPUnit\Framework\isEmpty;
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
                     data-opme="<?= $itemmapa->opme ?>"
                     data-equipamentos="<?= $itemmapa->equipamentos_cirurgia ?>"
+                    data-equipamentosinfo="<?= $itemmapa->equipamentos_cirurgia_info ?>"
+                    data-equipamentoexcedente="<?= $itemmapa->equipamento_excedente ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
@@ -273,6 +292,7 @@ use function PHPUnit\Framework\isEmpty;
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>">
                         <?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>
                     </td>
+                    <td><?php echo $itemmapa->equipamento_excedente ?></td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
@@ -326,6 +346,13 @@ use function PHPUnit\Framework\isEmpty;
                 // Atualiza a linha selecionada
                 selectedRow = this;
                 selectedRow.classList.add("lineselected");
+
+                if (selectedRow.dataset.equipamentoexcedente == 1) {
+                    //selectedRow.classList.add("lineselected");
+                    selectedRow.classList.add("equipamento-excedente");
+                } else {
+                    selectedRow.classList.remove("equipamento-excedente");
+                }
 
                 // Atualiza as colunas fixadas com a classe "lineselected"
                 const tableId = "#table"; // Substitua pelo ID real da tabela
@@ -855,6 +882,7 @@ use function PHPUnit\Framework\isEmpty;
                     { "width": "70px" },  // hemod
                     { "width": "70px" },  // opme
                     { "width": "350px" },  // equipamentos
+                    { "width": "50px" },  // equipamento exc
                     { "width": "150px" },  // risco
                     { "width": "90px" },  // dt risco
                     { "width": "130px" },  // origem
