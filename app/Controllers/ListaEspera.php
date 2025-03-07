@@ -18,6 +18,7 @@ use App\Models\EquipamentosModel;
 use App\Models\EquipeMedicaModel;
 use App\Models\EquipamentosCirurgiaModel;
 use App\Models\FilasModel;
+use App\Models\FilaWebModel;
 use App\Models\HistoricoModel;
 use App\Models\JustificativasModel;
 //use App\Models\JustificativasExclusaoModel;
@@ -67,7 +68,8 @@ class ListaEspera extends ResourceController
     private $equipamentoscirurgiamodel;
     private $historicomodel;
     private $usuariocontroller;
-    private $mapacirurgicocontroller;
+    //private $mapacirurgicocontroller;
+    private $filawebmodel;
     private $aghucontroller;
     private $selectfila;
     private $selectrisco;
@@ -117,7 +119,8 @@ class ListaEspera extends ResourceController
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
-        $this->mapacirurgicocontroller = new MapaCirurgico(); // disable for migration
+        //$this->mapacirurgicocontroller = new MapaCirurgico(); // disable for migration
+        $this->filawebmodel = new FilaWebModel(); // disable for migration
         $this->localvwdetalhespacientesmodel = new LocalVwDetalhesPacientesModel();
         $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
         //$this->aghucontroller = new Aghu();
@@ -618,15 +621,21 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    private function atualizaLimiteExcedidoEquipamento ($dtcirurgia, $idequipamento) 
+    public function atualizaLimiteExcedidoEquipamento ($dtcirurgia, $idequipamento) 
     {
         //die(var_dump($data));
+
+        $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, (int) $idequipamento);
+
+        $eqpto = $this->equipamentosmodel->find((int) $idequipamento);
+
+        $eqpExcedente = ($qtdEmUso >= $eqpto->qtd);
 
         $db = \Config\Database::connect('default');
 
         $sql = "
             UPDATE equipamentos_cirurgia ec
-            SET indexcedente = TRUE
+            SET indexcedente = ?
             FROM mapa_cirurgico mc
             WHERE mc.id = ec.idmapacirurgico
             AND ec.idequipamento = ?
@@ -638,16 +647,26 @@ class ListaEspera extends ResourceController
         ";
 
         $db->query($sql, [
+            $eqpExcedente,
             (int) $idequipamento,
             DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d')
         ]);
 
         //die(var_dump($builder->getCompiledSelect()));
+        if (!$db->affectedRows() > 0) {
+            $error = $db->error();
+            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+            $errorCode = !empty($error['code']) ? $error['code'] : 0;
 
-       return $db->affectedRows() > 0;
+            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                sprintf('Erro ao atualizar equipamento cirúrgico excedido [%d] %s', $errorCode, $errorMessage)
+            );
+        }
+
+       return $eqpExcedente;
     
     }
-        /**
+     /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -982,7 +1001,7 @@ class ListaEspera extends ResourceController
 
             if ($db->transStatus() === false) {
                 $dados = $this->request->getPost();
-                $dataflash['idlista'] = $id;
+                $dataflash['idlista'] = $data['id'];
                 session()->setFlashdata('dataflash', $dataflash);
 
             } else {
@@ -1976,7 +1995,7 @@ class ListaEspera extends ResourceController
             $data_clone['listapaciente'] = $this->data['id'];
             //$data_clone['dtcirurgia'] = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'])->format('Y-m-d');
             $data_clone['dtcirurgia'] = $dataCirurgia->format('Y-m-d');
-            if ($this->mapacirurgicocontroller->getPacienteNoMapa($data_clone)) {
+            if ($this->filawebmodel->getPacienteNoMapa($data_clone)) {
                 session()->setFlashdata('failed', 'Esse paciente já tem uma cirurgia programada para esse dia!');
 
                 $this->carregaMapa();
@@ -2126,11 +2145,11 @@ class ListaEspera extends ResourceController
 
                         $dtcirurgia = $dataCirurgia->format('d/m/Y');
 
-                        $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, (int) $equipamento);
+                        /* $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, (int) $equipamento);
 
                         $eqpto = $this->equipamentosmodel->find((int) $equipamento);
 
-                        $eqpExcedente = ($qtdEmUso >= $eqpto->qtd);
+                        $eqpExcedente = ($qtdEmUso >= $eqpto->qtd); 
 
                         if ($eqpExcedente) {
                         
@@ -2141,12 +2160,14 @@ class ListaEspera extends ResourceController
                                 $errorCode = !empty($error['code']) ? $error['code'] : 0;
             
                                 throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                    sprintf('Erro ao informar equipamento cirúrgico excedido [%d] %s', $errorCode, $errorMessage)
+                                    sprintf('Erro ao atualizar equipamento cirúrgico excedido [%d] %s', $errorCode, $errorMessage)
                                 );
 
                             }
                         }
+                        */
 
+                        $eqpExcedente = $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento);
                         $array['idmapacirurgico'] = (int) $idmapa;
                         $array['idequipamento'] = (int) $equipamento;
                         $array['indexcedente'] = $eqpExcedente;

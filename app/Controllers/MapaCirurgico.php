@@ -1,8 +1,9 @@
 <?php
 
 namespace App\Controllers;
-use CodeIgniter\RESTful\ResourceController;
 use App\Libraries\HUAP_Functions;
+use CodeIgniter\RESTful\ResourceController;
+use App\Controllers\ListaEspera;
 use App\Models\ListaEsperaModel;
 use App\Models\VwListaEsperaModel;
 use App\Models\VwMapaCirurgicoModel;
@@ -28,6 +29,7 @@ use App\Models\LocalCentrosCirurgicosModel;
 use App\Models\LocalMbcSalasCirurgicasModel;
 use App\Models\LocalProfEspecialidadesModel;
 use App\Models\JustificativasModel;
+use App\Models\FilaWebModel;
 use DateTime;
 use CodeIgniter\Config\Services;
 use Config\Database;
@@ -38,12 +40,15 @@ use CodeIgniter\HTTP\ResponseInterface;
 class MapaCirurgico extends ResourceController
 {
     private $listaesperamodel;
+    //private $listaesperacontroller;
+    private $filawebmodel;
     private $vwlistaesperamodel;
     private $vwmapacirurgicomodel;
     private $vwstatusfilacirurgicamodel;
     private $vwsalascirurgicasmodel;
     private $vwordempacientemodel;
     private $mapacirurgicomodel;
+    private $mapacirurgicocontroller;
     private $filamodel;
     private $riscomodel;
     private $origempacientemodel;
@@ -91,6 +96,8 @@ class MapaCirurgico extends ResourceController
     {
         ini_set('memory_limit', '512M');
 
+        //$this->listaesperacontroller = new ListaEspera();
+        $this->filawebmodel = new FilaWebModel(); 
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
         $this->vwmapacirurgicomodel = new vwMapaCirurgicoModel();
@@ -1919,6 +1926,7 @@ class MapaCirurgico extends ResourceController
 
         $data = [];
         $data['id'] = $mapa['id'];
+        $data['datacirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa['dthrcirurgia'])->format('d/m/Y');
         $data['idlista'] = $mapa['idlista'];
         $data['ordemfila'] = '-';
         $data['prontuario'] = $mapa['prontuario'];
@@ -1979,6 +1987,35 @@ class MapaCirurgico extends ResourceController
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
                     );
+                }
+
+                $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $data['id'])->findAll();
+
+                foreach ( $equipamentos as $key => $equipamento) {
+
+                    $this->equipamentoscirurgiamodel->update($equipamento['id'], ['indexcedente' => false]);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $this->filawebmodel->atualizaLimiteExcedidoEquipamento($data['datacirurgia'], $equipamento['idequipamento'], true);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
                 }
 
                 $listaespera = $this->listaesperamodel->withDeleted()->find($data['idlista']);
@@ -2043,22 +2080,25 @@ class MapaCirurgico extends ResourceController
                 }
 
                 $db->transComplete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao enviar paciente para o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                session()->setFlashdata('success', 'Cirurgia suspensa com sucesso!');
+
+                $this->validator->reset();
         
             } catch (\Throwable $e) {
-                $db->transRollback(); // Reverte a transação em caso de erro
-                $msg = 'Erro na recuperação do paciente da Lista';
-                $msg .= ' - '.$e->getMessage();
-                log_message('error', $msg.': ' . $e->getMessage());
-                session()->setFlashdata('failed', $msg);
-            }
-
-            if ($db->transStatus() === false) {
-                $dados = $this->request->getPost();
-                $dataflash['idlista'] = $id;
-                session()->setFlashdata('dataflash', $dataflash);
-
-            } else {
-                session()->setFlashdata('success', 'Cirurgia suspensa com sucesso!');
+                $msg = sprintf('Falha na suspensão da cirurgia - prontuário: %d - cod: (%d) msg: %s', (int) $data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
             }
 
             return redirect()->to(base_url('mapacirurgico/exibir'));

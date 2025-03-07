@@ -142,6 +142,7 @@
                         </div>
 
                         <input type="hidden" name="id" value="<?= $data['id'] ?>" />
+                        <input type="hidden" name="datacirurgia" id="datacirurgia" value="<?= $data['datacirurgia'] ?>" />
                         <input type="hidden" name="ordemfila" id="ordemfila" value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
