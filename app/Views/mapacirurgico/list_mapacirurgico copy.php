@@ -289,46 +289,24 @@ use function PHPUnit\Framework\isEmpty;
                     <td><?php echo $itemmapa->congelacao ?></td>
                     <td><?php echo $itemmapa->hemoderivados ?></td>
                     <td><?php echo $itemmapa->opme ?></td>
-                    <!---------- Equipamentos -------------------------------------------------->
-                    <?php 
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->equipamentos_cirurgia); ?>">
+                        <?php 
                         $equipamentos = json_decode($itemmapa->equipamentos_cirurgia_info, true);
-
-                        if ($equipamentos) {
                         
+                        if ($equipamentos) {
                             $equipamentos_formatados = [];
-                            $equipamentos_excedentes = [];
-                            $equipamentos_nao_excedentes = [];
-
-                            if ($equipamentos) {
-                                foreach ($equipamentos as $equipamento) {
-
-                                    $cor = $equipamento['indexcedente'] ? 'red' : 'black';
-                                    $equipamentos_formatados[] = '<span style="color: ' . $cor . ';">' . htmlspecialchars($equipamento['descricao']) . '</span>';
-
-                                    if ($equipamento['indexcedente']) {
-                                        $equipamentos_excedentes[] = $equipamento['descricao'];  // Equipamentos excedentes
-                                    } else {
-                                        $equipamentos_nao_excedentes[] = $equipamento['descricao'];  // Equipamentos não excedentes
-                                    }
-                                }
+                            
+                            foreach ($equipamentos as $equipamento) {
+                                $cor = $equipamento['indexcedente'] ? 'red' : 'black';
+                                $equipamentos_formatados[] = '<span style="color: ' . $cor . ';">' . htmlspecialchars($equipamento['descricao']) . '</span>';
                             }
 
-                            $equipamentos = implode(', ', $equipamentos_formatados);
-
-                            $excedentes = !empty($equipamentos_excedentes) ? implode(', ', $equipamentos_excedentes) : 'Nenhum equipamento excedente';
-                            $nao_excedentes = !empty($equipamentos_nao_excedentes) ? implode(', ', $equipamentos_nao_excedentes) : 'Nenhum equipamento não excedente';
-
-                            $tooltip = "Equipamentos Excedentes:\n$excedentes\n\nEquipamentos Não Excedentes:\n$nao_excedentes";
-                            //$tooltip = "$nao_excedentes\n\nExcedentes:\n$excedentes";
+                            echo implode(', ', $equipamentos_formatados);
                         } else {
-                            $equipamentos = '';
-                            $tooltip = '';
+                            echo '-'; // Caso não tenha equipamentos
                         }
-                    ?>
-                    <td class="break-line" title="<?php echo htmlspecialchars($tooltip); ?>">
-                        <?= $equipamentos; ?>
+                        ?>
                     </td>
-                    <!-------------------------------------------------------------------------->
                     <td><?php echo $itemmapa->equipamento_excedente ?></td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>

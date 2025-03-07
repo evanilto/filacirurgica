@@ -173,7 +173,7 @@ input, textarea {
 }
 
 table tbody tr.equipamento-excedente {
-    background-color: rgba(255, 0, 0, 0.2) !important; /* Vermelho claro */
+    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
 }
 
 .dataTable tbody tr {
@@ -188,17 +188,13 @@ table tbody tr.equipamento-excedente {
 
 .equipamento-excedente,
 .equipamento-excedente td {
-    background-color: rgba(255, 0, 0, 0.2) !important; /* Vermelho claro */
+    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
     color: #333 !important; /* Cor do texto */
 }
 
 /* Cor de fundo para todas as linhas não selecionadas */
 #table tbody tr:not(.lineselected) {
     background-color: #f8f9fa; /* Cor clara para linhas não selecionadas */
-}
-
-#table tbody tr:not(.equipamento-excedente) {
-    background-color: rgba(255, 0, 0, 0.2) !important; /* Vermelho claro */
 }
 
 /* Cor de fundo para as linhas fixas e não fixas */
@@ -208,13 +204,11 @@ table tbody tr.equipamento-excedente {
     background-color: #f8f9fa; /* A mesma cor de fundo para colunas fixas e não fixas */
 }
 
-
-#table tbody tr:not(.equipamento-excedente) td,
-#table .DTFC_LeftWrapper tbody tr:not(.equipamento-excedente) td,
-#table .DTFC_RightWrapper tbody tr:not(.equipamento-excedente) td {
-    background-color: rgba(255, 0, 0, 0.2) !important; 
+#table .DTFC_LeftWrapper tbody tr.equipamento-excedente td,
+#table .DTFC_RightWrapper tbody tr.equipamento-excedente td,
+#table tbody tr.equipamento-excedente td {
+    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
 }
-
 
 /* Estilo uniforme para o cabeçalho */
 #table thead tr th,
@@ -543,6 +537,7 @@ tfoot {
     height: 20px; 
     font-size: 10px;
 } */
+
 
 ************** Spinner ***************************/        
 .modal {
