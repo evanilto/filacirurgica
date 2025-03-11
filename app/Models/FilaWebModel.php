@@ -98,19 +98,24 @@ class FilaWebModel extends Model
             AND mc.dthrsuspensao IS NULL
             AND mc.dthrtroca IS NULL
             AND CAST(mc.dthrcirurgia AS DATE) = ?
+            RETURNING ec.id
         ";
 
-        $db->query($sql, [
+        $query = $db->query($sql, [
             $eqpExcedente,
             (int) $idequipamento,
             DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d')
         ]);
 
-        /* if ($idequipamento != 3) {
-            die(var_dump($db->getLastQuery()));
+        //$result = $query->getResultArray();
+
+       /* if ($idequipamento == 4) {
+            //die(var_dump($db->getLastQuery()));
+            dd($result);
         }  */
 
-        if (!$db->affectedRows() > 0) {
+        if (!$query) {
+            die(var_dump($db->getLastQuery()));
             $error = $db->error();
             $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
             $errorCode = !empty($error['code']) ? $error['code'] : 0;

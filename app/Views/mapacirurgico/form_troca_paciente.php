@@ -1,6 +1,12 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<?php
+    // Inicializando valores padrão
+    $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
+    $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
+?>
+
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -13,11 +19,11 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="dtcirurgia" class="form-label">Data/hora da Cirurgia</label>
+                                    <label for="dtcirurgia" class="form-label">Data Cirurgia<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                        <input type="text" id="dtcirurgia" placeholder="DD/MM/AAAA HH:MM" disabled
-                                            class="form-control <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
-                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>"/>
+                                        <input type="text" id="dtcirurgia" maxlength="10" placeholder="DD/MM/AAAA" readonly
+                                            class="form-control input-data <?php if($validation->getError('dtcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="dtcirurgia" value="<?= set_value('dtcirurgia', $data['dtcirurgia']) ?>" />
                                         <?php if ($validation->getError('dtcirurgia')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtcirurgia') ?>
@@ -26,6 +32,23 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="hrcirurgia" class="form-label">Hora Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="time" id="hrcirurgia" maxlength="5" placeholder="HH:MM" readonly
+                                            class="form-control input-hora <?php if($validation->getError('hrcirurgia')): ?>is-invalid<?php endif ?>"
+                                            name="hrcirurgia" value="<?= set_value('hrcirurgia', $data['hrcirurgia']) ?>" />
+                                        <?php if ($validation->getError('hrcirurgia')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hrcirurgia') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-10">
                                 <div class="mb-2">
                                     <label for="candidato" class="form-label">Paciente de Troca<b class="text-danger">*</b></label>
@@ -53,23 +76,21 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-2">
-                                    <div class="mb-2">
-                                        <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
-                                        <div class="input-group">
-                                            <input type="time" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
-                                                class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
-                                                name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
-                                            <?php if ($validation->getError('tempoprevisto')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('tempoprevisto') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
+                                <div class="mb-2">
+                                    <label for="tempoprevisto" class="form-label">Tempo Previsto Cirurgia<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="time" id="tempoprevisto" maxlength="5" placeholder="HH:MM"
+                                            class="form-control input-hora <?php if($validation->getError('tempoprevisto')): ?>is-invalid<?php endif ?>"
+                                            name="tempoprevisto" value="<?= set_value('tempoprevisto', $data['tempoprevisto']) ?>" />
+                                        <?php if ($validation->getError('tempoprevisto')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('tempoprevisto') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
+                            </div>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -353,7 +374,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -377,6 +398,44 @@
                                             <?= $validation->getError('complexidade') ?>
                                         </div>
                                     <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                id="eqpts" name="eqpts[]" multiple="multiple"
+                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                            <?php
+                                            foreach ($data['equipamentos'] as $equipamento) {
+                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->hasError('eqpts')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('eqpts') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>

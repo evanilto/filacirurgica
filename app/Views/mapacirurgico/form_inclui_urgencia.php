@@ -471,6 +471,11 @@
                                             <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
+                                    <?php if ($validation->getError('usarEquipamentos')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('usarEquipamentos') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-6">

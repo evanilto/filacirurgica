@@ -395,7 +395,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-3">
-                                <div class="mb-4">
+                                <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -419,6 +419,44 @@
                                             <?= $validation->getError('complexidade') ?>
                                         </div>
                                     <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-4">
+                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                id="eqpts" name="eqpts[]" multiple="multiple"
+                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                            <?php
+                                            foreach ($data['equipamentos'] as $equipamento) {
+                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->hasError('eqpts')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('eqpts') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -657,6 +695,30 @@
             var selectedFilter = $(this).val();
             $('input[name="lateralidade"]').val(selectedFilter);
         })
+
+        $('#eqpts').select2();
+
+        if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
+            $('#eqpts').prop('disabled', false);
+        } else {
+            $('#eqpts').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarEquipamentos"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#eqpts').prop('disabled', false); // Habilita o campo eqpts
+                $('#eqpts').select2(); // Inicializa o Select2
+            } else {
+                $('#eqpts').prop('disabled', true); // Desabilita o campo eqpts
+                $('#eqpts').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#eqpts').prop('disabled')) {
+            $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
 
         //------------------------ Filtro de salas cirurgicas baseado no filtro selecionado ----------------
         

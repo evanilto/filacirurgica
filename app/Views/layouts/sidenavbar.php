@@ -56,13 +56,13 @@
                             </a>
                         </li>
                         <?php } ?>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-aprovar')) { ?>
+                        <!--?php if(HUAP_Functions::tem_permissao('mapacirurgico-aprovar')) { ?>
                         <li>
-                            <a href="<?= base_url('mapacirurgico/avaliarcirurgias') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <a href="<!?= base_url('mapacirurgico/avaliarcirurgias') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Avaliar Cirurgia
                             </a>
-                        </li>
-                        <?php } ?>
+                        </li-->
+                        <!--?php } ?-->
                     </ul>
                 </div>
             </li>
