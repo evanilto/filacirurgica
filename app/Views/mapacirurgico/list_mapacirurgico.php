@@ -521,6 +521,7 @@ use function PHPUnit\Framework\isEmpty;
                     const mapaId = selectedRow.dataset.idmapa;
 
                     if (mapaId) {
+
                         const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
                         window.location.href = url;
                     } else {
@@ -536,6 +537,9 @@ use function PHPUnit\Framework\isEmpty;
 
         trocar.addEventListener("click", function () {
             if (selectedRow) {
+
+                $('#janelaAguarde').show();
+
                 const statusCirurgia = selectedRow.dataset.statuscirurgia;
                 const temPermissao = selectedRow.dataset.tempermissaoalterar;
 

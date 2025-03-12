@@ -1,6 +1,11 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<?php
+    // Inicializando valores padrão
+    $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
+?>
+
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -581,7 +586,8 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <?php if ($data['status_fila'] == 'enabled') { ?>
-                                    <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                    <!--button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1"-->
+                                    <button class="btn btn-primary mt-3" onclick="return confirma(this);">
                                     <i class="fa-solid fa-floppy-disk"></i> Salvar
                                     </button>
                                 <?php } ?>
@@ -613,6 +619,90 @@
 </div>
 
 <script>
+
+    function confirma(button) {
+        event.preventDefault(); // Previne a submissão padrão do formulário
+
+        const equipamentos = $('#eqpts').val();
+
+        if (equipamentos && equipamentos.length > 0) {
+
+            const form = button.form;
+
+            const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
+
+            let equipamentosSelecionados = [];
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val();
+                let qtd = $(this).data('qtd');
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            // Objeto de dados para enviar ao servidor
+            const data = {
+                dtcirurgia: dtcirurgia,
+                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
+            };
+
+            if (!dtcirurgia || dtcirurgia.trim() === "") {
+                return true;
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?= base_url('listaespera/verificaequipamentos') ?>', true); 
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Limite excedido para reserva de equipamento. Deseja prosseguir mesmo assim?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ok',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    //$('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
+                                    $('#janelaAguarde').show();
+                                    $('#idForm').off('submit'); 
+                                    $('#idForm').submit(); 
+                                } else {
+                                    $('#janelaAguarde').hide();
+                                }
+                            });
+                        } else {
+                            $('#janelaAguarde').show();
+                            $('#idForm').off('submit'); 
+                            $('#idForm').submit();        
+                        }
+                    } else {
+                        console.error('Erro ao enviar os dados:', xhr.statusText);
+                        alert('Erro na comunicação com o servidor.');
+                        $('#janelaAguarde').hide();
+                        return false;  
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Erro ao enviar os dados:', xhr.statusText);
+                    alert('Erro na comunicação com o servidor.');
+                    $('#janelaAguarde').hide();
+                    return false;
+                };
+
+                // Envia os dados como JSON, incluindo equipamentos
+                xhr.send(JSON.stringify(data));
+            }
+        } else {
+            $('#janelaAguarde').show();
+            $('#idForm').off('submit'); 
+            $('#idForm').submit(); 
+        }
+    }
+
     function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
@@ -852,12 +942,12 @@
         
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
-        $('#idForm').submit(function() {
+       /*  $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
                 window.location.href = href;
             }, 1000);
-        });
+        }); */
 
         const prontuarioInput = document.getElementById('prontuario');
         prontuarioInput.addEventListener('change', function() {

@@ -1240,9 +1240,52 @@ class MapaCirurgico extends ResourceController
 
                 // Trata equipamentos -------------------------------------
 
-                $array['idmapacirurgico'] = (int) $this->data['idmapa'];
+                /* $array['idmapacirurgico'] = (int) $this->data['idmapa'];
 
                 $this->equipamentoscirurgiamodel->where('idmapacirurgico', $array['idmapacirurgico'])->delete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir equipamentos da cirurgia [%d] %s', $errorCode, $errorMessage)
+                    );
+                } */
+
+                $dtcirurgia = $this->data['dtcirurgia'];
+
+                $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->findAll();
+
+                foreach ( $equipamentos as $key => $equipamento) {
+
+                    $this->equipamentoscirurgiamodel->update($equipamento['id'], ['indexcedente' => false]);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, $equipamento['idequipamento'], true);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                }
+
+                $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->delete();
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1257,8 +1300,6 @@ class MapaCirurgico extends ResourceController
                 if (isset($this->data['eqpts'])) {
 
                     foreach ($this->data['eqpts'] as $key => $equipamento) {
-
-                        $dtcirurgia = $this->data['dtcirurgia'];
 
                         $eqpExcedente = $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento);
                         $array['idmapacirurgico'] = (int) $this->data['idmapa'];
@@ -1781,7 +1822,8 @@ class MapaCirurgico extends ResourceController
 
                 $mapa = [
                     'idlistaespera' => $this->data['idlistapac2'],
-                    'dthrcirurgia' => DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5)),
+                    //'dthrcirurgia' => DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5)),
+                    'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
@@ -1799,7 +1841,7 @@ class MapaCirurgico extends ResourceController
                         sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
                     );
                 }
-
+                
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
                     'idlistaespera' => $this->data['idlistapac2'],
@@ -1899,6 +1941,77 @@ class MapaCirurgico extends ResourceController
                         sprintf('Erro ao atualizar o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+
+                //---------- Equipamentos ----------------------------------------
+
+                /* $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapapacatrocar'])->set('indexcedente', FALSE)->update();
+               
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar equipamento cirúrgico [%d] %s', $errorCode, $errorMessage)
+                    );
+                } */
+
+                $dtcirurgia = $this->data['dtcirurgia'];
+
+                $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapapacatrocar'])->findAll();
+
+                foreach ( $equipamentos as $key => $equipamento) {
+
+                    $this->equipamentoscirurgiamodel->update($equipamento['id'], ['indexcedente' => false]);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+
+                    $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, $equipamento['idequipamento'], true);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = isset($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                }
+
+                if (isset($this->data['eqpts'])) {
+
+                    foreach ($this->data['eqpts'] as $key => $equipamento) {
+
+                        $eqpExcedente = $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento);
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['idequipamento'] = (int) $equipamento;
+                        $array['indexcedente'] = $eqpExcedente;
+
+                        $this->equipamentoscirurgiamodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir equipamento cirúrgico [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
+                //--------------------------------------------------------------------------------------------------------
 
                 $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
                                                                                                         ->set('indsituacao', 'A') // Aguardando

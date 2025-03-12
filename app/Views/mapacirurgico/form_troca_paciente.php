@@ -533,7 +533,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                             <button class="btn btn-primary mt-3" type="button"
-                                    onclick="verPacienteNaLista(event);">
+                                    onclick="verPacienteNaLista(event, this);">
                                 <i class="fa-solid fa-people-arrows"></i> Trocar
                             </button>
                                <!--  <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
@@ -578,7 +578,90 @@
 
 <script>
 
-    function verPacienteNaLista(event) {
+function confirma(button) {
+        event.preventDefault(); // Previne a submissão padrão do formulário
+
+        const equipamentos = $('#eqpts').val();
+
+        if (equipamentos && equipamentos.length > 0) {
+
+            const form = button.form;
+
+            const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
+
+            let equipamentosSelecionados = [];
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val();
+                let qtd = $(this).data('qtd');
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            // Objeto de dados para enviar ao servidor
+            const data = {
+                dtcirurgia: dtcirurgia,
+                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
+            };
+
+            if (!dtcirurgia || dtcirurgia.trim() === "") {
+                return true;
+            } else {
+                const xhr = new XMLHttpRequest();
+                xhr.open('POST', '<?= base_url('listaespera/verificaequipamentos') ?>', true); 
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+                
+                xhr.onload = function() {
+                    if (xhr.status >= 200 && xhr.status < 400) {
+                        const response = JSON.parse(xhr.responseText);
+
+                        if (response.success) {
+                            Swal.fire({
+                                title: 'Limite excedido para reserva de equipamento. Deseja prosseguir mesmo assim?',
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonText: 'Ok',
+                                cancelButtonText: 'Cancelar'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    //$('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
+                                    $('#janelaAguarde').show();
+                                    $('#idForm').off('submit'); 
+                                    $('#idForm').submit(); 
+                                } else {
+                                    $('#janelaAguarde').hide();
+                                }
+                            });
+                        } else {
+                            $('#janelaAguarde').show();
+                            $('#idForm').off('submit'); 
+                            $('#idForm').submit();        
+                        }
+                    } else {
+                        console.error('Erro ao enviar os dados:', xhr.statusText);
+                        alert('Erro na comunicação com o servidor.');
+                        $('#janelaAguarde').hide();
+                        return false;  
+                    }
+                };
+
+                xhr.onerror = function() {
+                    console.error('Erro ao enviar os dados:', xhr.statusText);
+                    alert('Erro na comunicação com o servidor.');
+                    $('#janelaAguarde').hide();
+                    return false;
+                };
+
+                // Envia os dados como JSON, incluindo equipamentos
+                xhr.send(JSON.stringify(data));
+            }
+        } else {
+            $('#janelaAguarde').show();
+            $('#idForm').off('submit'); 
+            $('#idForm').submit(); 
+        }
+    }
+
+    function verPacienteNaLista(event, button) {
         event.preventDefault(); // Previne o comportamento padrão do botão
 
         $('#janelaAguarde').show(); // Exibe a janela de carregamento
@@ -618,8 +701,9 @@
                                 }).then((result) => {
                                     if (result.isConfirmed) {
                                         $('#janelaAguarde').show();
-                                        $('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
-                                        $('#idForm').submit(); // Submete
+                                        //$('#idForm').off('submit'); // Remover qualquer manipulador de eventos existente
+                                        //$('#idForm').submit(); // Submete
+                                        confirma(button);
                                     } else {
                                         $('#janelaAguarde').hide(); // Esconde a janela de carregamento
                                     }
@@ -661,6 +745,48 @@
             placeholder: "",
             allowClear: true,
             width: 'resolve' // Corrigir a largura
+        });
+
+        $('#eqpts').select2();
+
+        if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
+            $('#eqpts').prop('disabled', false);
+        } else {
+            $('#eqpts').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarEquipamentos"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#eqpts').prop('disabled', false); // Habilita o campo eqpts
+                $('#eqpts').select2(); // Inicializa o Select2
+            } else {
+                $('#eqpts').prop('disabled', true); // Desabilita o campo eqpts
+                $('#eqpts').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#eqpts').prop('disabled')) {
+            $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
+
+        $('#eqpts').change(function() {
+            let equipamentosSelecionados = [];
+
+            $('#eqpts option:selected').each(function() {
+                let id = $(this).val(); // ID do equipamento
+                let qtd = $(this).data('qtd'); // Pega o valor do atributo data-qtd
+                equipamentosSelecionados.push({ id: id, qtd: qtd });
+            });
+
+            //console.log(equipamentosSelecionados); // Apenas para debug
+        });
+
+        $('#eqpts').change(function() {
+            if ($(this).val().includes("0")) {
+                $(this).val(["0"]).trigger("change"); // Mantém apenas a opção "Não utilizará equipamentos cirúrgicos"
+            }
         });
 
         let lastFocusedInput = null;
