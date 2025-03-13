@@ -562,6 +562,7 @@ class ListaEspera extends ResourceController
         //$data = $this->request->getJSON(true);
         $data = json_decode(file_get_contents('php://input'), true);
 
+        $idmapa = $data['idmapa'] ?? null;
         $dtcirurgia = $data['dtcirurgia'];
         $equipamentos = $data['equipamentos'];
 
@@ -569,13 +570,13 @@ class ListaEspera extends ResourceController
             $id = (int) $equip['id'];
             $qtd = (int) $equip['qtd'];
 
-            $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, $id);
+            $qtdEmUso = $this->getQtdEquipamentoReservado($dtcirurgia, $id, $idmapa);
             
             if ( $qtdEmUso >= $qtd) {
                 return $this->response->setJSON([
                     'success' => true,
                     'message' => 'Equipamento Reservado',
-                    'data' => "id=$id qtd=$qtdEmUso"
+                    'data' => "ideqpto=$id qtdEmUso=$qtdEmUso idMapa=$idmapa"
                 ]);
             }
         }
@@ -591,7 +592,7 @@ class ListaEspera extends ResourceController
      *
      * @return mixed
      */
-    private function getQtdEquipamentoReservado ($dtcirurgia, $idequipamento) 
+    private function getQtdEquipamentoReservado ($dtcirurgia, $idequipamento, $idmapa = null) 
     {
         //die(var_dump($data));
 
@@ -608,6 +609,9 @@ class ListaEspera extends ResourceController
         $builder->where('mc.dthrsuspensao IS NULL'); 
         $builder->where('mc.dthrtroca IS NULL'); 
         //$builder->where('mc.dthrsaidacentrocirurgico IS NULL'); 
+        if ($idmapa) {
+            $builder->where('mc.id !=', $idmapa); 
+        }
 
         $query = $builder->get();
         $result = $query->getRow();

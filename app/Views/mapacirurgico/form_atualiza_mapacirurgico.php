@@ -629,6 +629,7 @@
 
             const form = button.form;
 
+            const idmapa = form.querySelector('input[name="idmapa"]').value;
             const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
 
             let equipamentosSelecionados = [];
@@ -638,10 +639,13 @@
                 equipamentosSelecionados.push({ id: id, qtd: qtd });
             });
 
+            //alert(equipamentos.length);
+
             // Objeto de dados para enviar ao servidor
             const data = {
                 dtcirurgia: dtcirurgia,
-                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
+                equipamentos: equipamentosSelecionados,
+                idmapa: idmapa
             };
 
             if (!dtcirurgia || dtcirurgia.trim() === "") {

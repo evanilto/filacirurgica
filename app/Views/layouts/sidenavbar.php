@@ -154,6 +154,29 @@
                                 </ul>
                             </div>
                         </li>
+                        <li>
+                            <a href="#equipamentos" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                                <i class="fa-solid fa-plus toggle-icon"></i> Equipamentos
+                            </a>
+                            <div class="collapse" id="equipamentos">
+                                <ul class="nav flex-column submenu-3">
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-incluir')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('equipamentos/incluir') ?>" class="nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Incluir
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                <?php if(HUAP_Functions::tem_permissao('cadastros-consultar')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('equipamentos/listar') ?>" class="nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Listar
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </li>

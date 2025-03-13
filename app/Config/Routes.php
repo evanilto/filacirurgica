@@ -100,6 +100,14 @@ $routes->group('filas', ['filter' => 'auth'], function ($routes) {
     $routes->get('listar', 'Filas::listar');
 });
 
+$routes->group('equipamentos', ['filter' => 'auth'], function ($routes) {
+    $routes->get('incluir', 'Equipamentos::incluir_equipamento');
+    $routes->post('incluir', 'Equipamentos::incluir');
+    $routes->get('editar/(:num)', 'Equipamentos::editar_equipamento/$1');
+    $routes->post('editar/(:num)', 'Equipamentos::editar/$1');
+    $routes->get('listar', 'Equipamentos::listar');
+});
+
 $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
     $routes->get('agendas', 'Agendas::consultarAgendas');
     $routes->post('consultar', 'Agendas::consultar');

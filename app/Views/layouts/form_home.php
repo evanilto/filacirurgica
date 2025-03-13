@@ -34,12 +34,12 @@
 
         <script>
 
-            document.addEventListener("DOMContentLoaded", function() {
+           /*  document.addEventListener("DOMContentLoaded", function() {
 
                 event.preventDefault(); // Previne a submissão padrão do formulário
 
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', '<?= base_url('mapacirurgico/verificacirurgiasemaprovacao') ?>', true); 
+                xhr.open('POST', '<--?= base_url('mapacirurgico/verificacirurgiasemaprovacao') ?>', true); 
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
@@ -58,7 +58,7 @@
                             }).then((result) => {
                                     if (result.isConfirmed) {
                                         $('#janelaAguarde').show(); 
-                                            const url = '<?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
+                                            const url = '<--?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
                                             window.location.href = url;
                                     } else {
                                         $('#janelaAguarde').hide(); 
@@ -76,7 +76,7 @@
                 };
 
                 xhr.send();
-            });
+            }); */
 
             $(document).ready(function() {
                 $('#idForm').submit(function() {

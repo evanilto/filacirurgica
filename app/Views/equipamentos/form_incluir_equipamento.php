@@ -1,53 +1,43 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
     
-<div class="container mt-5 mb-5">
+<div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Incluir Usuário' ?></b>
+                    <b><?= 'Incluir Equipamento Cirúrgico' ?></b>
                 </div>
                 <div class="card-body has-validation d-flex flex-column align-items-center">
-                    <form id="UsuarioForm" method="post" action="<?= base_url('usuarios/incluir') ?>" class="w-100">
+                    <form id="EquipamentoForm" method="post" action="<?= base_url('equipamentos/incluir') ?>" class="w-100">
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-9">
                                 <div class="mb-2">
-                                    <label for="login" class="form-label">Login<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-12">
-                                        <input type="text" id="login" maxlength="100"
-                                            class="form-control <?php if($validation->getError('login')): ?>is-invalid<?php endif ?>"
-                                            autofocus name="login" value="<?= set_value('login') ?>"/>
-
-                                        <?php if ($validation->getError('login')): ?>
+                                    <label for="nome" class="form-label">Descrição<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="nome" minlength="3"
+                                        class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
+                                        name="nome" value="<?= set_value('nome') ?>"/>
+                                        <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('login') ?>
+                                                <?= $validation->getError('nome') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-3">
                                 <div class="mb-2">
-                                    <label for="perfis" class="form-label" autofocus>Perfis<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-12 bordered-container">
-                                        <div style="max-height: 200px; overflow-y: auto;">
-                                            <?php
-                                            foreach ($selectPerfil as $key => $perfil) {
-                                                $perfilenconded = $perfil['id'].'#'.$perfil['nmperfil'];
-                                                echo '<div class="form-check"><input class="form-check-input" type="checkbox" id="perfil'.$key.'" name="perfil[]" value="'.$perfilenconded.'" ><label class="form-check-label" for="perfil'.$key.'">'.$perfil['nmperfil'].'</label></div>';
-                                            }
-                                            ?>
-
-                                            <?php if ($validation->getError('perfil')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('perfil') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
+                                    <label for="qtd" class="form-label">Qtd. Disponível<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="number" id="qtd" minlength="1"
+                                        class="form-control <?php if($validation->getError('qtd')): ?>is-invalid<?php endif ?>"
+                                        name="qtd" value="<?= set_value('qtd') ?>"/>
+                                        <?php if ($validation->getError('qtd')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('qtd') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -85,3 +75,19 @@
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+        $('#idForm').submit(function() {
+            $('#janelaAguarde').show();
+            setTimeout(function() {
+                window.location.href = href;
+            }, 1000);
+        });
+        
+        $('.select2-dropdown').select2({
+            placeholder: "",
+            allowClear: true,
+            width: 'resolve' // Corrigir a largura
+        });
+    });
+</script>

@@ -52,8 +52,7 @@
                                 </div>
                             </div>
                         </div>
-
-                        <div class="row g-3">
+                        <!-- <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label">Situação<b class="text-danger">*</b></label>
@@ -69,7 +68,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">

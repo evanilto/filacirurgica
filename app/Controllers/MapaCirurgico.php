@@ -1240,27 +1240,15 @@ class MapaCirurgico extends ResourceController
 
                 // Trata equipamentos -------------------------------------
 
-                /* $array['idmapacirurgico'] = (int) $this->data['idmapa'];
-
-                $this->equipamentoscirurgiamodel->where('idmapacirurgico', $array['idmapacirurgico'])->delete();
-
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao excluir equipamentos da cirurgia [%d] %s', $errorCode, $errorMessage)
-                    );
-                } */
-
                 $dtcirurgia = $this->data['dtcirurgia'];
 
                 $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->findAll();
 
-                foreach ( $equipamentos as $key => $equipamento) {
+                foreach ( $equipamentos as $key => $equipamento) { // exclui os equipamentos anteriores
 
                     $this->equipamentoscirurgiamodel->update($equipamento['id'], ['indexcedente' => false]);
+
+                    $this->equipamentoscirurgiamodel->delete($equipamento['id']);
 
                     if ($db->transStatus() === false) {
                         $error = $db->error();
@@ -1268,7 +1256,7 @@ class MapaCirurgico extends ResourceController
                         $errorCode = isset($error['code']) ? $error['code'] : 0;
     
                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                            sprintf('Erro ao excluir equipamentos cirúrgicos! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
 
@@ -1283,18 +1271,6 @@ class MapaCirurgico extends ResourceController
                             sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
-                }
-
-                $this->equipamentoscirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->delete();
-
-                if ($db->transStatus() === false) {
-                    $error = $db->error();
-                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao excluir equipamentos da cirurgia [%d] %s', $errorCode, $errorMessage)
-                    );
                 }
 
                 if (isset($this->data['eqpts'])) {
@@ -1970,7 +1946,7 @@ class MapaCirurgico extends ResourceController
                         $errorCode = isset($error['code']) ? $error['code'] : 0;
     
                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                            sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
+                            sprintf('Erro ao atualizar equipamentos cirúrgicos! [%d] %s', $errorCode, $errorMessage)
                         );
                     }
 

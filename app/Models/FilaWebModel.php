@@ -79,7 +79,7 @@ class FilaWebModel extends Model
 
         $eqpto = $this->equipamentosmodel->find((int) $idequipamento);
 
-        if ($excl) {
+        if ($excl) { // equipamento está excluído da contagem (não é considerado)
             $eqpExcedente = ($qtdEmUso > $eqpto->qtd);
         } else {
             $eqpExcedente = ($qtdEmUso >= $eqpto->qtd);
@@ -106,13 +106,6 @@ class FilaWebModel extends Model
             (int) $idequipamento,
             DateTime::createFromFormat('d/m/Y', $dtcirurgia)->format('Y-m-d')
         ]);
-
-        //$result = $query->getResultArray();
-
-       /* if ($idequipamento == 4) {
-            //die(var_dump($db->getLastQuery()));
-            dd($result);
-        }  */
 
         if (!$query) {
             die(var_dump($db->getLastQuery()));
