@@ -87,6 +87,7 @@ class MapaCirurgico extends ResourceController
     private $selectposoperatorio;
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
+    private $selectjustificativassuspensaoadm;
     private $data;
     private $equipamentosmodel;
     private $equipamentoscirurgiamodel;
@@ -144,11 +145,12 @@ class MapaCirurgico extends ResourceController
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
         //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectjustificativassuspensaoadm = $this->justificativasmodel->Where('tipojustificativa', 'SADM')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
                                                                                ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
-        $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        //$this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
@@ -2063,7 +2065,7 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function suspenderCirurgia(int $id)
+    public function suspenderCirurgia(int $id, $suspadm = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 
@@ -2083,9 +2085,10 @@ class MapaCirurgico extends ResourceController
         $data['fila'] = $mapa['idfila'];
         $data['filas'] = $this->selectfilaativas;
         $data['especialidades'] = $this->selectespecialidadeaghu;
-        $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+        $data['justificativassuspensao'] = $suspadm ? $this->selectjustificativassuspensaoadm : $this->selectjustificativassuspensao;
         $data['idsuspensao'] = null;
         $data['justsuspensao'] = '';
+        $data['suspensaoadm'] = isset($suspadm);
 
         //var_dump($data['id']);die();
 
@@ -2210,7 +2213,7 @@ class MapaCirurgico extends ResourceController
                     $array = [
                         'dthrevento' => date('Y-m-d H:i:s'),
                         'idlistaespera' => $data['idlista'],
-                        'idevento' => 2,
+                        'idevento' => $data['idsuspensao'] ? 15 : 2,
                         'idlogin' => session()->get('Sessao')['login']
                     ];
 
@@ -2257,7 +2260,7 @@ class MapaCirurgico extends ResourceController
 
             $data['filas'] = $this->selectfilaativas;
             $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+            $data['justificativassuspensao'] = $data['suspadm'] ? $this->selectjustificativassuspensaoadm : $this->selectjustificativassuspensao;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
                                                 'data' => $data]);

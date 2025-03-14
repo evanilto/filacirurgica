@@ -12,6 +12,7 @@ use function PHPUnit\Framework\isEmpty;
     $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
     $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'Red';
+    $corCirurgiaSuspensaAdm = 'purple';
     $corCirurgiaCancelada = $corCirurgiaSuspensa;
 ?>
  
@@ -91,10 +92,21 @@ use function PHPUnit\Framework\isEmpty;
                     $permiteatualizar = true;
                     
                     if ($itemmapa->dthrsuspensao) {
-                        $color =$corCirurgiaSuspensa;
-                        $background_color = $color;
-                        $status_cirurgia = 'Suspensa';
-                        $title = 'Cirurgia Suspensa';
+
+                        if (in_array($itemmapa->idsuspensao, [53, 54])) {
+
+                            $color =$corCirurgiaSuspensaAdm;
+                            $background_color = $color;
+                            $status_cirurgia = 'Suspensa Administrativamente';
+                            $title = 'Cirurgia Suspensa Administrativamente';
+
+                        } else {
+
+                            $color =$corCirurgiaSuspensa;
+                            $background_color = $color;
+                            $status_cirurgia = 'Suspensa';
+                            $title = 'Cirurgia Suspensa';
+                        }
 
                     } elseif ($itemmapa->dthrtroca) {
                         $color =$corTrocaPaciente;
@@ -231,7 +243,8 @@ use function PHPUnit\Framework\isEmpty;
                     data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
                     >
                     
-                    <td><?php echo $itemmapa->dthrcirurgia ?></td>
+                    <!-- <td><--?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y').$itemmapa->status_fila ?></td> -->
+                    <td><?php echo $itemmapa->indsituacao.($itemmapa->indurgencia == 'S' ? 'A' : 'B')?></td>
                     <td style="text-align: center; vertical-align: middle;">
                         <i 
                             class="fa-solid fa-circle" 
@@ -294,7 +307,7 @@ use function PHPUnit\Framework\isEmpty;
                         $equipamentos = json_decode($itemmapa->equipamentos_cirurgia_info, true);
 
                         if ($equipamentos) {
-                        
+
                             $equipamentos_formatados = [];
                             $equipamentos_excedentes = [];
                             $equipamentos_nao_excedentes = [];
@@ -353,6 +366,7 @@ use function PHPUnit\Framework\isEmpty;
         <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button>
         <button class="btn btn-primary" id="trocar" disabled> Trocar </button>
         <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
+        <button class="btn btn-primary" id="suspenderadm" disabled> Suspensão Administrativa </button>
         <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
@@ -425,6 +439,7 @@ use function PHPUnit\Framework\isEmpty;
                     saidadasala,
                     saidadoccirurgico,
                     suspender,
+                    suspenderadm,
                     trocar,
                     atualizarhorarios,
                     editar,
@@ -462,6 +477,10 @@ use function PHPUnit\Framework\isEmpty;
                     suspender.disabled = false;
                     suspender.removeAttribute("disabled");
                     suspender.style.backgroundColor = "<?= $corCirurgiaSuspensa ?>";
+
+                    suspenderadm.disabled = false;
+                    suspenderadm.removeAttribute("disabled");
+                    suspenderadm.style.backgroundColor = "<?= $corCirurgiaSuspensaAdm ?>";
 
                     if (cirurgiaurgente == 'N') {
                         trocar.disabled = false;
@@ -522,8 +541,14 @@ use function PHPUnit\Framework\isEmpty;
 
                     if (mapaId) {
 
-                        const url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
+                        let url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
+
+                        if (botao.id === 'suspenderadm') {
+                            url += '/SADM';
+                        }
+
                         window.location.href = url;
+
                     } else {
                         console.error('ID do mapa não encontrado na linha selecionada.');
                         alert('Erro: Não foi possível encontrar o ID do mapa.');
@@ -578,6 +603,7 @@ use function PHPUnit\Framework\isEmpty;
         handleButtonHorarios("saidadasala");
         handleButtonHorarios("saidadoccirurgico");
         handleButtonOthers(suspender, 'suspendercirurgia');
+        handleButtonOthers(suspenderadm, 'suspendercirurgia');
         handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
         handleButtonOthers(editar, 'atualizarcirurgia');
         handleButtonOthers(consultar, 'consultarcirurgia');
@@ -903,18 +929,18 @@ use function PHPUnit\Framework\isEmpty;
             ordering: true,
             autoWidth: false,
                 "columns": [
-                    { "width": "0px" },  // Primeira coluna
+                    { "width": "50px" },  // Primeira coluna
                     { "width": "40px" },       
                     { "width": "95px" },  // dt
                     { "width": "62px" },  // hr
                     { "width": "75px" },  // tp
                     { "width": "220px" },  // centro cir
                     { "width": "85px" }, 
-                    { "width": "55px" }, 
-                    { "width": "55px" }, 
-                    { "width": "55px" }, 
-                    { "width": "55px" }, 
-                    { "width": "55px" }, 
+                    { "width": "57px" }, 
+                    { "width": "57px" }, 
+                    { "width": "57px" }, 
+                    { "width": "57px" }, 
+                    { "width": "57px" }, 
                     { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
@@ -942,7 +968,7 @@ use function PHPUnit\Framework\isEmpty;
                     
                 ],
             "columnDefs": [
-                { "orderable": false, "targets": [0, 1, 6, 7, 8, 9, 10, 21, 22] },
+                { "orderable": false, "targets": [1, 6, 7, 8, 9, 10, 11, 21, 22] },
                 { "visible": false, "targets": [0] }
             ],
             layout: { topStart: {

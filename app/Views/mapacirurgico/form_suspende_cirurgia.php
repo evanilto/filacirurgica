@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Suspender Cirurgia' ?></b>
+                    <b><?= $data['suspensaoadm'] ? 'Suspender Cirurgia Administrativamente': 'Suspender Cirurgia' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/suspender') ?>">
@@ -148,6 +148,7 @@
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
                         <input type="hidden" name="idlista" id="idlista-hidden" value="<?php echo $data['idlista']; ?>">
+                        <input type="hidden" name="suspadm" id="suspadm-hidden" value="<?php echo $data['suspensaoadm']; ?>">
                 </div>
             </div>
         </div>

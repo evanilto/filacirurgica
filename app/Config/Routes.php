@@ -67,6 +67,7 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     #$routes->get('carregaaside/(:num)', 'MapaCirurgico::getDetailsAside/$1');
     $routes->add('exibirhistorico/(:num)', 'MapaCirurgico::exibirHistorico/$1');
     $routes->get('suspendercirurgia/(:num)', 'MapaCirurgico::SuspenderCirurgia/$1');
+    $routes->get('suspendercirurgia/(:num)/(:any)', 'MapaCirurgico::SuspenderCirurgia/$1/$2');
     $routes->post('suspender/', 'MapaCirurgico::suspender');
     $routes->get('avaliarcirurgias', 'MapaCirurgico::avaliarCirurgias');
     $routes->add('exibircirurgiasemaprovacao', 'MapaCirurgico::exibirCirurgiasEmAprovacao');
