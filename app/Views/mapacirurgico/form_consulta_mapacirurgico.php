@@ -167,6 +167,32 @@
                             </div>
                         </div>
                         <div class="row g-3"> 
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label">Situação<b class="text-danger"></b></label>
+                                    <div class="input-group bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="situacao[]" id="situacaoA" value="P">
+                                            <label class="form-check-label" for="situacaoA">&nbsp;Programada</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="situacao[]" id="situacaoS" value="S">
+                                            <label class="form-check-label" for="situacaoS">&nbsp;Suspensa</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="situacao[]" id="situacaoT" value="T">
+                                            <label class="form-check-label" for="situacaoT">&nbsp;Trocada</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="situacao[]" id="situacaoSADM" value="SADM">
+                                            <label class="form-check-label" for="situacaoSADM">&nbsp;Suspensa Administrativamente</label>
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3"> 
                             <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
                                     <i class="fa-solid fa-search"></i> Consultar

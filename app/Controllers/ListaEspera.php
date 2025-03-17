@@ -2084,7 +2084,8 @@ class ListaEspera extends ResourceController
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'txtjustificativaenvio' => $this->data['justenvio'],
-                    'numordem' => $this->data['ordemfila']
+                    'numordem' => $this->data['ordemfila'],
+                    'indsituacao' => 'P' // Programada
                     ];
 
                 $idmapa = $this->mapacirurgicomodel->insert($mapa);

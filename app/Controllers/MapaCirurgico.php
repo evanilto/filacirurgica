@@ -14,6 +14,7 @@ use App\Models\FilaModel;
 use App\Models\RiscoModel;
 use App\Models\OrigemPacienteModel;
 use App\Models\LateralidadeModel;
+use App\Models\HemocomponentesModel;
 use App\Models\EquipamentosModel;
 use App\Models\EquipamentosCirurgiaModel;
 use App\Models\PosOperatorioModel;
@@ -53,6 +54,7 @@ class MapaCirurgico extends ResourceController
     private $riscomodel;
     private $origempacientemodel;
     private $lateralidademodel;
+    private $hemocomponentesmodel;
     private $posoperatoriomodel;
     private $procedimentosadicionaismodel;
     private $equipemedicamodel;
@@ -83,6 +85,7 @@ class MapaCirurgico extends ResourceController
     private $selectorigempaciente;
     private $selectorigempacienteativos;
     private $selectlateralidade;
+    private $selecthemocomponentes;
     private $selectlateralidadeativos;
     private $selectposoperatorio;
     private $selectjustificativastroca;
@@ -110,6 +113,7 @@ class MapaCirurgico extends ResourceController
         $this->riscomodel = new RiscoModel();
         $this->origempacientemodel = new OrigemPacienteModel();
         $this->lateralidademodel = new LateralidadeModel();
+        $this->hemocomponentesmodel = new HemocomponentesModel();
         $this->posoperatoriomodel = new PosOperatorioModel;
         $this->procedimentosadicionaismodel = new ProcedimentosAdicionaisModel();
         $this->equipemedicamodel = new EquipeMedicaModel();
@@ -135,6 +139,7 @@ class MapaCirurgico extends ResourceController
         $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
         $this->selectorigempacienteativos = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll();
         $this->selectlateralidade = $this->lateralidademodel->orderBy('id', 'ASC')->findAll();
+        $this->selecthemocomponentes = $this->hemocomponentesmodel->orderBy('id', 'ASC')->findAll();
         $this->selectlateralidadeativos = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
@@ -647,6 +652,11 @@ class MapaCirurgico extends ResourceController
         // Condicional para complexidades
         if (!empty($data['complexidades'])) {
             $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
+        }
+
+        // Condicional para complexidades
+        if (!empty($data['situacao'])) {
+            $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
         }
 
        $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
@@ -1805,7 +1815,8 @@ class MapaCirurgico extends ResourceController
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
-                    'txtnecessidadesproced' => $this->data['nec_proced']
+                    'txtnecessidadesproced' => $this->data['nec_proced'],
+                    'indsituacao' => 'P' // Programada
                     ];
 
                 $idmapa = $this->mapacirurgicomodel->insert($mapa);
@@ -1905,6 +1916,8 @@ class MapaCirurgico extends ResourceController
                 $array['dthrtroca'] = date('Y-m-d H:i:s');
                 $array['idlistatroca'] = $this->data['idlistapac2'];
                 $array['txtjustificativatroca'] = $this->data['justtroca'];
+                $array['indsituacao'] = 'T'; // Trocada
+
 
                 //die(var_dump($array));
 
@@ -2127,9 +2140,12 @@ class MapaCirurgico extends ResourceController
                     'idsuspensao' => $data['idsuspensao'],
                     'dthrsuspensao' => date('Y-m-d H:i:s'),
                     'txtjustificativasuspensao' => $data['justsuspensao'],
+                    'indsituacao' => $data['suspadm'] ? 'SADM' : 'S' // SUSPENSA ADMINISTRATIVAMENTE ou simplesmente SUSPENSA
                     ];
 
                 $this->mapacirurgicomodel->update($data['id'], $mapa);
+
+                //die(var_dump($mapa));
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -2213,7 +2229,7 @@ class MapaCirurgico extends ResourceController
                     $array = [
                         'dthrevento' => date('Y-m-d H:i:s'),
                         'idlistaespera' => $data['idlista'],
-                        'idevento' => $data['idsuspensao'] ? 15 : 2,
+                        'idevento' => $data['suspadm'] ? 15 : 2,
                         'idlogin' => session()->get('Sessao')['login']
                     ];
 
@@ -2463,10 +2479,12 @@ class MapaCirurgico extends ResourceController
         $data['sala'] =  '';
         $data['centrocirurgico'] =  '';
         $data['profissional'] = [];
+        $data['hemocomponente'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidadeativos;
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
@@ -2722,7 +2740,8 @@ class MapaCirurgico extends ResourceController
                                         'txtjustificativaurgencia' => $this->data['justurgencia'],
                                         'idcentrocirurgico' => $this->data['centrocirurgico'],
                                         'idsala' => $this->data['sala'],
-                                        'indurgencia' => 'S'
+                                        'indurgencia' => 'S',
+                                        'indsituacao' => 'P' // Programada
                                         ];
 
                                         //die(var_dump($mapa));

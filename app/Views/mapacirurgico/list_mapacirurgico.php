@@ -25,7 +25,7 @@ use function PHPUnit\Framework\isEmpty;
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="7" class="bg-light text-start" >
+                <th scope="row" colspan="7" class="text-start" style="background-color: #d4edda;">
                     <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
             </tr>

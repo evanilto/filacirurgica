@@ -41,6 +41,7 @@ class MapaCirurgicoModel extends Model
         'numordem',
         'indurgencia',
         'idsuspensao',
+        'indsituacao'
     ];
 
     // Dates
