@@ -5,6 +5,8 @@
     // Inicializando valores padrão
     $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
     $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
+    $data['hemocomps'] = isset($data['hemocomps']) ? (array)$data['hemocomps'] : [];
+    $data['usarHemocomponentes'] = $data['usarHemocomponentes'] ?? ['N']; 
     //dd($data);
 ?>
 
@@ -507,44 +509,41 @@
                                     <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemocomponentes" id="hemocomponentesN" value="N"
-                                                <?= (isset($data['hemocomponentes']) && $data['hemocomponentes'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="hemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="hemocomponentes" id="hemocomponentesS" value="S"
-                                                <?= (isset($data['hemocomponentes']) && $data['hemocomponentes'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="hemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('hemocomponentes')): ?>
+                                <?php if ($validation->getError('usarHemocomponentes')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('hemocomponentes') ?>
+                                        <?= $validation->getError('usarHemocomponentes') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
                             <div class="col-md-10">
                                 <div class="mb-4">
-                                <label for="hemocomponente" class="form-label">Hemocomponentes Necessários</label>
+                                <label for="hemocomps" class="form-label">Hemocomponentes Necessários</label>
                                 <div class="input-group">
-                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomponente') ? 'is-invalid' : '' ?>"
-                                            id="hemocomponente" name="hemocomponente[]" multiple="multiple"
-                                            data-placeholder="" data-allow-clear="1">
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
+                                            id="hemocomps" name="hemocomps[]" multiple="multiple"
+                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
                                         <?php
-                                        // Certifique-se de que $data['hemocomponentes'] está definido como um array
-                                        $data['hemocomponente'] = isset($data['hemocomponente']) ? (array)$data['hemocomponente'] : [];
-                                        $data['hemocomponente'] = array_filter($data['hemocomponente']);
                                         
                                         foreach ($data['hemocomponentes'] as $hemocomponente) {
-                                            $selected = in_array($hemocomponente->id, $data['hemocomponente']) ? 'selected' : '';
-                                            echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->id . ' - ' . $hemocomponente->descricao . '</option>';
+                                            $selected = in_array($hemocomponente->id, $data['hemocomps']) ? 'selected' : '';
+                                            echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->descricao . '</option>';
                                         }
                                         ?>
                                     </select>
-                                    <?php if ($validation->hasError('hemocomponente')): ?>
+                                    <?php if ($validation->hasError('hemocomps')): ?>
                                         <div class="invalid-feedback">
-                                            <?= $validation->getError('hemocomponente') ?>
+                                            <?= $validation->getError('hemocomps') ?>
                                         </div>
                                     <?php endif; ?>
                                     </div>
@@ -655,9 +654,9 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="justurgencia">Justificativas da Urgência<b class="text-danger">*</b></label>
-                                    <textarea id="justurgencia" maxlength="255" rows="3"
+                                    <textarea id="justurgencia" maxlength="2048" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
-                                            name="justurgencia" autocomplete="off"> <?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
+                                            name="justurgencia"><?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justurgencia')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('justurgencia') ?>
@@ -716,7 +715,7 @@
                         <input type="hidden" id="listapacienteSelect" name="listapacienteSelect">
                         <input type="hidden" name="ordem" id="ordem" value="<?= $data['ordem'] ?>" />
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
-                        <input type="hidden" name="hemocomponente_hidden" id="hemocomponente_hidden" />
+                        <input type="hidden" name="hemocomps_hidden" id="hemocomps_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="especialidade_hidden" id="especialidade_hidden" value="<?= $data['especialidade'] ?>"/>
                         <input type="hidden" name="fila_hidden" id="fila_hidden" value="<?= $data['fila'] ?>" />
@@ -1089,6 +1088,8 @@
             //width: 'resolve' // Corrigir a largura
         });
 
+        //------------Equipamentos --------------------------
+
         $('#eqpts').select2();
 
         if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
@@ -1112,6 +1113,36 @@
         if ($('#eqpts').prop('disabled')) {
             $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
         }
+
+        //--------------Hemocomponentes------------------------------
+
+        $('#hemocomps').select2();
+
+        if ($('input[name="usarHemocomponentes"]:checked').val() === 'S') {
+            $('#hemocomps').prop('disabled', false);
+        } else {
+            $('#hemocomps').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarHemocomponentes"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#hemocomps').prop('disabled', false); // Habilita o campo hemocomponentes
+                $('#hemocomps').select2(); // Inicializa o Select2
+            } else {
+                $('#hemocomps').prop('disabled', true); // Desabilita o campo hemocomponentes
+                $('#hemocomps').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#hemocomps').prop('disabled')) {
+            $('#hemocomps').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
+
+        //--------------------------------------------------------
+
+        //alert($('#hemocomps').val());
 
         let lastFocusedInput = null;
         // Captura o último campo de entrada (input ou textarea) focado
@@ -1197,11 +1228,16 @@
                 equipamentosSelecionados.push({ id: id, qtd: qtd });
             });
 
-            //console.log(equipamentosSelecionados); // Apenas para debug
         });
 
         $(document).ready(function() {
             $('#eqpts').change(function() {
+                if ($(this).val().includes("0")) {
+                    $(this).val(["0"]).trigger("change"); // Mantém apenas a opção "Não utilizará equipamentos cirúrgicos"
+                }
+            });
+
+            $('#hemocomps').change(function() {
                 if ($(this).val().includes("0")) {
                     $(this).val(["0"]).trigger("change"); // Mantém apenas a opção "Não utilizará equipamentos cirúrgicos"
                 }
@@ -1219,29 +1255,16 @@
 
         $('#eqpts_hidden').val($('#eqpts').val());
 
-        //-------------------------------------
-
-        $('#hemocomponente').on('change', function() {
-            $('#hemocomponente_hidden').val($(this).val());
+        $('#eqpts').on('change', function() {
+            $('#eqpts_hidden').val($(this).val());
         });
 
-        // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
-        $('#hemocomponente_hidden').val($('#hemocomponente').val());
+        $('#hemocomps_hidden').val($('#hemocomps').val());
 
-        $('#eqpts_hidden').val($('#eqpts').val());
+        $('#hemocomps').on('change', function() {
+            $('#hemocomps_hidden').val($(this).val());
+        });
 
-
-        //$('#origem').prop('disabled', true);
-        
-        // Procedimentos Adicionais  ----------------------------------------------------------------------------
-
-       /*  $('#idForm').submit(function() {
-            $('#janelaAguarde').show();
-            setTimeout(function() {
-                window.location.href = href;
-            }, 1000);
-        }); */
-        
         const prontuarioInput = document.getElementById('prontuario');
         const ordemInput = document.getElementById('ordem');
 

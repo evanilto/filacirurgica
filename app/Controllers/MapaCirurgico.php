@@ -17,6 +17,7 @@ use App\Models\LateralidadeModel;
 use App\Models\HemocomponentesModel;
 use App\Models\EquipamentosModel;
 use App\Models\EquipamentosCirurgiaModel;
+use App\Models\HemocomponentesCirurgiaModel;
 use App\Models\PosOperatorioModel;
 use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipeMedicaModel;
@@ -94,6 +95,7 @@ class MapaCirurgico extends ResourceController
     private $data;
     private $equipamentosmodel;
     private $equipamentoscirurgiamodel;
+    private $hemocomponentescirurgiamodel;
 
 
     public function __construct()
@@ -129,6 +131,7 @@ class MapaCirurgico extends ResourceController
         $this->usuariocontroller = new Usuarios();
         $this->equipamentosmodel = new EquipamentosModel();
         $this->equipamentoscirurgiamodel = new EquipamentosCirurgiaModel();
+        $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
 
         //$this->aghucontroller = new Aghu();
 
@@ -948,6 +951,7 @@ class MapaCirurgico extends ResourceController
         $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
         $this->data['equipamentos'] = $this->selectequipamentos;
+        $this->data['hemocomponentes'] = $this->selecthemocomponentes;
 
     }
     /**
@@ -2479,12 +2483,10 @@ class MapaCirurgico extends ResourceController
         $data['sala'] =  '';
         $data['centrocirurgico'] =  '';
         $data['profissional'] = [];
-        $data['hemocomponente'] = [];
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidadeativos;
-        $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['posoperatorios'] = $this->selectposoperatorio;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
@@ -2497,6 +2499,9 @@ class MapaCirurgico extends ResourceController
         $data['usarEquipamentos'] = '';
         $data['equipamentos'] = $this->selectequipamentos;
         $data['eqpts'] = [];
+        $data['usarHomponentes'] = [];
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
+        $data['hemocomps'] = [];
 
         $data['listapacienteSelect'] = [];
 
@@ -2570,6 +2575,7 @@ class MapaCirurgico extends ResourceController
             'centrocirurgico' => 'required',
             'sala' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             //'justorig' => 'max_length[1024]|min_length[0]',
@@ -2577,7 +2583,7 @@ class MapaCirurgico extends ResourceController
             'usarEquipamentos' => 'required'
         ];
 
-        //dd($this->data['listapaciente']);
+        //dd($this->data);
 
         if ($this->data['listapaciente'] == 0 || is_null($this->data['listapaciente'])) {
             $rules = $rules + [
@@ -2874,6 +2880,29 @@ class MapaCirurgico extends ResourceController
                                         }
                                     }
 
+                                    if (isset($this->data['hemocomps'])) {
+
+                                        foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+                    
+                                            $array['idmapacirurgico'] = (int) $idmapa;
+                                            $array['idhemocomponente'] = (int) $hemocomponente;
+                                            $array['inddisponibilidade'] = false;
+                    
+                                            $this->hemocomponentescirurgiamodel->insert($array);
+                    
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                            
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+                    
+                                        }
+                                    }
+
                                     //$this->listaesperamodel->delete($this->data['listapaciente']);
                                     $this->listaesperamodel->where('id', $idlista)->delete();
 
@@ -2974,8 +3003,8 @@ class MapaCirurgico extends ResourceController
             $this->data['procedimentos_adicionais'] = $this->data['procedimentos'];
             $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
             $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
-            $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
             $this->data['equipamentos'] = $this->selectequipamentos;
+            $this->data['hemocomponentes'] = $this->selecthemocomponentes;
 
             $this->data['listapacienteSelect'] = [];
             $this->data['listapaciente'] = '';
@@ -2985,7 +3014,7 @@ class MapaCirurgico extends ResourceController
             $this->carregaMapa('I');
         }
         
-        //die(var_dump($this->data));
+        //dd($this->data);
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
                                             /* 'validation' => $this->validator, */
                                             'data' => $this->data]);

@@ -74,8 +74,8 @@ use function PHPUnit\Framework\isEmpty;
                 <th scope="col" data-field="nome" >Congel.</th>
                 <th scope="col" data-field="nome" >Hemod.</th>
                 <th scope="col" data-field="nome" >OPME</th>
-                <th scope="col" data-field="eqpts" >Equipamentos Necessários</th>
-                <th scope="col" data-field="eqpts" >Equipamentos Excedente</th>
+                <th scope="col" data-field="eqpts" >Equipamentos</th>
+                <th scope="col" data-field="hemocomps" >Hemocomponentes</th>
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
@@ -189,13 +189,14 @@ use function PHPUnit\Framework\isEmpty;
                         $border = 'none;';
                     }
 
+                    // ---------eqpto ---------------------------------
+
                     $equipamentos = json_decode($itemmapa->equipamentos_cirurgia_info, true);
 
                     $equipamentoexcedente = 0;
 
                     if ($equipamentos) {
                         foreach ($equipamentos as $key => $equipamento) {
-                            //die(var_dump($equipamento['descricao']));
                             if ($equipamento['indexcedente']) {
                                 $equipamentoexcedente = 1;
                             };
@@ -203,6 +204,24 @@ use function PHPUnit\Framework\isEmpty;
                     }
 
                     $itemmapa->equipamento_excedente = $equipamentoexcedente;
+
+                    //-------------- hemocomps ----------------------
+
+                    $hemocomponentes = json_decode($itemmapa->hemocomponentes_cirurgia_info, true);
+
+                    $hemocomponenteindisponivel = 0;
+
+                    if ($hemocomponentes) {
+                        foreach ($hemocomponentes as $key => $hemocomponente) {
+                            if (!$hemocomponente['inddisponibilidade']) {
+                                $hemocomponenteindisponivel = 1;
+                            };
+                        }
+                    }
+
+                    $itemmapa->hemocomponente_indisponivel = $hemocomponenteindisponivel;
+
+                    // --------------------------------------------------------
 
             ?>
                 <tr
@@ -235,6 +254,9 @@ use function PHPUnit\Framework\isEmpty;
                     data-equipamentos="<?= htmlspecialchars($itemmapa->equipamentos_cirurgia, ENT_QUOTES, 'UTF-8') ?>"
                     data-equipamentosinfo="<?= $itemmapa->equipamentos_cirurgia_info ?>"
                     data-equipamentoexcedente="<?= $itemmapa->equipamento_excedente ?>"
+                    data-hemocomponentes="<?= htmlspecialchars($itemmapa->hemocomponentes_cirurgia, ENT_QUOTES, 'UTF-8') ?>"
+                    data-hemocomponentesinfo="<?= $itemmapa->hemocomponentes_cirurgia_info ?>"
+                    data-hemocomponenteindisponivel="<?= $itemmapa->hemocomponente_indisponivel ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
@@ -341,8 +363,47 @@ use function PHPUnit\Framework\isEmpty;
                     <td class="break-line" title="<?php echo htmlspecialchars($tooltip); ?>">
                         <?= $equipamentos; ?>
                     </td>
+                    <!---------- Hemocomponentes -------------------------------------------------->
+                    <?php 
+                        $hemocomponentes = json_decode($itemmapa->hemocomponentes_cirurgia_info, true);
+
+                        if ($hemocomponentes) {
+
+                            $hemocomponentes_formatados = [];
+                            $hemocomponentes_indisponiveis = [];
+                            $hemocomponentes_disponiveis = [];
+
+                            if ($hemocomponentes) {
+                                foreach ($hemocomponentes as $hemocomponente) {
+
+                                    $cor = $hemocomponente['inddisponibilidade'] ? 'black' : 'red';
+                                    $hemocomponentes_formatados[] = '<span style="color: ' . $cor . ';">' . htmlspecialchars($hemocomponente['descricao']) . '</span>';
+
+                                    if ($hemocomponente['inddisponibilidade']) {
+                                        $hemocomponentes_disponiveis[] = $hemocomponente['descricao'];  
+                                    } else {
+                                        $hemocomponentes_indisponiveis[] = $hemocomponente['descricao']; 
+
+                                    }
+                                }
+                            }
+
+                            $hemocomponentes = implode(', ', $hemocomponentes_formatados);
+
+                            $indisponiveis = !empty($hemocomponentes_indisponiveis) ? implode(', ', $hemocomponentes_indisponiveis) : 'Nenhum hemocomponente indisponível';
+                            $disponiveis = !empty($hemocomponentes_disponiveis) ? implode(', ', $hemocomponentes_disponiveis) : 'Nenhum hemocomponente disponível';
+
+                            $tooltip = "hemocomponentes SEM RESERVA confirmada:\n$indisponiveis\n\nhemocomponentes COM RESERVA confirmada:\n$disponiveis";
+                            //$tooltip = "$nao_excedentes\n\nExcedentes:\n$excedentes";
+                        } else {
+                            $hemocomponentes = '';
+                            $tooltip = '';
+                        }
+                    ?>
+                    <td class="break-line" title="<?php echo htmlspecialchars($tooltip); ?>">
+                        <?= $hemocomponentes; ?>
+                    </td>
                     <!-------------------------------------------------------------------------->
-                    <td><?php echo $itemmapa->equipamento_excedente ?></td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
@@ -391,6 +452,10 @@ use function PHPUnit\Framework\isEmpty;
 
             if (row.dataset.equipamentoexcedente == 1) {
                 row.classList.add("equipamento-excedente");
+            } else {
+                if (row.dataset.hemocomponenteindisponivel == 1) {
+                    row.classList.add("hemocomponente-indisponivel");
+                }
             }
 
             row.addEventListener("click", function () {
@@ -398,8 +463,12 @@ use function PHPUnit\Framework\isEmpty;
                 document.querySelectorAll(".lineselected").forEach(selected => {
                     selected.classList.remove("lineselected");
 
-                    if (selected.dataset.equipamentoexcedente == 1) {
-                        selected.classList.add("equipamento-excedente");
+                    if (row.dataset.equipamentoexcedente == 1) {
+                        row.classList.add("equipamento-excedente");
+                    } else {
+                        if (row.dataset.hemocomponenteindisponivel == 1) {
+                            row.classList.add("hemocomponente-indisponivel");
+                        }
                     }
                 });
 
@@ -408,6 +477,10 @@ use function PHPUnit\Framework\isEmpty;
 
                 if (this.classList.contains("equipamento-excedente")) {
                     this.classList.remove("equipamento-excedente");
+                } else {
+                    if (this.classList.contains("hemocomponente-indisponivel")) {
+                        this.classList.remove("hemocomponente-indisponivel");
+                    }
                 }
 
                 selectedRow.classList.add("lineselected");
@@ -420,6 +493,9 @@ use function PHPUnit\Framework\isEmpty;
 
                 $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("lineselected");
                 $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("lineselected");
+
+                $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("lineselected");
+                $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("lineselected");
 
                 // Atualize os botões e permissões
                 const statuscirurgia = selectedRow.dataset.statuscirurgia;
@@ -890,7 +966,8 @@ use function PHPUnit\Framework\isEmpty;
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
                     <strong>Hemoderivados:</strong> ${dados.hemo}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
-                    <strong>Equipamentos Necessários:</strong> ${verificarValor(dados.equipamentos)}<br>
+                    <strong>Equipamentos:</strong> ${verificarValor(dados.equipamentos)}<br>
+                    <strong>Hemocomponentes:</strong> ${verificarValor(dados.hemocomponentes)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
@@ -960,7 +1037,7 @@ use function PHPUnit\Framework\isEmpty;
                     { "width": "70px" },  // hemod
                     { "width": "70px" },  // opme
                     { "width": "350px" },  // equipamentos
-                    { "width": "50px" },  // equipamento exc
+                    { "width": "350px" },  // hemocomponentes
                     { "width": "150px" },  // risco
                     { "width": "90px" },  // dt risco
                     { "width": "130px" },  // origem
@@ -1037,6 +1114,7 @@ use function PHPUnit\Framework\isEmpty;
                 hemo: $(this).data('hemo'),
                 opme: $(this).data('opme'),
                 equipamentos: $(this).data('equipamentos'),
+                hemocomponentes: $(this).data('hemocomponentes'),
                 posoperatorio: $(this).data('posoperatorio'),
                 infoadic: $(this).data('infoadic'),
                 necesspro: $(this).data('necesspro'),
