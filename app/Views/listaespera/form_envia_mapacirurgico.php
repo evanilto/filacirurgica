@@ -5,6 +5,8 @@
     // Inicializando valores padrão
     $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
     $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
+    $data['hemocomps'] = isset($data['hemocomps']) ? (array)$data['hemocomps'] : [];
+    $data['usarHemocomponentes'] = $data['usarHemocomponentes'] ?? ['N']; 
     //dd($data);
 ?>
 
@@ -284,6 +286,33 @@
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-2">
+                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
+                                        </div>
+                                    </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>"
@@ -305,7 +334,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -375,6 +404,8 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
@@ -397,37 +428,8 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
-                                        </div>
-                                    </div>
-                                    <?php if ($validation->getError('complexidade')): ?>
-                                        <div class="invalid-feedback d-block">
-                                            <?= $validation->getError('complexidade') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="mb-4">
                                     <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -442,8 +444,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="mb-4">
+                            <div class="col-md-8">
+                                <div class="mb-2">
                                     <label for="eqpts" class="form-label">Equipamentos Necessários</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
@@ -465,6 +467,54 @@
                                 </div>
                             </div>
                         </div>
+                    <div class="row g-3">
+                        <div class="col-md-2">
+                            <div class="mb-2">
+                                <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
+                                <div class="input-group mb-2 bordered-container">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
+                                            <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
+                                            <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
+                                        <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php if ($validation->getError('usarHemocomponentes')): ?>
+                                <div class="invalid-feedback d-block">
+                                    <?= $validation->getError('usarHemocomponentes') ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                        <div class="col-md-10">
+                            <div class="mb-4">
+                            <label for="hemocomps" class="form-label">Hemocomponentes Necessários</label>
+                            <div class="input-group">
+                                <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
+                                        id="hemocomps" name="hemocomps[]" multiple="multiple"
+                                        data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
+                                    <?php
+                                    
+                                    foreach ($data['hemocomponentes'] as $hemocomponente) {
+                                        $selected = in_array($hemocomponente->id, $data['hemocomps']) ? 'selected' : '';
+                                        echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->descricao . '</option>';
+                                    }
+                                    ?>
+                                </select>
+                                <?php if ($validation->hasError('hemocomps')): ?>
+                                    <div class="invalid-feedback">
+                                        <?= $validation->getError('hemocomps') ?>
+                                    </div>
+                                <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
                         <div class="row g-2">
                             <div class="container bordered-container" >
                                 <div class="row g-3">
@@ -595,7 +645,7 @@
                         <input type="hidden" name="eqpts_hidden" id="eqpts_hidden" />
                         <input type="hidden" name="idsituacao_cirurgia_hidden" id="idsituacao_cirurgia_hidden" value='P' /> <!-- Programada por default --> 
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
-
+                        <input type="hidden" name="hemocomps_hidden" id="hemocomps_hidden" />
                     </form>
                 </div>
             </div>
@@ -781,6 +831,8 @@ function formatarData(input) {
             allowClear: true,
         });
 
+        // ------------ equipamentos -----------------------------------
+
         $('#eqpts').select2();
 
         if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
@@ -804,6 +856,34 @@ function formatarData(input) {
         if ($('#eqpts').prop('disabled')) {
             $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
         }
+
+        //--------------Hemocomponentes------------------------------
+
+        $('#hemocomps').select2();
+
+        if ($('input[name="usarHemocomponentes"]:checked').val() === 'S') {
+            $('#hemocomps').prop('disabled', false);
+        } else {
+            $('#hemocomps').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarHemocomponentes"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#hemocomps').prop('disabled', false); // Habilita o campo hemocomponentes
+                $('#hemocomps').select2(); // Inicializa o Select2
+            } else {
+                $('#hemocomps').prop('disabled', true); // Desabilita o campo hemocomponentes
+                $('#hemocomps').val([]).trigger('change'); // Limpa a seleção
+            }
+        });
+
+        // Se a validação falhar, recarrega os valores
+        if ($('#hemocomps').prop('disabled')) {
+            $('#hemocomps').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
+        }
+
+        //--------------------------------------------------------
 
         let lastFocusedInput = null;
         // Captura o último campo de entrada (input ou textarea) focado
@@ -925,6 +1005,11 @@ function formatarData(input) {
 
         $('#eqpts_hidden').val($('#eqpts').val());
 
+        $('#hemocomps_hidden').val($('#hemocomps').val());
+
+        $('#hemocomps').on('change', function() {
+            $('#hemocomps_hidden').val($(this).val());
+        });
         
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 

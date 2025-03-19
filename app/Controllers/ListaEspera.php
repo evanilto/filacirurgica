@@ -17,6 +17,9 @@ use App\Models\ProcedimentosAdicionaisModel;
 use App\Models\EquipamentosModel;
 use App\Models\EquipeMedicaModel;
 use App\Models\EquipamentosCirurgiaModel;
+use App\Models\HemocomponentesModel;
+use App\Models\HemocomponentesCirurgiaModel;
+
 use App\Models\FilasModel;
 use App\Models\FilaWebModel;
 use App\Models\HistoricoModel;
@@ -90,6 +93,9 @@ class ListaEspera extends ResourceController
     private $selectjustificativassuspensao;
     private $selectjustificativasexclusao;
     private $data;
+    private $hemocomponentesmodel;
+    private $selecthemocomponentes;
+    private $hemocomponentescirurgiamodel;
 
 
     public function __construct()
@@ -123,6 +129,8 @@ class ListaEspera extends ResourceController
         $this->filawebmodel = new FilaWebModel(); // disable for migration
         $this->localvwdetalhespacientesmodel = new LocalVwDetalhesPacientesModel();
         $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
+        $this->hemocomponentesmodel = new HemocomponentesModel();
+        $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
         //$this->aghucontroller = new Aghu();
 
         $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -148,6 +156,7 @@ class ListaEspera extends ResourceController
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
         $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selecthemocomponentes = $this->hemocomponentesmodel->orderBy('id', 'ASC')->findAll();
 
     }
 
@@ -1886,6 +1895,9 @@ class ListaEspera extends ResourceController
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['usarHomponentes'] = [];
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
+        $data['hemocomps'] = [];
 
         $codToRemove = $lista['idprocedimento'];
         $procedimentos = $data['procedimentos'];
@@ -1913,7 +1925,7 @@ class ListaEspera extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($this->data));
+        //dd($this->data);
 
         $rules = [
             'especialidade' => 'required',
@@ -1931,6 +1943,7 @@ class ListaEspera extends ResourceController
             'congelacao' => 'required',
             'opme' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'justorig' => 'max_length[1024]|min_length[0]',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
@@ -2192,6 +2205,29 @@ class ListaEspera extends ResourceController
                     }
                 }
 
+                if (isset($this->data['hemocomps'])) {
+
+                    foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['idhemocomponente'] = (int) $hemocomponente;
+                        $array['inddisponibilidade'] = false;
+
+                        $this->hemocomponentescirurgiamodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
                 $this->listaesperamodel->delete($this->data['id']);
 
                 /* if ($this->data['idsituacao_cirurgia_hidden'] === 'EA') { // Em Aprovação
@@ -2410,6 +2446,7 @@ class ListaEspera extends ResourceController
         $this->data['procedimentos'] = $this->selectitensprocedhospit;
         $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
         $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $this->data['hemocomponentes'] = $this->selecthemocomponentes;
 
         $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
         $this->data['proced_adic'] = array_filter($this->data['proced_adic']);

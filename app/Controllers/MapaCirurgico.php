@@ -1035,6 +1035,7 @@ class MapaCirurgico extends ResourceController
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
         $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
+        $data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
         //dd($this->equipamentoscirurgiamodel->getLastQuery());
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
@@ -1055,6 +1056,8 @@ class MapaCirurgico extends ResourceController
         });
         $data['equipamentos'] = $this->selectequipamentos;
         $data['usarEquipamentos'] = empty($data['eqpts']) ? 'N' : 'S';
+        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
 
        //var_dump($this->data['eqpts']);die();
        //var_dump($data['salas_cirurgicas']);die();
@@ -1097,6 +1100,7 @@ class MapaCirurgico extends ResourceController
             'cid' => 'required',
             'risco' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'centrocirurgico' => 'required',
             'sala' => 'required'
@@ -1449,6 +1453,9 @@ class MapaCirurgico extends ResourceController
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
         $data['equipamentos'] = $this->selectequipamentos;
         $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
+        $data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
+
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
