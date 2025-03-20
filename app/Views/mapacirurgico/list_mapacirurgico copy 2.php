@@ -93,7 +93,7 @@ use function PHPUnit\Framework\isEmpty;
                     
                     if ($itemmapa->dthrsuspensao) {
 
-                        if (in_array($itemmapa->idsuspensao, [53, 54, 55])) { // tratar melhor depois
+                        if (in_array($itemmapa->idsuspensao, [53, 54])) {
 
                             $color =$corCirurgiaSuspensaAdm;
                             $background_color = $color;
@@ -450,59 +450,65 @@ use function PHPUnit\Framework\isEmpty;
 
         table.querySelectorAll("tbody tr").forEach(row => {
 
-            let equipamentoExcedente = row.dataset.equipamentoexcedente == 1;
-            let hemocomponenteIndisponivel = row.dataset.hemocomponenteindisponivel == 1;
-
-            row.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
-
-            if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                row.classList.add("combinado"); 
-            } else if (equipamentoExcedente) {
+            if (row.dataset.equipamentoexcedente == 1) {
                 row.classList.add("equipamento-excedente");
-            } else if (hemocomponenteIndisponivel) {
-                row.classList.add("hemocomponente-indisponivel");
+            } else {
+                if (row.dataset.hemocomponenteindisponivel == 1) {
+                    row.classList.add("hemocomponente-indisponivel");
+                }
             }
 
+           /*  switch (row.dataset.equipamentoexcedente) {
+                case 1:
+                    row.classList.add("equipamento-excedente");
+                    break;
+                case 2:
+                    row.classList.add("hemocomponente-indisponivel");
+                    break;
+                default:
+            } */
+
             row.addEventListener("click", function () {
-
+                // Remove a classe "lineselected" de todas as linhas, incluindo colunas fixadas
                 document.querySelectorAll(".lineselected").forEach(selected => {
+
+                    const tableId = "#table"; // Substitua pelo ID real da tabela
+                    const rowIndex = $(this).index();
+
                     selected.classList.remove("lineselected");
+                    selected.classList.remove("equipamento-excedente");
+                    selected.classList.remove("hemocomponente-indisponivel");
 
-                    // Restaura a cor original baseada nos atributos data
-                    let equipamentoExcedente = selected.dataset.equipamentoexcedente == 1;
-                    let hemocomponenteIndisponivel = selected.dataset.hemocomponenteindisponivel == 1;
+                    if (row.dataset.equipamentoexcedente == 1) {
+                            $(`${tableId} .DTFC_LeftWrapper tbody tr`).eq(rowIndex).addClass("equipamento-excedente");
+                            $(`${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex).addClass("equipamento-excedente");
 
-                    // Remove todas as classes antes de definir a correta
-                    selected.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("lineselected").addClass("equipamento-excedente");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("lineselected").addClass("equipamento-excedente");
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("equipamento-excedente");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("equipamento-excedente");      
+                    } else {
 
-                    if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                        selected.classList.add("combinado"); // Aplica a classe especial para sobreposição
-                    } else if (equipamentoExcedente) {
-                        selected.classList.add("equipamento-excedente");
-                    } else if (hemocomponenteIndisponivel) {
-                        selected.classList.add("hemocomponente-indisponivel");
+                        if (row.dataset.hemocomponenteindisponivel == 1) {
+                            $(`${tableId} .DTFC_LeftWrapper tbody tr`).eq(rowIndex).addClass("hemocomponente-indisponivel");
+                            $(`${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex).addClass("hemocomponente-indisponivel");
+
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("lineselected").addClass("hemocomponente-indisponivel");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("lineselected").addClass("hemocomponente-indisponivel");
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("hemocomponente-indisponivel");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("hemocomponente-indisponivel"); 
+
+                        } else {
+                            $(`${tableId} .DTFC_LeftWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
+                            $(`${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
+
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("lineselected");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("equipamento-excedente").addClass("lineselected");
+                            $("#table .DTFC_LeftWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("lineselected");
+                            $("#table .DTFC_RightWrapper tbody tr").eq(rowIndex).removeClass("hemocomponente-indisponivel").addClass("lineselected");
+                        }
                     }
                 });
-
-                // Atualiza a linha selecionada
-                selectedRow = this;
-
-                // Remove classes de cor antes de aplicar "lineselected"
-                this.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
-
-                // Adiciona a classe "lineselected" à linha selecionada
-                selectedRow.classList.add("lineselected");
-
-                // Atualiza a classe para colunas fixadas
-                const tableId = "#table"; // Substitua pelo ID real da tabela
-                const rowIndex = $(this).index();
-                $(`${tableId} .DTFC_LeftWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
-                $(`${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex).addClass("lineselected");
-
-                // Remove classes anteriores das colunas fixadas e adiciona "lineselected"
-                $(`${tableId} .DTFC_LeftWrapper tbody tr, ${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex)
-                    .removeClass("equipamento-excedente hemocomponente-indisponivel combinado")
-                    .addClass("lineselected");
 
                 // Atualize os botões e permissões
                 const statuscirurgia = selectedRow.dataset.statuscirurgia;
@@ -594,7 +600,7 @@ use function PHPUnit\Framework\isEmpty;
 
                 }
             });
-            
+
         });
 
         function handleButtonHorarios(buttonId) {

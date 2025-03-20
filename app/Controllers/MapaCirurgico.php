@@ -1317,6 +1317,57 @@ class MapaCirurgico extends ResourceController
                     }
                 }
 
+                // Trata hemocomponentes --------------------------------------------------------------
+
+                if (!isset($this->data['hemocomps'])) {
+
+                    $this->hemocomponentescirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->delete();
+
+                } else {
+
+                    $hemocomponentes_ant = $this->hemocomponentescirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->findAll();
+
+                    foreach ( $hemocomponentes_ant as $key => $hemocomponente) { // exclui os hemomcomponentes que foram removidos
+
+                        if (!in_array($hemocomponente['idhemocomponente'], $this->data['hemocomps'], )) {
+    
+                            $this->hemocomponentescirurgiamodel->delete($hemocomponente['id']);
+    
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+            
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao excluir homocomponentes [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+                        }
+                    }
+
+                    foreach ($this->data['hemocomps'] as $key => $hemocomponente) { // inclui os novos hemocomponentes
+
+                        if (!in_array($hemocomponente, array_column($hemocomponentes_ant, 'idhemocomponente'))) {
+
+
+                            $array['idmapacirurgico'] = (int) $this->data['idmapa'];
+                            $array['idhemocomponente'] = (int) $hemocomponente;
+
+                            $this->hemocomponentescirurgiamodel->insert($array);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+            
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao inserir hemocomponente [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+                        }
+                    }
+                }
+
                 //--------------------------------------------------------------------------------------
 
                 $array = [

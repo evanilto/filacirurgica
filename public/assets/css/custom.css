@@ -180,11 +180,15 @@ input, textarea {
 }
 
 table tbody tr.equipamento-excedente {
-    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
+    background-color: hsl(60, 100%, 90%) !important; /* Vermelho bem desbotado */
 }
 
 table tbody tr.hemocomponente-indisponivel {
     background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
+}
+
+table tbody tr.combinado {
+    background-color: hsl(30, 100%, 80%) !important; 
 }
 
 .dataTable tbody tr {
@@ -199,13 +203,19 @@ table tbody tr.hemocomponente-indisponivel {
 
 .equipamento-excedente,
 .equipamento-excedente td {
-    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
+    background-color: hsl(60, 100%, 90%) !important; /* Vermelho bem desbotado */
     color: #333 !important; /* Cor do texto */
 }
 
 .hemocomponente-indisponivel,
 .hemocomponente-indisponivel td {
     background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
+    color: #333 !important; /* Cor do texto */
+}
+
+.combinado,
+.combinado td {
+    background-color: hsl(30, 100%, 80%) !important; /* Vermelho bem desbotado */
     color: #333 !important; /* Cor do texto */
 }
 
@@ -224,7 +234,7 @@ table tbody tr.hemocomponente-indisponivel {
 #table .DTFC_LeftWrapper tbody tr.equipamento-excedente td,
 #table .DTFC_RightWrapper tbody tr.equipamento-excedente td,
 #table tbody tr.equipamento-excedente td {
-    background-color: hsl(0, 100%, 90%) !important; /* Vermelho bem desbotado */
+    background-color: hsl(60, 100%, 90%) !important; /* Vermelho bem desbotado */
 }
 
 #table .DTFC_LeftWrapper tbody tr.hemocomponente-indisponivel td,

@@ -93,7 +93,7 @@ use function PHPUnit\Framework\isEmpty;
                     
                     if ($itemmapa->dthrsuspensao) {
 
-                        if (in_array($itemmapa->idsuspensao, [53, 54, 55])) { // tratar melhor depois
+                        if (in_array($itemmapa->idsuspensao, [53, 54])) {
 
                             $color =$corCirurgiaSuspensaAdm;
                             $background_color = $color;
@@ -450,36 +450,28 @@ use function PHPUnit\Framework\isEmpty;
 
         table.querySelectorAll("tbody tr").forEach(row => {
 
-            let equipamentoExcedente = row.dataset.equipamentoexcedente == 1;
-            let hemocomponenteIndisponivel = row.dataset.hemocomponenteindisponivel == 1;
-
-            row.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
-
-            if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                row.classList.add("combinado"); 
-            } else if (equipamentoExcedente) {
+            if (row.dataset.equipamentoexcedente == 1) {
                 row.classList.add("equipamento-excedente");
-            } else if (hemocomponenteIndisponivel) {
-                row.classList.add("hemocomponente-indisponivel");
+
+                if (row.dataset.hemocomponenteindisponivel == 1) {
+                    row.classList.add("hemocomponente-indisponivel");
+                };
+            } else {
+                if (row.dataset.hemocomponenteindisponivel == 1) {
+                    row.classList.add("hemocomponente-indisponivel");
+                }
             }
 
             row.addEventListener("click", function () {
 
+                // Remove a classe "lineselected" de todas as linhas
                 document.querySelectorAll(".lineselected").forEach(selected => {
                     selected.classList.remove("lineselected");
 
                     // Restaura a cor original baseada nos atributos data
-                    let equipamentoExcedente = selected.dataset.equipamentoexcedente == 1;
-                    let hemocomponenteIndisponivel = selected.dataset.hemocomponenteindisponivel == 1;
-
-                    // Remove todas as classes antes de definir a correta
-                    selected.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
-
-                    if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                        selected.classList.add("combinado"); // Aplica a classe especial para sobreposição
-                    } else if (equipamentoExcedente) {
+                    if (selected.dataset.equipamentoexcedente == 1) {
                         selected.classList.add("equipamento-excedente");
-                    } else if (hemocomponenteIndisponivel) {
+                    } else if (selected.dataset.hemocomponenteindisponivel == 1) {
                         selected.classList.add("hemocomponente-indisponivel");
                     }
                 });
@@ -487,8 +479,8 @@ use function PHPUnit\Framework\isEmpty;
                 // Atualiza a linha selecionada
                 selectedRow = this;
 
-                // Remove classes de cor antes de aplicar "lineselected"
-                this.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
+                // Remove classes de destaque para evitar conflitos visuais
+                this.classList.remove("equipamento-excedente", "hemocomponente-indisponivel");
 
                 // Adiciona a classe "lineselected" à linha selecionada
                 selectedRow.classList.add("lineselected");
@@ -501,8 +493,8 @@ use function PHPUnit\Framework\isEmpty;
 
                 // Remove classes anteriores das colunas fixadas e adiciona "lineselected"
                 $(`${tableId} .DTFC_LeftWrapper tbody tr, ${tableId} .DTFC_RightWrapper tbody tr`).eq(rowIndex)
-                    .removeClass("equipamento-excedente hemocomponente-indisponivel combinado")
-                    .addClass("lineselected");
+                .removeClass("equipamento-excedente hemocomponente-indisponivel")
+                .addClass("lineselected");
 
                 // Atualize os botões e permissões
                 const statuscirurgia = selectedRow.dataset.statuscirurgia;
