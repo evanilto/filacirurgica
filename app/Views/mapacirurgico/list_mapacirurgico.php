@@ -25,7 +25,7 @@ use function PHPUnit\Framework\isEmpty;
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="7" class="text-start" style="background-color: #d4edda;">
+                <th scope="row" colspan="7" class="text-start" style="background-color: #d4edda;">  <!--hsl(130, 70%, 85%) -->
                     <h5><strong>Mapa Cirúrgico</strong></h5>
                 </th>
             </tr>
@@ -97,7 +97,7 @@ use function PHPUnit\Framework\isEmpty;
 
                             $color =$corCirurgiaSuspensaAdm;
                             $background_color = $color;
-                            $status_cirurgia = 'Suspensa Administrativamente';
+                            $status_cirurgia = 'SuspensaAdministrativamente';
                             $title = 'Cirurgia Suspensa Administrativamente';
 
                         } else {
@@ -257,6 +257,7 @@ use function PHPUnit\Framework\isEmpty;
                     data-hemocomponentes="<?= htmlspecialchars($itemmapa->hemocomponentes_cirurgia, ENT_QUOTES, 'UTF-8') ?>"
                     data-hemocomponentesinfo="<?= $itemmapa->hemocomponentes_cirurgia_info ?>"
                     data-hemocomponenteindisponivel="<?= $itemmapa->hemocomponente_indisponivel ?>"
+                    data-indsituacao="<?= $itemmapa->indsituacao ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
@@ -376,7 +377,7 @@ use function PHPUnit\Framework\isEmpty;
                             if ($hemocomponentes) {
                                 foreach ($hemocomponentes as $hemocomponente) {
 
-                                    $cor = $hemocomponente['inddisponibilidade'] ? 'black' : 'red';
+                                    $cor = $hemocomponente['inddisponibilidade'] || $itemmapa->indsituacao != 'P' ? 'black' : 'red';
                                     $hemocomponentes_formatados[] = '<span style="color: ' . $cor . ';">' . htmlspecialchars($hemocomponente['descricao']) . '</span>';
 
                                     if ($hemocomponente['inddisponibilidade']) {
@@ -452,35 +453,40 @@ use function PHPUnit\Framework\isEmpty;
 
             let equipamentoExcedente = row.dataset.equipamentoexcedente == 1;
             let hemocomponenteIndisponivel = row.dataset.hemocomponenteindisponivel == 1;
-
+            
+            // Remove as classes antes de definir a correta
             row.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
 
-            if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                row.classList.add("combinado"); 
-            } else if (equipamentoExcedente) {
-                row.classList.add("equipamento-excedente");
-            } else if (hemocomponenteIndisponivel) {
-                row.classList.add("hemocomponente-indisponivel");
+            // Aplica as classes SOMENTE se indsituacao === 'P'
+            if (row.dataset.indsituacao === 'P') {
+                if (equipamentoExcedente && hemocomponenteIndisponivel) {
+                    row.classList.add("combinado"); 
+                } else if (equipamentoExcedente) {
+                    row.classList.add("equipamento-excedente");
+                } else if (hemocomponenteIndisponivel) {
+                    row.classList.add("hemocomponente-indisponivel");
+                }
             }
 
             row.addEventListener("click", function () {
-
                 document.querySelectorAll(".lineselected").forEach(selected => {
                     selected.classList.remove("lineselected");
 
-                    // Restaura a cor original baseada nos atributos data
                     let equipamentoExcedente = selected.dataset.equipamentoexcedente == 1;
                     let hemocomponenteIndisponivel = selected.dataset.hemocomponenteindisponivel == 1;
 
                     // Remove todas as classes antes de definir a correta
                     selected.classList.remove("equipamento-excedente", "hemocomponente-indisponivel", "combinado");
 
-                    if (equipamentoExcedente && hemocomponenteIndisponivel) {
-                        selected.classList.add("combinado"); // Aplica a classe especial para sobreposição
-                    } else if (equipamentoExcedente) {
-                        selected.classList.add("equipamento-excedente");
-                    } else if (hemocomponenteIndisponivel) {
-                        selected.classList.add("hemocomponente-indisponivel");
+                    // Aplica as classes SOMENTE se indsituacao === 'P'
+                    if (selected.dataset.indsituacao === 'P') {
+                        if (equipamentoExcedente && hemocomponenteIndisponivel) {
+                            selected.classList.add("combinado");
+                        } else if (equipamentoExcedente) {
+                            selected.classList.add("equipamento-excedente");
+                        } else if (hemocomponenteIndisponivel) {
+                            selected.classList.add("hemocomponente-indisponivel");
+                        }
                     }
                 });
 
@@ -573,8 +579,9 @@ use function PHPUnit\Framework\isEmpty;
 
                 }
 
+                //alert(statuscirurgia);
                 /* if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) { */
-                if (!["Suspensa", "Cancelada", "TrocaPaciente"].includes(statuscirurgia)) {
+                if (!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
 
@@ -583,7 +590,7 @@ use function PHPUnit\Framework\isEmpty;
 
                 }
 
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada"].includes(statuscirurgia)) {
+                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
                 }
@@ -690,7 +697,6 @@ use function PHPUnit\Framework\isEmpty;
         handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
         handleButtonOthers(editar, 'atualizarcirurgia');
         handleButtonOthers(consultar, 'consultarcirurgia');
-        handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
 
     });
 
