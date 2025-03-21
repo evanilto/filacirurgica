@@ -1895,7 +1895,7 @@ class ListaEspera extends ResourceController
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
-        $data['usarHomponentes'] = [];
+        $data['usarHemocomponentes'] = [];
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
 

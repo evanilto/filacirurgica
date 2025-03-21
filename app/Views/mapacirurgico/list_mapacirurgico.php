@@ -1019,7 +1019,7 @@ use function PHPUnit\Framework\isEmpty;
             ordering: true,
             autoWidth: false,
                 "columns": [
-                    { "width": "50px" },  // Primeira coluna
+                    { "width": "100px" },  // Primeira coluna
                     { "width": "40px" },       
                     { "width": "95px" },  // dt
                     { "width": "62px" },  // hr

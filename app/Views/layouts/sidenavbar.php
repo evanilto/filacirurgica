@@ -56,13 +56,13 @@
                             </a>
                         </li>
                         <?php } ?>
-                        <!--?php if(HUAP_Functions::tem_permissao('mapacirurgico-aprovar')) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-reservarhemocomponente')) { ?>
                         <li>
-                            <a href="<!?= base_url('mapacirurgico/avaliarcirurgias') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Avaliar Cirurgia
+                            <a href="<?= base_url('mapacirurgico/reservarhemocomponente') ?>" class="nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Reservar Hemocomponente
                             </a>
                         </li-->
-                        <!--?php } ?-->
+                        <?php } ?>
                     </ul>
                 </div>
             </li>

@@ -588,6 +588,124 @@ class MapaCirurgico extends ResourceController
         }
     }
     /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirCirurgiaComHemocomponentes()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $dataflash = session()->getFlashdata('dataflash');
+        if ($dataflash) {
+            $data = $dataflash;
+        } else {
+            $data = $this->request->getVar();
+        }
+
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+            $data = $_SESSION['mapacirurgico'];
+        }
+
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'nome' => 'permit_empty|min_length[3]',
+        ];
+
+        if (!$dataflash) {
+            if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
+                $rules = $rules + [
+                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                ];
+            }
+        }
+
+        if ($this->validate($rules)) {
+            if ($data['dtinicio'] || $data['dtfim']) {
+
+                $data['filas'] = $this->selectfilaativas;
+                $data['riscos'] = $this->selectrisco;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                if (empty($data['dtinicio'])) {
+                    $this->validator->setError('dtinicio', 'Informe a data de início!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (!$data['dtfim']) {
+                    $this->validator->setError('dtfim', 'Informe a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoreservahemocomps',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
+ 
+            }
+            
+            $this->validator->reset();
+
+            $result = $this->getCirurgiaComHemocomponentes($data);
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['mapacirurgico'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_cirurgiascomhemocomponentes',
+                                               'mapacirurgico' => $result,
+                                               'data' => $data]);
+
+        } else {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
+    /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -672,6 +790,32 @@ class MapaCirurgico extends ResourceController
     return $builder->get()->getResult();
 }
     /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function reservarHemocomponente(string $idmapacirurgico = null)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['mapacirurgico'] = NULL;
+
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
+        $data['filas'] = $this->selectfilaativas;
+        $data['riscos'] = $this->selectrisco;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoreservahecomps',
+                                            'data' => $data]);
+
+    }
+     /**
      * Return a new resource object, with default properties
      *
      * @return mixed
@@ -784,6 +928,76 @@ class MapaCirurgico extends ResourceController
         }
 
        $builder->orderBy('vw_cirurgiasemaprovacao.dthrcirurgia', 'ASC');
+
+    }
+    
+    return $builder->get()->getResult();
+}
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getCirurgiaComHemocomponentes($data) 
+{
+    $db = \Config\Database::connect('default');
+
+    $builder = $db->table('vw_mapacirurgico');
+
+    $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
+    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
+
+    $builder->select('
+        vw_mapacirurgico.*,
+        (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+        COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
+    ');
+   
+    $builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
+
+    if (!empty($data['idmapa'])) {
+    
+        $builder->where('vw_mapacirurgico.id', $data['idmapa']); 
+
+    } else {
+
+        if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+            $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+            $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+            $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
+            $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+        }
+
+        if (!empty($data['prontuario'])) {
+            $builder->where('vw_mapacirurgico.prontuario', $data['prontuario']);
+        }
+
+        if (!empty($data['nome'])) {
+            $builder->like('vw_mapacirurgico.nome_paciente', strtoupper($data['nome']));
+        }
+
+        if (!empty($data['especialidade'])) {
+            $builder->where('vw_mapacirurgico.idespecialidade', $data['especialidade']);
+        }
+
+        if (!empty($data['fila'])) {
+            $builder->where('vw_mapacirurgico.idfila', $data['fila']);
+        }
+
+        if (!empty($data['risco'])) {
+            $builder->where('vw_mapacirurgico.idriscocirurgico', $data['risco']);
+        }
+
+        if (!empty($data['complexidades'])) {
+            $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
+        }
+
+        if (!empty($data['indsituacao']) && $data['indsituacao'] === 'EA') {
+            $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
+        }
+
+       $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
     }
     
@@ -1728,6 +1942,10 @@ class MapaCirurgico extends ResourceController
         $data['usarEquipamentos'] = 'N';
         $data['equipamentos'] = $this->selectequipamentos;
         $data['eqpts'] = [];
+        $data['usarHemocomponentes'] = 'N';
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
+        $data['hemocomps'] = [];
+
 
         //$codToRemove = $mapapac1['idprocedimento'];
         //$procedimentos = $data['procedimentos'];
@@ -1793,6 +2011,7 @@ class MapaCirurgico extends ResourceController
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justtroca' => 'required|max_length[500]|min_length[3]',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
         ];
 
         //die(var_dump($_SESSION['candidatos']));
@@ -2064,7 +2283,32 @@ class MapaCirurgico extends ResourceController
                     }
                 }
 
-                //--------------------------------------------------------------------------------------------------------
+                //-------------- Hemocomponentes -----------------------------------------------------------------
+
+                if (isset($this->data['hemocomps'])) {
+
+                    foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+
+                        $array['idmapacirurgico'] = (int) $idmapa;
+                        $array['idhemocomponente'] = (int) $hemocomponente;
+                        $array['inddisponibilidade'] = false;
+
+                        $this->hemocomponentescirurgiamodel->insert($array);
+
+                        if ($db->transStatus() === false) {
+                            $error = $db->error();
+                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+        
+                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                            );
+                        }
+
+                    }
+                }
+
+                // ----------------------------------------------------------------------------------
 
                 $this->listaesperamodel->withDeleted()->where('id', $this->data['idlistapacatrocar'])->set('deleted_at', NULL)
                                                                                                         ->set('indsituacao', 'A') // Aguardando
