@@ -700,7 +700,7 @@ class MapaCirurgico extends ResourceController
             $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
             $data['especialidades'] = $this->selectespecialidadeaghu;
 
-            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoemaprovacao',
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoreservahemocomps',
                                                 'validation' => $this->validator,
                                                 'data' => $data]);
         }
@@ -794,25 +794,40 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
-    public function reservarHemocomponente(string $idmapacirurgico = null)
+    public function exibirCirurgiasComHemocomponentes(string $idmapacirurgico = null)
     {
         HUAP_Functions::limpa_msgs_flash();
 
         $_SESSION['mapacirurgico'] = NULL;
 
-        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
-        //$data['dtinicio'] = date('d/m/Y');
-        //$data['dtfim'] = date('d/m/Y');
-        $data['dtinicio'] = NULL;
-        $data['dtfim'] = NULL;
-        $data['filas'] = $this->selectfilaativas;
-        $data['riscos'] = $this->selectrisco;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $dataflash = session()->getFlashdata('dataflash');
 
-        //die(var_dump($data));
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+            $data = $_SESSION['mapacirurgico'];
+        }
 
-        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgicoreservahecomps',
-                                            'data' => $data]);
+            $result = $this->getCirurgiaComHemocomponentes([]);
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Não existem cirurgias com hemocomponentes no período!');
+            }
+
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['mapacirurgico'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_cirurgiascomhemocomponentes',
+                                               'mapacirurgico' => $result,
+                                               'data' => $data]);
 
     }
      /**
@@ -954,6 +969,9 @@ class MapaCirurgico extends ResourceController
     ');
    
     $builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
+    $builder->where('vw_mapacirurgico.dthrsuspensao IS NULL'); 
+    $builder->where('vw_mapacirurgico.dthrtroca IS NULL'); 
+    //$builder->where('vw_mapacirurgico.dthrcirurgia >= ', (new DateTime())->format('Y-m-d'));
 
     if (!empty($data['idmapa'])) {
     
@@ -3687,6 +3705,38 @@ class MapaCirurgico extends ResourceController
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
                                   ->setJSON(['success' => false, 'message' => $e->getMessage()]);
         }
+    }
+     /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function reservarHemocomponente(int $id)
+    {
+       
+        HUAP_Functions::limpa_msgs_flash();
+
+        $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
+
+        //die(var_dump($mapa));
+
+        $data = [];
+        $data['idmapa'] = $mapa->id;
+        $data['idlista'] = $mapa->idlista;
+        $data['ordemfila'] = $mapa->ordem_fila;
+        $data['prontuario'] = $mapa->prontuario;
+        $data['especialidade'] = $mapa->idespecialidade;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['fila'] = $mapa->idfila;
+        $data['filas'] = $this->selectfilaativas;
+        $data['procedimento'] = $mapa->idprocedimento;
+        $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['hemocomponentes_cirurgia_info'] = $mapa->hemocomponentes_cirurgia_info;
+
+        $data['dthrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
+                     
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_reserva_hemocomponentes',
+                                            'data' => $data]);
     }
     /**
      * Return the editable properties of a resource object

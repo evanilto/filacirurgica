@@ -58,7 +58,7 @@
                         <?php } ?>
                         <?php if(HUAP_Functions::tem_permissao('mapacirurgico-reservarhemocomponente')) { ?>
                         <li>
-                            <a href="<?= base_url('mapacirurgico/reservarhemocomponente') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <a href="<?= base_url('mapacirurgico/exibircirurgiacomhemocomps') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Reservar Hemocomponente
                             </a>
                         </li-->

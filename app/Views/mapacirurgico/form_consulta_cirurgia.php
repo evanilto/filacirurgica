@@ -1,5 +1,19 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
+<?php 
+    //dd($data['linkorigem']);
+    switch ($data['linkorigem']) {
+        case 'situacao_cirurgica':
+            $link = base_url('listaespera/exibirsituacao');
+            break;
+        case 'cirurgiascomhemocomps':
+            $link = base_url('mapacirurgico/exibircirurgiacomhemocomps');
+            break;
+        default:
+            $link = base_url('mapacirurgico/exibir');
+            break;
+    }
+?>
 
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
@@ -661,12 +675,11 @@
                         <?php } ?>
                         <div class="row g-3">
                             <div class="col-md-12">
-                            <a class="btn btn-warning mt-3" href="<?= $data['linkorigem'] === 'situacao_cirurgica' ? base_url('listaespera/exibirsituacao') : base_url('mapacirurgico/exibir') ?>">
-                                <i class="fa-solid fa-arrow-left"></i> Voltar
-                            </a>
+                                <a class="btn btn-warning mt-3" id="btnVoltar" data-link="<?= $link; ?>">
+                                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                                </a>
                             </div>
                         </div>
-
                         <input type="hidden" name="idmapa" value="<?= $data['idmapa'] ?>" />
                         <input type="hidden" name="idlistaespera" value="<?= $data['idlistaespera'] ?>" />
                         <input type="hidden" name="ordemfila" id='ordemfila' value="<?= $data['ordemfila'] ?>" />
@@ -756,6 +769,20 @@
             placeholder: "",
             allowClear: true,
             width: 'resolve' // Corrigir a largura
+        });
+
+        $("#btnVoltar").on("click", function(event) {
+            event.preventDefault(); // Impede a navegação imediata
+
+            var linkDestino = $(this).data("link"); // Obtém o link do botão
+
+            // Exibe a janela de aguarde
+            $("#janelaAguarde").show();
+
+            // Aguarda um curto período e redireciona
+            setTimeout(function() {
+                window.location.href = linkDestino;
+            }, 1000); // Tempo para exibir o "Aguarde"
         });
 
         //------------------------ Filtro de salas cirurgicas baseado no filtro selecionado ----------------
