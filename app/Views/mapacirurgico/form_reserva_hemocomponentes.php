@@ -13,7 +13,7 @@ use App\Models\HemocomponentesModel;
                     <b><?= 'Reservar Hemocomponente' ?></b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizarhorarios') ?>">
+                    <form id="idForm" method="post" action="<?= base_url('mapacirurgico/confirmarreserva') ?>">
                         <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-2">
@@ -109,26 +109,29 @@ use App\Models\HemocomponentesModel;
                                 </div>
                             </div>
                         </div>
-                        <?php 
-                        $hemocomponentes_json = $data['hemocomponentes_cirurgia_info'] ?? '[]'; 
-                        $hemocomponentes = json_decode($hemocomponentes_json, true) ?? []; 
-                        ?>
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label for="perfis" class="form-label" autofocus>Hemocomponentes</label>
-                                    <div class="bordered-container p-3"> <!-- Container começa aqui -->
+                                    <div class="bordered-container p-3">
                                         <div style="max-height: 300px; overflow-y: auto;"> 
-                                        <!-- <pre><-?php print_r($hemocomponentes); ?></pre> -->
+                                            <?php 
+                                            $hemocomponentes_json = $data['hemocomponentes_cirurgia_info'] ?? '[]'; 
+                                            $hemocomponentes = json_decode($hemocomponentes_json, true) ?? []; 
+                                            ?>
+
                                             <?php if (!empty($hemocomponentes)): ?>
                                                 <?php foreach ($hemocomponentes as $item): ?>
                                                     <div class="form-check">
+                                                        <!-- Campo oculto para garantir envio de valor falso quando não marcado -->
+                                                        <input type="hidden" name="inddisponibilidade[<?= $item['id'] ?>]" value="0">
+                                                        
                                                         <input type="checkbox" class="form-check-input" 
-                                                            name="inddisponibilidade[<?= $item['idhemocomponente'] ?>]" 
+                                                            name="inddisponibilidade[<?= $item['id'] ?>]" 
                                                             value="1" 
-                                                            id="item_<?= $item['idhemocomponente'] ?>" 
+                                                            id="item_<?= $item['id'] ?>" 
                                                             <?= !empty($item['inddisponibilidade']) ? 'checked' : '' ?>>
-                                                        <label class="form-check-label" for="item_<?= $item['idhemocomponente'] ?>">
+                                                        <label class="form-check-label" for="item_<?= $item['id'] ?>">
                                                             <?= htmlspecialchars($item['descricao']) ?>
                                                         </label>
                                                     </div>
@@ -137,13 +140,13 @@ use App\Models\HemocomponentesModel;
                                                 <p>Nenhum hemocomponente disponível.</p>
                                             <?php endif; ?>
                                         </div>
-                                    </div> <!-- Container termina aqui -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">
+                                <button class="btn btn-primary mt-3" onclick="return confirma(this);">
                                 <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
                                 <a class="btn btn-warning mt-3" id="btnVoltar" data-link="<?= base_url('mapacirurgico/exibircirurgiacomhemocomps'); ?>">
@@ -168,6 +171,30 @@ use App\Models\HemocomponentesModel;
     </div>
 </div>
 <script>
+
+    function confirma(button) {
+
+        event.preventDefault(); // Previne a submissão padrão do formulário
+
+        Swal.fire({
+            title: 'Confirma a reserva do(s) hemocomponente(s) assinalado(s)?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ok',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                $('#janelaAguarde').show();
+                $('#idForm').off('submit'); 
+                $('#idForm').submit(); 
+            } else {
+                $('#janelaAguarde').hide(); // Esconde a janela de aguardo se necessário
+            }
+        });
+
+        return false; // Queremos prevenir o comportamento padrão do link
+    }
+
     function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
         fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {

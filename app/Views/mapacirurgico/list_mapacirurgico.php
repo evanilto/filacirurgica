@@ -1,7 +1,7 @@
 <?php
     use App\Libraries\HUAP_Functions;
 
-use function PHPUnit\Framework\isEmpty;
+//use function PHPUnit\Framework\isEmpty;
 
     //session()->set('parametros_consulta_mapa', $data); 
     $corProgramada = 'yellow';
@@ -9,11 +9,32 @@ use function PHPUnit\Framework\isEmpty;
     $corNoCentroCirúrgico = '#97DA4B';
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
-    $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
+    $corSaídaCentroCirúrgico = '#00008B'; //'#277534'; /* Entrada no RPA */
+    $corLeitoPosOper = '#8d6e63';
+    $corAltaDayClinic = '#78909c';
     $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'Red';
     $corCirurgiaSuspensaAdm = 'purple';
+    $corAtualizarHorarios = '#2c3e50';
+    $corEditar = $corAtualizarHorarios;
+    $corConsultar = $corEditar;
     $corCirurgiaCancelada = $corCirurgiaSuspensa;
+
+    $coresBotoes = [
+        'pacientesolicitado' => $corPacienteSolicitado,
+        'nocentrocirurgico' => $corNoCentroCirúrgico,
+        'emcirurgia' => $corEmCirurgia,
+        'saidadasala' => $corSaídaDaSala,
+        'saidadoccirurgico' => $corSaídaCentroCirúrgico,
+        'leitoposoper' => $corLeitoPosOper,
+        'altadayclinic' => $corAltaDayClinic,
+        'suspender' => $corCirurgiaSuspensa,
+        'suspenderadm' => $corCirurgiaSuspensaAdm,
+        'trocar' => $corTrocaPaciente,
+        'atualizarhorarios' => $corAtualizarHorarios,
+        'editar' => $corEditar,
+        'consultar' => $corConsultar
+    ];
 ?>
  
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
@@ -25,8 +46,23 @@ use function PHPUnit\Framework\isEmpty;
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="7" class="text-start" style="background-color: #d4edda;">  <!--hsl(130, 70%, 85%) -->
-                    <h5><strong>Mapa Cirúrgico</strong></h5>
+                <th scope="row" colspan="7" class="text-start" style="background-color: white;"> <!--  #d4edda;"> -->
+                    <h5 style="display: inline-block; margin-right: 20px;"><strong>Mapa Cirúrgico</strong></h5>
+                    <div class="btn-container" style="display: inline-flex; align-items: center; gap: 10px;">
+                        <button class="btn" id="pacientesolicitado" style="background-color: <?= $corPacienteSolicitado ?>;" disabled>Paciente Solicitado</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn" id="nocentrocirurgico" style="background-color: <?= $corNoCentroCirúrgico ?>;" disabled>No Centro Cirúrgico</button>
+                         <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn" id="emcirurgia" style="background-color: <?= $corEmCirurgia ?>;" disabled>Em Cirurgia</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn" id="saidadasala" style="background-color: <?= $corSaídaDaSala ?>;" disabled>Saída da Sala</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn" id="saidadoccirurgico" style="background-color: <?= $corSaídaCentroCirúrgico ?>;" disabled>Entrada no RPA</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Leito Pós-Operatório</button>
+                        <i class="fa-solid fa-arrows-left-right"></i>
+                        <button class="btn" id="altadayclinic" style="background-color: <?= $corAltaDayClinic ?>;" disabled>Alta Day Clinic</button>
+                    </div>
                 </th>
             </tr>
         </thead>
@@ -44,17 +80,23 @@ use function PHPUnit\Framework\isEmpty;
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
                         <i class="fa-solid fa-circle" style="color: <?= $corPacienteSolicitado ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente no Centro Cirúrgico">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no Centro Cirúrgico">
                         <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente em Cirurgia">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada em Sala">
                         <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu da Sala">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Saída da Sala">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu do Centro Cirúrgico (cirurgia realizada)">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no RPA">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
+                </th>
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
+                        <i class="fa-solid fa-circle" style="color: <?= $corLeitoPosOper ?>; "></i>
+                </th>
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Alta Hospitalar Day Clinic">
+                        <i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" >Especialidade</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
@@ -117,8 +159,8 @@ use function PHPUnit\Framework\isEmpty;
                     } elseif ($itemmapa->dthrsaidacentrocirurgico) {
                         $color = $corSaídaCentroCirúrgico;
                         $background_color = $color;
-                        $status_cirurgia = 'Realizada';
-                        $title = 'Cirurgia Realizada';
+                        $status_cirurgia = 'NoRPA';
+                        $title = 'Paciente no RPA';
                     } else {
 
                         switch ($itemmapa->status_fila) {
@@ -147,10 +189,10 @@ use function PHPUnit\Framework\isEmpty;
                                 $background_color = $color;
                                 $title = 'Paciente saiu da Sala';
                                 break;
-                            case 'SaídaCentroCirúrgico':
+                            case 'SaídaCentroCirúrgico': // entrada no RPA
                                 $color = $corSaídaCentroCirúrgico;
                                 $background_color = $color;
-                                $title = 'Cirurgia Realizada';
+                                $title = 'Paciente no RPA';
                                 break;
                             /* case 'TrocaPaciente':
                                 $color =$corTrocaPaciente;
@@ -221,6 +263,8 @@ use function PHPUnit\Framework\isEmpty;
 
                     $itemmapa->hemocomponente_indisponivel = $hemocomponenteindisponivel;
 
+                    //dd($itemmapa);
+
                     // --------------------------------------------------------
 
             ?>
@@ -289,6 +333,8 @@ use function PHPUnit\Framework\isEmpty;
                     <td><?php echo $itemmapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthremcirurgia)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidasala)->format('H:i') : ' ' ?></td>
                     <td><?php echo $itemmapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $itemmapa->dthrleitoposoper ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrleitoposoper)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $itemmapa->dthraltadayclinic ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthraltadayclinic)->format('H:i') : ' ' ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>">
                         <?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>
                     </td>
@@ -421,11 +467,11 @@ use function PHPUnit\Framework\isEmpty;
         <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="pacientesolicitado" disabled> Paciente Solicitado</button>
+        <!-- <button class="btn btn-primary" id="pacientesolicitado" disabled> Paciente Solicitado</button>
         <button class="btn btn-primary" id="nocentrocirurgico" disabled> No Centro Cirúrgico </button>
         <button class="btn btn-primary" id="emcirurgia" disabled> Em Cirurgia </button>
         <button class="btn btn-primary" id="saidadasala" disabled> Saída da Sala </button>
-        <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button>
+        <button class="btn btn-primary" id="saidadoccirurgico" disabled> Saída C. Cirúrgico </button> -->
         <button class="btn btn-primary" id="trocar" disabled> Trocar </button>
         <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
         <button class="btn btn-primary" id="suspenderadm" disabled> Suspensão Administrativa </button>
@@ -520,23 +566,34 @@ use function PHPUnit\Framework\isEmpty;
 
                 console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
 
+                const coresBotoes = <?= json_encode($coresBotoes) ?>;
+
                 // Desabilite todos os botões inicialmente
-                [
-                    pacientesolicitado,
-                    nocentrocirurgico,
-                    emcirurgia,
-                    saidadasala,
-                    saidadoccirurgico,
-                    suspender,
-                    suspenderadm,
-                    trocar,
-                    atualizarhorarios,
-                    editar,
-                    consultar
-                ].forEach(button => {
-                    button.disabled = true;
-                    button.setAttribute("disabled", true);
-                    button.style.backgroundColor = '';
+                // Lista de IDs dos botões que precisam ser desabilitados
+                const botoes = [
+                    'pacientesolicitado',
+                    'nocentrocirurgico',
+                    'emcirurgia',
+                    'saidadasala',
+                    'saidadoccirurgico',
+                    'leitoposoper',
+                    'altadayclinic',
+                    'suspender',
+                    'suspenderadm',
+                    'trocar',
+                    'atualizarhorarios',
+                    'editar',
+                    'consultar'
+                ];
+
+                // Percorrer os botões e definir a cor ao desativá-los
+                botoes.forEach(id => {
+                    let button = document.getElementById(id);
+                    if (button) {
+                        button.disabled = true;
+                        button.style.backgroundColor = coresBotoes[id] || '#ccc'; // Cor do array ou cinza padrão
+                        //button.style.filter = 'brightness(85%)'; // Deixa a cor um pouco mais suave
+                    }
                 });
 
                 // Atualize os botões com base nas permissões e status
@@ -560,6 +617,14 @@ use function PHPUnit\Framework\isEmpty;
                     saidadoccirurgico.disabled = false;
                     saidadoccirurgico.removeAttribute("disabled");
                     saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
+                } else if (statuscirurgia === "NoRPA" && permiteatualizar && tempermissaoalterar) {
+                    leitoposoper.disabled = false;
+                    leitoposoper.removeAttribute("disabled");
+                    leitoposoper.style.backgroundColor = "<?= $corLeitoPosOper ?>";
+
+                    altadayclinic.disabled = false;
+                    altadayclinic.removeAttribute("disabled");
+                    altadayclinic.style.backgroundColor = "<?= $corAltaDayClinic ?>";
                 }
 
                 if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) {
@@ -614,6 +679,7 @@ use function PHPUnit\Framework\isEmpty;
                         dthrcirurgia: selectedRow.dataset.dthrcirurgia,
                         mapaId: selectedRow.dataset.idmapa,
                         listaId: selectedRow.dataset.idlista,
+                        buttonId: buttonId,
                         time: getFormattedTimestamp()
                     };
 
@@ -692,6 +758,8 @@ use function PHPUnit\Framework\isEmpty;
         handleButtonHorarios("emcirurgia");
         handleButtonHorarios("saidadasala");
         handleButtonHorarios("saidadoccirurgico");
+        handleButtonHorarios("leitoposoper");
+        handleButtonHorarios("altadayclinic");
         handleButtonOthers(suspender, 'suspendercirurgia');
         handleButtonOthers(suspenderadm, 'suspendercirurgia');
         handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
@@ -739,7 +807,7 @@ use function PHPUnit\Framework\isEmpty;
                 break;
             case 'NoCentroCirurgico':
                 evento = 'dthremcirurgia';
-                message = 'Confirma o paciente em cirurgia?';
+                message = 'Confirma a entrada do paciente na sala para cirurgia?';
                 break;
             case 'EmCirurgia':
                 evento = 'dthrsaidasala';
@@ -747,7 +815,19 @@ use function PHPUnit\Framework\isEmpty;
                 break;
             case 'SaídaDaSala':
                 evento = 'dthrsaidacentrocirurgico';
-                message = 'Confirma a saída do centro cirúrgico?';
+                message = 'Confirma a entrada no RPA?';
+                break;
+            case 'NoRPA':
+                switch (cirurgia.buttonId) {
+                    case 'leitoposoper':
+                        evento = 'dthrleitoposoper';
+                        message = 'Confirma o encaminhamento ao leito pós-operatório?';
+                        break;
+                    case 'altadayclinic':
+                        evento = 'dthraltadayclinic';
+                        message = 'Confirma a alta hospitalar day clinic?';
+                        break;
+                }
                 break;
             case 'Suspensa':
                 evento = 'dthrsuspensao';
@@ -1031,6 +1111,8 @@ use function PHPUnit\Framework\isEmpty;
                     { "width": "57px" }, 
                     { "width": "57px" }, 
                     { "width": "57px" }, 
+                    { "width": "57px" }, 
+                    { "width": "57px" }, 
                     { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
@@ -1058,7 +1140,7 @@ use function PHPUnit\Framework\isEmpty;
                     
                 ],
             "columnDefs": [
-                { "orderable": false, "targets": [1, 6, 7, 8, 9, 10, 11, 21, 22] },
+                { "orderable": false, "targets": [1, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22] },
                 { "visible": false, "targets": [0] }
             ],
             layout: { topStart: {

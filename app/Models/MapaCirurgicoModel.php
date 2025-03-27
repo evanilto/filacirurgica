@@ -26,6 +26,8 @@ class MapaCirurgicoModel extends Model
         'dthrsuspensao',
         'dthrcirurgia',
         'dthrsaidacentrocirurgico',
+        'dthrleitoposoper',
+        'dthraltadayclinic',
         'dthrtroca',
         'idlistatroca',
         'idcentrocirurgico',

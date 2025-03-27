@@ -968,10 +968,10 @@ class MapaCirurgico extends ResourceController
         COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
     ');
    
-    $builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
+    $builder->where('vw_mapacirurgico.dthrcirurgia >= ', (new DateTime())->format('Y-m-d'));
     $builder->where('vw_mapacirurgico.dthrsuspensao IS NULL'); 
     $builder->where('vw_mapacirurgico.dthrtroca IS NULL'); 
-    //$builder->where('vw_mapacirurgico.dthrcirurgia >= ', (new DateTime())->format('Y-m-d'));
+    $builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
 
     if (!empty($data['idmapa'])) {
     
@@ -1864,6 +1864,38 @@ class MapaCirurgico extends ResourceController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Não Existem Cirurgias Em Aprovação.'
+            ]);
+        }
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function verificaCirurgiasComHemocomponentes()
+    {
+       
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Requisição inválida.'
+            ])->setStatusCode(400);
+        }
+
+        $data = [];
+        $cirurgias = $this->getCirurgiaComHemocomponentes($data);
+
+        //die(var_dump($mapa));
+
+        if ($cirurgias) {
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Existe Cirurgias'
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Não Existem Cirurgias Com Hemocomponentes no Período.'
             ]);
         }
     }
@@ -2766,6 +2798,68 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function confirmarReserva()
+    {
+        helper(['form', 'url']);
+
+        \Config\Services::session();
+
+        $data = $this->request->getVar();
+
+        //var_dump($data);die();
+
+        $db = \Config\Database::connect('default');
+        $db->transStart();
+        
+        try {
+
+            if (isset($data['inddisponibilidade'])) {
+
+                foreach ($data['inddisponibilidade'] as $key => $inddisponibilidade) {
+
+                    $this->hemocomponentescirurgiamodel->update($key, ['inddisponibilidade' => $inddisponibilidade]);
+
+                    if ($db->transStatus() === false) {
+                        $error = $db->error();
+                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+    
+                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                            sprintf('Erro ao reservar hemocomponente! [%d] %s', $errorCode, $errorMessage)
+                        );
+                    }
+                }
+            }
+            
+            $db->transComplete(); 
+
+            if ($db->transStatus() === false) {
+                $error = $db->error();
+                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                    sprintf('Erro ao incluir usuário! [%d] %s', $errorCode, $errorMessage)
+                );
+            }
+
+            session()->setFlashdata('success', 'Operação concluída com sucesso!');
+
+        } catch (\Throwable $e) {
+            $db->transRollback(); 
+            $msg = sprintf('Exception - '.$e->getMessage());
+            log_message('error', 'Exception: ' . $msg);
+            session()->setFlashdata('exception', $msg);
+        }
+
+        return redirect()->to('mapacirurgico/exibircirurgiacomhemocomps');
+
+    }
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
     public function incluirUrgencia()
     {
         HUAP_Functions::limpa_msgs_flash();
@@ -3628,6 +3722,7 @@ class MapaCirurgico extends ResourceController
 
             $db->transStart();
 
+            die(var_dump($arrayid['idMapa']));
             //$this->mapacirurgicomodel->update($idMapa, $evento);
             $this->mapacirurgicomodel->update($arrayid['idMapa'], $evento);
 

@@ -34,12 +34,14 @@
 
         <script>
 
-           /*  document.addEventListener("DOMContentLoaded", function() {
+        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-reservarhemocomponente')) {?>
+
+            document.addEventListener("DOMContentLoaded", function() {
 
                 event.preventDefault(); // Previne a submissão padrão do formulário
 
                 const xhr = new XMLHttpRequest();
-                xhr.open('POST', '<--?= base_url('mapacirurgico/verificacirurgiasemaprovacao') ?>', true); 
+                xhr.open('POST', '<?= base_url('mapacirurgico/verificacirurgiascomhemocomponentes') ?>', true); 
                 xhr.setRequestHeader('Content-Type', 'application/json');
                 xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
@@ -50,7 +52,7 @@
                         if (response.success) {
 
                             Swal.fire({
-                                title: 'Há cirurgia(s) em aprovação. Deseja verificar agora?',
+                                title: 'Existem cirurgia(s) com utilização de hemocomponentes no período. Deseja verificar agora?',
                                 icon: 'question',
                                 showCancelButton: true,
                                 confirmButtonText: 'Sim',
@@ -58,7 +60,7 @@
                             }).then((result) => {
                                     if (result.isConfirmed) {
                                         $('#janelaAguarde').show(); 
-                                            const url = '<--?= base_url('mapacirurgico/vercirurgiasemaprovacao') ?>';
+                                            const url = '<?= base_url('mapacirurgico/exibircirurgiacomhemocomps') ?>';
                                             window.location.href = url;
                                     } else {
                                         $('#janelaAguarde').hide(); 
@@ -76,7 +78,7 @@
                 };
 
                 xhr.send();
-            }); */
+            });
 
             $(document).ready(function() {
                 $('#idForm').submit(function() {
@@ -88,6 +90,8 @@
                 //$('#sidebar').html('<p>Teste</p>');
 
             });
+
+        <?php } ?>
         </script>
 
 <?= $this->endSection() ?>
