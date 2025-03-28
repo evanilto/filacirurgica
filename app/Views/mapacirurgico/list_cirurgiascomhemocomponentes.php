@@ -25,7 +25,7 @@ use function PHPUnit\Framework\isEmpty;
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="7" class="text-start" style="background-color: #d4edda;">  <!--hsl(130, 70%, 85%) -->
+                <th scope="row" colspan="7" class="bg-light text-start">
                     <h5><strong>Cirurgias Com Hemocomponentes</strong></h5>
                 </th>
             </tr>

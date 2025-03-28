@@ -3,7 +3,7 @@
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-10">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
                     <b><?= 'Atualizar Horários da Cirurgia' ?></b>
@@ -116,7 +116,7 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="dthrcirurgia" class="form-label">Data/Hora da Cirurgia</label>
                                     <div class="input-group">
@@ -131,11 +131,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="hrpacientesolicitado" class="form-label">Paciente Solicitado</label>
                                     <div class="input-group">
-                                        <input type="text" id="hrpacientesolicitado" placeholder="HH:MM"
+                                        <input type="time" id="hrpacientesolicitado" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hrpacientesolicitado')): ?>is-invalid<?php endif ?>"
                                             name="hrpacientesolicitado" value="<?= set_value('hrpacientesolicitado', $data['hrpacientesolicitado']) ?>" />
                                         <?php if ($validation->getError('hrpacientesolicitado')): ?>
@@ -146,11 +146,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="hrnocentrocirurgico" class="form-label">Entrada C. Cirúrgico</label>
                                     <div class="input-group">
-                                        <input type="text" id="hrnocentrocirurgico" placeholder="HH:MM"
+                                        <input type="time" id="hrnocentrocirurgico" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hrnocentrocirurgico')): ?>is-invalid<?php endif ?>"
                                             name="hrnocentrocirurgico" value="<?= set_value('hrnocentrocirurgico', $data['hrnocentrocirurgico']) ?>" />
                                         <?php if ($validation->getError('hrnocentrocirurgico')): ?>
@@ -161,11 +161,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="hremcirurgia" class="form-label">Em Cirurgia</label>
                                     <div class="input-group">
-                                        <input type="text" id="hremcirurgia" placeholder="HH:MM"
+                                        <input type="time" id="hremcirurgia" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hremcirurgia')): ?>is-invalid<?php endif ?>"
                                             name="hremcirurgia" value="<?= set_value('hremcirurgia', $data['hremcirurgia']) ?>" />
                                         <?php if ($validation->getError('hremcirurgia')): ?>
@@ -176,11 +176,13 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="hrsaidasala" class="form-label">Saída da Sala</label>
                                     <div class="input-group">
-                                        <input type="text" id="hrsaidasala" placeholder="HH:MM"
+                                        <input type="time" id="hrsaidasala" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hrsaidasala')): ?>is-invalid<?php endif ?>"
                                             name="hrsaidasala" value="<?= set_value('hrsaidasala', $data['hrsaidasala']) ?>" />
                                         <?php if ($validation->getError('hrsaidasala')): ?>
@@ -191,16 +193,46 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="hrsaidacentrocirurgico" class="form-label">Saída do C. Cirúrgico</label>
+                                    <label for="hrsaidacentrocirurgico" class="form-label">Entrada no RPA</label>
                                     <div class="input-group">
-                                        <input type="text" id="hrsaidacentrocirurgico" placeholder="HH:MM"
+                                        <input type="time" id="hrsaidacentrocirurgico" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hrsaidacentrocirurgico')): ?>is-invalid<?php endif ?>"
                                             name="hrsaidacentrocirurgico" value="<?= set_value('hrsaidacentrocirurgico', $data['hrsaidacentrocirurgico']) ?>" />
                                         <?php if ($validation->getError('hrsaidacentrocirurgico')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('hrsaidacentrocirurgico') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="hrleitoposoper" class="form-label">Leito Pós-Operatório</label>
+                                    <div class="input-group">
+                                        <input type="time" id="hrleitoposoper" placeholder="HH:MM"
+                                            class="form-control <?php if($validation->getError('hrleitoposoper')): ?>is-invalid<?php endif ?>"
+                                            name="hrleitoposoper" value="<?= set_value('hrleitoposoper', $data['hrleitoposoper']) ?>" />
+                                        <?php if ($validation->getError('hrleitoposoper')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hrleitoposoper') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="hraltadayclinic" class="form-label">Alta Day Clinic</label>
+                                    <div class="input-group">
+                                        <input type="time" id="hraltadayclinic" placeholder="HH:MM"
+                                            class="form-control <?php if($validation->getError('hraltadayclinic')): ?>is-invalid<?php endif ?>"
+                                            name="hraltadayclinic" value="<?= set_value('hraltadayclinic', $data['hraltadayclinic']) ?>" />
+                                        <?php if ($validation->getError('hraltadayclinic')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('hraltadayclinic') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>

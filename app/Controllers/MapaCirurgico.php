@@ -3465,6 +3465,8 @@ class MapaCirurgico extends ResourceController
         $data['hremcirurgia'] = $mapa->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthremcirurgia)->format('H:i') : '';
         $data['hrsaidasala'] = $mapa->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsaidasala)->format('H:i') : '';
         $data['hrsaidacentrocirurgico'] = $mapa->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsaidacentrocirurgico)->format('H:i') : '';
+        $data['hrleitoposoper'] = $mapa->dthrleitoposoper ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrleitoposoper)->format('H:i') : '';
+        $data['hraltadayclinic'] = $mapa->dthraltadayclinic ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthraltadayclinic)->format('H:i') : '';
         //$data['hrsuspensao'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-s H:i:s', $mapa->dthrsuspensao)->format('H:i') : '';
         //$data['hrtroca'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-s H:i:s', $mapa->dthrsuspensao)->format('H:i') : '';
              
@@ -3494,6 +3496,8 @@ class MapaCirurgico extends ResourceController
             'hremcirurgia' => 'permit_empty|valid_date[H:i]',
             'hrsaidasala' => 'permit_empty|valid_date[H:i]',
             'hrsaidacentrocirurgico' => 'permit_empty|valid_date[H:i]',
+            'hrleitoposoper' => 'permit_empty|valid_date[H:i]',
+            'hraltadayclinic' => 'permit_empty|valid_date[H:i]',
             //'hrsuspensao' => 'permit_empty|valid_date[H:i]',
         ];
 
@@ -3519,6 +3523,8 @@ class MapaCirurgico extends ResourceController
                 'dthremcirurgia'  => !empty($data['hremcirurgia']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hremcirurgia'] : NULL,
                 'dthrsaidasala' => !empty($data['hrsaidasala']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidasala'] : NULL,
                 'dthrsaidacentrocirurgico' => !empty($data['hrsaidacentrocirurgico']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrsaidacentrocirurgico'] : NULL,
+                'dthrleitoposoper' => !empty($data['hrleitoposoper']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hrleitoposoper'] : NULL,
+                'dthraltadayclinic' => !empty($data['hraltadayclinic']) ? DateTime::createFromFormat('d/m/Y H:i', $data['dthrcirurgia'])->format('Y-m-d').' '.$data['hraltadayclinic'] : NULL,
                 ];
 
               /*   $mapa = [
@@ -3537,6 +3543,8 @@ class MapaCirurgico extends ResourceController
                 $dthrInicioCirurgia = $this->createDateTime($mapa['dthremcirurgia']);
                 $dthrSaidaSala = $this->createDateTime($mapa['dthrsaidasala']);
                 $dthrSaidaCentroCirurgico = $this->createDateTime($mapa['dthrsaidacentrocirurgico']);
+                $dthrLeitoPosOper = $this->createDateTime($mapa['dthrleitoposoper']);
+                $dthrAltaDayClinic = $this->createDateTime($mapa['dthraltadayclinic']);
 
                 // Lista de campos com a ordem esperada
                 $campos = [
@@ -3544,15 +3552,19 @@ class MapaCirurgico extends ResourceController
                     'hrnocentrocirurgico' => $dthrEntrada,
                     'hremcirurgia' => $dthrInicioCirurgia,
                     'hrsaidasala' => $dthrSaidaSala,
-                    'hrsaidacentrocirurgico' => $dthrSaidaCentroCirurgico
+                    'hrsaidacentrocirurgico' => $dthrSaidaCentroCirurgico,
+                    'hrleitoposoper' => $dthrLeitoPosOper,
+                    'hraltadayclinic' => $dthrAltaDayClinic,
                 ];
 
                 // Lista organizada de mensagens de erro
                 $mensagensErro = [
                     'hrnocentrocirurgico' => 'A hora de entrada no centro cirúrgico não pode ser menor que a hora de solicitação do paciente!',
                     'hremcirurgia' => 'A hora de início da cirurgia não pode ser menor que a hora de entrada no centro cirúrgico!',
-                    'hrsaidasala' => 'A hora de saída da sala tem que ser maior que a hora de início de cirurgia!',
-                    'hrsaidacentrocirurgico' => 'A hora de saída do centro cirúrgico não pode ser menor que a hora de saída da sala!'
+                    'hrsaidasala' => 'A hora de saída da sala tem que ser maior que a hora de início da cirurgia!',
+                    'hrsaidacentrocirurgico' => 'A hora de entrada no RPA não pode ser menor que a hora de saída da sala de cirurgia!',
+                    'hrleitoposoper' => 'A hora de encaminhamento ao leito pós-operatório tem que ser maior que a hora de entrada no RPA!',
+                    'hraltadayclinic' => 'A hora da alta day clinic tem que ser maior que a hora de de entrada no RPA!',
                 ];
 
                 // Verificações das datas preenchidas quanto à ordem temporal
@@ -3578,6 +3590,16 @@ class MapaCirurgico extends ResourceController
                             $erro = true;
                             break;
                         }
+                        if ($key === 'hrleitoposoper' && $dthrSaidaCentroCirurgico && $dthrLeitoPosOper < $dthrSaidaCentroCirurgico) {
+                            $this->validator->setError('hrleitoposoper', $mensagensErro['hrleitoposoper']);
+                            $erro = true;
+                            break;
+                        }
+                        if ($key === 'hraltadayclinic' && $dthrSaidaCentroCirurgico && $dthrAltaDayClinic < $dthrSaidaCentroCirurgico) {
+                            $this->validator->setError('hraltadayclinic', $mensagensErro['hraltadayclinic']);
+                            $erro = true;
+                            break;
+                        }
                     }
                 }
 
@@ -3592,11 +3614,28 @@ class MapaCirurgico extends ResourceController
                             }
 
                             if ($next_non_empty && $value_check) {
-                                // Define o erro para a primeira data intermediária vazia quando há subsequentes preenchidas
-                                $this->validator->setError($key, 'Existem tempos intermediários obrigatórios não preenchidos.');
-                                $erro = true;
-                                break 2; // Encerra ambos os loops
+                                if ($key != "hrleitoposoper") {
+                                    // Define o erro para a primeira data intermediária vazia quando há subsequentes preenchidas
+                                    $this->validator->setError($key, 'Tempo intermediário obrigatório não preenchido.');
+                                    $erro = true;
+                                    break 2; // Encerra ambos os loops
+                                }
                             }
+                        }
+                    }
+                }
+
+                $mapaant = $this->mapacirurgicomodel->find($data['idmapa']);
+                $cirurgiajarealizada = !empty($mapaant['dthrsaidacentrocirurgico']);
+
+                if (!$erro) {
+                    if ($cirurgiajarealizada && !$dthrSaidaCentroCirurgico) {
+                        $this->validator->setError('hrsaidacentrocirurgico', 'É obrigatório informar a hora de entrada no RPA para uma cirurgia que já foi realizada.');
+                        $erro = true;
+                    } else {
+                        if ($dthrLeitoPosOper && $dthrAltaDayClinic) {
+                            $this->validator->setError($key, 'Informe a hora de encaminhamento ao leito pós-operatório ou a hora da alta day clinic.');
+                            $erro = true;
                         }
                     }
                 }
@@ -3629,10 +3668,17 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
+                if ($cirurgiajarealizada) { // cirurgia realizada
+                    $evento = 8;
+                } else {
+                    $evento = is_null($campos['hrsaidacentrocirurgico']) ? 8 : 4;
+                }
+
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
                     'idlistaespera' => $data['idlista'],
-                    'idevento' => (is_null($campos['hrsaidacentrocirurgico']) ? 8 : 4),
+                    //'idevento' => (is_null($campos['hrsaidacentrocirurgico']) ? 8 : 4),
+                    'idevento' => $evento,
                     'idlogin' => session()->get('Sessao')['login']
                 ];
 
@@ -3722,7 +3768,7 @@ class MapaCirurgico extends ResourceController
 
             $db->transStart();
 
-            die(var_dump($arrayid['idMapa']));
+            //die(var_dump($arrayid['idMapa']));
             //$this->mapacirurgicomodel->update($idMapa, $evento);
             $this->mapacirurgicomodel->update($arrayid['idMapa'], $evento);
 

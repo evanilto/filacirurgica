@@ -10,7 +10,7 @@
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
     $corSaídaCentroCirúrgico = '#00008B'; //'#277534'; /* Entrada no RPA */
-    $corLeitoPosOper = '#8d6e63';
+    $corLeitoPosOper = '#5d4037'; // '#8d6e63'
     $corAltaDayClinic = '#78909c';
     $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'Red';
@@ -46,7 +46,7 @@
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="7" class="text-start" style="background-color: white;"> <!--  #d4edda;"> -->
+                <th scope="row" colspan="7" class="bg-light text-start">  <!--style="background-color: #d4edda;"> -->
                     <h5 style="display: inline-block; margin-right: 20px;"><strong>Mapa Cirúrgico</strong></h5>
                     <div class="btn-container" style="display: inline-flex; align-items: center; gap: 10px;">
                         <button class="btn" id="pacientesolicitado" style="background-color: <?= $corPacienteSolicitado ?>;" disabled>Paciente Solicitado</button>
@@ -89,7 +89,7 @@
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Saída da Sala">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no RPA">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Cirurgia Realizada">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
@@ -155,12 +155,7 @@
                         $background_color = $color;
                         $status_cirurgia = 'TrocaPaciente';
                         $title = 'Troca de Paciente';
-
-                    } elseif ($itemmapa->dthrsaidacentrocirurgico) {
-                        $color = $corSaídaCentroCirúrgico;
-                        $background_color = $color;
-                        $status_cirurgia = 'NoRPA';
-                        $title = 'Paciente no RPA';
+                   
                     } else {
 
                         switch ($itemmapa->status_fila) {
@@ -189,11 +184,21 @@
                                 $background_color = $color;
                                 $title = 'Paciente saiu da Sala';
                                 break;
-                            case 'SaídaCentroCirúrgico': // entrada no RPA
+                            case 'Realizada': // No RPA
                                 $color = $corSaídaCentroCirúrgico;
                                 $background_color = $color;
-                                $title = 'Paciente no RPA';
+                                $title = 'Cirurgia Realizada';
                                 break;
+                            case 'LeitoPosOper': 
+                                $color = $corLeitoPosOper;
+                                $background_color = $color;
+                                $title = 'Paciente encaminhado ao leito pós-operatório';
+                                break;
+                                case 'AltaDayClinic': 
+                                    $color = $corAltaDayClinic;
+                                    $background_color = $color;
+                                    $title = 'Paciente com alta hospitalar day clinic';
+                                    break;
                             /* case 'TrocaPaciente':
                                 $color =$corTrocaPaciente;
                                 $background_color = $color;
@@ -617,7 +622,7 @@
                     saidadoccirurgico.disabled = false;
                     saidadoccirurgico.removeAttribute("disabled");
                     saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
-                } else if (statuscirurgia === "NoRPA" && permiteatualizar && tempermissaoalterar) {
+                } else if (statuscirurgia === "Realizada" && permiteatualizar && tempermissaoalterar) {
                     leitoposoper.disabled = false;
                     leitoposoper.removeAttribute("disabled");
                     leitoposoper.style.backgroundColor = "<?= $corLeitoPosOper ?>";
@@ -655,7 +660,8 @@
 
                 }
 
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
+                //if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
+                if (["PacienteSolicitado", "Programada"].includes(statuscirurgia)) {
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
                 }
@@ -811,13 +817,13 @@
                 break;
             case 'EmCirurgia':
                 evento = 'dthrsaidasala';
-                message = 'Confirma a saída da sala?';
+                message = 'Confirma a saída da sala cirúrgica?';
                 break;
             case 'SaídaDaSala':
                 evento = 'dthrsaidacentrocirurgico';
                 message = 'Confirma a entrada no RPA?';
                 break;
-            case 'NoRPA':
+            case 'Realizada': // No RPA
                 switch (cirurgia.buttonId) {
                     case 'leitoposoper':
                         evento = 'dthrleitoposoper';
