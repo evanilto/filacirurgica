@@ -31,14 +31,14 @@
         <!-- HTML5 export v3.0.2 e Print view v3.0.2)                                                                                                        -->
         <script src="<?= base_url('/assets/DataTables/i18n/datatables.min.js') ?>"></script>
         <!----------------------------------------------------------------------------------------------------------------------------------------------------->
-        <script src="<?= base_url('/assets/bootstrap.5.3.3/js/bootstrap.bundle.min.js') ?>"></script>
-        <script src="<?= base_url('/assets/select2-4.0.13/dist/js/select2.min.js') ?>" crossorigin="anonymous"></script>
-        <script src="<?= base_url('/assets/jquery.countdown-2.2.0/jquery.countdown.min.js') ?>" crossorigin="anonymous"></script>
-        <script src="<?= base_url('/assets/sweetalert2-11/dist/js/sweetalert2.min.js') ?>" crossorigin="anonymous"></script>
-        <script src="<?= base_url('/assets/js/jquery.maskedinput.min.js') ?>" crossorigin="anonymous"></script>
-        <script src="<?= base_url('/assets/js/jquery.maskMoney.min.js') ?>" crossorigin="anonymous"></script>
+        <!-- <script src="<-?= base_url('/assets/js/jquery.maskedinput.min.js') ?>" crossorigin="anonymous"></script>
+        <script src="<-?= base_url('/assets/js/jquery.maskMoney.min.js') ?>" crossorigin="anonymous"></script> -->
         <script src="<?= base_url('/assets/js/HUAP_ready_jquery.js') ?>" crossorigin="anonymous"></script>
         <script src="<?= base_url('/assets/js/HUAP_jquery.js') ?>" crossorigin="anonymous"></script>
+        <!-- <script src="<-?= base_url('/assets/jquery.countdown-2.2.0/jquery.countdown.min.js') ?>" crossorigin="anonymous"></script> -->
+        <script src="<?= base_url('/assets/sweetalert2-11/dist/js/sweetalert2.min.js') ?>" crossorigin="anonymous"></script>
+        <script src="<?= base_url('/assets/bootstrap.5.3.3/js/bootstrap.bundle.min.js') ?>"></script>
+        <script src="<?= base_url('/assets/select2-4.0.13/dist/js/select2.min.js') ?>" crossorigin="anonymous"></script>
 
         <script>
             function disableEnter(event) {

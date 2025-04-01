@@ -71,33 +71,35 @@
     <ul class="nav navbar-nav flex-column">
         <?php if(HUAP_Functions::tem_permissao('relatorios')) { ?>
         <li>
-                <a href="#relatorios" class="nav-link text-white p-2 disabled" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-plus toggle-icon"></i> Relatórios
-                </a>
-                <div class="collapse" id="relatorios">
-                    <ul class="nav flex-column submenu-2">
-                        <li>
-                            <a href="<?= base_url('relatorios/agendas') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Agendas
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav flex-column submenu-2">
-                        <li>
-                        <a href="<?= base_url('relatorios/prontuariosretidos') ?>" class="nav-link text-white p-2 enabled" tabindex="-1" aria-disabled="false">
-                                <i class="fa-solid fa-user-nurse"></i> Prontuários Retidos
-                            </a>
-                        </li>
-                    </ul>
-                    <ul class="nav flex-column submenu-2">
-                        <li>
-                            <a href="<?= base_url('relatorios/movimentacoessetor') ?>" class="nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Movimentações entre Setores
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
+            <a href="#relatorios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                <i class="fa-solid fa-plus toggle-icon"></i> Relatórios
+            </a>
+            <div class="collapse" id="relatorios">
+                <ul class="nav flex-column submenu-2">
+                    <?php if(HUAP_Functions::tem_permissao('relatorios-potencialcontaminacao')) { ?>
+                    <li>
+                        <a href="<?= base_url('relatorios/potencialcontaminacao') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Potencial de Contaminação
+                        </a>
+                    <?php } ?>
+                    </li>
+                </ul>
+                <!-- <ul class="nav flex-column submenu-2">
+                    <li>
+                    <a href="<-?= base_url('relatorios/prontuariosretidos') ?>" class="nav-link text-white p-2 enabled" tabindex="-1" aria-disabled="false">
+                            <i class="fa-solid fa-user-nurse"></i> Prontuários Retidos
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav flex-column submenu-2">
+                    <li>
+                        <a href="<-?= base_url('relatorios/movimentacoessetor') ?>" class="nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Movimentações entre Setores
+                        </a>
+                    </li>
+                </ul> -->
+            </div>
+        </li>
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">

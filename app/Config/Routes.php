@@ -114,15 +114,8 @@ $routes->group('equipamentos', ['filter' => 'auth'], function ($routes) {
 });
 
 $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
-    $routes->get('agendas', 'Agendas::consultarAgendas');
-    $routes->post('consultar', 'Agendas::consultar');
-    $routes->get('imprimiragendas', 'Agendas::imprimirAgendas');
-    $routes->get('movimentacoessetor', 'Prontuarios::consultarMovimentacoesSetor');
-    $routes->post('qtdmovimentacoessetor', 'Prontuarios::qtdMovimentacoesSetor');
-    $routes->get('prontuariosretidos', 'Prontuarios::consultarProntuariosRetidos');
-    $routes->post('prontuariosretidos', 'Prontuarios::listarProntuariosRetidos');
-    $routes->get('imprimirprontuariosretidos', 'Prontuarios::imprimirProntuariosRetidos');
-
+    $routes->get('potencialcontaminacao', 'MapaCirurgico::consultarPotencialContaminacao');
+    $routes->post('exibirpotencialcontaminacao', 'MapaCirurgico::exibirPotencialContaminacao');
 });
 
 /* $routes->get('inserir-paciente', 'PacientesController::inserir_paciente');

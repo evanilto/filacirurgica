@@ -474,6 +474,137 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function exibirPotencialContaminacao()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $dataflash = session()->getFlashdata('dataflash');
+        if ($dataflash) {
+            $data = $dataflash;
+        } else {
+            $data = $this->request->getVar();
+        }
+
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+            //$data = $dataflash;
+            $data = $_SESSION['mapacirurgico'];
+        }
+
+        //die(var_dump($dataflash));
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'nome' => 'permit_empty|min_length[3]',
+        ];
+
+        if (!$dataflash) {
+            if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
+                $rules = $rules + [
+                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                ];
+            }
+        }
+
+        if ($this->validate($rules)) {
+            if ($data['dtinicio'] || $data['dtfim']) {
+
+                $data['filas'] = $this->selectfilaativas;
+                $data['riscos'] = $this->selectrisco;
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                if (empty($data['dtinicio'])) {
+                    $this->validator->setError('dtinicio', 'Informe a data de início!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (!$data['dtfim']) {
+                    $this->validator->setError('dtfim', 'Informe a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
+            
+            }
+            
+            $this->validator->reset();
+
+            $result = $this->getMapaCirurgico($data);
+
+            //die(var_dump($result));
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['especialidades'] = $this->selectespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'relatorios/form_consulta_potencialcontaminacao',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            //die(var_dump($result));
+
+            //session()->set('mapa_cirurgico_resultados', $result);
+
+            /* $result = session()->get('mapa_cirurgico_resultados');
+            die(var_dump($result)); */
+
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['mapacirurgico'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_potencialcontaminacao',
+                                               'mapacirurgico' => $result,
+                                               'data' => $data]);
+
+        } else {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
+            //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'relatorios/form_consulta_potencialcontaminacao',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
     public function exibirCirurgiasEmAprovacao()
     {        
         helper(['form', 'url', 'session']);
@@ -710,6 +841,32 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function consultarPotencialContaminacao()
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['mapacirurgico'] = NULL;
+
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
+        $data['filas'] = $this->selectfilaativas;
+        $data['riscos'] = $this->selectrisco;
+        $data['especialidades'] = $this->selectespecialidadeaghu;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function getMapaCirurgico($data) 
 {
     // Conexão com o banco de dados
@@ -789,6 +946,86 @@ class MapaCirurgico extends ResourceController
 
     return $builder->get()->getResult();
 }
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getPotencialContaminacao($data) 
+{
+
+    $db = \Config\Database::connect('default');
+
+    $builder = $db->table('vw_mapacirurgico');
+
+    $builder->join('local_aip_contatos_pacientes', 'local_aip_contatos_pacientes.pac_codigo = vw_mapacirurgico.codigo', 'inner');
+    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
+
+
+    // Selecionando campos específicos com aliases
+    $builder->select('
+        vw_mapacirurgico.codigo,
+        vw_mapacirurgico.prontuario,
+        vw_mapacirurgico.nome,
+        vw_mapacirurgico.dt_nascimento,
+        local_aip_contatos_pacientes.ddd,
+        local_aip_contatos_pacientes.nro_fone,
+        (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+        COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
+    ');
+   
+    //die(var_dump($data));
+
+    if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+        $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
+        $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+    }
+
+    // Condicional para prontuario
+    if (!empty($data['prontuario'])) {
+        $builder->where('vw_mapacirurgico.prontuario', $data['prontuario']);
+    }
+
+    // Condicional para nome
+    if (!empty($data['nome'])) {
+        $builder->like('vw_mapacirurgico.nome_paciente', strtoupper($data['nome']));
+    }
+
+    // Condicional para especialidade
+    if (!empty($data['especialidade'])) {
+        $builder->where('vw_mapacirurgico.idespecialidade', $data['especialidade']);
+    }
+
+    // Condicional para fila
+    if (!empty($data['fila'])) {
+        $builder->where('vw_mapacirurgico.idfila', $data['fila']);
+    }
+
+    // Condicional para risco
+    if (!empty($data['risco'])) {
+        $builder->where('vw_mapacirurgico.idriscocirurgico', $data['risco']);
+    }
+
+    // Condicional para complexidades
+    if (!empty($data['complexidades'])) {
+        $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
+    }
+
+    // Condicional para complexidades
+    if (!empty($data['situacao'])) {
+        $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
+    }
+
+    $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
+    
+    //var_dump($builder->getCompiledSelect());die();
+    //var_dump($builder->get()->getResult());die();
+
+        return $builder->get()->getResult();
+    }
     /**
      * Return a new resource object, with default properties
      *

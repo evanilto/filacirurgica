@@ -1137,6 +1137,12 @@ class HUAP_Functions
             case 'mapacirurgico-reservarhemocomponente':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '31']));
 
+            case 'relatorios':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','65']));
+
+            case 'relatorios-potencialcontaminacao':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['65']));
+
             default:
                 return false;
         }
