@@ -38,6 +38,8 @@ use Config\Database;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use PHPUnit\Framework\Constraint\IsNull;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Models\LocalAipContatosPacientesModel;
+use App\Models\LocalVwAghuCirurgiasModel;
 
 class MapaCirurgico extends ResourceController
 {
@@ -96,6 +98,8 @@ class MapaCirurgico extends ResourceController
     private $equipamentosmodel;
     private $equipamentoscirurgiamodel;
     private $hemocomponentescirurgiamodel;
+    private $localaipcontatospacientesmodel;
+    private $localvwaghucirurgiasmodel;
 
 
     public function __construct()
@@ -132,6 +136,8 @@ class MapaCirurgico extends ResourceController
         $this->equipamentosmodel = new EquipamentosModel();
         $this->equipamentoscirurgiamodel = new EquipamentosCirurgiaModel();
         $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
+        $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
+        $this->localvwaghucirurgiasmodel = new LocalVwAghuCirurgiasModel();
 
         //$this->aghucontroller = new Aghu();
 
@@ -550,7 +556,7 @@ class MapaCirurgico extends ResourceController
             
             $this->validator->reset();
 
-            $result = $this->getMapaCirurgico($data);
+            $result = $this->getPotencialContaminacao($data);
 
             //die(var_dump($result));
 
@@ -560,7 +566,7 @@ class MapaCirurgico extends ResourceController
                 $data['especialidades'] = $this->selectespecialidadeaghu;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
-                return view('layouts/sub_content', ['view' => 'relatorios/form_consulta_potencialcontaminacao',
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
             
@@ -582,7 +588,7 @@ class MapaCirurgico extends ResourceController
             $_SESSION['mapacirurgico'] = $data;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/list_potencialcontaminacao',
-                                               'mapacirurgico' => $result,
+                                               'cirurgias' => $result,
                                                'data' => $data]);
 
         } else {
@@ -595,7 +601,7 @@ class MapaCirurgico extends ResourceController
             //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
             $data['especialidades'] = $this->selectespecialidadeaghu;
 
-            return view('layouts/sub_content', ['view' => 'relatorios/form_consulta_potencialcontaminacao',
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                                                 'validation' => $this->validator,
                                                 'data' => $data]);
         }
@@ -958,20 +964,11 @@ class MapaCirurgico extends ResourceController
 
     $builder = $db->table('vw_mapacirurgico');
 
-    $builder->join('local_aip_contatos_pacientes', 'local_aip_contatos_pacientes.pac_codigo = vw_mapacirurgico.codigo', 'inner');
-    $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
-
-
-    // Selecionando campos específicos com aliases
-    $builder->select('
+    $builder->distinct()->select('
         vw_mapacirurgico.codigo,
         vw_mapacirurgico.prontuario,
-        vw_mapacirurgico.nome,
-        vw_mapacirurgico.dt_nascimento,
-        local_aip_contatos_pacientes.ddd,
-        local_aip_contatos_pacientes.nro_fone,
-        (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
-        COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
+        vw_mapacirurgico.nome_paciente,
+        vw_mapacirurgico.dtnascimento,
     ');
    
     //die(var_dump($data));
@@ -1004,27 +1001,24 @@ class MapaCirurgico extends ResourceController
         $builder->where('vw_mapacirurgico.idfila', $data['fila']);
     }
 
-    // Condicional para risco
-    if (!empty($data['risco'])) {
-        $builder->where('vw_mapacirurgico.idriscocirurgico', $data['risco']);
-    }
-
-    // Condicional para complexidades
-    if (!empty($data['complexidades'])) {
-        $builder->whereIn('vw_mapacirurgico.complexidade', $data['complexidades']);
-    }
-
-    // Condicional para complexidades
-    if (!empty($data['situacao'])) {
-        $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
-    }
-
-    $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
-    
     //var_dump($builder->getCompiledSelect());die();
     //var_dump($builder->get()->getResult());die();
 
-        return $builder->get()->getResult();
+    $pacientes = $builder->get()->getResult();
+
+    foreach ($pacientes as &$paciente) {
+
+        $paciente->contatos = $this->localaipcontatospacientesmodel->where('pac_codigo', $paciente->codigo)->findAll();
+
+        $paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
+
+        //print_r($paciente->cirurgias);
+    }
+
+    //die(var_dump($pacientes[0]->cirurgias));
+
+    return $paciente;
+
     }
     /**
      * Return a new resource object, with default properties

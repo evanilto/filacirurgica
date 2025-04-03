@@ -9,8 +9,8 @@
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="20" class="bg-light text-start" >
-                    <h5><strong>Fila Cirúrgica</strong></h5>
+                <th scope="row" colspan="3" class="bg-light text-start" >
+                    <h5><strong>Cirurgias</strong></h5>
                 </th>
             </tr>
         </thead>
@@ -18,109 +18,25 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" data-field="" ></th>
-                <th scope="col" class="col-0" data-field="ordem-lista" title="Ordem de entrada na Fila Cirúrgica">#Lista</th>
-                <th scope="col" class="col-0" data-field="ordem-fila" title="Ordem de entrada na Fila Cirúrgica"> #Fila</th>
-                <th scope="col" data-field="prontuarioaghu" >Dt/Hr.Inscr.</th>
+                <th scope="col" data-field="prontuarioaghu" >Seq</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
-                <th scope="col" data-field="prontuarioaghu" >Nome</th>
-                <th scope="col" data-field="prontuarioaghu" >Especialidade</th>
-                <th scope="col" data-field="prontuarioaghu" >Fila</th>
-                <th scope="col" data-field="prontuarioaghu" >Informações Adicionais</th>
-                <th scope="col" data-field="prontuarioaghu" >Risco</th>
-                <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
-                <th scope="col" data-field="prontuarioaghu" >CID</th>
-                <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
-                <th scope="col" data-field="prontuarioaghu" >Origem</th>
-                <th scope="col" data-field="prontuarioaghu" >Justificativas da Origem</th>
-                <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
-                <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
-                <th scope="col" data-field="prontuarioaghu" >Congelação</th>
-                <th scope="col" data-field="prontuarioaghu" >OPME</th>
-                <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
+                <th scope="col" data-field="prontuarioaghu" >Sintomas</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach($listaespera as $itemlista): 
-                $itemlista->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $itemlista->created_at)->format('d/m/Y H:i');
-                $itemlista->data_risco = $itemlista->data_risco ? \DateTime::createFromFormat('Y-m-d', $itemlista->data_risco)->format('d/m/Y') : '';
+            <?php foreach($cirurgias as $cirurgia): 
+                //$cirurgia->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $cirurgia->created_at)->format('d/m/Y H:i');
+                //$cirurgia->data_risco = $cirurgia->data_risco ? \DateTime::createFromFormat('Y-m-d', $cirurgia->data_risco)->format('d/m/Y') : '';
             ?>
-                <tr data-id="<?= $itemlista->id ?>" 
-                    data-ordem="<?= $itemlista->ordem_fila ?>" 
-                    data-fila="<?= $itemlista->fila ?>"
-                    data-prontuario="<?= $itemlista->prontuario ?>" 
-                    data-ordem="<?= $itemlista->ordem_fila ?>" 
-                    data-fila="<?= $itemlista->fila ?>" 
-                    data-especialidade="<?= $itemlista->especialidade_descricao ?>" 
-                    data-justorig="<?= htmlspecialchars($itemlista->just_orig, ENT_QUOTES, 'UTF-8') ?>" 
-                    data-risco="<?= $itemlista->risco_descricao ?>" 
-                    data-idprocedimento="<?= $itemlista->idprocedimento ?>" 
-                    data-procedimento="<?= $itemlista->procedimento_descricao ?>" 
-                    data-cid="<?= $itemlista->cid_codigo ?>" 
-                    data-ciddescr="<?= $itemlista->cid_descricao ?>" 
-                    data-origem="<?= $itemlista->origem_descricao ?>" 
-                    data-complexidade="<?= $itemlista->complexidade ?>" 
-                    data-lateralidade="<?= $itemlista->nmlateralidade ?>" 
-                    data-congelacao="<?= $itemlista->indcongelacao ?>" 
-                    data-opme="<?= $itemlista->opme ?>" 
-                    data-dtrisco="<?= $itemlista->data_risco ?>" 
-                    data-infoadic="<?= htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') ?>" 
+                <tr data-crg_seq="<?= $cirurgia->crg_seq ?>" 
+                    data-prontuario="<?= $cirurgia->prontuario ?>" 
+                    data-aih_sintomas="<?= htmlspecialchars($cirurgia->aih_sintomas, ENT_QUOTES, 'UTF-8') ?>" 
                 >
-                    <td><?php echo $itemlista->ordem_lista ?></td>
-                    <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
-                    <td title="Ordem na Fila Cirúrgica"><?php echo $itemlista->ordem_fila ?></td>
-                    <td><?php echo $itemlista->created_at ?></td>
-                    <td><?php echo $itemlista->prontuario ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->nome_paciente); ?>">
-                        <?php echo htmlspecialchars($itemlista->nome_paciente); ?>
+                    <td><?php echo $cirurgia->crg_seq ?></td>
+                    <td><?php echo $cirurgia->prontuario ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
+                        <?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>">
-                        <?php echo htmlspecialchars($itemlista->especialidade_descricao); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->fila); ?>">
-                        <?php echo htmlspecialchars($itemlista->fila); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->info_adicionais); ?>">
-                        <?php echo htmlspecialchars($itemlista->info_adicionais); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->risco_descricao); ?>">
-                        <?php echo htmlspecialchars($itemlista->risco_descricao); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>">
-                        <?php echo htmlspecialchars($itemlista->procedimento_descricao); ?>
-                    </td>
-                    <td class="break-line"><?php echo $itemlista->cid_codigo ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->cid_descricao); ?>">
-                        <?php echo htmlspecialchars($itemlista->cid_descricao); ?>
-                    </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->origem_descricao); ?>">
-                        <?php echo htmlspecialchars($itemlista->origem_descricao); ?>
-                        <td class="break-line" title="<?php echo htmlspecialchars($itemlista->just_orig); ?>">
-                        <?php echo htmlspecialchars($itemlista->just_orig); ?>
-                    </td>
-                    </td>
-                    <td>
-                        <?php 
-                        switch ($itemlista->complexidade) {
-                            case 'A':
-                                echo 'ALTA';
-                                break;
-                            case 'B':
-                                echo 'BAIXA';
-                                break;
-                            case 'M':
-                                echo 'MÉDIA';
-                                break;
-                            default:
-                                echo 'Indefinida'; // caso o valor não seja esperado
-                                break;
-                        }
-                        ?>
-                    </td>
-                    <td class="break-line"><?php echo $itemlista->nmlateralidade ?></td>
-                    <td class="break-line"><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
-                    <td class="break-line"><?php echo $itemlista->opme == 'S' ? 'SIM' : ($itemlista->opme == 'N' ? 'NÃO' : '') ?></td>
-                    <td><?php echo $itemlista->data_risco ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -406,32 +322,15 @@
             ordering: true,
             autoWidth: false,
             "columns": [
-                { "width": "0px" },  // Primeira coluna
                 { "width": "90px" },  // Lista
                 { "width": "60px" },  // Fila
-                { "width": "130px" },                
-                { "width": "100px" },  // prontuario
-                { "width": "300px" }, 
-                { "width": "200px" },  // especialidade
-                { "width": "250px" }, 
-                { "width": "300px" },  // infoadicionais
-                { "width": "120px" },  // risco
-                { "width": "300px" },
-                { "width": "60px"  },   // CID
-                { "width": "300px" },
-                { "width": "140px" },
-                { "width": "300px" },
-                { "width": "120px" }, // complex
-                { "width": "150px" },
-                { "width": "110px" },
-                { "width": "110px" },
-                { "width": "90px" } // dt risco
+                
 
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
+            { "orderable": false, "targets": [0] },
             { "visible": false, "targets": [0] },
-            { "width": "500px", "targets": [8] }
+            { "width": "500px", "targets": [1] }
             ],
             stateSave: true, // Habilita o salvamento do estado
             layout: { topStart: {
