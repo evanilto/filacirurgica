@@ -74,54 +74,54 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3"> 
+                        <!-- <div class="row g-3"> 
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('esp')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <-?php if($validation->getError('esp')): ?>is-invalid<-?php endif ?>"
                                             id="especialidade" name="especialidade" onchange=""
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('especialidade', '', TRUE); ?> ></option>
-                                            <?php
+                                            <option value="" <-?php echo set_select('especialidade', '', TRUE); ?> ></option>
+                                            <-?php
                                             foreach ($data['especialidades'] as $key => $especialidade) {
                                                 $selected = (set_value('especialidade') == $especialidade->seq) ? 'selected' : '';
                                                 echo '<option value="'.$especialidade->seq.'" '.$selected.'>'.$especialidade->nome_especialidade.'</option>';
                                             }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('especialidade')): ?>
+                                        <-?php if ($validation->getError('especialidade')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('especialidade') ?>
+                                                <-?= $validation->getError('especialidade') ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <-?php endif; ?>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-6">
+                            </div> -->
+                            <!-- <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</b></label>
                                     <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
+                                        <select class="form-select select2-dropdown <-?php if($validation->getError('fila')): ?>is-invalid<-?php endif ?>"
                                             id="fila" name="fila"
                                             data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('fila', '', TRUE); ?> ></option>
-                                            <?php
+                                            <option value="" <-?php echo set_select('fila', '', TRUE); ?> ></option>
+                                            <-?php
                                             foreach ($data['filas'] as $key => $fila) {
                                                 $selected = (set_value('fila') == $fila['id']) ? 'selected' : '';
                                                 echo '<option value="'.$fila['id'].'" '.$selected.'>'.$fila['nmtipoprocedimento'].'</option>';
                                             }
                                             ?>
                                         </select>
-                                        <?php if ($validation->getError('fila')): ?>
+                                        <-?php if ($validation->getError('fila')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('fila') ?>
+                                                <-?= $validation->getError('fila') ?>
                                             </div>
-                                        <?php endif; ?>
+                                        <-?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                         <div class="row g-3"> 
                             <div class="col-md-12">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">

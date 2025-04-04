@@ -501,6 +501,7 @@ class MapaCirurgico extends ResourceController
         }
 
         //die(var_dump($dataflash));
+        //dd($data);
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -520,8 +521,8 @@ class MapaCirurgico extends ResourceController
         if (!$dataflash) {
             if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
                 $rules = $rules + [
-                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
-                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtinicio' => 'permit_empty|valid_date[Y-m-d]',
+                    'dtfim' => 'permit_empty|valid_date[Y-m-d]',
                 ];
             }
         }
@@ -545,7 +546,7 @@ class MapaCirurgico extends ResourceController
                     'validation' => $this->validator,
                     'data' => $data]);
                 }
-                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                if (DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('Y-m-d')) {
                     $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
                     return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
                                                         'validation' => $this->validator,
@@ -962,62 +963,74 @@ class MapaCirurgico extends ResourceController
 
     $db = \Config\Database::connect('default');
 
-    $builder = $db->table('vw_mapacirurgico');
+    $builder = $db->table('local_vw_aghu_cirurgias');
 
     $builder->distinct()->select('
-        vw_mapacirurgico.codigo,
-        vw_mapacirurgico.prontuario,
-        vw_mapacirurgico.nome_paciente,
-        vw_mapacirurgico.dtnascimento,
+        local_vw_aghu_cirurgias.crg_seq,
+        local_vw_aghu_cirurgias.codigo,
+        local_vw_aghu_cirurgias.prontuario,
+        local_vw_aghu_cirurgias.nome,
+        local_vw_aghu_cirurgias.dt_nascimento,
+        local_vw_aghu_cirurgias.eqp_nome_funcao,
+        local_vw_aghu_cirurgias.esp_seq,
+        local_vw_aghu_cirurgias.nome_especialidade,
+        local_vw_aghu_cirurgias.procedimento_cirurgia,
+        local_vw_aghu_cirurgias.dthr_internacao,
+        local_vw_aghu_cirurgias.aih_sintomas as motivo_int,
+        local_vw_aghu_cirurgias.data_inicio_cirurgia as dthr_inicio_cirurgia,
+        local_vw_aghu_cirurgias.data_fim_cirurgia as dthr_fim_cirurgia,
+        local_vw_aghu_cirurgias.contaminação as potencial_contaminacao,
+        local_vw_aghu_cirurgias.situacao_descr_cir,
+        local_vw_aghu_cirurgias.situacao_cir
     ');
    
     //die(var_dump($data));
 
     if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
-        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
-        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+        $dtInicio = DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('Y-m-d 00:00:00');
+        $dtFim = DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('Y-m-d 23:59:59');
 
-        $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
-        $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+        $builder->where("local_vw_aghu_cirurgias.data_inicio_cirurgia >=", $dtInicio);
+        $builder->where("local_vw_aghu_cirurgias.data_fim_cirurgia <=", $dtFim);
     }
 
     // Condicional para prontuario
     if (!empty($data['prontuario'])) {
-        $builder->where('vw_mapacirurgico.prontuario', $data['prontuario']);
+        $builder->where('local_vw_aghu_cirurgias.prontuario', $data['prontuario']);
     }
 
     // Condicional para nome
     if (!empty($data['nome'])) {
-        $builder->like('vw_mapacirurgico.nome_paciente', strtoupper($data['nome']));
+        $builder->like('local_vw_aghu_cirurgias.nome', strtoupper($data['nome']));
     }
 
     // Condicional para especialidade
-    if (!empty($data['especialidade'])) {
-        $builder->where('vw_mapacirurgico.idespecialidade', $data['especialidade']);
+    /* if (!empty($data['especialidade'])) {
+        $builder->where('local_vw_aghu_cirurgias.idespecialidade', $data['especialidade']);
     }
 
     // Condicional para fila
     if (!empty($data['fila'])) {
-        $builder->where('vw_mapacirurgico.idfila', $data['fila']);
-    }
+        $builder->where('local_vw_aghu_cirurgias.idfila', $data['fila']);
+    } */
 
     //var_dump($builder->getCompiledSelect());die();
     //var_dump($builder->get()->getResult());die();
 
-    $pacientes = $builder->get()->getResult();
+    $cirurgias = $builder->get()->getResult();
 
-    foreach ($pacientes as &$paciente) {
+    foreach ($cirurgias as &$cirurgia) {
 
-        $paciente->contatos = $this->localaipcontatospacientesmodel->where('pac_codigo', $paciente->codigo)->findAll();
+        $cirurgia->contatos = $this->localaipcontatospacientesmodel->where('pac_codigo', $cirurgia->codigo)->findAll();
 
-        $paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
+        //$paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
 
         //print_r($paciente->cirurgias);
     }
 
-    //die(var_dump($pacientes[0]->cirurgias));
+    //die(var_dump($cirurgias));
 
-    return $paciente;
+    return $cirurgias;
 
     }
     /**

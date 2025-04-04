@@ -1,4 +1,14 @@
 <?php use App\Libraries\HUAP_Functions; ?>
+
+<?php 
+    function formatarData($data, $formato = 'd/m/Y') {
+        if (!$data) return '';
+        
+        $dt = \DateTime::createFromFormat('Y-m-d H:i:s', $data);
+        
+        return $dt instanceof \DateTime ? $dt->format($formato) : '';
+    }
+?>
  
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/5.0.4/css/fixedColumns.dataTables.min.css">
@@ -9,7 +19,7 @@
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="3" class="bg-light text-start" >
+                <th scope="row" class="bg-light text-start" >
                     <h5><strong>Cirurgias</strong></h5>
                 </th>
             </tr>
@@ -18,46 +28,93 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" data-field="prontuarioaghu" >Seq</th>
+                <th scope="col" data-field="prontuarioaghu" >Código Cirurgia</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Cirurgia</th>
+                <th scope="col" data-field="prontuarioaghu" >Início</th>
+                <th scope="col" data-field="prontuarioaghu" >Fim</th>
+                <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
+                <th scope="col" data-field="prontuarioaghu" >Potencial Contaminação</th>
+                <th scope="col" data-field="prontuarioaghu" >Descr. Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
-                <th scope="col" data-field="prontuarioaghu" >Sintomas</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Nascimento</th>
+                <th scope="col" data-field="prontuarioaghu" >Contatos</th>
+                <th scope="col" data-field="prontuarioaghu" >Cirurgião</th>
+                <th scope="col" data-field="prontuarioaghu" >Anestesista</th>
+                <th scope="col" data-field="prontuarioaghu" >Especialidade Cirúrgica</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Situação Cirurgia</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach($cirurgias as $cirurgia): 
-                //$cirurgia->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $cirurgia->created_at)->format('d/m/Y H:i');
-                //$cirurgia->data_risco = $cirurgia->data_risco ? \DateTime::createFromFormat('Y-m-d', $cirurgia->data_risco)->format('d/m/Y') : '';
+           
+                $dt_nascimento       = formatarData($cirurgia->dt_nascimento);
+                $dt_cirurgia         = formatarData($cirurgia->dthr_inicio_cirurgia);
+                $hr_inicio_cirurgia  = formatarData($cirurgia->dthr_inicio_cirurgia, 'H:i');
+                $hr_fim_cirurgia     = formatarData($cirurgia->dthr_fim_cirurgia, 'H:i');
+                $dt_internacao       = formatarData($cirurgia->dthr_internacao);
+            
+                $contatos = !empty($cirurgia->contatos) ? implode(', ', array_map(fn($c) => "({$c->ddd}){$c->nro_fone}", $cirurgia->contatos)) : 'N/D';
+
+                // Equipe --------------------------------------------------------------------
+                $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao ?? ''));
+
+                $cirg = array_map(
+                    fn($n) => substr($n, 5),
+                    array_filter($nomes, fn($n) => str_starts_with($n, 'CIRG:'))
+                );
+
+                $aux = array_map(
+                    fn($n) => substr($n, 5),
+                    array_filter($nomes, fn($n) => str_starts_with($n, 'ANES:'))
+                );
+
+                 $cirurgioes = implode(', ', $cirg) ?: 'N/D';
+                 $anestesistas = implode(', ', $aux) ?: 'N/D';
             ?>
-                <tr data-crg_seq="<?= $cirurgia->crg_seq ?>" 
-                    data-prontuario="<?= $cirurgia->prontuario ?>" 
-                    data-aih_sintomas="<?= htmlspecialchars($cirurgia->aih_sintomas, ENT_QUOTES, 'UTF-8') ?>" 
+                <tr
+                    data-cod_pac="<?= $cirurgia->codigo ?>" 
+                    data-crg_seq="<?= $cirurgia->crg_seq ?>"
                 >
                     <td><?php echo $cirurgia->crg_seq ?></td>
-                    <td><?php echo $cirurgia->prontuario ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
-                        <?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>
+                    <td><?php echo $dt_cirurgia ?></td>
+                    <td><?php echo $hr_inicio_cirurgia ?></td>
+                    <td><?php echo $hr_fim_cirurgia ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>">
+                        <?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->potencial_contaminacao); ?>">
+                        <?php echo htmlspecialchars($cirurgia->potencial_contaminacao ?: 'N/D'); ?>
+                    </td>
+                    <td><?php echo $cirurgia->situacao_descr_cir ?: 'N/D'?></td>
+                    <td><?php echo $cirurgia->prontuario ?></td>
+                    <td><?php echo $dt_nascimento ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($contatos); ?>">
+                        <?php echo htmlspecialchars($contatos); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgioes); ?>">
+                        <?php echo htmlspecialchars($cirurgioes); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($anestesistas); ?>">
+                        <?php echo htmlspecialchars($anestesistas); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>">
+                        <?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>
+                    </td>
+                    <td><?php echo $dt_internacao ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->motivo_int); ?>">
+                        <?php echo htmlspecialchars($cirurgia->motivo_int); ?>
+                    </td>
+                    <td><?php echo $cirurgia->situacao_cir ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
     <div class="col-md-12 table-actions">
-        <a class="btn btn-warning" href="<?= base_url('listaespera/consultar') ?>">
+        <a class="btn btn-warning" href="<?= base_url('relatorios/potencialcontaminacao') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="enviar" disabled>
-            <!-- <i class="fa-solid fa-paper-plane"></i> --> Enviar para Mapa
-        </button>
-        <button class="btn btn-primary" id="editar" disabled>
-            <!-- <i class="fas fa-pencil-alt"></i> --> Editar
-        </button>
-        <button class="btn btn-primary" id="excluir" disabled>
-            <!-- <i class="fas fa-trash-alt"></i> --> Excluir
-        </button>
-        <button class="btn btn-primary" id="consultar" disabled>
-            <!-- <i class="fa-solid fa-magnifying-glass"></i> --> Consultar
-        </button>
-
     </div>
 </div>
 
@@ -67,11 +124,11 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        const table = document.getElementById("table");
+        /* const table = document.getElementById("table");
         const editar = document.getElementById("editar");
         const enviar = document.getElementById("enviar");
         const excluir = document.getElementById("excluir");
-        const consultar = document.getElementById("consultar");
+        const consultar = document.getElementById("consultar"); */
 
         let selectedRow = null;
 
@@ -82,10 +139,10 @@
                 selectedRow = this;
                 //selectedRow.classList.add("selected");
                 selectedRow.classList.add("lineselected"); 
-                <?php if(HUAP_Functions::tem_permissao('listaespera-alterar')) { ?> editar.disabled = false;  <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-enviar')) { ?> enviar.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-excluir')) { ?> excluir.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?> consultar.disabled = false; <?php } ?>
+               /*  <-?php if(HUAP_Functions::tem_permissao('listaespera-alterar')) { ?> editar.disabled = false;  <-?php } ?>
+                <-?php if(HUAP_Functions::tem_permissao('listaespera-enviar')) { ?> enviar.disabled = false; <-?php } ?>
+                <-?php if(HUAP_Functions::tem_permissao('listaespera-excluir')) { ?> excluir.disabled = false; <-?php } ?>
+                <-?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?> consultar.disabled = false; <-?php } ?> */
             });
         });
 
@@ -300,8 +357,8 @@
         $('[data-toggle="tooltip"]').tooltip();
 
         $('#table').DataTable({
-            "order": [[0, 'asc']],
-            /* "lengthChange": true,
+            /*"order": [[1, 'asc']],
+            "lengthChange": true,
             "pageLength": 15,
             "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]], */
             "language": {
@@ -309,9 +366,9 @@
             },
            /*  "autoWidth": false,  
             "scrollX": true, */ 
-            fixedColumns: {
+           /*  fixedColumns: {
             leftColumns: 5 // Número de colunas a serem fixadas
-            },
+            }, */
             /* paging: true, 
             ordering: true,  */
             fixedHeader: true,
@@ -323,14 +380,25 @@
             autoWidth: false,
             "columns": [
                 { "width": "90px" },  // Lista
+                { "width": "90px" },  // Lista
                 { "width": "60px" },  // Fila
-                
-
+                { "width": "60px" },  // Lista
+                { "width": "250px" },  // Lista
+                { "width": "250px" },  // Fila
+                { "width": "100px" },  // Lista
+                { "width": "100px" },  // Fila
+                { "width": "100px" },  // Fila
+                { "width": "120px" },  // Lista
+                { "width": "250px" },  // Fila
+                { "width": "250px" },  // Lista
+                { "width": "250px" },  // Especialidade
+                { "width": "100px" },  // Lista
+                { "width": "300px" },  // Fila
+                { "width": "90px" },  // Lista
             ],
             "columnDefs": [
             { "orderable": false, "targets": [0] },
             { "visible": false, "targets": [0] },
-            { "width": "500px", "targets": [1] }
             ],
             stateSave: true, // Habilita o salvamento do estado
             layout: { topStart: {
