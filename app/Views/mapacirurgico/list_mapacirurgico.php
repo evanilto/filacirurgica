@@ -42,6 +42,46 @@
 
 <script>$('#janelaAguarde').show();</script>
 
+<script>
+    // tratamento para realçar os botões do fluxo do mapa
+    function isDarkColor(rgb) {
+        const match = rgb.match(/\d+/g);
+        if (!match) return false;
+
+        const r = parseInt(match[0]);
+        const g = parseInt(match[1]);
+        const b = parseInt(match[2]);
+
+        const luminance = 0.299 * r + 0.587 * g + 0.114 * b;
+        return luminance < 128;
+    }
+
+    function applyHoverEffects() {
+        const buttons = document.querySelectorAll('a.btn-header, button.btn-header');
+
+        buttons.forEach(btn => {
+            const bgColor = window.getComputedStyle(btn).backgroundColor;
+
+            if (isDarkColor(bgColor)) {
+                // Adiciona eventos de mouse
+                btn.addEventListener('mouseenter', () => {
+                    btn.style.setProperty('color', 'white', 'important');
+                   //btn.style.setProperty('font-weight', '600', 'important');
+                   btn.style.setProperty('font-size', '14.3px', 'important');
+                });
+
+                btn.addEventListener('mouseleave', () => {
+                    btn.style.removeProperty('color');
+                    //btn.style.removeProperty('font-weight');
+                    btn.style.removeProperty('font-size');
+                });
+            }
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', applyHoverEffects);
+</script>
+
 <div class="table-container mt-3">
     <table class="table">
         <thead style="border: 1px solid black;">
@@ -49,19 +89,19 @@
                 <th scope="row" colspan="7" class="bg-light text-start">  <!--style="background-color: #d4edda;"> -->
                     <h5 style="display: inline-block; margin-right: 20px;"><strong>Mapa Cirúrgico</strong></h5>
                     <div class="btn-container" style="display: inline-flex; align-items: center; gap: 10px;">
-                        <button class="btn" id="pacientesolicitado" style="background-color: <?= $corPacienteSolicitado ?>;" disabled>Paciente Solicitado</button>
+                        <button class="btn btn-header" id="pacientesolicitado" style="background-color: <?= $corPacienteSolicitado ?>;" disabled>Paciente Solicitado</button>
                         <i class="fa-solid fa-arrow-right"></i> 
-                        <button class="btn" id="nocentrocirurgico" style="background-color: <?= $corNoCentroCirúrgico ?>;" disabled>No Centro Cirúrgico</button>
-                         <i class="fa-solid fa-arrow-right"></i> 
-                        <button class="btn" id="emcirurgia" style="background-color: <?= $corEmCirurgia ?>;" disabled>Em Cirurgia</button>
+                        <button class="btn btn-header" id="nocentrocirurgico" style="background-color: <?= $corNoCentroCirúrgico ?>;" disabled>No Centro Cirúrgico</button>
                         <i class="fa-solid fa-arrow-right"></i> 
-                        <button class="btn" id="saidadasala" style="background-color: <?= $corSaídaDaSala ?>;" disabled>Saída da Sala</button>
+                        <button class="btn btn-header" id="emcirurgia" style="background-color: <?= $corEmCirurgia ?>;" disabled>Em Cirurgia</button>
                         <i class="fa-solid fa-arrow-right"></i> 
-                        <button class="btn" id="saidadoccirurgico" style="background-color: <?= $corSaídaCentroCirúrgico ?>;" disabled>Entrada no RPA</button>
+                        <button class="btn btn-header" id="saidadasala" style="background-color: <?= $corSaídaDaSala ?>;" disabled>Saída da Sala</button>
                         <i class="fa-solid fa-arrow-right"></i> 
-                        <button class="btn" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Leito Pós-Operatório</button>
+                        <button class="btn btn-header" id="saidadoccirurgico" style="background-color: <?= $corSaídaCentroCirúrgico ?>;" disabled>Entrada no RPA</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn btn-header" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Leito Pós-Operatório</button>
                         <i class="fa-solid fa-arrows-left-right"></i>
-                        <button class="btn" id="altadayclinic" style="background-color: <?= $corAltaDayClinic ?>;" disabled>Alta Day Clinic</button>
+                        <button class="btn btn-header" id="altadayclinic" style="background-color: <?= $corAltaDayClinic ?>;" disabled>Alta Day Clinic</button>
                     </div>
                 </th>
             </tr>

@@ -15,7 +15,7 @@
                                 <div class="mb-2">
                                     <label for="dtinicio" class="form-label">Data Início</label>
                                     <div class="input-group">
-                                        <input type="date" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="date" id="dtinicio" maxlength="10" 
                                             class="form-control Data <?php if($validation->getError('dtinicio')): ?>is-invalid<?php endif ?>"
                                             name="dtinicio" value="<?= set_value('dtinicio', $data['dtinicio']) ?>"/>
                                         <?php if ($validation->getError('dtinicio')): ?>
@@ -138,9 +138,28 @@
         </div>
     </div>
 </div>
-<script>
 
-       $(document).ready(function() {
+<script>
+    function setupDateClearBehavior(inputId) {
+        const input = document.getElementById(inputId);
+
+        input.addEventListener('keydown', function (e) {
+            if ((e.key === 'Backspace' || e.key === 'Delete')) {
+                e.preventDefault();
+                input.value = '';
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                input.blur();
+                setTimeout(() => input.focus(), 10);
+            }
+        });
+    }
+
+    // Aplica o comportamento aos campos desejados
+    setupDateClearBehavior('dtinicio');
+    setupDateClearBehavior('dtfim');
+
+    $(document).ready(function() {
         $('#idForm').submit(function(event) {
             $('#janelaAguarde').show();
             setTimeout(function() {

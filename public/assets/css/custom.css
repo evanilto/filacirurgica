@@ -611,11 +611,21 @@ thead .btn {
     color: white;
 }
 
+/*
 button:hover, 
 button:focus {
-    color: white !important; /* Garante que o texto permaneça branco */
-    filter: brightness(90%); /* Deixa o fundo 10% mais escuro */
+    /*color: white !important; /* Garante que o texto permaneça branco 
+    filter: brightness(90%); /* Deixa o fundo 10% mais escuro 
+    font-weight: bold;       /* Deixa o texto em negrito 
+
 }
+*/
+
+a.btn:hover,
+a.btn:focus {
+    filter: brightness(90%);
+}
+
 
 .arrow-right::after {
     content: "→"; /* Código da seta */

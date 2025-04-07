@@ -528,27 +528,30 @@ class MapaCirurgico extends ResourceController
         }
 
         if ($this->validate($rules)) {
-            if ($data['dtinicio'] || $data['dtfim']) {
 
-                $data['filas'] = $this->selectfilaativas;
-                $data['riscos'] = $this->selectrisco;
-                $data['especialidades'] = $this->selectespecialidadeaghu;
+            $data['filas'] = $this->selectfilaativas;
+            $data['riscos'] = $this->selectrisco;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            if (empty($data['dtinicio']) || empty($data['dtfim'])) {
 
                 if (empty($data['dtinicio'])) {
                     $this->validator->setError('dtinicio', 'Informe a data de início!');
-                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                     'validation' => $this->validator,
                     'data' => $data]);
                 }
                 if (!$data['dtfim']) {
                     $this->validator->setError('dtfim', 'Informe a data final!');
-                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                     'validation' => $this->validator,
                     'data' => $data]);
                 }
+
+            } else {
                 if (DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('Y-m-d')) {
                     $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
-                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                                                         'validation' => $this->validator,
                                                         'data' => $data]);
                 }
@@ -976,7 +979,8 @@ class MapaCirurgico extends ResourceController
         local_vw_aghu_cirurgias.nome_especialidade,
         local_vw_aghu_cirurgias.procedimento_cirurgia,
         local_vw_aghu_cirurgias.dthr_internacao,
-        local_vw_aghu_cirurgias.aih_sintomas as motivo_int,
+        local_vw_aghu_cirurgias.aih_sintomas,
+        local_vw_aghu_cirurgias.aih_condicoes,
         local_vw_aghu_cirurgias.data_inicio_cirurgia as dthr_inicio_cirurgia,
         local_vw_aghu_cirurgias.data_fim_cirurgia as dthr_fim_cirurgia,
         local_vw_aghu_cirurgias.contaminação as potencial_contaminacao,
