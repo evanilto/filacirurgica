@@ -28,11 +28,12 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" data-field="prontuarioaghu" >Código Cirurgia</th>
-                <th scope="col" data-field="prontuarioaghu" >Data Cirurgia</th>
+                <th scope="col" data-field="prontuarioaghu" >Código Cirurgia/PDT</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Cirurgia/PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Início</th>
                 <th scope="col" data-field="prontuarioaghu" >Fim</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+                <th scope="col" data-field="prontuarioaghu" >Nome</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Nascimento</th>
                 <th scope="col" data-field="prontuarioaghu" >Contatos</th>
                 <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
@@ -43,7 +44,9 @@
                 <th scope="col" data-field="prontuarioaghu" >Especialidade Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Internação</th>
                 <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
-                <th scope="col" data-field="prontuarioaghu" >Situação</th>
+                <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
+                <th scope="col" data-field="prontuarioaghu" >Situação Descrição</th>
+                <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
             </tr>
         </thead>
         <tbody>
@@ -58,7 +61,11 @@
                 $contatos = !empty($cirurgia->contatos) ? implode(', ', array_map(fn($c) => "({$c->ddd}){$c->nro_fone}", $cirurgia->contatos)) : 'N/D';
 
                 // Equipe --------------------------------------------------------------------
-                $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao ?? ''));
+                if ($cirurgia->situacao_descr_pdt) {
+                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao_pdt ?? ''));
+                } else {
+                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao ?? ''));
+                }
 
                 $cirg = array_map(
                     fn($n) => substr($n, 5),
@@ -82,6 +89,7 @@
                     <td><?php echo $hr_inicio_cirurgia ?></td>
                     <td><?php echo $hr_fim_cirurgia ?></td>
                     <td><?php echo $cirurgia->prontuario ?></td>
+                    <td><?php echo $cirurgia->nome ?></td>
                     <td><?php echo $dt_nascimento ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($contatos); ?>">
                         <?php echo htmlspecialchars($contatos); ?>
@@ -89,9 +97,15 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>">
                         <?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->potencial_contaminacao); ?>">
-                        <?php echo htmlspecialchars($cirurgia->potencial_contaminacao ?: 'N/D'); ?>
-                    </td>
+                    <?php if ($cirurgia->situacao_descr_pdt) { ?>
+                        <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->potencial_contaminacao_pdt); ?>">
+                            <?php echo htmlspecialchars($cirurgia->potencial_contaminacao ?: 'N/D'); ?>
+                        </td>
+                    <?php } else { ?>
+                        <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->potencial_contaminacao); ?>">
+                            <?php echo htmlspecialchars($cirurgia->potencial_contaminacao ?: 'N/D'); ?>
+                        </td>
+                    <?php } ?>
                     <!-- <td><-?php echo $cirurgia->situacao_descr_cir ?: 'N/D'?></td> -->
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgioes); ?>">
                         <?php echo htmlspecialchars($cirurgioes); ?>
@@ -102,10 +116,18 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>">
                         <?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>
                     </td>
-                    <td><?php echo $dt_internacao ?></td>
+                    <td><?php echo $dt_internacao ?: 'N/D';?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>">
                         <?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>">
+                        <?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>
+                    </td>
+                     <?php if ($cirurgia->situacao_descr_pdt) { ?>
+                        <td><?php echo $cirurgia->situacao_descr_pdt ?></td>
+                    <?php } else { ?>
+                        <td><?php echo $cirurgia->situacao_descr ?></td>
+                    <?php } ?>
                     <td><?php echo $cirurgia->situacao_cir ?></td>
                 </tr>
             <?php endforeach; ?>
@@ -379,11 +401,12 @@
             ordering: true,
             autoWidth: false,
             "columns": [
-                { "width": "90px" },  // Lista
-                { "width": "90px" },  // Lista
+                { "width": "120px" },  // Lista
+                { "width": "120px" },  // Lista
                 { "width": "60px" },  // Fila
                 { "width": "60px" },  // Lista
                 { "width": "100px" },  // Lista
+                { "width": "250px" },  // Lista
                 { "width": "100px" },  // Fila
                 { "width": "120px" },  // Fila
                 { "width": "250px" },  // Lista
@@ -394,7 +417,9 @@
                 { "width": "250px" },  // Especialidade
                 { "width": "100px" },  // Lista
                 { "width": "300px" },  // Fila
-                { "width": "120px" },  // Lista
+                { "width": "300px" },  // Fila
+                { "width": "200px" },  // Fila
+                { "width": "100px" },  // Lista
             ],
             "columnDefs": [
             { "orderable": false, "targets": [0] },
@@ -407,7 +432,7 @@
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
                     //columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
-                    columns: ':not(:first-child)' 
+                    //columns: ':not(:first-child)' 
                 },
                 'copy',
                 'csv',

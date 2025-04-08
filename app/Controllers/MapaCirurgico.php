@@ -975,17 +975,23 @@ class MapaCirurgico extends ResourceController
         local_vw_aghu_cirurgias.nome,
         local_vw_aghu_cirurgias.dt_nascimento,
         local_vw_aghu_cirurgias.eqp_nome_funcao,
+        local_vw_aghu_cirurgias.eqp_nome_funcao_pdt,
         local_vw_aghu_cirurgias.esp_seq,
         local_vw_aghu_cirurgias.nome_especialidade,
         local_vw_aghu_cirurgias.procedimento_cirurgia,
         local_vw_aghu_cirurgias.dthr_internacao,
         local_vw_aghu_cirurgias.aih_sintomas,
         local_vw_aghu_cirurgias.aih_condicoes,
+        local_vw_aghu_cirurgias.indicacao_pdt,
         local_vw_aghu_cirurgias.data_inicio_cirurgia as dthr_inicio_cirurgia,
         local_vw_aghu_cirurgias.data_fim_cirurgia as dthr_fim_cirurgia,
-        local_vw_aghu_cirurgias.contaminação as potencial_contaminacao,
+        local_vw_aghu_cirurgias.contaminacao as potencial_contaminacao,
+        local_vw_aghu_cirurgias.contaminacao as potencial_contaminacao_pdt,
         local_vw_aghu_cirurgias.situacao_descr_cir,
-        local_vw_aghu_cirurgias.situacao_cir
+        local_vw_aghu_cirurgias.situacao_cir,
+        local_vw_aghu_cirurgias.situacao_descr,
+        local_vw_aghu_cirurgias.situacao_descr_pdt,
+
     ');
    
     //die(var_dump($data));
