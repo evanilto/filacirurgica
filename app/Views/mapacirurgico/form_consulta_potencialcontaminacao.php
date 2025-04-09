@@ -49,7 +49,7 @@
                                     <div class="input-group">
                                         <input type="number" id="prontuario" maxlength="8"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
-                                        name="prontuario" value="" />
+                                        name="prontuario" value="<?= set_value('prontuario', $data['prontuario']) ?>" />
                                         <?php if ($validation->getError('prontuario')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('prontuario') ?>
