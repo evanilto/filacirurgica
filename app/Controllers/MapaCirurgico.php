@@ -567,7 +567,7 @@ class MapaCirurgico extends ResourceController
                 $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
                 $data['especialidades'] = $this->selectespecialidadeaghu;
 
-                session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
+                session()->setFlashdata('warning_message', 'Nenhuma cirurgia para o paciente localizada com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
                                                     'validation' => $this->validator,
                                                     'data' => $data]);
@@ -973,8 +973,8 @@ class MapaCirurgico extends ResourceController
         local_vw_aghu_cirurgias.prontuario,
         local_vw_aghu_cirurgias.nome,
         local_vw_aghu_cirurgias.dt_nascimento,
-        local_vw_aghu_cirurgias.eqp_nome_funcao,
-        local_vw_aghu_cirurgias.eqp_nome_funcao_pdt,
+        local_vw_aghu_cirurgias.eqp_cir,
+        local_vw_aghu_cirurgias.eqp_pdt,
         local_vw_aghu_cirurgias.esp_seq,
         local_vw_aghu_cirurgias.nome_especialidade,
         local_vw_aghu_cirurgias.procedimento_cirurgia,
@@ -984,13 +984,12 @@ class MapaCirurgico extends ResourceController
         local_vw_aghu_cirurgias.indicacao_pdt,
         local_vw_aghu_cirurgias.data_inicio_cirurgia as dthr_inicio_cirurgia,
         local_vw_aghu_cirurgias.data_fim_cirurgia as dthr_fim_cirurgia,
-        local_vw_aghu_cirurgias.contaminacao as potencial_contaminacao,
+        local_vw_aghu_cirurgias.contaminacao_cir as potencial_contaminacao_cir,
         local_vw_aghu_cirurgias.contaminacao_pdt as potencial_contaminacao_pdt,
         local_vw_aghu_cirurgias.situacao_descr_cir,
-        local_vw_aghu_cirurgias.situacao_cir,
-        local_vw_aghu_cirurgias.situacao_descr,
         local_vw_aghu_cirurgias.situacao_descr_pdt,
-        local_vw_aghu_cirurgias.tipo_proc
+        local_vw_aghu_cirurgias.situacao_cir,
+        local_vw_aghu_cirurgias.tipo_cir
 
     ');
    

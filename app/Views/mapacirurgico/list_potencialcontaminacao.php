@@ -62,10 +62,10 @@
                 $contatos = !empty($cirurgia->contatos) ? implode(', ', array_map(fn($c) => "({$c->ddd}){$c->nro_fone}", $cirurgia->contatos)) : 'N/D';
 
                 // Equipe --------------------------------------------------------------------
-                if ($cirurgia->tipo_proc == 'PDT') {
-                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao_pdt ?? ''));
+                if ($cirurgia->tipo_cir == 'PDT') {
+                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_pdt ?? ''));
                 } else {
-                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_nome_funcao ?? ''));
+                    $nomes = array_map('trim', explode(',', $cirurgia->eqp_cir ?? ''));
                 }
 
                 $cirg = array_map(
@@ -81,7 +81,7 @@
                  $cirurgioes = implode(', ', $cirg) ?: 'N/D';
                  $anestesistas = implode(', ', $aux) ?: 'N/D';
 
-                 $potencialcontaminacao = $cirurgia->tipo_proc == 'PDT' ? $cirurgia->potencial_contaminacao_pdt : $cirurgia->potencial_contaminacao;
+                 $potencialcontaminacao = $cirurgia->tipo_cir == 'PDT' ? $cirurgia->potencial_contaminacao_pdt : $cirurgia->potencial_contaminacao_cir;
 
             ?>
                 <tr
@@ -89,7 +89,7 @@
                     data-crg_seq="<?= $cirurgia->crg_seq ?>"
                 >
                     <td><?php echo $cirurgia->crg_seq ?></td>
-                    <td><?php echo $cirurgia->tipo_proc ?></td>
+                    <td><?php echo $cirurgia->tipo_cir ?></td>
                     <td><?php echo $dt_cirurgia ?></td>
                     <td><?php echo $hr_inicio_cirurgia ?></td>
                     <td><?php echo $hr_fim_cirurgia ?></td>
@@ -122,10 +122,10 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>">
                         <?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>
                     </td>
-                     <?php if ($cirurgia->tipo_proc == 'PDT') { ?>
+                     <?php if ($cirurgia->tipo_cir == 'PDT') { ?>
                         <td><?php echo $cirurgia->situacao_descr_pdt ?></td>
                     <?php } else { ?>
-                        <td><?php echo $cirurgia->situacao_descr ?></td>
+                        <td><?php echo $cirurgia->situacao_descr_cir ?></td>
                     <?php } ?>
                     <td><?php echo $cirurgia->situacao_cir ?></td>
                 </tr>
