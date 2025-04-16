@@ -29,7 +29,7 @@
         <thead>
             <tr>
                 <th scope="col" data-field="prontuarioaghu" >Código Cirurgia/PDT</th>
-                <th scope="col" data-field="prontuarioaghu" >Proced.</th>
+                <th scope="col" data-field="prontuarioaghu" >Tipo</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Cirurgia/PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Início</th>
                 <th scope="col" data-field="prontuarioaghu" >Fim</th>
@@ -64,8 +64,12 @@
                 // Equipe --------------------------------------------------------------------
                 if ($cirurgia->tipo_cir == 'PDT') {
                     $nomes = array_map('trim', explode(',', $cirurgia->eqp_pdt ?? ''));
+                    $potencialcontaminacao = $cirurgia->potencial_contaminacao_pdt;
+                    $situacao_descr = $cirurgia->situacao_descr_pdt;
                 } else {
                     $nomes = array_map('trim', explode(',', $cirurgia->eqp_cir ?? ''));
+                    $potencialcontaminacao = $cirurgia->potencial_contaminacao_cir;
+                    $situacao_descr = $cirurgia->situacao_descr_cir;
                 }
 
                 $cirg = array_map(
@@ -80,9 +84,6 @@
 
                  $cirurgioes = implode(', ', $cirg) ?: 'N/D';
                  $anestesistas = implode(', ', $aux) ?: 'N/D';
-
-                 $potencialcontaminacao = $cirurgia->tipo_cir == 'PDT' ? $cirurgia->potencial_contaminacao_pdt : $cirurgia->potencial_contaminacao_cir;
-
             ?>
                 <tr
                     data-cod_pac="<?= $cirurgia->codigo ?>" 
@@ -97,7 +98,7 @@
                     <td><?php echo $cirurgia->nome ?></td>
                     <td><?php echo $dt_nascimento ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($contatos); ?>">
-                        <?php echo htmlspecialchars($contatos); ?>
+                        <?php echo htmlspecialchars($contatos ?: 'N/D'); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>">
                         <?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>
@@ -107,26 +108,23 @@
                     </td>
                     <!-- <td><-?php echo $cirurgia->situacao_descr_cir ?: 'N/D'?></td> -->
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgioes); ?>">
-                        <?php echo htmlspecialchars($cirurgioes); ?>
+                        <?php echo htmlspecialchars($cirurgioes ?: 'N/D'); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($anestesistas); ?>">
-                        <?php echo htmlspecialchars($anestesistas); ?>
+                        <?php echo htmlspecialchars($anestesistas ?: 'N/D'); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>">
                         <?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>
                     </td>
                     <td><?php echo $dt_internacao ?: 'N/D';?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>">
-                        <?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>
+                    <!--td class="break-line" title="<-?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>"-->
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
+                        <!--?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?-->
+                        <?php echo htmlspecialchars($cirurgia->aih_sintomas ?: 'N/D'); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>">
-                        <?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>
-                    </td>
-                     <?php if ($cirurgia->tipo_cir == 'PDT') { ?>
-                        <td><?php echo $cirurgia->situacao_descr_pdt ?></td>
-                    <?php } else { ?>
-                        <td><?php echo $cirurgia->situacao_descr_cir ?></td>
-                    <?php } ?>
+                        <?php echo htmlspecialchars($cirurgia->indicacao_pdt ?: 'N/D'); ?>
+                    <td><?php echo $situacao_descr ?></td>
                     <td><?php echo $cirurgia->situacao_cir ?></td>
                 </tr>
             <?php endforeach; ?>

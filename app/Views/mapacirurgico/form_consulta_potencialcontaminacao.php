@@ -6,7 +6,7 @@
         <div class="col-md-8">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Consultar Potencial de Contaminação' ?></b>
+                    <b><?= 'Consultar Cirurgias' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('relatorios/exibirpotencialcontaminacao') ?>">

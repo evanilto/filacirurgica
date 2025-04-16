@@ -533,6 +533,13 @@ class MapaCirurgico extends ResourceController
             $data['riscos'] = $this->selectrisco;
             $data['especialidades'] = $this->selectespecialidadeaghu;
 
+            if(empty($data['prontuario']) && empty($data['dtinicio']) && empty($data['dtfim']) && empty($data['nome'])) {
+                session()->setFlashdata('failed', 'Informe o período ou o número do prontuário para consulta!');
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
+                'validation' => $this->validator,
+                'data' => $data]);            
+            } 
+
             if (!empty($data['dtinicio']) || !empty($data['dtfim'])) {
 
                 if (empty($data['dtinicio'])) {
@@ -553,9 +560,23 @@ class MapaCirurgico extends ResourceController
                                                         'validation' => $this->validator,
                                                         'data' => $data]);
                 }
+
+                $dtInicio = DateTime::createFromFormat('Y-m-d', $data['dtinicio']);
+                $dtFim = DateTime::createFromFormat('Y-m-d', $data['dtfim']);
+
+                $intervaloDias = $dtInicio->diff($dtFim)->days;
+
+                if ($intervaloDias > 183) {
+                    $this->validator->setError('dtfim', 'O período não pode ser superior a 6 meses!');
+                    return view('layouts/sub_content', [
+                        'view' => 'mapacirurgico/form_consulta_potencialcontaminacao',
+                        'validation' => $this->validator,
+                        'data' => $data
+                    ]);
+                }
             
             }
-            
+
             $this->validator->reset();
 
             $result = $this->getPotencialContaminacao($data);
