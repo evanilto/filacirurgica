@@ -1000,6 +1000,7 @@ class MapaCirurgico extends ResourceController
         local_vw_aghu_cirurgias.nome_especialidade,
         local_vw_aghu_cirurgias.procedimento_cirurgia,
         local_vw_aghu_cirurgias.dthr_internacao,
+        local_vw_aghu_cirurgias.dthr_alta_medica,
         local_vw_aghu_cirurgias.aih_sintomas,
         local_vw_aghu_cirurgias.aih_condicoes,
         local_vw_aghu_cirurgias.indicacao_pdt,

@@ -44,6 +44,7 @@
                 <th scope="col" data-field="prontuarioaghu" >Anestesista</th>
                 <th scope="col" data-field="prontuarioaghu" >Especialidade Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Alta</th>
                 <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
                 <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Situação Descrição</th>
@@ -58,6 +59,7 @@
                 $hr_inicio_cirurgia  = formatarData($cirurgia->dthr_inicio_cirurgia, 'H:i');
                 $hr_fim_cirurgia     = formatarData($cirurgia->dthr_fim_cirurgia, 'H:i');
                 $dt_internacao       = formatarData($cirurgia->dthr_internacao);
+                $dt_alta       = formatarData($cirurgia->dthr_alta_medica);
             
                 $contatos = !empty($cirurgia->contatos) ? implode(', ', array_map(fn($c) => "({$c->ddd}){$c->nro_fone}", $cirurgia->contatos)) : 'N/D';
 
@@ -117,6 +119,7 @@
                         <?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>
                     </td>
                     <td><?php echo $dt_internacao ?: 'N/D';?></td>
+                    <td><?php echo $dt_alta ?: 'N/D';?></td>
                     <!--td class="break-line" title="<-?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>"-->
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
                         <!--?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?-->
@@ -413,7 +416,8 @@
                 { "width": "250px" },  // Fila
                 { "width": "250px" },  // Lista
                 { "width": "250px" },  // Especialidade
-                { "width": "100px" },  // Lista
+                { "width": "100px" },  // Dt Int
+                { "width": "100px" },  // Dt Alta
                 { "width": "300px" },  // Fila
                 { "width": "300px" },  // Fila
                 { "width": "200px" },  // Fila
