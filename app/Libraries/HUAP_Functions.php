@@ -1134,7 +1134,7 @@ class HUAP_Functions
             case 'mapacirurgico-aprovar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '30']));
 
-            case 'mapacirurgico-reservarhemocomponente':
+            case 'bcosangue-reservarhemocomponente':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '31']));
 
             case 'relatorios':

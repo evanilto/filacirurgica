@@ -15,7 +15,10 @@ class HemocomponentesCirurgiaModel extends Model
     protected $allowedFields    = [
         'idhemocomponente',
 	    'idmapacirurgico',
-        'inddisponibilidade'
+        'inddisponibilidade',
+        'quantidade',
+        'quantidade_utilizada',
+        'codigo'
     ];
 
     // Dates

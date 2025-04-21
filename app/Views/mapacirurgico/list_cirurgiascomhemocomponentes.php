@@ -240,7 +240,6 @@ use function PHPUnit\Framework\isEmpty;
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
                     data-procedimentosadicionais="<?= $itemmapa->procedimentos_adicionais ?>"
                     data-equipe="<?= $itemmapa->equipe_cirurgica ?>"
-                    data-ordem="<?= $itemmapa->ordem_fila ?>"
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
                     data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
                     data-congelacao="<?= $itemmapa->congelacao ?>"
@@ -419,7 +418,7 @@ use function PHPUnit\Framework\isEmpty;
         </tbody>
     </table>
     <div class="container-legend mt-2">
-        <a class="btn btn-warning" href="<?= base_url('home_index') ?>">
+        <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultarcirurgiacomhemocomps') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
         <!-- <button class="btn btn-primary" id="pacientesolicitado" disabled> Paciente Solicitado</button>
@@ -433,6 +432,7 @@ use function PHPUnit\Framework\isEmpty;
         <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button> -->
         <button class="btn btn-primary" id="reservar" disabled> Reservar Hemocomponentes </button>
+        <button class="btn btn-primary" id="informaruso" disabled> Informar Utilização </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
 </div>
@@ -535,6 +535,7 @@ use function PHPUnit\Framework\isEmpty;
                     atualizarhorarios,
                     editar, */
                     reservar,
+                    informaruso,
                     consultar
                 ].forEach(button => {
                     button.disabled = true;
@@ -604,6 +605,9 @@ use function PHPUnit\Framework\isEmpty;
                     reservar.disabled = false;
                     reservar.removeAttribute("disabled");
                     reservar.style.backgroundColor = "Red";
+                    informaruso.disabled = false;
+                    informaruso.removeAttribute("disabled");
+                    informaruso.style.backgroundColor = "Green";
 
                 //}
             });
@@ -644,6 +648,10 @@ use function PHPUnit\Framework\isEmpty;
                         }
 
                         if (botao.id === 'reservar') {
+                            url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
+                        }
+
+                        if (botao.id === 'informaruso') {
                             url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
                         }
 
@@ -708,6 +716,7 @@ use function PHPUnit\Framework\isEmpty;
         handleButtonOthers(editar, 'atualizarcirurgia'); */
         handleButtonOthers(consultar, 'consultarcirurgia');
         handleButtonOthers(reservar, 'reservarhemocomponente');
+        handleButtonOthers(informaruso, 'informarutilizacao');
 
     });
 
@@ -1128,7 +1137,6 @@ use function PHPUnit\Framework\isEmpty;
                 procedimento: $(this).data('procedimento'),
                 procedimentosadicionais: $(this).data('procedimentosadicionais'),
                 equipe: $(this).data('equipe'),
-                ordem: $(this).data('ordem'),
                 origem: $(this).data('origem'),
                 complexidade: $(this).data('complexidade'),
                 risco: $(this).data('risco'),
@@ -1145,9 +1153,9 @@ use function PHPUnit\Framework\isEmpty;
 
             };
 
-            if (dadosAdicionais.ordem == 0) {
+           /*  if (dadosAdicionais.ordem == 0) {
                 dadosAdicionais.ordem = '-';
-            }
+            } */
 
             if (dadosAdicionais.complexidade === 'A') {
                 dadosAdicionais.complexidade = 'Alta';

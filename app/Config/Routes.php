@@ -70,9 +70,12 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->get('suspendercirurgia/(:num)/(:any)', 'MapaCirurgico::SuspenderCirurgia/$1/$2');
     $routes->post('suspender/', 'MapaCirurgico::suspender');
     $routes->get('avaliarcirurgias', 'MapaCirurgico::avaliarCirurgias');
-    $routes->add('exibircirurgiacomhemocomps', 'MapaCirurgico::exibirCirurgiasComHemocomponentes');
+    $routes->get('consultarcirurgiacomhemocomps', 'MapaCirurgico::consultarCirurgiasComHemocomponentes');
+    $routes->add('exibircirurgiacomhemocomps', 'MapaCirurgico::exibirCirurgiaComHemocomponentes');
     $routes->get('reservarhemocomponente/(:num)', 'MapaCirurgico::reservarHemocomponente/$1');
+    $routes->get('informarutilizacao/(:num)', 'MapaCirurgico::informarUtilizacao/$1');
     $routes->post('confirmarreserva', 'MapaCirurgico::confirmarReserva');
+    $routes->post('registrarutilizacao', 'MapaCirurgico::registrarUtilizacao');
     $routes->add('exibircirurgiasemaprovacao', 'MapaCirurgico::exibirCirurgiasEmAprovacao');
     $routes->get('aprovarcirurgia/(:num)/(:num)', 'MapaCirurgico::aprovarCirurgia/$1/$2');
     $routes->get('desaprovarcirurgia/(:num)/(:num)', 'MapaCirurgico::desaprovarCirurgia/$1/$2');

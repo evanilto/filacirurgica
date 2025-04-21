@@ -5,6 +5,47 @@ use App\Models\HemocomponentesModel;
 
  $validation = \Config\Services::validation(); ?>
 
+<style>
+    .form-check.with-fields {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: nowrap; /* Impede quebra de linha */
+        gap: 10px; /* Dá um pequeno espaçamento entre os elementos */
+    }
+
+    .form-check.with-fields .input-group-fields {
+        display: flex;
+        gap: 10px;
+    }
+
+    .form-check.with-fields input[type="number"] {
+        width: 100px; /* Ajusta o tamanho dos inputs */
+    }
+
+    .d-flex {
+        display: flex;
+        gap: 10px; /* Ajusta o espaçamento entre os campos */
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    .form-label {
+        font-weight: bold;
+    }
+
+    .bordered-container {
+        border: 1px solid #ddd;
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 4px;
+    }
+</style>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -112,28 +153,80 @@ use App\Models\HemocomponentesModel;
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label for="perfis" class="form-label" autofocus>Hemocomponentes</label>
+                                    <label class="form-label">Hemocomponentes</label>
                                     <div class="bordered-container p-3">
-                                        <div style="max-height: 300px; overflow-y: auto;"> 
+                                        <div style="max-height: 300px; overflow-y: auto;">
                                             <?php 
                                             $hemocomponentes_json = $data['hemocomponentes_cirurgia_info'] ?? '[]'; 
                                             $hemocomponentes = json_decode($hemocomponentes_json, true) ?? []; 
+                                            
+                                            usort($hemocomponentes, function ($a, $b) {
+                                                return $a['id'] <=> $b['id'];
+                                            });
+                                            //dd($hemocomponentes);
                                             ?>
-
                                             <?php if (!empty($hemocomponentes)): ?>
+                                                <?php
+                                                    $mostrarSelecionarTodos = count($hemocomponentes) > 1;
+                                                ?>
+                                                <div class="form-check mb-0" <?= !$mostrarSelecionarTodos ? 'style="display: none;"' : '' ?>>
+                                                    <input class="form-check-input" type="checkbox" id="selecionarTodos" />
+                                                    <label class="form-check-label" for="selecionarTodos">Selecionar Todos</label>
+                                                </div>
+                                                <!-- Cabeçalhos -->
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div style="width: 50%;"></div> <!-- Espaço do checkbox e nome -->
+                                                    <div style="width: 25%;" class="text-center">Qtd. Liberada (Bolsa/ml)</div>
+                                                    <div style="width: 25%;" class="text-left">Código</div>
+                                                </div>
+
                                                 <?php foreach ($hemocomponentes as $item): ?>
-                                                    <div class="form-check">
-                                                        <!-- Campo oculto para garantir envio de valor falso quando não marcado -->
-                                                        <input type="hidden" name="inddisponibilidade[<?= $item['id'] ?>]" value="0">
-                                                        
-                                                        <input type="checkbox" class="form-check-input" 
-                                                            name="inddisponibilidade[<?= $item['id'] ?>]" 
-                                                            value="1" 
-                                                            id="item_<?= $item['id'] ?>" 
-                                                            <?= !empty($item['inddisponibilidade']) ? 'checked' : '' ?>>
-                                                        <label class="form-check-label" for="item_<?= $item['id'] ?>">
-                                                            <?= htmlspecialchars($item['descricao']) ?>
-                                                        </label>
+                                                    <div class="form-check mb-2 d-flex align-items-center">
+                                                        <!-- Checkbox + descrição -->
+                                                        <div style="width: 50%;" class="d-flex align-items-center gap-2">
+                                                            <!-- Hidden para garantir que mesmo se desmarcado o checkbox, o campo exista -->
+                                                            <input type="hidden" name="inddisponibilidade[<?= $item['id'] ?>]" value="0">
+
+                                                            <!-- Checkbox -->
+                                                            <input type="checkbox" class="form-check-input toggle-fields mt-0"
+                                                                data-id="<?= $item['id'] ?>"
+                                                                name="inddisponibilidade[<?= $item['id'] ?>]"
+                                                                value="1"
+                                                                id="item_<?= $item['id'] ?>"
+                                                                <?= !empty($item['inddisponibilidade']) ? 'checked' : '' ?>>
+
+                                                            <!-- Hidden com a descrição do hemocomponente -->
+                                                            <input type="hidden" name="descricao[<?= $item['id'] ?>]" value="<?= htmlspecialchars($item['descricao']) ?>">
+
+                                                            <!-- Label visual -->
+                                                            <label class="form-check-label mb-0" for="item_<?= $item['id'] ?>">
+                                                                <?= htmlspecialchars($item['descricao']) ?>
+                                                            </label>
+                                                        </div>
+
+                                                        <!-- Quantidade -->
+                                                        <div style="width: 25%;" class="text-center">
+                                                            <input type="number"
+                                                                name="quantidade[<?= $item['id'] ?>]"
+                                                                class="form-control"
+                                                                id="quantidade_<?= $item['id'] ?>"
+                                                                placeholder=""  
+                                                                min="0" required
+                                                                value="<?= isset($item['quantidade']) ? htmlspecialchars($item['quantidade']) : '' ?>"
+                                                                <?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
+                                                        </div>
+
+                                                        <!-- Código -->
+                                                        <div style="width: 25%;" class="text-center">
+                                                            <input type="number"
+                                                                name="codigo[<?= $item['id'] ?>]"
+                                                                class="form-control"
+                                                                id="codigo_<?= $item['id'] ?>"
+                                                                placeholder=""
+                                                                value="<?= isset($item['codigo']) ? htmlspecialchars($item['codigo']) : '' ?>"
+                                                                <?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
+                                                        </div>
+
                                                     </div>
                                                 <?php endforeach; ?>
                                             <?php else: ?>
@@ -144,6 +237,7 @@ use App\Models\HemocomponentesModel;
                                 </div>
                             </div>
                         </div>
+
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <button class="btn btn-primary mt-3" onclick="return confirma(this);">
@@ -195,68 +289,39 @@ use App\Models\HemocomponentesModel;
         return false; // Queremos prevenir o comportamento padrão do link
     }
 
-    function fetchPacienteNome(prontuarioValue) {
-      if (prontuarioValue) {
-        fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.nome) {
-            document.getElementById('nome').value = data.nome;
-            const ordemValue = document.getElementById('ordemfila').value;
-            var selectElement = document.getElementById('fila');
-            var filaText = selectElement.options[selectElement.selectedIndex].text;
-            
-            //loadAsideContent(prontuarioValue, ordemValue, filaText);
-          } else {
-            document.getElementById('nome').value = data.error;
-            console.error(data.error || 'Nome não encontrado');
-            $('#sidebar').html('<p>'+data.error+'</p>'); 
-          }
-        })
-        .catch(error => {
-          console.error('Erro:', error);
-          document.getElementById('nome').value = '';
-        });
-      } else {
-        document.getElementById('nome').value = '';
-      }
-    }
-    
-    function loadAsideContent(recordId, ordemFila, fila) {
-        $.ajax({
-            url: '<?= base_url('listaespera/carregaaside/') ?>' + recordId + '/' + ordemFila + '/' + fila,
-            method: 'GET',
-            beforeSend: function() {
-                $('#sidebar').html('<p>Carregando...</p>'); // Mostrar mensagem de carregando
-            },
-            success: function(response) {
-                $('#sidebar').html(response); // Atualizar o conteúdo do sidebar
-            },
-            error: function(xhr, status, error) {
-                var errorMessage = 'Erro ao carregar os detalhes: ' + status + ' - ' + error;
-                console.error(errorMessage);
-                console.error(xhr.responseText);
-                $('#sidebar').html('<p>' + errorMessage + '</p><p>' + xhr.responseText + '</p>');
-            }
-        });
-    }
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.toggle-fields');
 
-    function fetchPacienteNomeOnLoad() {
-        const prontuarioInput = document.getElementById('prontuario');
-        fetchPacienteNome(prontuarioInput.value);
-    }
+        checkboxes.forEach(function (checkbox) {
+            const id = checkbox.dataset.id;
+            const quantidade = document.getElementById('quantidade_' + id);
+            const codigo = document.getElementById('codigo_' + id);
 
-    fetchPacienteNomeOnLoad();
+            // Inicializa corretamente ao carregar
+            quantidade.disabled = !checkbox.checked;
+            codigo.disabled = !checkbox.checked;
+
+            checkbox.addEventListener('change', function () {
+                quantidade.disabled = !this.checked;
+                codigo.disabled = !this.checked;
+            });
+        });
+    });
+
+    document.getElementById('selecionarTodos').addEventListener('change', function () {
+        const isChecked = this.checked;
+        const checkboxes = document.querySelectorAll('.form-check-input.toggle-fields');
+        
+        checkboxes.forEach(cb => {
+            cb.checked = isChecked;
+            const id = cb.dataset.id;
+            const quantidadeInput = document.getElementById('quantidade_' + id);
+            const codigoInput = document.getElementById('codigo_' + id);
+
+            if (quantidadeInput) quantidadeInput.disabled = !isChecked;
+            if (codigoInput) codigoInput.disabled = !isChecked;
+        });
+    });
 
     $(document).ready(function() {
         $('.select2-dropdown').select2({

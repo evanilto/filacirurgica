@@ -47,7 +47,7 @@
                 <th scope="col" data-field="prontuarioaghu" >Data Alta</th>
                 <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
                 <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
-                <th scope="col" data-field="prontuarioaghu" >Situação Descrição</th>
+                <th scope="col" data-field="prontuarioaghu" >Descrição Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
             </tr>
         </thead>

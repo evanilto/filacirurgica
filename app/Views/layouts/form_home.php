@@ -34,7 +34,7 @@
 
         <script>
 
-        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-reservarhemocomponente')) {?>
+        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) {?>
 
             document.addEventListener("DOMContentLoaded", function() {
 

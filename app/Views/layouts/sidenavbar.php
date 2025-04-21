@@ -56,10 +56,23 @@
                             </a>
                         </li>
                         <?php } ?>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-reservarhemocomponente')) { ?>
+                    </ul>
+                </div>
+            </li>
+        <?php } ?>
+    </ul>
+    <ul class="nav navbar-nav flex-column">
+        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
+        <li>
+                <a href="#bcosangue" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="fa-solid fa-plus toggle-icon"></i> Banco de Sangue
+                </a>
+                <div class="collapse" id="bcosangue">
+                    <ul class="nav flex-column submenu-2">
+                        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
                         <li>
-                            <a href="<?= base_url('mapacirurgico/exibircirurgiacomhemocomps') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Reservar Hemocomponente
+                            <a href="<?= base_url('mapacirurgico/consultarcirurgiacomhemocomps') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Consultar Hemocomponentes
                             </a>
                         </li-->
                         <?php } ?>
