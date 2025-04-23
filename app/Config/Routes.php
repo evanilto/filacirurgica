@@ -71,6 +71,7 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->post('suspender/', 'MapaCirurgico::suspender');
     $routes->get('avaliarcirurgias', 'MapaCirurgico::avaliarCirurgias');
     $routes->get('consultarcirurgiacomhemocomps', 'MapaCirurgico::consultarCirurgiasComHemocomponentes');
+    $routes->post('setflashdata', 'MapaCirurgico::setFlashData');
     $routes->add('exibircirurgiacomhemocomps', 'MapaCirurgico::exibirCirurgiaComHemocomponentes');
     $routes->get('reservarhemocomponente/(:num)', 'MapaCirurgico::reservarHemocomponente/$1');
     $routes->get('informarutilizacao/(:num)', 'MapaCirurgico::informarUtilizacao/$1');

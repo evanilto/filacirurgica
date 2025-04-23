@@ -222,6 +222,25 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-2">
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                    <select class="form-select select2-dropdown"
+                                        name="tipo_sanguineo" id="tipo_sanguineo"
+                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        <?php
+                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
+                                            foreach ($tipos as $tipo):
+                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                            endforeach;
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
@@ -244,9 +263,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">Congelação <b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -272,7 +289,7 @@
                                 <?php endif; ?>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">OPME <b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -367,6 +384,7 @@
                         </div>
 
                         <input type="hidden" name="ordem_hidden" id="ordem_hidden" value="<?= $data['ordem'] ?>" />
+                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
 
                     </form>
                 </div>
@@ -536,6 +554,10 @@
         });
     } */
 
+    let tipoSanguineoOriginal = '';
+    let alteracaoConfirmada = false;
+    let carregandoInicial = true; // <- flag de carregamento
+
     function fetchPacienteNome(prontuarioValue) {
         if (!prontuarioValue) {
             document.getElementById('nome').value = '';
@@ -561,6 +583,17 @@
             if (data.nome) {
                 // Paciente encontrado, atualiza o campo
                 document.getElementById('nome').value = data.nome;
+
+                $('#nome').val(data.nome);
+
+                tipoSanguineoOriginal = data.tiposanguineo;
+                alteracaoConfirmada = false;
+
+                $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                $('#tipo_sanguineo_confirmado').val('0');
+
+                carregandoInicial = false; // <- libera para disparar alerta depois
+
             } else {
                 // Paciente não encontrado, exibe modal para sincronizar
                 document.getElementById('nome').value = data.error || 'Nome não encontrado';
@@ -718,6 +751,32 @@
             
             // Set the especialidade value and update the Select2 component
             $('#especialidade').val(selectedEspecialidade).trigger('change.select2');
+        });
+
+        $('#tipo_sanguineo').on('change', function () {
+            const valorAtual = $(this).val();
+
+            // ignora se ainda estamos carregando
+            if (carregandoInicial || alteracaoConfirmada || !tipoSanguineoOriginal) return;
+
+            if (valorAtual !== tipoSanguineoOriginal) {
+                Swal.fire({
+                    title: 'Alterar tipo sanguíneo?',
+                    text: `O tipo original era ${tipoSanguineoOriginal}. Deseja realmente alterar para ${valorAtual}?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim, alterar',
+                    cancelButtonText: 'Não, manter original'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        alteracaoConfirmada = true;
+                        $('#tipo_sanguineo_confirmado').val('1');
+                    } else {
+                        $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                        $('#tipo_sanguineo_confirmado').val('0');
+                    }
+                });
+            }
         });
             
     });

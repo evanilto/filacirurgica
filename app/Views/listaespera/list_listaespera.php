@@ -38,6 +38,7 @@
                 <th scope="col" data-field="prontuarioaghu" >Congelação</th>
                 <th scope="col" data-field="prontuarioaghu" >OPME</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
+                <th scope="col" data-field="tiposangue" >Tipo Sanguíneo</th>
             </tr>
         </thead>
         <tbody>
@@ -64,6 +65,7 @@
                     data-congelacao="<?= $itemlista->indcongelacao ?>" 
                     data-opme="<?= $itemlista->opme ?>" 
                     data-dtrisco="<?= $itemlista->data_risco ?>" 
+                    data-tiposangue="<?= $itemlista->tiposanguineo ?>"
                     data-infoadic="<?= htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') ?>" 
                 >
                     <td><?php echo $itemlista->ordem_lista ?></td>
@@ -121,6 +123,7 @@
                     <td class="break-line"><?php echo $itemlista->indcongelacao == 'S' ? 'SIM' : 'NÃO' ?></td>
                     <td class="break-line"><?php echo $itemlista->opme == 'S' ? 'SIM' : ($itemlista->opme == 'N' ? 'NÃO' : '') ?></td>
                     <td><?php echo $itemlista->data_risco ?></td>
+                    <td><?php echo $itemlista->tiposanguineo ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -222,7 +225,8 @@
             opme = element.getAttribute('data-opme') === 'S' ? 'SIM' :
                     element.getAttribute('data-opme') === 'N' ? 'NÃO' : '';
             dtrisco = element.getAttribute('data-dtrisco');  
-            justorig = element.getAttribute('data-justorig')
+            justorig = element.getAttribute('data-justorig');
+            tiposangue = element.getAttribute('data-tiposangue'); 
            
             $.ajax({
                 url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
@@ -293,16 +297,17 @@
                         <strong>Procedimento:</strong> ${idprocedimento} - ${procedimento}<br>
                         <strong>Risco:</strong> ${risco}<br>
                         <strong>Data do Risco:</strong> ${verificarValor(dtrisco)}<br>
+                        <strong>CID:</strong> ${verificarValor(cid)} - ${verificarValor(ciddescr)}<br>
+                        <strong>Origem:</strong> ${origem}<br>
                     `);
 
                     // Atualiza o conteúdo do modal para a coluna direita
                     $('#colunaDireita2').html(`
-                        <strong>CID:</strong> ${verificarValor(cid)} - ${verificarValor(ciddescr)}<br>
-                        <strong>Origem:</strong> ${origem}<br>
                         <strong>Complexidade:</strong> ${complexidade}<br>
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
                         <strong>OPME:</strong> ${verificarValor(opme)}<br>
+                        <strong>Tipo Sanguíneo:</strong> ${verificarValor(tiposangue)}<br>
                         <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                         <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
                     `);
@@ -425,7 +430,8 @@
                 { "width": "150px" },
                 { "width": "110px" },
                 { "width": "110px" },
-                { "width": "90px" } // dt risco
+                { "width": "90px" }, // dt risco
+                { "width": "100px" } // tipo sangue
 
             ],
             "columnDefs": [
@@ -440,7 +446,7 @@
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
                     //columns: ':not(:first-child):not(:nth-child(2)):not(:last-child)' // Opção para ignorar a primeira e segunda coluna
-                    columns: ':not(:nth-child(2)):not(:last-child)' 
+                    columns: ':not(:nth-child(2))' 
                 },
                 'copy',
                 'csv',

@@ -181,7 +181,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -196,7 +196,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="mb-2">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -220,6 +220,25 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                    <select class="form-select select2-dropdown"
+                                        name="tipo_sanguineo" id="tipo_sanguineo"
+                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        <?php
+                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
+                                            foreach ($tipos as $tipo):
+                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                            endforeach;
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
@@ -266,8 +285,6 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
@@ -290,7 +307,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">

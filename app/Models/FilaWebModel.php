@@ -13,6 +13,24 @@ class FilaWebModel extends Model
 
     private $equipamentosmodel;
 
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getTipoSanguineoAtual($prontuario)
+    {
+        $db = Database::connect('default');
+        $builder = $db->table('lista_espera');
+
+        return $builder
+            ->where('numprontuario', $prontuario)
+            ->where('tiposanguineo IS NOT NULL')
+            ->orderBy('updated_at', 'DESC')
+            ->limit(1)
+            ->get()
+            ->getRow(); // pega apenas uma linha como objeto
+    }
    /**
      * Return a new resource object, with default properties
      *

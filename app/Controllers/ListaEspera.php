@@ -246,8 +246,11 @@ class ListaEspera extends ResourceController
 
     //if ($paciente && isset($paciente[0]->nome)) {
     if ($paciente && isset($paciente->nome)) {
-        //return $this->response->setJSON(['nome' => $paciente[0]->nome]);
-        return $this->response->setJSON(['nome' => $paciente->nome]);
+
+        $listapaciente = $this->filawebmodel->getTipoSanguineoAtual($numProntuario);
+
+        return $this->response->setJSON(['nome' => $paciente->nome,
+                                         'tiposanguineo' => $listapaciente->tiposanguineo]);
     }
 
     return $this->response->setJSON(['error' => 'Paciente não localizado'], 404);
@@ -1123,6 +1126,7 @@ class ListaEspera extends ResourceController
 
         $data['dtinclusao'] = date('d/m/Y H:i');
         $data['ordem'] = '';
+        $data['tipo_sanguineo'] = '';
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectriscoativos;
         $data['origens'] = $this->selectorigempacienteativos;
@@ -1186,7 +1190,7 @@ class ListaEspera extends ResourceController
 
         $rules = [
             'especialidade' => 'required',
-            //'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
+            'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
             'fila' => 'required',
             'procedimento' => 'required',
@@ -1267,6 +1271,7 @@ class ListaEspera extends ResourceController
                     'idtipoprocedimento' => $data['fila'],
                     'idorigempaciente' => $data['origem'],
                     'indcongelacao' => $data['congelacao'],
+                    'tiposanguineo' => $data['tipo_sanguineo'],
                     'indopme' => $data['opme'],
                     'idprocedimento' => $data['procedimento'],
                     'idlateralidade' => $data['lateralidade'],
@@ -1486,6 +1491,7 @@ class ListaEspera extends ResourceController
         $data['origem'] = $lista['idorigempaciente'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['opme'] = $lista['indopme'];
+        $data['tipo_sanguineo'] = $lista['tiposanguineo'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['lateralidade'] = $lista['idlateralidade'];
         $data['info'] = $lista['txtinfoadicionais'];
@@ -1604,6 +1610,7 @@ class ListaEspera extends ResourceController
                         'idorigempaciente' => $data['origem'],
                         'indcongelacao' => $data['congelacao'],
                         'indopme' => $data['opme'],
+                        'tiposanguineo' => $data['tipo_sanguineo'],
                         'idprocedimento' => $data['procedimento'],
                         'idlateralidade' => $data['lateralidade'],
                         'txtinfoadicionais' => $data['info'],
@@ -1895,9 +1902,10 @@ class ListaEspera extends ResourceController
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['especialidades_med'] = $this->selectespecialidadeaghu;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
-        $data['usarHemocomponentes'] = [];
+        $data['usarHemocomponentes'] = 'N';
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
+        $data['tipo_sanguineo'] = $lista['tiposanguineo'];
 
         $codToRemove = $lista['idprocedimento'];
         $procedimentos = $data['procedimentos'];
@@ -2068,6 +2076,7 @@ class ListaEspera extends ResourceController
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
                         'indopme' => $this->data['opme'],
+                        'tiposanguineo' => $this->data['tipo_sanguineo'],
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig'],
@@ -2075,6 +2084,7 @@ class ListaEspera extends ResourceController
                         'indsituacao' => 'P' // Programada
                         ];
 
+                        //dd($lista);
                 $this->listaesperamodel->update($this->data['id'], $lista);
 
                 if ($db->transStatus() === false) {

@@ -158,6 +158,7 @@
                 <th scope="col" data-field="nome" >OPME</th>
                 <th scope="col" data-field="eqpts" >Equipamentos</th>
                 <th scope="col" data-field="hemocomps" >Hemocomponentes</th>
+                <th scope="col" data-field="tiposangue" >Tipo Sanguíneo</th>
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
@@ -340,6 +341,7 @@
                     data-necesspro="<?= htmlspecialchars($itemmapa->necessidadesproced, ENT_QUOTES, 'UTF-8') ?>"
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
                     data-opme="<?= $itemmapa->opme ?>"
+                    data-tiposangue="<?= $itemmapa->tiposanguineo ?>"
                     data-equipamentos="<?= htmlspecialchars($itemmapa->equipamentos_cirurgia, ENT_QUOTES, 'UTF-8') ?>"
                     data-equipamentosinfo="<?= $itemmapa->equipamentos_cirurgia_info ?>"
                     data-equipamentoexcedente="<?= $itemmapa->equipamento_excedente ?>"
@@ -496,6 +498,7 @@
                         <?= $hemocomponentes; ?>
                     </td>
                     <!-------------------------------------------------------------------------->
+                    <td><?php echo $itemmapa->tiposanguineo ?></td>
                     <td><?php echo $itemmapa->risco_descricao ?></td>
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
@@ -1103,6 +1106,7 @@
                 $('#colunaDireita2').html(`
                     <strong>Lateralidade:</strong> ${dados.lateralidade}<br>
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
+                    <strong>Tipo Sanguíneo:</strong> ${verificarValor(dados.tiposangue)}<br>
                     <strong>Hemoderivados:</strong> ${dados.hemo}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
                     <strong>Equipamentos:</strong> ${verificarValor(dados.equipamentos)}<br>
@@ -1135,7 +1139,7 @@
                 "url": "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             },
             fixedColumns: {
-            leftColumns: 11 // Número de colunas a serem fixadas
+            leftColumns: 13 // Número de colunas a serem fixadas
             },
             fixedHeader: true,
             scrollY: '500px',
@@ -1179,6 +1183,7 @@
                     { "width": "70px" },  // opme
                     { "width": "350px" },  // equipamentos
                     { "width": "350px" },  // hemocomponentes
+                    { "width": "100px" },  // tipo sanguineo
                     { "width": "150px" },  // risco
                     { "width": "90px" },  // dt risco
                     { "width": "130px" },  // origem
@@ -1194,7 +1199,7 @@
                 {
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
-                    columns: [2, 3, 4, 5, 6, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30] // Especifica quais colunas são visíveis
+                    columns: [2, 3, 4, 5, 6, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38] // Especifica quais colunas são visíveis
                 },
                 'copy',
                 'csv',
@@ -1254,6 +1259,7 @@
                 congelacao: $(this).data('congelacao'),
                 hemo: $(this).data('hemo'),
                 opme: $(this).data('opme'),
+                tiposangue: $(this).data('tiposangue'),
                 equipamentos: $(this).data('equipamentos'),
                 hemocomponentes: $(this).data('hemocomponentes'),
                 posoperatorio: $(this).data('posoperatorio'),

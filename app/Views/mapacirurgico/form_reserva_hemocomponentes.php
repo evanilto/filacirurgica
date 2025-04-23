@@ -211,8 +211,8 @@ use App\Models\HemocomponentesModel;
                                                                 class="form-control"
                                                                 id="quantidade_<?= $item['id'] ?>"
                                                                 placeholder=""  
-                                                                min="0" required
                                                                 value="<?= isset($item['quantidade']) ? htmlspecialchars($item['quantidade']) : '' ?>"
+                                                                min="0" required
                                                                 <?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
                                                         </div>
 

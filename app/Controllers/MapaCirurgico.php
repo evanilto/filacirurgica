@@ -979,6 +979,22 @@ class MapaCirurgico extends ResourceController
      *
      * @return mixed
      */
+    public function setFlashData()
+    {
+        helper(['form', 'url', 'session']);
+
+        $dataflash['dtinicio'] = date('d/m/Y', strtotime('-1 day'));
+        $dataflash['dtfim'] = date('d/m/Y', strtotime('+1 day'));
+
+        session()->setFlashdata('dataflash', $dataflash);
+
+        return $this->response->setJSON(['success' => true]);
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
     public function exibirCirurgiaComHemocomponentes(string $idmapacirurgico = null)
     {
         helper(['form', 'url', 'session']);
@@ -1556,6 +1572,7 @@ class MapaCirurgico extends ResourceController
         $data['usarEquipamentos'] = empty($data['eqpts']) ? 'N' : 'S';
         $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
         $data['hemocomponentes'] = $this->selecthemocomponentes;
+        $data['tipo_sanguineo'] = $mapa->tiposanguineo;
 
        //var_dump($this->data['eqpts']);die();
        //var_dump($data['salas_cirurgicas']);die();
@@ -2210,6 +2227,7 @@ class MapaCirurgico extends ResourceController
                 $candidato['complexidade'] = $values[10];
                 $candidato['infoadicionais'] = $values[11];
                 $candidato['opme'] = $values[14];
+                $candidato['tiposanguineo'] = $this->listaesperamodel->find($candidato['idlistaespera'])['tiposanguineo'];
             }
         }
 
@@ -2261,7 +2279,7 @@ class MapaCirurgico extends ResourceController
         $data['usarHemocomponentes'] = 'N';
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
-
+        $data['tipo_sanguineo'] = '';
 
         //$codToRemove = $mapapac1['idprocedimento'];
         //$procedimentos = $data['procedimentos'];
@@ -2413,6 +2431,7 @@ class MapaCirurgico extends ResourceController
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
+                    'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'indsituacao' => 'P' // Programada
                     ];
 

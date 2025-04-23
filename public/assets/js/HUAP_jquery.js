@@ -10,11 +10,11 @@ timesession.setSeconds( timesession.getSeconds() + parseInt(timeout) );
 $('#flashdata').delay(5000).fadeOut('slow');
 
 //monta o time de sessão do usuário
-$('#clock').countdown(timesession)
+/* $('#clock').countdown(timesession)
 .on('update.countdown', function(event) {
     var format = '%H:%M:%S';
     $(this).html(event.strftime(format));
-});
+}); */
 //.on('finish.countdown', function(event) {
 //    $(this).html('This offer has expired!')
 //    .parent().addClass('disabled');

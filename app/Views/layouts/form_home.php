@@ -58,13 +58,35 @@
                                 confirmButtonText: 'Sim',
                                 cancelButtonText: 'Não'
                             }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        $('#janelaAguarde').show(); 
+                                if (result.isConfirmed) {
+                                    $('#janelaAguarde').show(); 
+
+                                    // Envia requisição para salvar os dados na sessão
+                                    fetch('<?= base_url('mapacirurgico/setflashdata') ?>', {
+                                        method: 'POST',
+                                        headers: {
+                                            'X-Requested-With': 'XMLHttpRequest' // opcional, mas bom para segurança
+                                        }
+                                    })
+                                    .then(response => response.json())
+                                    .then(data => {
+                                        if (data.success) {
                                             const url = '<?= base_url('mapacirurgico/exibircirurgiacomhemocomps') ?>';
                                             window.location.href = url;
-                                    } else {
-                                        $('#janelaAguarde').hide(); 
-                                    }
+                                        } else {
+                                            $('#janelaAguarde').hide();
+                                            Swal.fire('Erro', 'Não foi possível continuar.', 'error');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        $('#janelaAguarde').hide();
+                                        Swal.fire('Erro', 'Falha ao comunicar com o servidor.', 'error');
+                                        console.error(error);
+                                    });
+
+                                } else {
+                                    $('#janelaAguarde').hide(); 
+                                }
                             });
 
                         }

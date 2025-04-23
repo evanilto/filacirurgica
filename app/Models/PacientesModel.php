@@ -6,39 +6,14 @@ use CodeIgniter\Model;
 
 class ListaEsperaModel extends Model
 {
-    protected $table            = 'lista_espera';
-    protected $primaryKey       = 'id';
+    protected $table            = 'pacientes';
+    protected $primaryKey       = 'numprontuario';
     protected $useAutoIncrement = true; //false for migration
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true; //false for migration
     protected $protectFields    = true;
     protected $allowedFields    = [
-        /*'id', // for migration
-        'created_at', // for migration
-        'updated_at', // for migration */
-        'deleted_at',
         'numprontuario',
-        'idespecialidade',
-        'dtriscocirurgico',
-        'dtexclusao',
-        'dtrecuperacao',
-        'numcid',
-        'idcomplexidade',
-        'idtipoprocedimento',
-        'idriscocirurgico',
-        'idorigempaciente',
-        'idprocedimento',
-        'idlateralidade',
-        'indsituacao',
-        'indcongelacao',
-        'indurgencia',
-        'indopme',
-        'idexclusao',
-        'txtinfoadicionais',
-        'txtorigemjustificativa',
-        'txtjustificativaexclusao',
-        'txtjustificativarecuperacao',
-        'txtinfoadicionais',
         'tiposanguineo'
     ];
 

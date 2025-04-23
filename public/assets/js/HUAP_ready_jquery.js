@@ -2,7 +2,7 @@
 $(document).ready(function() {
 
     //Máscaras
-    $(".Numero").mask("9");
+   /*  $(".Numero").mask("9");
     $(".Data").mask("99/99/9999");
     $(".Hora").mask("99:99");
     $(".DataHora").mask("99/99/9999 99:99");
@@ -26,7 +26,7 @@ $(document).ready(function() {
 
             $(this).val(first + '-' + lastfour);
         }
-    });
+    }); */
 
     //inicializa o select2 apenas em inputs com class select2 indicado
     $('.select2').select2({
