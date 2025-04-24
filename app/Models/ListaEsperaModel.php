@@ -39,7 +39,11 @@ class ListaEsperaModel extends Model
         'txtjustificativaexclusao',
         'txtjustificativarecuperacao',
         'txtinfoadicionais',
-        'tiposanguineo'
+        'tiposanguineo',
+        'idalttiposanguelogin',
+        'idalttiposanguemotivo',
+        'txtalttiposanguejustificativa',
+        'dthralttiposangue'
     ];
 
     // Dates

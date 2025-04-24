@@ -646,18 +646,20 @@ z-index: 999;
 background-color: transparent; /* Remova o fundo escurecido */
 }
 
+/* 
 .modal-content {
     position: fixed;
     top: 50%;
-    left: calc(50% + 115px); /* Compensa a largura do menu lateral */
+    left: calc(50% + 115px);
     transform: translate(-50%, -50%);
     max-width: 15%;
     padding: 20px;
     border: 2px solid #000;
     border-radius: 5px;
     background-color: white;
-    z-index: 1001; /* Deve ser maior que o z-index de modal-overlay */
+    z-index: 1001; /* Deve ser maior que o z-index de modal-overlay
 }
+*/
 
 .modal-overlay {
 position: fixed;
@@ -681,6 +683,20 @@ padding: 0;
     left: calc(25% + 115px); /* Metade da largura do menu (230px / 2) */
     transform: translate(-50%, -50%); /* Centraliza com precisão */
     max-width: 50%; /* Define a largura máxima */
+    width: 100%; /* Garante que não ultrapasse a largura disponível */
+    padding: 20px;
+    border: 2px solid #000;
+    border-radius: 5px;
+    background-color: white;
+    z-index: 1001; /* Deve ser maior que o modal-overlay */
+}
+
+.modal-dialog-custom {
+    position: fixed; /* Fixa o modal na viewport */
+    top: 10%; /* Posiciona no meio vertical */
+    left: 35%; /* Metade da largura do menu (230px / 2) */
+    transform: translate(-50%, -50%); /* Centraliza com precisão */
+    max-width: 30%; /* Define a largura máxima */
     width: 100%; /* Garante que não ultrapasse a largura disponível */
     padding: 20px;
     border: 2px solid #000;

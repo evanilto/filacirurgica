@@ -385,10 +385,12 @@
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="0">
+                        <input type="hidden" name="idalttiposanguelogin" id="idalttiposanguelogin">
+                        <input type="hidden" name="idalttiposanguejustificativa" id="idalttiposanguejustificativa">
+                        <input type="hidden" name="txtalttiposanguejustificativa" id="txtalttiposanguejustificativa">
                         <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
-                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden">
-                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden">
-                        <input type="hidden" name="updated_at_original" value="<?= esc($data['updated_at']) ?>">
+                        <input type="hidden" name="motivo_alteracao" id="campo_oculto_motivo_alteracao">
+                        <input type="hidden" name="justificativa" id="campo_oculto_justificativa">
 
                 </div>
             </div>
@@ -608,8 +610,7 @@
             if (valorAtual !== tipoSanguineoOriginal) {
                 Swal.fire({
                     title: 'Alterar tipo sanguíneo?',
-                    //text: `O tipo original era ${tipoSanguineoOriginal}. Deseja realmente alterar para ${valorAtual}?`,
-                    text: `O tipo anterior era ${tipoSanguineoOriginal}. Deseja realmente alterar para outro tipo sanguíneo?`,
+                    text: `O tipo original era ${tipoSanguineoOriginal}. Deseja realmente alterar para ${valorAtual}?`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Sim',
@@ -641,8 +642,8 @@
             alteracaoConfirmada = true;
 
             $('#tipo_sanguineo_confirmado').val('1');
-            $('#motivo_alteracao_hidden').val(motivo);
-            $('#justificativa_alteracao_hidden').val(justificativa);
+            $('#campo_oculto_motivo_alteracao').val(motivo);
+            $('#campo_oculto_justificativa').val(justificativa);
         });
 
         $('#btnCancelarJustificativa').on('click', function () {

@@ -388,7 +388,6 @@
                         <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
                         <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden">
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden">
-                        <input type="hidden" name="updated_at_original" value="<?= esc($data['updated_at']) ?>">
 
                 </div>
             </div>

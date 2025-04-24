@@ -249,8 +249,14 @@ class ListaEspera extends ResourceController
 
         $listapaciente = $this->filawebmodel->getTipoSanguineoAtual($numProntuario);
 
+        if ($listapaciente && isset($listapaciente->tiposanguineo)) {
+            $tiposanguineo = $listapaciente->tiposanguineo;
+        } else {
+            $tiposanguineo = NULL;
+        }
+
         return $this->response->setJSON(['nome' => $paciente->nome,
-                                         'tiposanguineo' => $listapaciente->tiposanguineo]);
+                                         'tiposanguineo' => $tiposanguineo]);
     }
 
     return $this->response->setJSON(['error' => 'Paciente não localizado'], 404);
@@ -1160,7 +1166,7 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //dd($data);
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -1271,15 +1277,22 @@ class ListaEspera extends ResourceController
                     'idtipoprocedimento' => $data['fila'],
                     'idorigempaciente' => $data['origem'],
                     'indcongelacao' => $data['congelacao'],
-                    'tiposanguineo' => $data['tipo_sanguineo'],
                     'indopme' => $data['opme'],
                     'idprocedimento' => $data['procedimento'],
                     'idlateralidade' => $data['lateralidade'],
                     'indsituacao' => 'A',
                     'txtinfoadicionais' => $data['info'],
-                    'txtorigemjustificativa' => $data['justorig']
+                    'txtorigemjustificativa' => $data['justorig'],
+                    'tiposanguineo' => empty($data['tipo_sanguineo']) ? NULL : $data['tipo_sanguineo'],
                 ];
                 
+                if ($data['tipo_sanguineo_confirmado'] == '1') {
+                    $lista['idalttiposanguelogin'] = session()->get('Sessao')['login'];
+                    $lista['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
+                    $lista['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
+                    $lista['dthralttiposangue'] = date('Y-m-d H:i:s');
+                }
+
                 $idlista = $this->listaesperamodel->insert($paciente);
 
                 if ($db->transStatus() === false) {
@@ -1503,6 +1516,7 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['updated_at'] = $lista['updated_at']; 
 
         //var_dump($data['procedimentos']);die();
 
@@ -1523,7 +1537,7 @@ class ListaEspera extends ResourceController
 
         $data = $this->request->getVar();
 
-        //die(var_dump($data));
+        //dd($data);
 
         $rules = [
             'especialidade' => 'required',
@@ -1610,14 +1624,29 @@ class ListaEspera extends ResourceController
                         'idorigempaciente' => $data['origem'],
                         'indcongelacao' => $data['congelacao'],
                         'indopme' => $data['opme'],
-                        'tiposanguineo' => $data['tipo_sanguineo'],
                         'idprocedimento' => $data['procedimento'],
                         'idlateralidade' => $data['lateralidade'],
                         'txtinfoadicionais' => $data['info'],
-                        'txtorigemjustificativa' => $data['justorig']
+                        'txtorigemjustificativa' => $data['justorig'],
                         ];
 
-                //dd($lista);
+                if ($data['tipo_sanguineo_confirmado'] == '1') {
+                    $lista['tiposanguineo'] = $data['tipo_sanguineo'];
+                    $lista['idalttiposanguelogin'] = session()->get('Sessao')['login'];
+                    $lista['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
+                    $lista['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
+                    $lista['dthralttiposangue'] = date('Y-m-d H:i:s');
+                }
+
+                $registroAtual = $this->listaesperamodel->find($data['id']);
+                if ($registroAtual['updated_at'] != $data['updated_at_original']) {
+                    $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar - prontuario  %s";
+                    log_message('error', 'Exception: ' . $msg);
+                    throw new \Exception($msg);
+                }
+
+                //dd($data);
+
                 $this->listaesperamodel->update($data['id'], $lista);
 
                 if ($db->transStatus() === false) {

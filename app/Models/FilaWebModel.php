@@ -26,7 +26,7 @@ class FilaWebModel extends Model
         return $builder
             ->where('numprontuario', $prontuario)
             ->where('tiposanguineo IS NOT NULL')
-            ->orderBy('updated_at', 'DESC')
+            ->orderBy('dthralttiposangue', 'DESC')
             ->limit(1)
             ->get()
             ->getRow(); // pega apenas uma linha como objeto
