@@ -33,6 +33,7 @@ use App\Models\LocalProfEspecialidadesModel;
 use App\Models\VwOrdemPacienteModel;
 use App\Models\LocalVwDetalhesPacientesModel;
 use App\Models\LocalAipContatosPacientesModel;
+use App\Models\PacientesModel;
 
 //use App\Controllers\MapaCirurgico;
 use DateTime;
@@ -96,6 +97,7 @@ class ListaEspera extends ResourceController
     private $hemocomponentesmodel;
     private $selecthemocomponentes;
     private $hemocomponentescirurgiamodel;
+    private $pacientesmodel;
 
 
     public function __construct()
@@ -104,6 +106,7 @@ class ListaEspera extends ResourceController
 
         $this->listaesperamodel = new ListaEsperaModel();
         $this->vwlistaesperamodel = new VwListaEsperaModel();
+        $this->pacientesmodel = new PacientesModel();
         $this->vwstatusfilacirurgicamodel = new VwStatusFilaCirurgicaModel();
         $this->vwordempacientemodel = new VwOrdemPacienteModel();
         $this->mapacirurgicomodel = new MapaCirurgicoModel();
@@ -247,16 +250,19 @@ class ListaEspera extends ResourceController
     //if ($paciente && isset($paciente[0]->nome)) {
     if ($paciente && isset($paciente->nome)) {
 
-        $listapaciente = $this->filawebmodel->getTipoSanguineoAtual($numProntuario);
+        $pac = $this->filawebmodel->getTipoSanguineoAtual($numProntuario);
 
-        if ($listapaciente && isset($listapaciente->tiposanguineo)) {
-            $tiposanguineo = $listapaciente->tiposanguineo;
+        if ($pac) {
+            $tiposanguineo = $pac->tiposanguineo;
+            $updated_at = $pac->updated_at;
         } else {
             $tiposanguineo = NULL;
+            $updated_at = NULL;
         }
 
         return $this->response->setJSON(['nome' => $paciente->nome,
-                                         'tiposanguineo' => $tiposanguineo]);
+                                         'tiposanguineo' => $tiposanguineo,
+                                         'updated_at' => $updated_at]);
     }
 
     return $this->response->setJSON(['error' => 'Paciente não localizado'], 404);
@@ -1283,14 +1289,14 @@ class ListaEspera extends ResourceController
                     'indsituacao' => 'A',
                     'txtinfoadicionais' => $data['info'],
                     'txtorigemjustificativa' => $data['justorig'],
-                    'tiposanguineo' => empty($data['tipo_sanguineo']) ? NULL : $data['tipo_sanguineo'],
                 ];
                 
-                if ($data['tipo_sanguineo_confirmado'] == '1') {
-                    $lista['idalttiposanguelogin'] = session()->get('Sessao')['login'];
-                    $lista['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
-                    $lista['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
-                    $lista['dthralttiposangue'] = date('Y-m-d H:i:s');
+                $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
+
+                if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])){
+                    $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
+                    log_message('error', 'Exception: ' . $msg);
+                    throw new \Exception($msg);
                 }
 
                 $idlista = $this->listaesperamodel->insert($paciente);
@@ -1302,6 +1308,36 @@ class ListaEspera extends ResourceController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $tiposangue = [
+                    'prontuario' => $data['prontuario'],
+                    'tiposanguineo' => $data['tipo_sanguineo'],
+                    'idalttiposanguelogin' => session()->get('Sessao')['login']
+                ];
+
+/*                 $pac = $this->pacientesmodel->find($data['prontuario']);
+ */                
+
+                //dd($data);
+                if (!$pacienteregistroAtual && !empty($data['tipo_sanguineo']) ) {
+                    $this->pacientesmodel->insert($tiposangue);
+                } else {
+                    if ($data['tipo_sanguineo_confirmado'] == '1') {
+                        $tiposangue['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
+                        $tiposangue['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
+                        $this->pacientesmodel->update($data['prontuario'], $tiposangue);
+                    }
+                }
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar tipo de sangue do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -1487,6 +1523,7 @@ class ListaEspera extends ResourceController
         //$data = $this->request->getVar();
 
         $lista = $this->listaesperamodel->find($id);
+        $paciente = $this->pacientesmodel->find($lista['numprontuario']);
 
         //die(var_dump($lista));
 
@@ -1504,7 +1541,6 @@ class ListaEspera extends ResourceController
         $data['origem'] = $lista['idorigempaciente'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['opme'] = $lista['indopme'];
-        $data['tipo_sanguineo'] = $lista['tiposanguineo'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['lateralidade'] = $lista['idlateralidade'];
         $data['info'] = $lista['txtinfoadicionais'];
@@ -1516,7 +1552,9 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
-        $data['updated_at'] = $lista['updated_at']; 
+        $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
+        $data['paciente_updated_at'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
+        $data['lista_updated_at'] = $lista['updated_at']; 
 
         //var_dump($data['procedimentos']);die();
 
@@ -1630,22 +1668,46 @@ class ListaEspera extends ResourceController
                         'txtorigemjustificativa' => $data['justorig'],
                         ];
 
-                if ($data['tipo_sanguineo_confirmado'] == '1') {
-                    $lista['tiposanguineo'] = $data['tipo_sanguineo'];
-                    $lista['idalttiposanguelogin'] = session()->get('Sessao')['login'];
-                    $lista['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
-                    $lista['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
-                    $lista['dthralttiposangue'] = date('Y-m-d H:i:s');
-                }
+                $pac = [
+                    'prontuario' => $data['prontuario'],
+                    'tiposanguineo' => $data['tipo_sanguineo'],
+                    'idalttiposanguelogin' => session()->get('Sessao')['login']
+                ];
 
-                $registroAtual = $this->listaesperamodel->find($data['id']);
-                if ($registroAtual['updated_at'] != $data['updated_at_original']) {
-                    $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar - prontuario  %s";
+                $listaregistroAtual = $this->listaesperamodel->find($data['id']);
+                $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
+
+                if (($listaregistroAtual['updated_at'] != $data['lista_updated_at_original']) ||
+                    ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])) ) {
+                    $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
                     log_message('error', 'Exception: ' . $msg);
                     throw new \Exception($msg);
                 }
 
-                //dd($data);
+                if (!$pacienteregistroAtual) {
+
+                    if (!empty($data['tipo_sanguineo'])) {
+                        $this->pacientesmodel->insert($pac);
+                    }
+
+                } else {
+
+                    if ($data['tipo_sanguineo_confirmado'] == '1') {
+                        $pac['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
+                        $pac['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
+                        $this->pacientesmodel->update($data['prontuario'], $pac);
+                    }
+                }
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
 
                 $this->listaesperamodel->update($data['id'], $lista);
 

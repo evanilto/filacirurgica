@@ -388,6 +388,7 @@
                         <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
                         <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden">
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden">
+                        <input type="hidden" name="paciente_updated_at_original">
 
                     </form>
                 </div>
@@ -627,10 +628,13 @@
                 document.getElementById('nome').value = data.nome;
                 
                 tipoSanguineoOriginal = data.tiposanguineo;
+                updated_at = data.updated_at;
                 alteracaoConfirmada = false;
 
                 $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
                 $('#alteracao_tipo_sanguineo').val('0');
+
+                $('#paciente_updated_at_original').val(updated_at);
 
                 carregandoInicial = false; // <- libera para disparar alerta depois
 
@@ -719,10 +723,10 @@
         }); */
         
         $('.select2-dropdown').select2({
-            placeholder: "",
-            allowClear: true,
-            width: 'resolve' // Corrigir a largura
-        });
+/*             placeholder: "",
+ */            allowClear: true,
+/*             width: 'resolve' // Corrigir a largura
+ */        });
 
         $('#motivo_alteracao').select2({
 /*             theme: 'bootstrap-5', */

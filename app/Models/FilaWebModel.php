@@ -21,15 +21,12 @@ class FilaWebModel extends Model
     public function getTipoSanguineoAtual($prontuario)
     {
         $db = Database::connect('default');
-        $builder = $db->table('lista_espera');
+        $builder = $db->table('pacientes');
 
         return $builder
-            ->where('numprontuario', $prontuario)
-            ->where('tiposanguineo IS NOT NULL')
-            ->orderBy('dthralttiposangue', 'DESC')
-            ->limit(1)
-            ->get()
-            ->getRow(); // pega apenas uma linha como objeto
+                ->where('prontuario', $prontuario)
+                ->get()
+                ->getRow(); // retorna um objeto
     }
    /**
      * Return a new resource object, with default properties

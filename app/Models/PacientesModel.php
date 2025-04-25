@@ -4,17 +4,20 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class ListaEsperaModel extends Model
+class PacientesModel extends Model
 {
     protected $table            = 'pacientes';
-    protected $primaryKey       = 'numprontuario';
-    protected $useAutoIncrement = true; //false for migration
+    protected $primaryKey       = 'prontuario';
+    protected $useAutoIncrement = false; 
     protected $returnType       = 'array';
-    protected $useSoftDeletes   = true; //false for migration
+    protected $useSoftDeletes   = true; 
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'numprontuario',
-        'tiposanguineo'
+        'prontuario',
+        'tiposanguineo',
+        'idalttiposanguelogin',
+	    'idalttiposanguemotivo',
+	    'txtalttiposanguejustificativa',
     ];
 
     // Dates
