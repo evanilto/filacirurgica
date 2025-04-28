@@ -4,7 +4,7 @@
         <?php if(HUAP_Functions::tem_permissao('listaespera')) { ?>
         <li>
             <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                <i class="fa-solid fa-plus toggle-icon"></i> Fila Cirúrgica
+                <i class="fa-solid fa-plus toggle-icon"></i> Fila
             </a>
             <div class="collapse" id="listaespera">
                 <ul class="nav flex-column submenu-2">
@@ -38,7 +38,7 @@
         <?php if(HUAP_Functions::tem_permissao('mapacirurgico')) { ?>
         <li>
                 <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-plus toggle-icon"></i> Mapa Cirúrgico
+                    <i class="fa-solid fa-plus toggle-icon"></i> Mapa
                 </a>
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
@@ -201,7 +201,7 @@
         <?php if(true) { ?>
             <li>
                 <a href="<?= base_url('listaespera/situacaocirurgica') ?>" class="nav-link text-white p-2" aria-current="page">
-                    <i class="fa-solid fa-user-nurse"></i> Situação Cirúrgica
+                    <i class="fa-solid fa-user-nurse"></i> Situação Cirúrgica/PDT
                 </a>
             </li>
         <?php } ?>

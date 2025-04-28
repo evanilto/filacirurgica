@@ -579,7 +579,7 @@ class MapaCirurgico extends ResourceController
 
             $this->validator->reset();
 
-            $result = $this->getPotencialContaminacao($data);
+            $result = $this->filawebmodel->getCirurgiasPDT($data);
 
             //die(var_dump($result));
 
@@ -886,94 +886,7 @@ class MapaCirurgico extends ResourceController
 
     return $builder->get()->getResult();
 }
-/**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function getPotencialContaminacao($data) 
-{
 
-    $db = \Config\Database::connect('default');
-
-    $builder = $db->table('local_vw_aghu_cirurgias');
-
-    $builder->distinct()->select('
-        local_vw_aghu_cirurgias.crg_seq,
-        local_vw_aghu_cirurgias.codigo,
-        local_vw_aghu_cirurgias.prontuario,
-        local_vw_aghu_cirurgias.nome,
-        local_vw_aghu_cirurgias.dt_nascimento,
-        local_vw_aghu_cirurgias.eqp_cir,
-        local_vw_aghu_cirurgias.eqp_pdt,
-        local_vw_aghu_cirurgias.esp_seq,
-        local_vw_aghu_cirurgias.nome_especialidade,
-        local_vw_aghu_cirurgias.procedimento_cirurgia,
-        local_vw_aghu_cirurgias.dthr_internacao,
-        local_vw_aghu_cirurgias.dthr_alta_medica,
-        local_vw_aghu_cirurgias.aih_sintomas,
-        local_vw_aghu_cirurgias.aih_condicoes,
-        local_vw_aghu_cirurgias.indicacao_pdt,
-        local_vw_aghu_cirurgias.data_inicio_cirurgia as dthr_inicio_cirurgia,
-        local_vw_aghu_cirurgias.data_fim_cirurgia as dthr_fim_cirurgia,
-        local_vw_aghu_cirurgias.contaminacao_cir as potencial_contaminacao_cir,
-        local_vw_aghu_cirurgias.contaminacao_pdt as potencial_contaminacao_pdt,
-        local_vw_aghu_cirurgias.situacao_descr_cir,
-        local_vw_aghu_cirurgias.situacao_descr_pdt,
-        local_vw_aghu_cirurgias.situacao_cir,
-        local_vw_aghu_cirurgias.tipo_cir
-
-    ');
-   
-    //die(var_dump($data));
-
-    if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
-        $dtInicio = DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('Y-m-d 00:00:00');
-        $dtFim = DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('Y-m-d 23:59:59');
-
-        $builder->where("local_vw_aghu_cirurgias.data_inicio_cirurgia >=", $dtInicio);
-        $builder->where("local_vw_aghu_cirurgias.data_fim_cirurgia <=", $dtFim);
-    }
-
-    // Condicional para prontuario
-    if (!empty($data['prontuario'])) {
-        $builder->where('local_vw_aghu_cirurgias.prontuario', $data['prontuario']);
-    }
-
-    // Condicional para nome
-    if (!empty($data['nome'])) {
-        $builder->like('local_vw_aghu_cirurgias.nome', strtoupper($data['nome']));
-    }
-
-    // Condicional para especialidade
-    /* if (!empty($data['especialidade'])) {
-        $builder->where('local_vw_aghu_cirurgias.idespecialidade', $data['especialidade']);
-    }
-
-    // Condicional para fila
-    if (!empty($data['fila'])) {
-        $builder->where('local_vw_aghu_cirurgias.idfila', $data['fila']);
-    } */
-
-    //var_dump($builder->getCompiledSelect());die();
-    //var_dump($builder->get()->getResult());die();
-
-    $cirurgias = $builder->get()->getResult();
-
-    foreach ($cirurgias as &$cirurgia) {
-
-        $cirurgia->contatos = $this->localaipcontatospacientesmodel->where('pac_codigo', $cirurgia->codigo)->findAll();
-
-        //$paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
-
-        //print_r($paciente->cirurgias);
-    }
-
-    //die(var_dump($cirurgias));
-
-    return $cirurgias;
-
-    }
     /**
      * Return a new resource object, with default properties
      *

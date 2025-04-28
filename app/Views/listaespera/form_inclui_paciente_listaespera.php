@@ -48,7 +48,7 @@
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" readonly
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                        name="nome" value="" />
+                                        name="nome" value="<?= set_value('nome') ?>" />
                                         <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('nome') ?>
@@ -384,11 +384,12 @@
                         </div>
 
                         <input type="hidden" name="ordem_hidden" id="ordem_hidden" value="<?= $data['ordem'] ?>" />
-                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="0">
-                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
-                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden">
-                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden">
-                        <input type="hidden" name="paciente_updated_at_original">
+                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
+                        <input type="hidden" name="tipo_sanguineo_original" id="tipo_sanguineo_original" value="<?= $data['tipo_sanguineo_original'] ?? "" ?>">
+                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="<?= $data['tipo_sanguineo_confirmado'] ?? "0" ?>">
+                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden"  value="<?= $data['motivo_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
 
                     </form>
                 </div>
@@ -597,8 +598,10 @@
         });
     } */
 
-    let tipoSanguineoOriginal = '';
-    let alteracaoConfirmada = false;
+    //let tipoSanguineoOriginal = '';
+    //let alteracaoConfirmada = false;
+    let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
+    let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
     let carregandoInicial = true;
 
     function fetchPacienteNome(prontuarioValue) {
@@ -632,6 +635,7 @@
                 alteracaoConfirmada = false;
 
                 $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                $('#tipo_sanguineo_original').val(tipoSanguineoOriginal);
                 $('#alteracao_tipo_sanguineo').val('0');
 
                 $('#paciente_updated_at_original').val(updated_at);
@@ -723,10 +727,8 @@
         }); */
         
         $('.select2-dropdown').select2({
-/*             placeholder: "",
- */            allowClear: true,
-/*             width: 'resolve' // Corrigir a largura
- */        });
+                allowClear: true
+        });
 
         $('#motivo_alteracao').select2({
 /*             theme: 'bootstrap-5', */
@@ -765,8 +767,6 @@
                 handleProntuarioInput(event);
             }
         });
-
-        $('.select2-dropdown').select2();
 
         // Event listener for when an especialidade is selected
         $('#especialidade').change(function() {

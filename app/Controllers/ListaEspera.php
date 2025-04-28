@@ -230,6 +230,10 @@ class ListaEspera extends ResourceController
         //$paciente = $this->localaippacientesmodel->find($prontuario);
         $paciente = $this->localvwdetalhespacientesmodel->find($prontuario);
         $paciente->contatos = $this->localaipcontatospacientesmodel->Where('pac_codigo', $paciente->codigo)->findAll();
+        $int = $this->filawebmodel->getCirurgiasPDT(['prontuario' => $prontuario]);
+        $paciente->dtinternacao = $int['dthr_internacao'];
+        $paciente->leito = $int['leito_atual'];
+        $paciente->dtalta = $int['dthr_alta_medica'];
                    
         // Retorna como JSON
         return $this->response->setJSON($paciente);
@@ -1256,6 +1260,8 @@ class ListaEspera extends ResourceController
 
                 } else {
                     if  ($data['risco'] == 8 && empty($data['dtrisco'])) { // Risco Liberado
+                        //dd($dataform);
+
                         $this->validator->setError('dtrisco', 'Informe a data do risco cirúrgico!');
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
@@ -1292,6 +1298,8 @@ class ListaEspera extends ResourceController
                 ];
                 
                 $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
+
+                //dd($data);
 
                 if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])){
                     $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
@@ -1397,7 +1405,7 @@ class ListaEspera extends ResourceController
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
         }
-              
+
         return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                             //'validation' => $this->validator,
                                             'data' => $dataform]); 
@@ -1523,6 +1531,7 @@ class ListaEspera extends ResourceController
         //$data = $this->request->getVar();
 
         $lista = $this->listaesperamodel->find($id);
+        $nome_pac = $this->localaippacientesmodel->find($lista['numprontuario'])->nome;
         $paciente = $this->pacientesmodel->find($lista['numprontuario']);
 
         //die(var_dump($lista));
@@ -1532,6 +1541,8 @@ class ListaEspera extends ResourceController
         $data['ordemfila'] = $ordemfila;
         $data['dtinclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $lista['created_at'])->format('d/m/Y H:i');
         $data['prontuario'] = $lista['numprontuario'];
+        //$data['nome'] = $lista['nome_paciente'];
+        $data['nome'] = $nome_pac;
         $data['especialidade'] = $lista['idespecialidade'];
         $data['risco'] = $lista['idriscocirurgico'];
         $data['dtrisco'] = $lista['dtriscocirurgico'] ? DateTime::createFromFormat('Y-m-d', $lista['dtriscocirurgico'])->format('d/m/Y') : NULL;
@@ -1553,8 +1564,9 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
-        $data['paciente_updated_at'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
-        $data['lista_updated_at'] = $lista['updated_at']; 
+        $data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
+        $data['lista_updated_at_original'] = $lista['updated_at']; 
+
 
         //var_dump($data['procedimentos']);die();
 

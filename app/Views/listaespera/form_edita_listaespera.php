@@ -45,9 +45,9 @@
                                 <div class="mb-2">
                                     <label for="nome" class="form-label">Nome</label>
                                     <div class="input-group">
-                                        <input type="text" id="nome" minlength="3" disabled
+                                        <input type="text" id="nome" minlength="3" readonly
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                        name="nome" value="" />
+                                        name="nome" value="<?= set_value('nome', $data['nome']) ?>" />
                                         <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('nome') ?>
@@ -384,12 +384,12 @@
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
-                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="0">
-                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="0">
-                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden">
-                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden">
-                        <input type="hidden" name="lista_updated_at_original" value="<?= esc($data['lista_updated_at']) ?>">
-                        <input type="hidden" name="paciente_updated_at_original" value="<?= esc($data['paciente_updated_at']) ?>">
+                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
+                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="<?= $data['tipo_sanguineo_confirmado'] ?? "0" ?>">
+                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden"  value="<?= $data['motivo_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
+                        <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
 
                 </div>
             </div>
@@ -461,13 +461,14 @@
         e.preventDefault();  // Impede a abertura do dropdown
     }); */
 
-    let tipoSanguineoOriginal = '';
-    let alteracaoConfirmada = false;
-    let carregandoInicial = true;
+    let tipoSanguineoOriginal = $('#tipo_sanguineo').val();
+    let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
+    let carregandoInicial = false;
 
+    /*
     function fetchPacienteNome(prontuarioValue) {
       if (prontuarioValue) {
-        fetch('<?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
+        fetch('<-?= base_url('listaespera/getnomepac/') ?>' + prontuarioValue, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -514,13 +515,14 @@
         document.getElementById('nome').value = '';
       }
     }
+    */
     
-    function fetchPacienteNomeOnLoad() {
+    /* function fetchPacienteNomeOnLoad() {
         const prontuarioInput = document.getElementById('prontuario');
         fetchPacienteNome(prontuarioInput.value);
     }
 
-    fetchPacienteNomeOnLoad();
+    fetchPacienteNomeOnLoad(); */
 
     $(document).ready(function() {
         $('#idForm').submit(function() {
@@ -569,9 +571,9 @@
         }); */
 
         const prontuarioInput = document.getElementById('prontuario');
-        prontuarioInput.addEventListener('change', function() {
+        /* prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
-        });
+        }); */
 
         document.getElementById('idForm').addEventListener('submit', function(event) {
             $('#janelaAguarde').show();
