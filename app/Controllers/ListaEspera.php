@@ -220,6 +220,8 @@ class ListaEspera extends ResourceController
     public function getDadosModal()
     {
         $prontuario = $this->request->getGet('prontuario'); // Captura o parâmetro via GET
+        $dthrcirurgia = $this->request->getGet('dthrcirurgia'); // Captura o parâmetro via GET
+        $dtcirurgia = date("Y-m-d", strtotime($dthrcirurgia));
     
         // Valida se o parâmetro foi enviado
         if (!$prontuario) {
@@ -230,10 +232,22 @@ class ListaEspera extends ResourceController
         //$paciente = $this->localaippacientesmodel->find($prontuario);
         $paciente = $this->localvwdetalhespacientesmodel->find($prontuario);
         $paciente->contatos = $this->localaipcontatospacientesmodel->Where('pac_codigo', $paciente->codigo)->findAll();
-        $int = $this->filawebmodel->getCirurgiasPDT(['prontuario' => $prontuario]);
-        $paciente->dtinternacao = $int['dthr_internacao'];
-        $paciente->leito = $int['leito_atual'];
-        $paciente->dtalta = $int['dthr_alta_medica'];
+
+        if ($dthrcirurgia) {
+            $int = $this->filawebmodel->getCirurgiasPDT(['prontuario' => $prontuario,
+                                                         'dtinicio' => $dtcirurgia,
+                                                         'dtfim' => $dtcirurgia]);
+
+            if ($int) {
+                $paciente->dtinternacao = date("d/m/Y", strtotime($int[0]->dthr_internacao));
+                $paciente->dtalta = date("d/m/Y", strtotime($int[0]->dthr_alta_medica));
+                $paciente->leito = $int[0]->leito;
+            } else {
+                $paciente->dtinternacao = NULL;
+                $paciente->dtalta = NULL;
+                $paciente->leito = NULL;
+            }
+        }
                    
         // Retorna como JSON
         return $this->response->setJSON($paciente);

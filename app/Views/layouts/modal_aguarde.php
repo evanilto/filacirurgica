@@ -1,6 +1,6 @@
 <div id="janelaAguarde" class="modal">
     <div class="modal-overlay"></div>
-        <div class="modal-content">
+        <div class="modal-content-aguarde">
             <div class="modal-body">
                 <div class="spinner">
                     <div class="bounce1"></div>

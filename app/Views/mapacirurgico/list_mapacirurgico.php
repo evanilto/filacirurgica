@@ -1032,7 +1032,9 @@
             url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
             //url: '<--?= base_url('listaespera/carregadadosmodal/') ?>' + prontuario,
             type: 'GET',
-            data: { prontuario: dados.prontuario }, // Envia o ID como parâmetro
+            data: { prontuario: dados.prontuario,
+                    dthrcirurgia: dados.dthrcirurgia
+            }, // Envia o ID como parâmetro
             dataType: 'json',
             success: function(paciente) {
                 // Função para verificar se o valor é nulo ou vazio
@@ -1077,16 +1079,19 @@
                     <strong>Idade:</strong> ${verificarValor(paciente.idade)}<br>
                     <strong>CPF:</strong> ${verificarValor(paciente.cpf)}<br>
                     <strong>CNS:</strong> ${verificarValor(paciente.cns)}<br>
+                    <strong>Endereço:</strong> ${verificarValor(paciente.logradouro)}, ${verificarValor(paciente.num_logr)} ${verificarOutroValor(paciente.compl_logr)}<br>
+                    <strong>Cidade:</strong> ${verificarValor(paciente.cidade)}<br>
                 `);
 
                 // Atualiza o conteúdo do modal para a coluna direita
                 $('#colunaDireita1').html(`
-                    <strong>Endereço:</strong> ${verificarValor(paciente.logradouro)}, ${verificarValor(paciente.num_logr)} ${verificarOutroValor(paciente.compl_logr)}<br>
-                    <strong>Cidade:</strong> ${verificarValor(paciente.cidade)}<br>
                     <strong>Bairro:</strong> ${verificarValor(paciente.bairro)}<br>
                     <strong>CEP:</strong> ${verificarValor(paciente.cep)}<br>
                     <strong>Email:</strong> ${verificarValor(paciente.email)}<br>
                     ${telefonesHtml}
+                    <strong>Data Internação:</strong> ${verificarValor(paciente.dtinternacao)}<br>
+                    <strong>Data Alta:</strong> ${verificarValor(paciente.dtalta)}<br>
+                    <strong>Leito:</strong> ${verificarValor(paciente.leito)}<br>
                 `);
                 $('#colunaEsquerda2').html(`
                     <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
@@ -1244,6 +1249,7 @@
                 nome_paciente: $(this).data('nome_paciente'),
                 fila: $(this).data('fila'),
                 especialidade: $(this).data('especialidade'),
+                dthrcirurgia: $(this).data('dthrcirurgia'),
                 cid: $(this).data('cid'),
                 cid_codigo: $(this).data('cid_codigo'),
                 idprocedimento: $(this).data('idprocedimento'),

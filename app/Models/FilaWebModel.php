@@ -168,6 +168,7 @@ class FilaWebModel extends Model
             local_vw_aghu_cirurgias.esp_seq,
             local_vw_aghu_cirurgias.nome_especialidade,
             local_vw_aghu_cirurgias.procedimento_cirurgia,
+            local_vw_aghu_cirurgias.leito,
             local_vw_aghu_cirurgias.leito_atual,
             local_vw_aghu_cirurgias.dthr_internacao,
             local_vw_aghu_cirurgias.dthr_alta_medica,

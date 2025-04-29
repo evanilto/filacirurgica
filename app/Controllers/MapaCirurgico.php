@@ -3943,7 +3943,7 @@ class MapaCirurgico extends ResourceController
                 ];
 
                 // Verificações das datas preenchidas quanto à ordem temporal
-                foreach ($campos as $key => $value) {
+                /* foreach ($campos as $key => $value) {
                     if ($value) {
                         if ($key === 'hrnocentrocirurgico' && $dthrPacienteSolicitado && $dthrEntrada < $dthrPacienteSolicitado) {
                             $this->validator->setError('hrnocentrocirurgico', $mensagensErro['hrnocentrocirurgico']);
@@ -3976,7 +3976,7 @@ class MapaCirurgico extends ResourceController
                             break;
                         }
                     }
-                }
+                } */
 
                 // Verificações de presença de datas intermediárias
                 foreach ($campos as $key => $value) {
