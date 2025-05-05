@@ -439,6 +439,75 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo<b class="text-danger">*</b></label>
+                                    <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>"
+                                        name="tipo_sanguineo" id="tipo_sanguineo"
+                                        data-placeholder="" data-allow-clear="1">
+                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        <?php
+                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
+                                            foreach ($tipos as $tipo):
+                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                            endforeach;
+                                        ?>
+                                    </select>
+                                    <?php if ($validation->getError('tipo_sanguineo')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('tipo_sanguineo') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('usarHemocomponentes')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('usarHemocomponentes') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-2">
+                                <label for="hemocomps" class="form-label">Hemocomponentes Necessários</label>
+                                <div class="input-group">
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
+                                            id="hemocomps" name="hemocomps[]" multiple="multiple"
+                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
+                                        <?php
+                                        
+                                        foreach ($data['hemocomponentes'] as $hemocomponente) {
+                                            $selected = in_array($hemocomponente->id, $data['hemocomps']) ? 'selected' : '';
+                                            echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->descricao . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                    <?php if ($validation->hasError('hemocomps')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('hemocomps') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
@@ -481,7 +550,7 @@
                                 </div>
                             </div>
                             <div class="col-md-8">
-                                <div class="mb-2">
+                                <div class="mb-4">
                                     <label for="eqpts" class="form-label">Equipamentos Necessários</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
@@ -499,53 +568,6 @@
                                                 <?= $validation->getError('eqpts') ?>
                                             </div>
                                         <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php if ($validation->getError('usarHemocomponentes')): ?>
-                                    <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('usarHemocomponentes') ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="mb-4">
-                                <label for="hemocomps" class="form-label">Hemocomponentes Necessários</label>
-                                <div class="input-group">
-                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
-                                            id="hemocomps" name="hemocomps[]" multiple="multiple"
-                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
-                                        <?php
-                                        
-                                        foreach ($data['hemocomponentes'] as $hemocomponente) {
-                                            $selected = in_array($hemocomponente->id, $data['hemocomps']) ? 'selected' : '';
-                                            echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->descricao . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                    <?php if ($validation->hasError('hemocomps')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('hemocomps') ?>
-                                        </div>
-                                    <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -727,13 +749,58 @@
                         <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="risco_hidden" id="risco_hidden"  value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="eqpts_hidden" id="eqpts_hidden" />
+                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
+                        <input type="hidden" name="tipo_sanguineo_original" id="tipo_sanguineo_original" value="<?= $data['tipo_sanguineo_original'] ?? "" ?>">
+                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="<?= $data['tipo_sanguineo_confirmado'] ?? "0" ?>">
+                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden"  value="<?= $data['motivo_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
+<!--  Modal ---->
+<div id="modalJustificarAlteracao" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog  modal-dialog-custom" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><strong>Justificar Alteração do Tipo Sanguíneo</strong></h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="motivo_alteracao" class="form-label">Motivo da alteração</label>
+                            <select id="motivo_alteracao" class="form-select select2-dropdown" name="motivo_alteracao"
+                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                <option value="">Selecione um motivo</option>
+                                <option value="1">Erro no cadastro</option>
+                                <option value="2">Atualização com novo exame</option>
+                            </select>
+                        </div>
+                        <hr>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="justificativa" class="form-label">Justificativa</label>
+                            <textarea id="justificativa" class="form-control" rows="3" placeholder="Descreva a justificativa..."></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="linha">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelarJustificativa" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnSalvarJustificativa">Salvar Justificativa</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!------->
 <script>
     window.onload = function() {
         const inputs = document.querySelectorAll('input, select, .form-check-input');

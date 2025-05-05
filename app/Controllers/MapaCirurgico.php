@@ -3291,6 +3291,7 @@ class MapaCirurgico extends ResourceController
         $data['usarHomponentes'] = [];
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
+        $data['tipo_sanguineo'] = '';
 
         $data['listapacienteSelect'] = [];
 

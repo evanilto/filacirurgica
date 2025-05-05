@@ -225,7 +225,7 @@
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
                                     <select class="form-select select2-dropdown"
                                         name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                        data-placeholder="Selecione uma opção" data-allow-clear="1" readonly>
                                         <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
                                         <?php
                                             $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
