@@ -209,7 +209,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -232,7 +232,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -242,29 +242,6 @@
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label for="origem" class="form-label">Origem Paciente</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
-                                            id="origem" name="origem"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
-                                            <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['origens'] as $key => $origem) {
-                                                $selected = ($data['origem'] == $origem['id']) ? 'selected' : '';
-                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('origem')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('origem') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -296,6 +273,29 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-2">
+                                    <label for="origem" class="form-label">Origem Paciente</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
+                                            id="origem" name="origem"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['origens'] as $key => $origem) {
+                                                $selected = ($data['origem'] == $origem['id']) ? 'selected' : '';
+                                                echo '<option value="'.$origem['id'].'" '.$selected.'>'.$origem['nmorigem'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('origem')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('origem') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>" disabled
@@ -317,7 +317,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label for="lateralidade" class="form-label">Lateralidade</label>
                                     <div class="input-group">
@@ -340,7 +340,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label class="form-label">Congelação</label>
                                     <div class="input-group mb-2 bordered-container">
@@ -357,7 +359,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label class="form-label">Hemoderivados</label>
                                     <div class="input-group mb-2 bordered-container">
@@ -374,9 +376,24 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                    <select class="form-select select2-dropdown"
+                                        name="tipo_sanguineo" id="tipo_sanguineo"
+                                        data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        <?php
+                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
+                                            foreach ($tipos as $tipo):
+                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                            endforeach;
+                                        ?>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -398,7 +415,9 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <div class="col-md-3">
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-4">
                                 <div class="mb-3">
                                     <label for="eqpts" class="form-label">Equipamentos</label>
                                     <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>" disabled
@@ -429,11 +448,11 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div class="mb-4">
                                 <label for="hemocomps" class="form-label">Hemocomponentes</label>
                                 <div class="input-group">
-                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
+                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>" disabled
                                             id="hemocomps" name="hemocomps[]" multiple="multiple"
                                             data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
                                         <?php
@@ -485,42 +504,40 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="row g-2">
-                                <div class="container bordered-container">
-                                    <div class="row g-3">
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                                <label for="centrocirurgico" class="form-label">Centro Cirúrgico</label>
-                                                <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>" disabled
-                                                    id="centrocirurgico" name="centrocirurgico">
-                                                    <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
-                                                    <?php 
-                                                        foreach ($data['centros_cirurgicos'] as $filtro):
-                                                            $selected = ($data['centrocirurgico'] == $filtro->seq) ? 'selected' : '';
-                                                            echo '<option value="'.$filtro->seq.'" '.$selected.'>'.$filtro->descricao.'</option>';
-                                                        endforeach 
-                                                    ?>
-                                                </select>
-                                                <?php if ($validation->hasError('centrocirurgico')): ?>
-                                                    <div class="invalid-feedback">
-                                                        <?= $validation->getError('centrocirurgico') ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
+                            <div class="container bordered-container mb-2">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="centrocirurgico" class="form-label">Centro Cirúrgico</label>
+                                            <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>" disabled
+                                                id="centrocirurgico" name="centrocirurgico">
+                                                <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
+                                                <?php 
+                                                    foreach ($data['centros_cirurgicos'] as $filtro):
+                                                        $selected = ($data['centrocirurgico'] == $filtro->seq) ? 'selected' : '';
+                                                        echo '<option value="'.$filtro->seq.'" '.$selected.'>'.$filtro->descricao.'</option>';
+                                                    endforeach 
+                                                ?>
+                                            </select>
+                                            <?php if ($validation->hasError('centrocirurgico')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('centrocirurgico') ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-3">
-                                            <label for="sala" class="form-label">Salas</label>
-                                                <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>" disabled
-                                                        id="sala" name="sala" data-placeholder="" data-allow-clear="1">
-                                                    <!-- As salas irão aparecer aqui dinamicamente -->
-                                                </select>
-                                                <?php if ($validation->hasError('sala')): ?>
-                                                    <div class="invalid-feedback">
-                                                        <?= $validation->getError('sala') ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                        <label for="sala" class="form-label">Salas</label>
+                                            <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>" disabled
+                                                    id="sala" name="sala" data-placeholder="" data-allow-clear="1">
+                                                <!-- As salas irão aparecer aqui dinamicamente -->
+                                            </select>
+                                            <?php if ($validation->hasError('sala')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('sala') ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>

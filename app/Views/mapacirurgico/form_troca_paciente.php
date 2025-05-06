@@ -64,7 +64,8 @@
                                                 echo '<option value="'.$candidato['idlistaespera'].'" data-prontuario="'.$candidato['prontuario'].'" data-idfila="'.$candidato['idfila'].'" data-fila="'.$candidato['fila'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
                                                 '" data-procedimento="'.$candidato['idprocedimento'].'" data-risco="'.$candidato['riscocirurgico'].'" data-dtrisco="'.$candidato['datariscocirurgico'].
                                                 '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].
-                                                '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].'" data-opme="'.$candidato['opme'].
+                                                '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].'" data-opme="'.$candidato['opme'].'" data-tiposanguineo="'.$candidato['tiposanguineo'].
+                                                '" data-paciente_updated_at_original="'.$candidato['paciente_updated_at_original'].'" data-lista_updated_at_original="'.$candidato['lista_updated_at_original'].
                                                 '" '.$selected.'>Fila: '.$candidato['fila'].' '.'No. Fila: '.$candidato['ordem_fila'].' - Paciente: '.$candidato['prontuario'].' - '.$candidato['nome'].'</option>';
                                             }
                                             ?>
@@ -381,10 +382,10 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
-                                    <select class="form-select select2-dropdown"
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo<b class="text-danger">*</b></label>
+                                    <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>"
                                         name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="" data-allow-clear="1" disabled>
+                                        data-placeholder="" data-allow-clear="1">
                                         <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
                                         <?php
                                             $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
@@ -394,6 +395,11 @@
                                             endforeach;
                                         ?>
                                     </select>
+                                    <?php if ($validation->getError('tipo_sanguineo')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('tipo_sanguineo') ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -630,12 +636,20 @@
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
-                        <input type="hidden" name="tipo_sanguineo" value="<?= $data['tipo_sanguineo'] ?>" />
+                        <!-- <input type="hidden" name="tipo_sanguineo" value="<-?= $data['tipo_sanguineo'] ?>" /> -->
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="idlistapac2" id="idlistapac2" value="<?= $data['idlistapac2'] ?? null ?>"/>
+                        <input type="hidden" name="prontuariopac2" id="prontuariopac2" value="<?= $data['prontuariopac2'] ?? null ?>"/>
                         <input type="hidden" name="ordem_hidden" id="ordem_hidden"/>
                         <input type="hidden" name="action" id="formAction" value="">
+                        <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
+                        <input type="hidden" name="tipo_sanguineo_original" id="tipo_sanguineo_original" value="<?= $data['tipo_sanguineo_original'] ?? "" ?>">
+                        <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="<?= $data['tipo_sanguineo_confirmado'] ?? "0" ?>">
+                        <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden"  value="<?= $data['motivo_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
+                        <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
+                        <input type="hidden" name="lista_updated_at_original" id="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
                         
                     </form>
                 </div>
@@ -643,10 +657,48 @@
         </div>
     </div>
 </div>
-
+<!--  Modal ---->
+<div id="modalJustificarAlteracao" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="tituloModal" aria-hidden="true" role="dialog">
+    <div class="modal-dialog  modal-dialog-custom" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><strong>Justificar Alteração do Tipo Sanguíneo</strong></h5>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="motivo_alteracao" class="form-label">Motivo da alteração</label>
+                            <select id="motivo_alteracao" class="form-select select2-dropdown" name="motivo_alteracao"
+                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                <option value="">Selecione um motivo</option>
+                                <option value="1">Erro no cadastro</option>
+                                <option value="2">Atualização com novo exame</option>
+                            </select>
+                        </div>
+                        <hr>
+                    <div class="row">
+                        <div class="mb-3">
+                            <label for="justificativa" class="form-label">Justificativa</label>
+                            <textarea id="justificativa" class="form-control" rows="3" placeholder="Descreva a justificativa..."></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" id="linha">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="btnCancelarJustificativa" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="btnSalvarJustificativa">Salvar Justificativa</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!------->
 <script>
-
-function confirma(button) {
+    function confirma(button) {
         event.preventDefault(); // Previne a submissão padrão do formulário
 
         const equipamentos = $('#eqpts').val();
@@ -815,6 +867,17 @@ function confirma(button) {
             width: 'resolve' // Corrigir a largura
         });
 
+        let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
+        let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
+        let carregandoInicial = false;
+
+        $('#motivo_alteracao').select2({
+/*             theme: 'bootstrap-5', */
+            dropdownParent: $('#modalJustificarAlteracao'), // ESSENCIAL para funcionar dentro do modal
+            width: '100%',
+            placeholder: 'Selecione uma opção'
+        });
+
         $('#eqpts').select2();
 
         if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
@@ -929,7 +992,8 @@ function confirma(button) {
         $('#proced_adic_hidden').val($('#proced_adic').val());
         
         $('#candidato').on('change', function() {
-            var prontuarioValue = $(this).val();
+            //var prontuarioValue = $(this).val();
+            var prontuarioValue = $(this).find('option:selected').data('prontuario');
             var ordemValue = $(this).find('option:selected').data('ordem');
             var idlistaValue = $(this).find('option:selected').data('id');
             var idFilaValue = $(this).find('option:selected').data('idfila');
@@ -942,7 +1006,9 @@ function confirma(button) {
             var origemValue = $(this).find('option:selected').data('origem');
             var congelacaoValue = $(this).find('option:selected').data('congelacao');
             var opmeValue = $(this).find('option:selected').data('opme');
-            var tiposangueValue = $(this).find('option:selected').data('tiposangue');
+            var tiposanguineoValue = $(this).find('option:selected').data('tiposanguineo');
+            var updated_at = $(this).find('option:selected').data('lista_updated_at_original');
+            var paciente_updated_at = $(this).find('option:selected').data('paciente_updated_at_original');
 
             var dtriscoValue = $(this).find('option:selected').data('dtrisco');
             if (dtriscoValue) {
@@ -959,6 +1025,7 @@ function confirma(button) {
             $('input[name="origem"]').val(origemValue); // Define o valor do hidden
             $('input[name="lateralidade"]').val(lateralidadeValue); // Define o valor do hidden
             $('input[name="idlistapac2"]').val(idlistaValue); // Define o valor do hidden
+            $('input[name="prontuariopac2"]').val(prontuarioValue); // Define o valor do hidden
             $('input[name="ordem_hidden"]').val(ordemValue); // Define o valor do hidden
             $('input[name="fila_hidden"]').val(idFilaValue); // Define o valor do hidden
             $('input[name="procedimento_hidden"]').val(procedimentoValue); // Define o valor do hidden
@@ -966,7 +1033,21 @@ function confirma(button) {
             $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
             $('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true).trigger('change');
             $('input[name="opme"][value="' + opmeValue + '"]').prop('checked', true).trigger('change');
-            $('input[name="tiposangue"][value="' + tiposangueValue + '"]').prop('checked', true).trigger('change');
+            $('#lista_updated_at_original').val(updated_at);
+            $('#paciente_updated_at_original').val(paciente_updated_at);
+            $('#tipo_sanguineo_original').val(tiposanguineoValue);
+            $('#alteracao_tipo_sanguineo').val('0');
+            $('#tipo_sanguineo_confirmado').val('0');
+            $('#motivo_alteracao_hidden').val(null);
+            $('#justificativa_alteracao_hidden').val(null);
+            $('#motivo_alteracao').val('').trigger('change'); 
+            $('#justificativa').val('');
+            
+            tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
+            alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
+            carregandoInicial = true;
+
+            $('select[name="tipo_sanguineo"]').val(tiposanguineoValue).change(); // Define o valor do hidden
 
             $('#fila').val(idFilaValue).change(); // Atualiza o valor e dispara evento change se necessário
             $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
@@ -1028,6 +1109,68 @@ function confirma(button) {
         /* <--?php if (isset($data['idlistapac2']) && !empty($data['idlistapac2'])) { ?>
             $('#candidato').val(<--?= $data['idlistapac2']?>).change(); 
         <--?php } ?>  */
+
+        $('#tipo_sanguineo').on('change', function () {
+
+            const valorAtual = $(this).val();
+
+            //alert('carregandoInicial: ' + carregandoInicial + ' - alteracaoConfirmada: ' + alteracaoConfirmada + ' - tipoSanguineoOriginal: ' + tipoSanguineoOriginal);
+
+            if (carregandoInicial || alteracaoConfirmada || !tipoSanguineoOriginal) {
+                carregandoInicial = false;
+                return;
+            }
+
+            //alert('valorAtual: ' + valorAtual + ' - tipoSanguineoOriginal: ' + tipoSanguineoOriginal);
+
+            if (valorAtual !== tipoSanguineoOriginal) {
+                Swal.fire({
+                    title: 'Alterar tipo sanguíneo?',
+                    //text: `O tipo original era ${tipoSanguineoOriginal}. Deseja realmente alterar para ${valorAtual}?`,
+                    text: `O tipo anterior era ${tipoSanguineoOriginal}. Deseja realmente alterar para outro tipo sanguíneo?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Não'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#modalJustificarAlteracao').modal('show');
+                        //$('#modalDetalhes').modal('show');
+
+                    } else {
+                        $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                        $('#tipo_sanguineo_confirmado').val('0');
+                    }
+                });
+            }
+
+            carregandoInicial = false;
+
+        });
+
+        $('#btnSalvarJustificativa').on('click', function () {
+            const motivo = $('#motivo_alteracao').val();
+            const justificativa = $('#justificativa').val().trim();
+
+            //if (!motivo || justificativa === '') {
+            if (!motivo) {
+                Swal.fire('Campos obrigatórios', 'Por favor, informe o motivo para alteração.', 'warning');
+                return;
+            }
+
+            $('#modalJustificarAlteracao').modal('hide');
+            alteracaoConfirmada = true;
+
+            $('#tipo_sanguineo_confirmado').val('1');
+            $('#motivo_alteracao_hidden').val(motivo);
+            $('#justificativa_alteracao_hidden').val(justificativa);
+        });
+
+        $('#btnCancelarJustificativa').on('click', function () {
+            if (tipoSanguineoOriginal !== null) {
+                $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+            }
+        });
 
     });
 </script>

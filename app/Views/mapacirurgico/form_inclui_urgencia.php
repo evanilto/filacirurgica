@@ -755,6 +755,7 @@
                         <input type="hidden" name="motivo_alteracao_hidden" id="motivo_alteracao_hidden"  value="<?= $data['motivo_alteracao_hidden'] ?? NULL ?>">
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
                         <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
+                        <input type="hidden" name="lista_updated_at_original" id="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
                     </form>
                 </div>
             </div>
@@ -892,6 +893,10 @@
         }
     }
 
+    let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
+    let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
+    let carregandoInicial = false;
+
     function fetchPacienteNome(prontuarioValue) {
         if (!prontuarioValue) {
             document.getElementById('nome').value = '';
@@ -917,6 +922,19 @@
             if (data.nome) {
                 // Paciente encontrado, atualiza o campo
                 document.getElementById('nome').value = data.nome;
+
+                tipoSanguineoOriginal = data.tiposanguineo;
+                updated_at = data.updated_at;
+                alteracaoConfirmada = false;
+
+                $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                $('#tipo_sanguineo_original').val(tipoSanguineoOriginal);
+                $('#alteracao_tipo_sanguineo').val('0');
+
+                $('#paciente_updated_at_original').val(updated_at);
+
+                carregandoInicial = false; // <- libera para disparar alerta depois
+
             } else {
                 // Paciente não encontrado, exibe modal para sincronizar
                 document.getElementById('nome').value = data.error || 'Nome não encontrado';
@@ -1043,6 +1061,7 @@
                         
                         // Adicionando atributos data para os IDs
                         //option.setAttribute('data-id', item.id);
+                        option.setAttribute('data-updated_at', item.updated_at);
                         option.setAttribute('data-especialidade-id', item.idespecialidade);
                         option.setAttribute('data-fila-id', item.idtipoprocedimento);
                         option.setAttribute('data-procedimento-id', item.idprocedimento);
@@ -1157,6 +1176,13 @@
             //placeholder: "",
             allowClear: true,
             //width: 'resolve' // Corrigir a largura
+        });
+
+        $('#motivo_alteracao').select2({
+/*             theme: 'bootstrap-5', */
+            dropdownParent: $('#modalJustificarAlteracao'), // ESSENCIAL para funcionar dentro do modal
+            width: '100%',
+            placeholder: 'Selecione uma opção'
         });
 
         //------------Equipamentos --------------------------
@@ -1355,6 +1381,7 @@
                 const selectedOption = this.options[this.selectedIndex];
 
                 // Obter os IDs armazenados nos atributos data
+                const updated_at = selectedOption.getAttribute('data-updated_at');
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
@@ -1391,6 +1418,7 @@
                 $('#dtrisco').val(dtrisco);
                 $('input[name="hemoderivados"]').prop('checked', false);
 
+                $('#lista_updated_at_original').val(updated_at);
                 $('#especialidade_hidden').val(especialidadeId);
                 $('#fila').val(filaId);
                 $('#fila_hidden').val(filaId);
@@ -1512,6 +1540,57 @@
 
             // Opcionalmente envie o formulário agora
             // event.currentTarget.submit(); // Descomente para executar envio padrão após processamento
+        });
+
+        $('#tipo_sanguineo').on('change', function () {
+            const valorAtual = $(this).val();
+
+            if (carregandoInicial || alteracaoConfirmada || !tipoSanguineoOriginal) return;
+
+            if (valorAtual !== tipoSanguineoOriginal) {
+                Swal.fire({
+                    title: 'Alterar tipo sanguíneo?',
+                    //text: `O tipo original era ${tipoSanguineoOriginal}. Deseja realmente alterar para ${valorAtual}?`,
+                    text: `O tipo anterior era ${tipoSanguineoOriginal}. Deseja realmente alterar para outro tipo sanguíneo?`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sim',
+                    cancelButtonText: 'Não'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $('#modalJustificarAlteracao').modal('show');
+                        //$('#modalDetalhes').modal('show');
+
+                    } else {
+                        $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                        $('#tipo_sanguineo_confirmado').val('0');
+                    }
+                });
+            }
+        });
+
+        $('#btnSalvarJustificativa').on('click', function () {
+            const motivo = $('#motivo_alteracao').val();
+            const justificativa = $('#justificativa').val().trim();
+
+            //if (!motivo || justificativa === '') {
+            if (!motivo) {
+                Swal.fire('Campos obrigatórios', 'Por favor, informe o motivo para alteração.', 'warning');
+                return;
+            }
+
+            $('#modalJustificarAlteracao').modal('hide');
+            alteracaoConfirmada = true;
+
+            $('#tipo_sanguineo_confirmado').val('1');
+            $('#motivo_alteracao_hidden').val(motivo);
+            $('#justificativa_alteracao_hidden').val(justificativa);
+        });
+
+        $('#btnCancelarJustificativa').on('click', function () {
+            if (tipoSanguineoOriginal !== null) {
+                $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+            }
         });
 
     });

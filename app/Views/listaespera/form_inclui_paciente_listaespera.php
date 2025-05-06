@@ -602,7 +602,7 @@
     //let alteracaoConfirmada = false;
     let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
     let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
-    let carregandoInicial = true;
+    let carregandoInicial = false;
 
     function fetchPacienteNome(prontuarioValue) {
         if (!prontuarioValue) {
