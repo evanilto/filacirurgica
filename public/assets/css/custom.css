@@ -611,6 +611,11 @@ thead .btn {
     color: white;
 }
 
+/* Esconde o botão "x" somente para select2s marcados com .no-clear */
+.select2-container.no-clear .select2-selection__clear {
+    display: none !important;
+}
+
 /*
 button:hover, 
 button:focus {

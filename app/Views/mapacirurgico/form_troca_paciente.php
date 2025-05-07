@@ -382,19 +382,29 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo<b class="text-danger">*</b></label>
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo <b class="text-danger">*</b></label>
                                     <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>"
                                         name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="" data-allow-clear="1">
-                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        data-placeholder="Selecione uma opção"
+                                        data-allow-clear="<?= empty($data['tipo_sanguineo']) ? '1' : '0' ?>">
+                                        
                                         <?php
+                                            // Define o valor atual (pode vir do POST ou de dados existentes)
+                                            $tipoSelecionado = old('tipo_sanguineo', $data['tipo_sanguineo'] ?? '');
+
+                                            // Só mostra a opção vazia se não houver valor selecionado
+                                            if (empty($tipoSelecionado)) {
+                                                echo '<option value="" selected></option>';
+                                            }
+
                                             $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
                                             foreach ($tipos as $tipo):
-                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
-                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                                $selected = ($tipoSelecionado === $tipo) ? 'selected' : '';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>'.$tipo.'</option>';
                                             endforeach;
                                         ?>
                                     </select>
+                                    
                                     <?php if ($validation->getError('tipo_sanguineo')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('tipo_sanguineo') ?>
@@ -860,6 +870,43 @@
         }
     };
 
+    function updateTipoSanguineo(valor, bloqueiaClear = true) {
+        const $select = $('#tipo_sanguineo');
+
+        // Define o valor
+        $select.val(valor);
+
+        // Destroi o select2 anterior
+        if ($select.hasClass("select2-hidden-accessible")) {
+            $select.select2('destroy');
+        }
+
+        // Reinicializa com allowClear correto
+        $select.select2({
+            placeholder: "Selecione uma opção",
+            allowClear: !bloqueiaClear,
+            width: '100%'
+        });
+
+        // Adiciona ou remove a classe no elemento gerado pelo select2
+        const $container = $select.next('.select2-container');
+
+        if (bloqueiaClear) {
+            $container.addClass('no-clear');
+
+            // Impede a remoção mesmo se tentarem
+            $select.off('select2:unselecting').on('select2:unselecting', function (e) {
+                e.preventDefault();
+            });
+        } else {
+            $container.removeClass('no-clear');
+            $select.off('select2:unselecting');
+        }
+
+        // Dispara o evento de mudança visual
+        $select.trigger('change');
+    }
+
     $(document).ready(function() {
         $('.select2-dropdown').select2({
             placeholder: "",
@@ -876,6 +923,14 @@
             dropdownParent: $('#modalJustificarAlteracao'), // ESSENCIAL para funcionar dentro do modal
             width: '100%',
             placeholder: 'Selecione uma opção'
+        });
+
+        const allowClear = $('#tipo_sanguineo').data('allow-clear') == 1;
+
+        $('#tipo_sanguineo').select2({
+            placeholder: "Selecione uma opção",
+            allowClear: allowClear,
+            width: '100%'
         });
 
         $('#eqpts').select2();
@@ -1047,7 +1102,8 @@
             alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
             carregandoInicial = true;
 
-            $('select[name="tipo_sanguineo"]').val(tiposanguineoValue).change(); // Define o valor do hidden
+            /* $('select[name="tipo_sanguineo"]').val(tiposanguineoValue).change(); */ 
+            updateTipoSanguineo(tiposanguineoValue, true);
 
             $('#fila').val(idFilaValue).change(); // Atualiza o valor e dispara evento change se necessário
             $('#procedimento').val(procedimentoValue).change(); // Atualiza o valor e dispara evento change se necessário
@@ -1138,7 +1194,8 @@
                         //$('#modalDetalhes').modal('show');
 
                     } else {
-                        $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                        /* $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change'); */
+                        updateTipoSanguineo(tipoSanguineoOriginal, true);
                         $('#tipo_sanguineo_confirmado').val('0');
                     }
                 });
@@ -1168,7 +1225,8 @@
 
         $('#btnCancelarJustificativa').on('click', function () {
             if (tipoSanguineoOriginal !== null) {
-                $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change');
+                /* $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change'); */
+                updateTipoSanguineo(tipoSanguineoOriginal, true);
             }
         });
 

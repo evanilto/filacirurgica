@@ -225,13 +225,16 @@
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
                                     <select class="form-select select2-dropdown"
                                         name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                        <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        data-placeholder="Selecione uma opção"
+                                        data-allow-clear="<?php echo empty($data['tipo_sanguineo']) ? '1' : '0'; ?>">
+                                        <?php if (empty($data['tipo_sanguineo'])): ?>
+                                            <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                        <?php endif; ?>
                                         <?php
                                             $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
                                             foreach ($tipos as $tipo):
                                                 $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
-                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp'.$tipo.'</option>';
+                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp;'.$tipo.'</option>';
                                             endforeach;
                                         ?>
                                     </select>
