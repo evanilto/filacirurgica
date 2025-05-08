@@ -1143,6 +1143,9 @@ class HUAP_Functions
             case 'relatorios-potencialcontaminacao':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['65']));
 
+            case 'exames':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','70']));
+
             default:
                 return false;
         }

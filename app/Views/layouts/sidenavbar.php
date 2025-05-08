@@ -1,28 +1,28 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-primary rounded menu-lateral">
     <ul class="nav ul-first navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('listaespera')) { ?>
+        <?php if(HUAP_Functions::tem_permissao('listaespera') || HUAP_Functions::tem_permissao('exames')){ ?>
         <li>
             <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                 <i class="fa-solid fa-plus toggle-icon"></i> Fila
             </a>
             <div class="collapse" id="listaespera">
                 <ul class="nav flex-column submenu-2">
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-incluir')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-incluir') || HUAP_Functions::tem_permissao('exames')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/incluirpaciente') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Incluir
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-consultar') || HUAP_Functions::tem_permissao('exames')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Consultar
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-recuperar')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-recuperar') || HUAP_Functions::tem_permissao('exames')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Recuperar Paciente

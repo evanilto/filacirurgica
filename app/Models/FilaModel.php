@@ -15,6 +15,7 @@ class FilaModel extends Model
     protected $allowedFields    = [
         'nmtipoprocedimento',
 	    'idespecialidade',
+        'tipo',
 	    'indsituacao',
     ];
 

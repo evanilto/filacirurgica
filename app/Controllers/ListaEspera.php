@@ -80,6 +80,7 @@ class ListaEspera extends ResourceController
     private $selectriscoativos;
     private $selectespecialidade;
     private $selectespecialidadeaghu;
+    private $selectAllespecialidadeaghu;
     private $selectprofespecialidadeaghu;
     private $selectcids;
     private $selectitensprocedhospit;
@@ -136,7 +137,34 @@ class ListaEspera extends ResourceController
         $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
         //$this->aghucontroller = new Aghu();
 
-        $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        // --------------------------------------------------------------------------------------------------------------------------------------------
+        $idsEspecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findColumn('idespecialidade');
+
+        if((HUAP_Functions::tem_permissao('listaespera')) && (HUAP_Functions::tem_permissao('exames'))) {
+            $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            /* $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll(); */
+            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+        } if(HUAP_Functions::tem_permissao('exames')) {
+            $this->selectfila = $this->filamodel->Where('tipo', 'E')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll(); 
+            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+        } else {
+            $this->selectfila = $this->filamodel->Where('tipo', 'C')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+        }
+        $selectAllespecialidade = array_unique(array_column($this->selectfila, 'idespecialidade'));
+        if ($this->selectespecialidade) {
+            $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
+                                                                               ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                              ->orderBy('nome_especialidade', 'ASC')->findAll(); 
+
+            $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                              ->orderBy('nome', 'ASC')->findAll(); // disable for migration
+        }                                                                        
+        $this->selectAllespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
+                                                                           ->whereIn('seq', $selectAllespecialidade)
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
+        // --------------------------------------------------------------------------------------------------------------------------------------------
+
         $this->selectrisco = $this->riscomodel->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectriscoativos = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
@@ -147,12 +175,6 @@ class ListaEspera extends ResourceController
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativasexclusao = $this->justificativasmodel->Where('tipojustificativa', 'E')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
-        $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
-        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
-                                                                           ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll(); 
-        $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
@@ -503,6 +525,12 @@ class ListaEspera extends ResourceController
             if (!empty($data['complexidades'])) {
                 //$clausula_where .= " AND  idrisco = $data[risco]";
                 $builder->whereIn('vl.complexidade',  $data['complexidades']);
+            };
+            if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+                $builder->where('vl.tipoprc_tipo',  'C');
+            };
+            if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+                $builder->where('vl.tipoprc_tipo',  'E');
             };
         }
 
@@ -1161,7 +1189,7 @@ class ListaEspera extends ResourceController
         $data['riscos'] = $this->selectriscoativos;
         $data['origens'] = $this->selectorigempacienteativos;
         $data['lateralidades'] = $this->selectlateralidadeativos;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['habilitasalvar'] = true;
