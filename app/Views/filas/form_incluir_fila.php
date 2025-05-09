@@ -52,23 +52,23 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row g-3">
-                            <div class="col-md-12">
+                        <div class="row g-3">
+                            <div class="col-md-6">
                                 <div class="mb-2">
-                                    <label class="form-label">Situação<b class="text-danger">*</b></label>
+                                    <label class="form-label">Tipo<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="indSituacao" id="indSituacaoA" value="A" checked>
-                                            <label class="form-check-label" for="indSituacaoA" style="margin-right: 10px;">&nbsp;Ativo</label>
+                                            <input class="form-check-input" type="radio" name="tipo" id="tipoC" value="C" checked>
+                                            <label class="form-check-label" for="tipoC" style="margin-right: 10px;">&nbsp;Cirurgia</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="indSituacao" id="indSituacaoI" value="I">
-                                            <label class="form-check-label" for="indSituacaoI" style="margin-right: 10px;">&nbsp;Inativo</label>
+                                            <input class="form-check-input" type="radio" name="tipo" id="tipoE" value="E">
+                                            <label class="form-check-label" for="tipoE" style="margin-right: 10px;">&nbsp;Exame</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div> -->
+                        </div>
                         <div class="row g-3">
                             <div class="col-md-8">
                                 <button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1">

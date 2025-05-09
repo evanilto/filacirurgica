@@ -83,7 +83,7 @@
                             switch ($itemlista->status) {
 
                                 case 'Excluído':
-                                    if (HUAP_Functions::tem_permissao('listaespera-consultar')) {
+                                    if (HUAP_Functions::tem_permissao('listaespera-consultar') || HUAP_Functions::tem_permissao('exames')) {
                                         //echo anchor('listaespera/consultarpacienteexcluido/'.$itemlista->idlistaespera, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente Excluído', 'onclick' => 'mostrarAguarde(event, this.href)'));
                                         if ($itemlista->ordem_fila) {
                                             echo anchor('listaespera/consultaritemlista/'.$itemlista->idlistaespera.'/'.$itemlista->ordem_fila, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente na Lista', 'onclick' => 'mostrarAguarde(event, this.href)'));
@@ -98,7 +98,7 @@
                             
                                 case 'Aguardando':
                                 case 'Suspensa':
-                                    if (HUAP_Functions::tem_permissao('listaespera-consultar')) {
+                                    if (HUAP_Functions::tem_permissao('listaespera-consultar') || HUAP_Functions::tem_permissao('exames')) {
                                         echo anchor('listaespera/consultaritemlista/'.$itemlista->idlistaespera.'/'.$itemlista->ordem_fila, '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Paciente na Lista', 'onclick' => 'mostrarAguarde(event, this.href)'));
                                     } else {
                                         echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';
@@ -108,7 +108,7 @@
                                 /* case 'Realizada':
                                 case 'Programada': */
                                 default:
-                                    if (HUAP_Functions::tem_permissao('mapacirurgico-consultar')) {
+                                    if (HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames')) {
                                         echo anchor('mapacirurgico/consultarcirurgia/'.$itemlista->idmapacirurgico.'/situacao_cirurgica', '<i class="fa-solid fa-magnifying-glass"></i>', array('title' => 'Consultar Cirurgia', 'onclick' => 'mostrarAguarde(event, this.href)'));
                                     } else {
                                         echo '<span style="color: gray; cursor: not-allowed;"><i class="fa-solid fa-magnifying-glass" style="color: gray;"></i></span>';

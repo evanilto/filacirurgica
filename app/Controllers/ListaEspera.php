@@ -144,22 +144,31 @@ class ListaEspera extends ResourceController
             $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
             /* $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll(); */
             $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
-        } if(HUAP_Functions::tem_permissao('exames')) {
-            $this->selectfila = $this->filamodel->Where('tipo', 'E')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll(); 
-            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+            if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->findAll();
+            }
         } else {
-            $this->selectfila = $this->filamodel->Where('tipo', 'C')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+            if(HUAP_Functions::tem_permissao('exames')) {
+                $this->selectfila = $this->filamodel->Where('tipo', 'E')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll(); 
+                $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+                if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->findAll();
+                }
+
+            } else {
+                $this->selectfila = $this->filamodel->Where('tipo', 'C')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+                if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->findAll();
+                }
+            }
         }
         $selectAllespecialidade = array_unique(array_column($this->selectfila, 'idespecialidade'));
-        if ($this->selectespecialidade) {
-            $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
-                                                                               ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                              ->orderBy('nome_especialidade', 'ASC')->findAll(); 
-
-            $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                              ->orderBy('nome', 'ASC')->findAll(); // disable for migration
-        }                                                                        
+        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
+                                                                            ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                            ->orderBy('nome_especialidade', 'ASC')->findAll(); 
+        $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                            ->orderBy('nome', 'ASC')->findAll(); // disable for migration
         $this->selectAllespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
                                                                            ->whereIn('seq', $selectAllespecialidade)
                                                                            ->orderBy('nome_especialidade', 'ASC')->findAll();
@@ -791,6 +800,12 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
                 $builder->where('vs.idfila', $data['fila']);
             };
+            if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+                $builder->where('fila.tipo',  'C');
+            };
+            if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+                $builder->where('fila.tipo',  'E');
+            };
         }
 
         //var_dump($builder->getCompiledSelect());die();
@@ -1162,6 +1177,13 @@ class ListaEspera extends ResourceController
         $builder->where('le.indsituacao', 'E');
         $builder->where('le.indurgencia', 'N');
         $builder->where('le.deleted_at IS NOT NULL', null, false);
+
+        if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+                $builder->where('fila.tipo',  'C');
+        };
+        if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+            $builder->where('fila.tipo',  'E');
+        };
 
         $builder->orderBy('le.id', 'ASC');
 
@@ -2696,7 +2718,7 @@ class ListaEspera extends ResourceController
 
         session()->remove('listsituacaocirurgica');
 
-        $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
 
         $data['filas'] = $this->selectfila;
 

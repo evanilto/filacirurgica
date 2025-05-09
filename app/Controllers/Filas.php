@@ -92,6 +92,7 @@ class Filas extends ResourceController
 
                 $fila['nmtipoprocedimento'] = $data['nome'];
                 $fila['idespecialidade'] = $data['especialidade'];
+                $fila['tipo'] = $data['tipo'];
                 $fila['indsituacao'] = 'A';
 
                 //die(var_dump(($data)));
@@ -167,6 +168,7 @@ class Filas extends ResourceController
             $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['especialidade'] = $fila->idespecialidade;
             $data['nome'] = $fila->nmtipoprocedimento;
+            $data['tipo'] = $fila->tipo;
             $data['indsituacao'] = $fila->indsituacao;
 
             //die(var_dump($data));
@@ -175,6 +177,7 @@ class Filas extends ResourceController
                                                 'id' => $fila->id,
                                                 'nome' => $fila->nmtipoprocedimento,
                                                 'especialidade' => $fila->idespecialidade,
+                                                'tipo' => $fila->tipo,
                                                 'indsituacao' => $fila->indsituacao,
                                                 'data' => $data]);
         }
@@ -214,6 +217,7 @@ class Filas extends ResourceController
                                                 'id' => $data['id'],
                                                 'nome' => $data['nome'],
                                                 'especialidade' => $data['especialidade'],
+                                                'tipo' =>$data['tipo'],
                                                 'indsituacao' => $data['indsituacao'],
                                                 'data' => $data]);         
         } 
@@ -226,7 +230,10 @@ class Filas extends ResourceController
 
             $fila['nmtipoprocedimento'] = strtoupper($data['nome']);
             $fila['idespecialidade'] = $data['especialidade'];
+            $fila['tipo'] = $data['tipo'];
             $fila['indsituacao'] = $data['indsituacao'];
+
+            //dd($data['id']);
 
             $this->filasmodel->update($data['id'], $fila);
 
@@ -263,6 +270,7 @@ class Filas extends ResourceController
                                                 'id' => $data['id'],
                                                 'nome' => $data['nome'],
                                                 'especialidade' => $data['especialidade'],
+                                                'tipo' =>$data['tipo'],
                                                 'indsituacao' => $data['indsituacao'],
                                                 'data' => $data]);
         }
@@ -309,6 +317,7 @@ class Filas extends ResourceController
         fila.id,
         fila.nmtipoprocedimento as nome,
         esp.nome_especialidade,
+        fila.tipo,
         fila.indsituacao
         ');
         $builder->whereIn('fila.indsituacao', ['A', 'I']);

@@ -353,8 +353,8 @@
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
-                    data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
-                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
+                    data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames') ?>"
+                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') || HUAP_Functions::tem_permissao('exames') ?>"
                     >
                     
                     <!-- <td><--?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y').$itemmapa->status_fila ?></td> -->
@@ -675,7 +675,7 @@
                     altadayclinic.style.backgroundColor = "<?= $corAltaDayClinic ?>";
                 }
 
-                if (["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) {
+                if ((["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) && tempermissaoalterar){
                     suspender.disabled = false;
                     suspender.removeAttribute("disabled");
                     suspender.style.backgroundColor = "<?= $corCirurgiaSuspensa ?>";
@@ -694,7 +694,7 @@
 
                 //alert(statuscirurgia);
                 /* if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SaídaCentroCirurgico"].includes(statuscirurgia)) { */
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
+                if ((!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) && tempermissaoalterar) {
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
 
@@ -704,7 +704,7 @@
                 }
 
                 //if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
-                if (["PacienteSolicitado", "Programada"].includes(statuscirurgia)) {
+                if ((["PacienteSolicitado", "Programada"].includes(statuscirurgia)) && tempermissaoalterar) {
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
                 }

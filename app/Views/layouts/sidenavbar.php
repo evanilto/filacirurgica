@@ -35,21 +35,21 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('mapacirurgico')) { ?>
+        <?php if(HUAP_Functions::tem_permissao('mapacirurgico') || HUAP_Functions::tem_permissao('exames')) { ?>
         <li>
                 <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Mapa
                 </a>
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
                             </a>
                         </li>
                         <?php } ?>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia')) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia') && !HUAP_Functions::tem_permissao('exames')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
@@ -62,7 +62,7 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
+        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') && !HUAP_Functions::tem_permissao('exames')) { ?>
         <li>
                 <a href="#bcosangue" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Banco de Sangue

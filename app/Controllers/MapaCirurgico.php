@@ -81,6 +81,7 @@ class MapaCirurgico extends ResourceController
     private $selectriscoativos;
     private $selectespecialidade;
     private $selectespecialidadeaghu;
+    private $selectAllespecialidadeaghu;
     private $selectprofespecialidadeaghu;
     private $selectcentroscirurgicosaghu;
     private $selectsalascirurgicasaghu;
@@ -145,8 +146,51 @@ class MapaCirurgico extends ResourceController
 
         //$this->aghucontroller = new Aghu();
 
-        $this->selectfila = $this->filamodel->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-        $this->selectfilaativas= $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        // --------------------------------------------------------------------------------------------------------------------------------------------
+        $idsEspecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findColumn('idespecialidade');
+
+        if((HUAP_Functions::tem_permissao('listaespera')) && (HUAP_Functions::tem_permissao('exames'))) {
+            $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $this->selectfilaativas = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            /* $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll(); */
+            $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+            if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->findAll();
+            }
+        } else {
+            if(HUAP_Functions::tem_permissao('exames')) {
+                $this->selectfila = $this->filamodel->Where('tipo', 'E')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll(); 
+                $this->selectfilaativas = $this->filamodel->Where('tipo', 'E')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll(); 
+                $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+                if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'E')->findAll();
+                }
+            } else {
+                $this->selectfila = $this->filamodel->Where('tipo', 'C')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $this->selectfilaativas = $this->filamodel->Where('tipo', 'C')->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->whereIn('idespecialidade', $idsEspecialidade)->findAll();
+                if (!$this->selectespecialidade) {
+                    $this->selectespecialidade = $this->filamodel->distinct()->select('idespecialidade')->where('tipo', 'C')->findAll();
+                }
+            }
+        }
+        $selectAllespecialidade = array_unique(array_column($this->selectfila, 'idespecialidade'));
+        if ($this->selectespecialidade) {
+            $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
+                                                                               ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                              ->orderBy('nome_especialidade', 'ASC')->findAll(); 
+
+            $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                              ->orderBy('nome', 'ASC')->findAll(); // disable for migration
+        }                                                                        
+        $this->selectAllespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A') // disable for migration
+                                                                           ->whereIn('seq', $selectAllespecialidade)
+                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll();
+        // --------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        //$this->selectfila = $this->filamodel->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+        //$this->selectfilaativas= $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
         $this->selectrisco = $this->riscomodel->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectriscoativos = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
         $this->selectorigempaciente = $this->origempacientemodel->orderBy('nmorigem', 'ASC')->findAll();
@@ -155,17 +199,17 @@ class MapaCirurgico extends ResourceController
         $this->selecthemocomponentes = $this->hemocomponentesmodel->orderBy('id', 'ASC')->findAll();
         $this->selectlateralidadeativos = $this->lateralidademodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
-        $this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
+        //$this->selectespecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findAll();
         //$this->selectespecialidadeaghu = $this->aghucontroller->getEspecialidades($this->selectespecialidade);
-        $this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
-                                                                           ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                           ->orderBy('nome_especialidade', 'ASC')->findAll(); // disable for migration
+        //$this->selectespecialidadeaghu = $this->localaghespecialidadesmodel->Where('ind_situacao', 'A')
+                                                                          // ->whereIn('seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                          //->orderBy('nome_especialidade', 'ASC')->findAll(); // disable for migration
         //die(var_dump($this->aghucontroller->getProfEspecialidades($this->selectespecialidade)));
         //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativassuspensaoadm = $this->justificativasmodel->Where('tipojustificativa', 'SADM')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
-        $this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
-                                                                               ->orderBy('nome', 'ASC')->findAll(); // disable for migration
+        //$this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
+                                                                               //->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectjustificativastroca = $this->justificativasmodel->Where('tipojustificativa', 'T')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -881,6 +925,13 @@ class MapaCirurgico extends ResourceController
             $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
         }
 
+        if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+            $builder->where('vw_mapacirurgico.tipoprc_tipo',  'C');
+        };
+        if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+            $builder->where('vw_mapacirurgico.tipoprc_tipo',  'E');
+        };
+
        $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
     }
@@ -1437,7 +1488,8 @@ class MapaCirurgico extends ResourceController
         $data['ordemfila'] = !is_null($array) ? $array['ordem_fila'] : 0;
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
-        $data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
+        //$data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
+        $data['status_fila'] = TRUE;
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y');
         $data['hrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('H:i');

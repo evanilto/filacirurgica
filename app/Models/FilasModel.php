@@ -17,6 +17,7 @@ class FilasModel extends Model
         'codigo',
         'nmtipoprocedimento',
         'idespecialidade',
+        'tipo',
         'indsituacao',
     ];
 

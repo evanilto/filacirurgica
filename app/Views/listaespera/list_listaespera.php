@@ -169,10 +169,10 @@
                 selectedRow = this;
                 //selectedRow.classList.add("selected");
                 selectedRow.classList.add("lineselected"); 
-                <?php if(HUAP_Functions::tem_permissao('listaespera-alterar')) { ?> editar.disabled = false;  <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-enviar')) { ?> enviar.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-excluir')) { ?> excluir.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?> consultar.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-alterar') || HUAP_Functions::tem_permissao('exames')) { ?> editar.disabled = false;  <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-enviar') || HUAP_Functions::tem_permissao('exames')) { ?> enviar.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-excluir') || HUAP_Functions::tem_permissao('exames')) { ?> excluir.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('listaespera-consultar') || HUAP_Functions::tem_permissao('exames')) { ?> consultar.disabled = false; <?php } ?>
             });
         });
 
