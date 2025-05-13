@@ -121,7 +121,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="justexclusao">Observações</label>
-                                    <textarea id="justexclusao" maxlength="255" rows="5"
+                                    <textarea id="justexclusao" maxlength="250" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justexclusao') ? 'is-invalid' : '' ?>"
                                             name="justexclusao"><?= isset($data['justexclusao']) ? $data['justexclusao'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justexclusao')): ?>

@@ -5,7 +5,7 @@
 
 <script>$('#janelaAguarde').show();</script>
 
-<div class="table-container mt-4">
+<div class="table-container mt-3">
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
