@@ -1146,6 +1146,9 @@ class HUAP_Functions
             case 'exames':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','70']));
 
+            case 'admin':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1']));
+
             default:
                 return false;
         }

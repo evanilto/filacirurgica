@@ -34,7 +34,8 @@
 
         <script>
 
-        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) {?>
+        /* <-?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) {?> */
+        <?php if(HUAP_Functions::tem_permissao('')) {?>
 
             document.addEventListener("DOMContentLoaded", function() {
 

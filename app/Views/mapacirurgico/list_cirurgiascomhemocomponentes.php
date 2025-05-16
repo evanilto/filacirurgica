@@ -600,14 +600,20 @@ use function PHPUnit\Framework\isEmpty;
                 } */
 
                 //if (tempermissaoconsultar) {
-                    consultar.disabled = false;
-                    consultar.removeAttribute("disabled");
+                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     reservar.disabled = false;
                     reservar.removeAttribute("disabled");
                     reservar.style.backgroundColor = "Red";
+                }
+
+                if (!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     informaruso.disabled = false;
                     informaruso.removeAttribute("disabled");
                     informaruso.style.backgroundColor = "Green";
+                }
+
+                consultar.disabled = false;
+                consultar.removeAttribute("disabled");
 
                 //}
             });

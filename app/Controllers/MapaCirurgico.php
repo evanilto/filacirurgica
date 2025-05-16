@@ -925,7 +925,7 @@ class MapaCirurgico extends ResourceController
             $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
         }
 
-        if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+        if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
             $builder->where('vw_mapacirurgico.tipoprc_tipo',  'C');
         };
         if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
@@ -2139,7 +2139,7 @@ class MapaCirurgico extends ResourceController
         $data = [];
         $cirurgias = $this->getCirurgiaComHemocomponentes($data);
 
-        //die(var_dump($mapa));
+        //die(var_dump($cirurgias));
 
         if ($cirurgias) {
             return $this->response->setJSON([

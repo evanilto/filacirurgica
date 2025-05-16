@@ -49,7 +49,7 @@
                             </a>
                         </li>
                         <?php } ?>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia') && !HUAP_Functions::tem_permissao('exames')) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir Urgência
@@ -62,7 +62,7 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') && !HUAP_Functions::tem_permissao('exames')) { ?>
+        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') && (!HUAP_Functions::tem_permissao('exames') ||  HUAP_Functions::tem_permissao('admin'))) { ?>
         <li>
                 <a href="#bcosangue" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Banco de Sangue

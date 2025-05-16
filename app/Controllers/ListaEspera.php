@@ -535,7 +535,7 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idrisco = $data[risco]";
                 $builder->whereIn('vl.complexidade',  $data['complexidades']);
             };
-            if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+            if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
                 $builder->where('vl.tipoprc_tipo',  'C');
             };
             if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
@@ -800,7 +800,7 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
                 $builder->where('vs.idfila', $data['fila']);
             };
-            if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+            if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
                 $builder->where('fila.tipo',  'C');
             };
             if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
@@ -1178,7 +1178,7 @@ class ListaEspera extends ResourceController
         $builder->where('le.indurgencia', 'N');
         $builder->where('le.deleted_at IS NOT NULL', null, false);
 
-        if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
+        if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
                 $builder->where('fila.tipo',  'C');
         };
         if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
