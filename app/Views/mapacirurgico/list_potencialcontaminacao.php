@@ -29,6 +29,7 @@
         <thead>
             <tr>
                 <th scope="col" data-field="prontuarioaghu" >Código Cirurgia/PDT</th>
+                <th scope="col" data-field="prontuarioaghu" >Seq Descr Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Tipo</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Cirurgia/PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Início</th>
@@ -55,7 +56,7 @@
             <?php foreach($cirurgias as $cirurgia): 
            
                 $dt_nascimento       = formatarData($cirurgia->dt_nascimento);
-                $dt_cirurgia         = formatarData($cirurgia->dthr_inicio_cirurgia);
+                $dt_cirurgia         = formatarData($cirurgia->data_cirurgia);
                 $hr_inicio_cirurgia  = formatarData($cirurgia->dthr_inicio_cirurgia, 'H:i');
                 $hr_fim_cirurgia     = formatarData($cirurgia->dthr_fim_cirurgia, 'H:i');
                 $dt_internacao       = formatarData($cirurgia->dthr_internacao);
@@ -92,6 +93,7 @@
                     data-crg_seq="<?= $cirurgia->crg_seq ?>"
                 >
                     <td><?php echo $cirurgia->crg_seq ?></td>
+                    <td><?php echo $cirurgia->dcrg_seqp ?></td>
                     <td><?php echo $cirurgia->tipo_cir ?></td>
                     <td><?php echo $dt_cirurgia ?></td>
                     <td><?php echo $hr_inicio_cirurgia ?></td>
@@ -379,8 +381,8 @@
         $('[data-toggle="tooltip"]').tooltip();
 
         $('#table').DataTable({
-            /*"order": [[1, 'asc']],
-            "lengthChange": true,
+            "order": [[0, 'asc'], [1, 'asc']],
+            /* "lengthChange": true,
             "pageLength": 15,
             "lengthMenu": [[10, 20, 50, 75, -1], [10, 20, 50, 75, "Tudo"]], */
             "language": {
@@ -399,9 +401,11 @@
             scrollCollapse: true,
             paging: false,
             ordering: true,
+            stateSave: false, // Desabilita estado salvo para evitar que ordem antiga sobrescreva
             autoWidth: false,
             "columns": [
                 { "width": "120px" },  // Lista
+                { "width": "120px" },  // seq
                 { "width": "70px" },  // tipo procedimento
                 { "width": "120px" },  // Lista
                 { "width": "60px" },  // Fila
@@ -424,10 +428,9 @@
                 { "width": "100px" },  // Lista
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0] },
-            { "visible": false, "targets": [0] },
+           // { "orderable": false, "targets": [] },
+            { "visible": false, "targets": [0, 1] },
             ],
-            stateSave: true, // Habilita o salvamento do estado
             layout: { topStart: {
                 buttons: [
                 {

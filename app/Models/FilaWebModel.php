@@ -159,6 +159,8 @@ class FilaWebModel extends Model
 
         $builder->distinct()->select('
             local_vw_aghu_cirurgias.crg_seq,
+            local_vw_aghu_cirurgias.data_cirurgia,
+            local_vw_aghu_cirurgias.dcrg_seqp,
             local_vw_aghu_cirurgias.codigo,
             local_vw_aghu_cirurgias.prontuario,
             local_vw_aghu_cirurgias.nome,
@@ -192,8 +194,8 @@ class FilaWebModel extends Model
             $dtInicio = DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('Y-m-d 00:00:00');
             $dtFim = DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('Y-m-d 23:59:59');
 
-            $builder->where("local_vw_aghu_cirurgias.data_inicio_cirurgia >=", $dtInicio);
-            $builder->where("local_vw_aghu_cirurgias.data_fim_cirurgia <=", $dtFim);
+            $builder->where("local_vw_aghu_cirurgias.data_cirurgia >=", $dtInicio);
+            $builder->where("local_vw_aghu_cirurgias.data_cirurgia <=", $dtFim);
         }
 
         // Condicional para prontuario
