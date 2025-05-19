@@ -48,10 +48,10 @@ use App\Models\HemocomponentesModel;
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
+        <div class="col-md-8">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Liberar Hemocomponente' ?></b>
+                    <b><?= 'Reservar Hemocomponente' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/confirmarreserva') ?>">
@@ -92,7 +92,7 @@ use App\Models\HemocomponentesModel;
                                     <div class="input-group">
                                         <input type="text" id="nome" minlength="3" disabled
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                        name="nome" value="<?= set_value('nome', $data['nome']) ?>" />
+                                        name="nome" value="" />
                                         <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('nome') ?>
@@ -103,7 +103,7 @@ use App\Models\HemocomponentesModel;
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-5">
+                            <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="especialidade" class="form-label">Especialidade</label>
                                     <div class="input-group">
@@ -126,7 +126,7 @@ use App\Models\HemocomponentesModel;
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-7">
+                            <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
@@ -151,66 +151,11 @@ use App\Models\HemocomponentesModel;
                             </div>
                         </div>
                         <div class="row g-3">
-                             <div class="col-md-3">
-                                <div class="mb-2">
-                                    <label class="form-label">Amostra Enviada<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="amostra" id="amostraN" value="N"
-                                                <?= (isset($data['amostra']) && $data['amostra'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="amostraN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="amostra" id="amostraS" value="S"
-                                                <?= (isset($data['amostra']) && $data['amostra'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="amostraS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php if ($validation->getError('amostra')): ?>
-                                    <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('amostra') ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo <b class="text-danger">*</b></label>
-                                    <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>"
-                                        name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="Selecione"
-                                        data-allow-clear="<?= empty($data['tipo_sanguineo']) ? '1' : '0' ?>">
-                                        
-                                        <?php
-                                            // Define o valor atual (pode vir do POST ou de dados existentes)
-                                            $tipoSelecionado = old('tipo_sanguineo', $data['tipo_sanguineo'] ?? '');
-
-                                            // Só mostra a opção vazia se não houver valor selecionado
-                                            if (empty($tipoSelecionado)) {
-                                                echo '<option value="" selected></option>';
-                                            }
-
-                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
-                                            foreach ($tipos as $tipo):
-                                                $selected = ($tipoSelecionado === $tipo) ? 'selected' : '';
-                                                echo '<option value="'.$tipo.'" '.$selected.'>'.$tipo.'</option>';
-                                            endforeach;
-                                        ?>
-                                    </select>
-                                    
-                                    <?php if ($validation->getError('tipo_sanguineo')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('tipo_sanguineo') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
+                                    <label class="form-label">Hemocomponentes</label>
                                     <div class="bordered-container p-3">
-                                        <div style="max-height: 300px; overflow-y: none;">
+                                        <div style="max-height: 300px; overflow-y: auto;">
                                             <?php 
                                             $hemocomponentes_json = $data['hemocomponentes_cirurgia_info'] ?? '[]'; 
                                             $hemocomponentes = json_decode($hemocomponentes_json, true) ?? []; 
@@ -221,22 +166,34 @@ use App\Models\HemocomponentesModel;
                                             //dd($hemocomponentes);
                                             ?>
                                             <?php if (!empty($hemocomponentes)): ?>
+                                                <?php
+                                                    $mostrarSelecionarTodos = count($hemocomponentes) > 1;
+                                                ?>
+                                                <div class="form-check mb-0" <?= !$mostrarSelecionarTodos ? 'style="display: none;"' : '' ?>>
+                                                    <input class="form-check-input" type="checkbox" id="selecionarTodos" />
+                                                    <label class="form-check-label" for="selecionarTodos">Selecionar Todos</label>
+                                                </div>
                                                 <!-- Cabeçalhos -->
-                                                <div class="d-flex align-items-center mb-3">
-                                                    <div style="width: 30%;" class="text-center fw-bold">Hemocomponente</div>
-                                                    <div style="width: 20%;" class="text-center fw-bold">Qtd. Solicitada (Bolsa/ml)</div>
-                                                    <div style="width: 20%;" class="text-center fw-bold">Qtd. Liberada (Bolsa/ml)</div>
-                                                    <!-- <div style="width: 25%;" class="text-left">Código</div> -->
-                                                    <div style="width: 30%;" class="text-left fw-bold">Observação</div>
-
+                                                <div class="d-flex align-items-center mb-2">
+                                                    <div style="width: 50%;"></div> <!-- Espaço do checkbox e nome -->
+                                                    <div style="width: 25%;" class="text-center">Qtd. Liberada (Bolsa/ml)</div>
+                                                    <div style="width: 25%;" class="text-left">Código</div>
                                                 </div>
 
                                                 <?php foreach ($hemocomponentes as $item): ?>
-                                                    <div class="form-check d-flex align-items-center" style="margin-bottom: 2rem;">
+                                                    <div class="form-check mb-2 d-flex align-items-center">
                                                         <!-- Checkbox + descrição -->
-                                                        <div style="width: 30%;" class="d-flex align-items-center gap-2">
+                                                        <div style="width: 50%;" class="d-flex align-items-center gap-2">
                                                             <!-- Hidden para garantir que mesmo se desmarcado o checkbox, o campo exista -->
                                                             <input type="hidden" name="inddisponibilidade[<?= $item['id'] ?>]" value="0">
+
+                                                            <!-- Checkbox -->
+                                                            <input type="checkbox" class="form-check-input toggle-fields mt-0"
+                                                                data-id="<?= $item['id'] ?>"
+                                                                name="inddisponibilidade[<?= $item['id'] ?>]"
+                                                                value="1"
+                                                                id="item_<?= $item['id'] ?>"
+                                                                <?= !empty($item['inddisponibilidade']) ? 'checked' : '' ?>>
 
                                                             <!-- Hidden com a descrição do hemocomponente -->
                                                             <input type="hidden" name="descricao[<?= $item['id'] ?>]" value="<?= htmlspecialchars($item['descricao']) ?>">
@@ -247,48 +204,27 @@ use App\Models\HemocomponentesModel;
                                                             </label>
                                                         </div>
 
-                                                        <!-- Quantidade Solicitada-->
-                                                        <div style="width: 20%;" class="text-center">
-                                                            <input type="number" disabled
-                                                                name="qtd_solicitada[<?= $item['id'] ?>]"
-                                                                class="form-control"
-                                                                id="qtd_solicitada_<?= $item['id'] ?>"
-                                                                placeholder=""  
-                                                                value="<?= isset($item['qtd_solicitada']) ? htmlspecialchars($item['qtd_solicitada']) : '' ?>"
-                                                                min="0" required>
-                                                        </div>
-
-                                                        <!-- Quantidade Liberada-->
-                                                        <div style="width: 20%;" class="text-center">
+                                                        <!-- Quantidade -->
+                                                        <div style="width: 25%;" class="text-center">
                                                             <input type="number"
-                                                                name="qtd_liberada[<?= $item['id'] ?>]"
+                                                                name="quantidade[<?= $item['id'] ?>]"
                                                                 class="form-control"
-                                                                id="qtd_liberada_<?= $item['id'] ?>"
+                                                                id="quantidade_<?= $item['id'] ?>"
                                                                 placeholder=""  
-                                                                value="<?= isset($item['qtd_liberada']) ? htmlspecialchars($item['qtd_liberada']) : '' ?>"
-                                                                min="0" required>
+                                                                value="<?= isset($item['quantidade']) ? htmlspecialchars($item['quantidade']) : '' ?>"
+                                                                min="0" required
+                                                                <?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
                                                         </div>
 
                                                         <!-- Código -->
-                                                        <!-- <div style="width: 25%;" class="text-center">
+                                                        <div style="width: 25%;" class="text-center">
                                                             <input type="number"
-                                                                name="codigo[<-?= $item['id'] ?>]"
+                                                                name="codigo[<?= $item['id'] ?>]"
                                                                 class="form-control"
-                                                                id="codigo_<-?= $item['id'] ?>"
+                                                                id="codigo_<?= $item['id'] ?>"
                                                                 placeholder=""
-                                                                value="<-?= isset($item['codigo']) ? htmlspecialchars($item['codigo']) : '' ?>"
-                                                                -?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
-                                                        </div> -->
-
-                                                        <!-- Observação -->
-                                                        <div style="width: 30%;" class="text-center">
-                                                            <textarea rows="2"
-                                                                name="observacao[<?= $item['id'] ?>]"
-                                                                class="form-control"
-                                                                id="observacao_<?= $item['id'] ?>"
-                                                                rows="1"
-                                                                placeholder="">
-                                                            </textarea>
+                                                                value="<?= isset($item['codigo']) ? htmlspecialchars($item['codigo']) : '' ?>"
+                                                                <?= empty($item['inddisponibilidade']) ? 'disabled' : '' ?>>
                                                         </div>
 
                                                     </div>
@@ -318,7 +254,6 @@ use App\Models\HemocomponentesModel;
                         <input type="hidden" name="dthrcirurgia" id='dthrcirurgia' value="<?= $data['dthrcirurgia'] ?>" />
                         <input type="hidden" name="ordemfila" id='ordemfila'  value="<?= $data['ordemfila'] ?>" />
                         <input type="hidden" name="prontuario" value="<?= $data['prontuario'] ?>" />
-                        <input type="hidden" name="nome" value="<?= $data['nome'] ?>" />
                         <input type="hidden" name="especialidade" value="<?= $data['especialidade'] ?>" />
                         <input type="hidden" name="fila" id="fila-hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento" value="<?= $data['procedimento'] ?>" />
@@ -353,6 +288,40 @@ use App\Models\HemocomponentesModel;
 
         return false; // Queremos prevenir o comportamento padrão do link
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.toggle-fields');
+
+        checkboxes.forEach(function (checkbox) {
+            const id = checkbox.dataset.id;
+            const quantidade = document.getElementById('quantidade_' + id);
+            const codigo = document.getElementById('codigo_' + id);
+
+            // Inicializa corretamente ao carregar
+            quantidade.disabled = !checkbox.checked;
+            codigo.disabled = !checkbox.checked;
+
+            checkbox.addEventListener('change', function () {
+                quantidade.disabled = !this.checked;
+                codigo.disabled = !this.checked;
+            });
+        });
+    });
+
+    document.getElementById('selecionarTodos').addEventListener('change', function () {
+        const isChecked = this.checked;
+        const checkboxes = document.querySelectorAll('.form-check-input.toggle-fields');
+        
+        checkboxes.forEach(cb => {
+            cb.checked = isChecked;
+            const id = cb.dataset.id;
+            const quantidadeInput = document.getElementById('quantidade_' + id);
+            const codigoInput = document.getElementById('codigo_' + id);
+
+            if (quantidadeInput) quantidadeInput.disabled = !isChecked;
+            if (codigoInput) codigoInput.disabled = !isChecked;
+        });
+    });
 
     $(document).ready(function() {
         $('.select2-dropdown').select2({

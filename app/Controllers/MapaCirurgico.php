@@ -1026,7 +1026,7 @@ class MapaCirurgico extends ResourceController
                 }
                 if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
                     $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
-                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgiacomhemocomponenteso',
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgiacomhemocomponentes',
                                                         'validation' => $this->validator,
                                                         'data' => $data]);
                 }
@@ -1040,6 +1040,8 @@ class MapaCirurgico extends ResourceController
             }
 
             $result = $this->getCirurgiaComHemocomponentes($data);
+
+            //dd($result);
 
             if (empty($result)) {
 
@@ -3118,7 +3120,7 @@ class MapaCirurgico extends ResourceController
 
         $data = $this->request->getVar();
 
-        //dd($data['inddisponibilidade']);
+        //dd($data);
 
         $rules = [];
 
@@ -3126,7 +3128,7 @@ class MapaCirurgico extends ResourceController
             foreach ($data['inddisponibilidade'] as $key => $inddisponibilidade) {
                 if ($inddisponibilidade) { // Só valida os marcados
                     $rules["quantidade.$key"] = 'required|decimal|greater_than[0]';
-                    $rules["codigo.$key"] = 'required|is_natural_no_zero';
+                    //$rules["codigo.$key"] = 'required|is_natural_no_zero';
                 }
             }
         }
@@ -4405,6 +4407,7 @@ class MapaCirurgico extends ResourceController
         $data['idlista'] = $mapa->idlista;
         $data['ordemfila'] = $mapa->ordem_fila;
         $data['prontuario'] = $mapa->prontuario;
+        $data['nome'] = $mapa->nome_paciente;
         $data['especialidade'] = $mapa->idespecialidade;
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['fila'] = $mapa->idfila;
