@@ -16,9 +16,10 @@ class HemocomponentesCirurgiaModel extends Model
         'idhemocomponente',
 	    'idmapacirurgico',
         'inddisponibilidade',
-        'quantidade',
-        'quantidade_utilizada',
-        'codigo'
+        'qtd_solicitada',
+        'qtd_liberada',
+        'codigo',
+        'obs'
     ];
 
     // Dates

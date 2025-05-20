@@ -3122,15 +3122,65 @@ class MapaCirurgico extends ResourceController
 
         //dd($data);
 
-        $rules = [];
+        $rules = ['tipo_sanguineo' => 'required'];
 
-        if (isset($data['inddisponibilidade'])) {
-            foreach ($data['inddisponibilidade'] as $key => $inddisponibilidade) {
-                if ($inddisponibilidade) { // Só valida os marcados
-                    $rules["quantidade.$key"] = 'required|decimal|greater_than[0]';
-                    //$rules["codigo.$key"] = 'required|is_natural_no_zero';
-                }
+        $morerules = [];
+
+        $qtdLiberada = $data['qtd_liberada'] ?? [];
+
+        if (is_array($qtdLiberada)) {
+            foreach ($qtdLiberada as $id => $valor) {
+                $morerules["qtd_liberada.$id"] = [
+                    'label' => "Quantidade Liberada do Hemocomponente ID $id",
+                    'rules' => 'required|integer|greater_than_equal_to[0]',
+                    'errors' => [
+                        'required' => 'Este campo é obrigatório.',
+                        'integer'  => 'A quantidade deve ser um número inteiro.',
+                        'greater_than_equal_to' => 'A quantidade não pode ser negativa.'
+                    ]
+                ];
             }
+        }
+
+        $validation = \Config\Services::validation();
+        $validation->setRules($morerules);
+
+        //dd($rules);
+
+        //dd($validation->getErrors());
+
+        if (!$validation->run($data)) {
+
+           //return redirect()->back()->withInput()->with('validation', $validation);
+
+            $data['dtinicio'] = NULL;
+            $data['dtfim'] = NULL;
+            $data['filas'] = $this->selectfilaativas;
+            $data['riscos'] = $this->selectrisco;
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            $hemocomponentesAdaptados = [];
+
+            foreach ($data['descricao'] as $id => $descricao) {
+                $hemocomponentesAdaptados[$id] = [
+                    'id' => $id,
+                    'descricao' => $descricao,
+                    'qtd_solicitada' => $data['qtd_solicitada'][$id] ?? null,
+                    'qtd_liberada' => $data['qtd_liberada'][$id] ?? null,
+                    //'codigo' => $data['codigo'][$id] ?? null,
+                    'inddisponibilidade' => !empty($data['inddisponibilidade'][$id]),
+                ];
+            }
+
+            ksort($hemocomponentesAdaptados);
+
+            $data['hemocomponentes_cirurgia_info'] = json_encode(array_values($hemocomponentesAdaptados));
+
+            session()->setFlashdata('failed', 'Informe valores maiores ou igual a zero para as quantidades liberadas!');
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_reserva_hemocomponentes',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
         }
 
         if ($this->validate($rules)) {
@@ -3142,16 +3192,60 @@ class MapaCirurgico extends ResourceController
         
             try {
 
-                if (isset($data['inddisponibilidade'])) {
-                    foreach ($data['inddisponibilidade'] as $key => $inddisponibilidade) {
+                $pac = [
+                    'prontuario' => $data['prontuario'],
+                    'tiposanguineo' => $data['tipo_sanguineo'],
+                    'idalttiposanguelogin' => session()->get('Sessao')['login']
+                ];
 
-                        $quantidade = isset($data['quantidade'][$key]) ? intval($data['quantidade'][$key]) : null;
+                $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
+
+                if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])) {
+                    $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
+                    log_message('error', 'Exception: ' . $msg);
+                    throw new \Exception($msg);
+                }
+
+                if (!$pacienteregistroAtual) {
+
+                    if (!empty($data['tipo_sanguineo'])) {
+                        $this->pacientesmodel->insert($pac);
+                    }
+
+                } else {
+
+                    if ($data['tipo_sanguineo_confirmado'] == '1') {
+                        $pac['idalttiposanguemotivo'] = $data['motivo_alteracao_hidden'];
+                        $pac['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
+                        $pac['tiposanguineo'] = $data['tipo_sanguineo'];
+
+                        $this->pacientesmodel->update($data['prontuario'], $pac);
+                    }
+                }
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                if (isset($data['qtd_liberada'])) {
+                    foreach ($data['qtd_liberada'] as $key => $qtd_liberada) {
+
+                        $qtd_solicitada = isset($data['qtd_solicitada'][$key]) ? intval($data['qtd_solicitada'][$key]) : null;
+                        $qtd_liberada = isset($data['qtd_liberada'][$key]) ? intval($data['qtd_liberada'][$key]) : null;
                         $codigo = isset($data['codigo'][$key]) ? intval($data['codigo'][$key]) : null;
+                        $observacao = isset($data['observacao'][$key]) && !empty($data['observacao'][$key]) ? $data['observacao'][$key] : null;
             
                         $dados = [
-                            'inddisponibilidade' => $inddisponibilidade,
-                            'quantidade' => $quantidade,
-                            'codigo' => $codigo
+                            'inddisponibilidade' => ($qtd_liberada >= $qtd_solicitada),
+                            'qtd_liberada' => $qtd_liberada,
+                            'codigo' => $codigo,
+                            'obs' => $observacao
                         ];
                 
                         $this->hemocomponentescirurgiamodel->update($key, $dados);
@@ -3207,8 +3301,9 @@ class MapaCirurgico extends ResourceController
                 $hemocomponentesAdaptados[$id] = [
                     'id' => $id,
                     'descricao' => $descricao,
-                    'quantidade' => $data['quantidade'][$id] ?? null,
-                    'codigo' => $data['codigo'][$id] ?? null,
+                    'qtd_solicitada' => $data['qtd_solicitada'][$id] ?? null,
+                    'qtd_liberada' => $data['qtd_liberada'][$id] ?? null,
+                    //'codigo' => $data['codigo'][$id] ?? null,
                     'inddisponibilidade' => !empty($data['inddisponibilidade'][$id]),
                 ];
             }
@@ -3219,7 +3314,7 @@ class MapaCirurgico extends ResourceController
 
             //dd($data);
 
-            session()->setFlashdata('failed', 'Informe valores válidos para quantidade e código do hemocomponente!');
+            //session()->setFlashdata('failed', 'Informe valores válidos para quantidade e código do hemocomponente!');
            
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_reserva_hemocomponentes',
                                                 'validation' => $this->validator,
@@ -4414,11 +4509,16 @@ class MapaCirurgico extends ResourceController
         $data['filas'] = $this->selectfilaativas;
         $data['procedimento'] = $mapa->idprocedimento;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['amostra'] = $mapa->indamostra;
+        $data['tipo_sanguineo'] = $mapa->tiposanguineo;
         $data['hemocomponentes_cirurgia_info'] = $mapa->hemocomponentes_cirurgia_info;
 
         $data['dthrcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y H:i');
 
-        //dd($data);
+        $paciente = $this->pacientesmodel->find($data['prontuario']);
+        $data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
+
+        //dd($data['hemocomponentes_cirurgia_info']);
                      
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_reserva_hemocomponentes',
                                             'data' => $data]);

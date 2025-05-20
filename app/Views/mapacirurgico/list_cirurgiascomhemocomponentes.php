@@ -432,7 +432,7 @@ use function PHPUnit\Framework\isEmpty;
         <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button> -->
         <button class="btn btn-primary" id="reservar" disabled> Reservar Hemocomponentes </button>
-        <button class="btn btn-primary" id="informaruso" disabled> Informar Utilização </button>
+        <!-- <button class="btn btn-primary" id="informaruso" disabled> Informar Utilização </button> -->
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
 </div>
@@ -535,7 +535,7 @@ use function PHPUnit\Framework\isEmpty;
                     atualizarhorarios,
                     editar, */
                     reservar,
-                    informaruso,
+                    //informaruso,
                     consultar
                 ].forEach(button => {
                     button.disabled = true;
@@ -606,11 +606,11 @@ use function PHPUnit\Framework\isEmpty;
                     reservar.style.backgroundColor = "Red";
                 }
 
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
+                /* if (!["Suspensa", "Cancelada", "TrocaPaciente", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     informaruso.disabled = false;
                     informaruso.removeAttribute("disabled");
                     informaruso.style.backgroundColor = "Green";
-                }
+                } */
 
                 consultar.disabled = false;
                 consultar.removeAttribute("disabled");
@@ -657,9 +657,9 @@ use function PHPUnit\Framework\isEmpty;
                             url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
                         }
 
-                        if (botao.id === 'informaruso') {
-                            url = '<?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
-                        }
+                        /* if (botao.id === 'informaruso') {
+                            url = '<-?= base_url('mapacirurgico/') ?>' + rotaBase + '/' + mapaId;
+                        } */
 
                         window.location.href = url;
 
@@ -722,7 +722,7 @@ use function PHPUnit\Framework\isEmpty;
         handleButtonOthers(editar, 'atualizarcirurgia'); */
         handleButtonOthers(consultar, 'consultarcirurgia');
         handleButtonOthers(reservar, 'reservarhemocomponente');
-        handleButtonOthers(informaruso, 'informarutilizacao');
+        //handleButtonOthers(informaruso, 'informarutilizacao');
 
     });
 
