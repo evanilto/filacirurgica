@@ -24,7 +24,7 @@
                                     echo "Cirurgia";
                                     break;
                                 case 'E':
-                                    echo "Exame";
+                                    echo "PDT"; //Exame
                                     break;
                                 default:
                                     echo "N/D";

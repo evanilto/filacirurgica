@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Incluir Paciente na Fila Cirúrgica' ?></b>
+                    <b><?= 'Incluir Paciente na Fila Cirúrgica/PDT' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('listaespera/incluir') ?>">

@@ -63,7 +63,7 @@
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="tipo" id="tipoE" value="E">
-                                            <label class="form-check-label" for="tipoE" style="margin-right: 10px;">&nbsp;Exame</label>
+                                            <label class="form-check-label" for="tipoE" style="margin-right: 10px;">&nbsp;PDT</label>
                                         </div>
                                     </div>
                                 </div>

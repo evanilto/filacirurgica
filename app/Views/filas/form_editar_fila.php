@@ -64,7 +64,7 @@
                                         <div class="form-check form-check-inline">
                                             <?php $checked = ($tipo == 'E' ? 'checked' : ''); ?>
                                             <input class="form-check-input" type="radio" name="tipo" id="tipoE" value="E" <?= $checked ?>>
-                                            <label class="form-check-label" for="tipoE" style="margin-right: 10px;">&nbsp;Exame</label>
+                                            <label class="form-check-label" for="tipoE" style="margin-right: 10px;">&nbsp;PDT</label>
                                         </div>
                                     </div>
                                 </div>
