@@ -6,7 +6,7 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
-                    <b><?= 'Editar Fila Cirúrgica' ?></b>
+                    <b><?= 'Editar Fila Cirúrgica/PDT' ?></b>
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('listaespera/editar') ?>">
@@ -134,7 +134,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-2">
-                                    <label for="cid" class="form-label">CID</label>
+                                    <label for="cid" class="form-label">CID<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
                                             id="cid" name="cid" style="width: 100px;"
@@ -196,7 +196,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -220,24 +220,25 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-4">
                                 <div class="mb-2">
-                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
-                                    <select class="form-select select2-dropdown"
-                                        name="tipo_sanguineo" id="tipo_sanguineo"
-                                        data-placeholder="Selecione uma opção"
-                                        data-allow-clear="<?php echo empty($data['tipo_sanguineo']) ? '1' : '0'; ?>">
-                                        <?php if (empty($data['tipo_sanguineo'])): ?>
-                                            <option value="" <?php echo set_select('tipo_sanguineo', '', TRUE); ?> ></option>
+                                    <label for="unidadeorigem" class="form-label">Unidade de Origem</label>
+                                    <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
+                                            id="unidadeorigem" name="unidadeorigem"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('unidadeorigem', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['unidades'] as $key => $unidade) {
+                                                $selected = ($data['unidadeorigem'] == $unidade->seq) ? 'selected' : '';
+                                                echo '<option value="'.$unidade->seq.'" '.$selected.'>'.$unidade->nome.'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('unidadeorigem')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('unidadeorigem') ?>
+                                            </div>
                                         <?php endif; ?>
-                                        <?php
-                                            $tipos = ['A (+)', 'A (-)', 'B (+)', 'B (-)', 'AB (+)', 'AB (-)', 'O (+)', 'O (-)'];
-                                            foreach ($tipos as $tipo):
-                                                $selected = ($data['tipo_sanguineo'] == $tipo) ? 'selected' : '';
-                                                echo '<option value="'.$tipo.'" '.$selected.'>&nbsp;'.$tipo.'</option>';
-                                            endforeach;
-                                        ?>
-                                    </select>
                                 </div>
                             </div>
                         </div>

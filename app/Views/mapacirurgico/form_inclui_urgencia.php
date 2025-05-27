@@ -84,7 +84,7 @@
                                 <div class="mb-2">
                                 <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
-                                    <input type="number" id="prontuario" maxlength="8"
+                                    <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
                                     class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                     name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
                                     <?php if ($validation->getError('prontuario')): ?>
@@ -155,7 +155,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-2">
-                                    <label for="fila" class="form-label">Fila Cirúrgica<b class="text-danger">*</b></label>
+                                    <label for="fila" class="form-label">Fila Cirúrgica</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('fila')): ?>is-invalid<?php endif ?>"
                                             id="fila" name="fila"
@@ -295,11 +295,36 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-2">
+                                    <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
+                                            id="lateralidade" name="lateralidade"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
+                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
+                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('lateralidade')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('lateralidade') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
                                     <label for="origem" class="form-label">Origem Paciente<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('origem')): ?>is-invalid<?php endif ?>"
                                             id="origem" name="origem" 
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" disabled>
+                                            data-placeholder="N/D" data-allow-clear="1" disabled>
                                             <option value="" <?php echo set_select('origem', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['origens'] as $key => $origem) {
@@ -316,36 +341,28 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="row g-3">
                             <div class="col-md-3">
                                 <div class="mb-2">
-                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
-                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
-                                        </div>
-                                    </div>
-                                    <?php if ($validation->getError('complexidade')): ?>
-                                        <div class="invalid-feedback d-block">
-                                            <?= $validation->getError('complexidade') ?>
-                                        </div>
-                                    <?php endif; ?>
+                                    <label for="unidadeorigem" class="form-label">Unidade de Origem</label>
+                                    <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>" 
+                                            id="unidadeorigem" name="unidadeorigem"
+                                            data-placeholder="N/D" data-allow-clear="1" disabled> 
+                                            <option value="" <?php echo set_select('unidadeorigem', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['unidades'] as $key => $unidade) {
+                                                $selected = ($data['unidadeorigem'] == $unidade->seq) ? 'selected' : '';
+                                                echo '<option value="'.$unidade->seq.'" '.$selected.'>'.$unidade->nome.'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('unidadeorigem')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('unidadeorigem') ?>
+                                            </div>
+                                        <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="posoperatorio" class="form-label">Pós-Operatório<b class="text-danger">*</b></label>
                                     <div class="input-group">
@@ -363,29 +380,6 @@
                                         <?php if ($validation->getError('posoperatorio')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('posoperatorio') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label for="lateralidade" class="form-label">Lateralidade<b class="text-danger">*</b></label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
-                                            id="lateralidade" name="lateralidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                $enabled = ($lateralidade['indsituacao'] == 'I') ? 'disabled' : ''; 
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.' '.$enabled.'>'.$lateralidade['descricao'].'</option>';                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('lateralidade')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('lateralidade') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -413,34 +407,61 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label class="form-label">Complexidade<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B"
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
+                                        </div>
+                                    </div>
+                                    <?php if ($validation->getError('complexidade')): ?>
+                                        <div class="invalid-feedback d-block">
+                                            <?= $validation->getError('complexidade') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">Hemoderivados<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosN" value="N"
-                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'N') ? 'checked' : '' ?>>
+                                                <-?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="hemoderivadosN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="hemoderivados" id="hemoderivadosS" value="S"
-                                                <?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
+                                                <-?= (isset($data['hemoderivados']) && $data['hemoderivados'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="hemoderivadosS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('hemoderivados')): ?>
+                                <-?php if ($validation->getError('hemoderivados')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('hemoderivados') ?>
+                                        <-?= $validation->getError('hemoderivados') ?>
                                     </div>
-                                <?php endif; ?>
-                            </div>
+                                <-?php endif; ?>
+                            </div> -->
                         </div>
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo <b class="text-danger">*</b></label>
-                                    <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>"
+                                    <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
+                                    <select class="form-select select2-dropdown <?= ($validation->getError('tipo_sanguineo')) ? 'is-invalid' : '' ?>" disabled
                                         name="tipo_sanguineo" id="tipo_sanguineo"
                                         data-placeholder="Selecione uma opção"
                                         data-allow-clear="<?= empty($data['tipo_sanguineo']) ? '1' : '0' ?>">
@@ -461,7 +482,6 @@
                                             endforeach;
                                         ?>
                                     </select>
-                                    
                                     <?php if ($validation->getError('tipo_sanguineo')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('tipo_sanguineo') ?>
@@ -757,8 +777,10 @@
                         <input type="hidden" name="fila_hidden" id="fila_hidden" value="<?= $data['fila'] ?>" />
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value="<?= $data['procedimento'] ?>"/>
                         <input type="hidden" name="origem_hidden" id="origem_hidden"  value="<?= $data['origem'] ?>" />
+                        <input type="hidden" name="unidadeorigem_hidden" id="unidadeorigem_hidden"  value="<?= $data['unidadeorigem'] ?>" />
                         <input type="hidden" name="risco_hidden" id="risco_hidden"  value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="eqpts_hidden" id="eqpts_hidden" />
+                        <input type="hidden" name="tipo_sanguineo_hidden" id="tipo_sanguineo_hidden" value="<?= $data['tipo_sanguineo'] ?>" />
                         <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
                         <input type="hidden" name="tipo_sanguineo_original" id="tipo_sanguineo_original" value="<?= $data['tipo_sanguineo_original'] ?? "" ?>">
                         <input type="hidden" name="tipo_sanguineo_confirmado" id="tipo_sanguineo_confirmado" value="<?= $data['tipo_sanguineo_confirmado'] ?? "0" ?>">
@@ -903,9 +925,9 @@
         }
     }
 
-    let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
+    /* let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
     let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
-    let carregandoInicial = false;
+    let carregandoInicial = false; */
 
     function fetchPacienteNome(prontuarioValue) {
         if (!prontuarioValue) {
@@ -933,11 +955,13 @@
                 // Paciente encontrado, atualiza o campo
                 document.getElementById('nome').value = data.nome;
 
-                tipoSanguineoOriginal = data.tiposanguineo;
+                $('#tipo_sanguineo').val(data.tiposanguineo).trigger('change'); 
+                $('#tipo_sanguineo_hidden').val(data.tiposanguineo); 
+
+                /* tipoSanguineoOriginal = data.tiposanguineo;
                 updated_at = data.updated_at;
                 alteracaoConfirmada = false;
 
-                /* $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change'); */
                 updateTipoSanguineo(tipoSanguineoOriginal, true);
                 $('#tipo_sanguineo_original').val(tipoSanguineoOriginal);
                 $('#alteracao_tipo_sanguineo').val('0');
@@ -947,7 +971,7 @@
                 $('#justificativa').val('');
                 $('#paciente_updated_at_original').val(updated_at);
 
-                carregandoInicial = false; // <- libera para disparar alerta depois
+                carregandoInicial = false; // <- libera para disparar alerta depois */
 
             } else {
                 // Paciente não encontrado, exibe modal para sincronizar
@@ -1080,6 +1104,8 @@
                         option.setAttribute('data-fila-id', item.idtipoprocedimento);
                         option.setAttribute('data-procedimento-id', item.idprocedimento);
                         option.setAttribute('data-origempaciente-id', item.idorigempaciente);
+                        option.setAttribute('data-unidadeorigem-id', item.idunidadeorigem);
+                        //option.setAttribute('data-tiposanguineo-id', item.tiposanguineo);
                         option.setAttribute('data-justorig', item.just_orig);
                         option.setAttribute('data-info', item.info_adicionais);
 
@@ -1182,7 +1208,7 @@
         }
     });
 
-    function updateTipoSanguineo(valor, bloqueiaClear = true) {
+    /* function updateTipoSanguineo(valor, bloqueiaClear = true) {
         const $select = $('#tipo_sanguineo');
 
         // Define o valor
@@ -1217,7 +1243,7 @@
 
         // Dispara o evento de mudança visual
         $select.trigger('change');
-    }
+    } */
 
     $(document).ready(function() {
         
@@ -1227,7 +1253,7 @@
             //width: 'resolve' // Corrigir a largura
         });
 
-        $('#motivo_alteracao').select2({
+        /* $('#motivo_alteracao').select2({
             dropdownParent: $('#modalJustificarAlteracao'), // ESSENCIAL para funcionar dentro do modal
             width: '100%',
             placeholder: 'Selecione uma opção'
@@ -1239,7 +1265,7 @@
             placeholder: "Selecione uma opção",
             allowClear: allowClear,
             width: '100%'
-        });
+        }); */
 
         //------------Equipamentos --------------------------
 
@@ -1440,6 +1466,8 @@
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
                 const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
+                const unidadeorigemId = selectedOption.getAttribute('data-unidadeorigem-id');
+                //const tiposanguineoId = selectedOption.getAttribute('data-tiposanguineo-id');
                 const justorig = selectedOption.getAttribute('data-justorig') == 'null' ? '' : selectedOption.getAttribute('data-justorig');
                 const info = selectedOption.getAttribute('data-info') == 'null' ? '' : selectedOption.getAttribute('data-info');
 
@@ -1460,6 +1488,8 @@
                 $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
                 $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
                 $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                $('#unidadeorigem').val(unidadeorigemId).trigger('change'); // Define o valor do select de procedimento e atualiza
+                //$('#tipo_sanguineo').val(tiposanguineoId).trigger('change'); // Define o valor do select de procedimento e atualiza
                 $('#risco').val(risco).trigger('change'); 
                 $('#justorig').val(justorig);
                 $('#info').val(info);
@@ -1479,6 +1509,10 @@
                 $('#procedimento_hidden').val(procedimentoId);
                 $('#origem').val(origempacienteId);
                 $('#origem_hidden').val(origempacienteId);
+                $('#unidadeorigem').val(unidadeorigemId);
+                $('#unidadeorigem_hidden').val(unidadeorigemId);
+                //$('#tipo_sanguineo').val(tiposanguineoId);
+                //$('#tipo_sanguineo_hidden').val(tiposanguineoId);
                 $('#risco').val(risco); 
                 $('#risco_hidden').val(risco);
                 /* $('#infoadic_hidden').val(info);
@@ -1500,6 +1534,8 @@
                 $('#risco').val(11).trigger('change');
                 $('#dtrisco').val("");
                 $('#procedimento').val('').trigger('change');
+                $('#unidadeorigem').val("").trigger('change');
+                //$('#tipo_sanguineo').val("").trigger('change');
 
                 $('#lateralidade').val('').trigger('change'); 
                 $('#cid').val('').trigger('change'); 
@@ -1512,6 +1548,8 @@
                 $('#fila_hidden').val(177);
                 $('#origem_hidden').val(9);
                 $('#risco_hidden').val(11);
+                $('#unidadeorigem_hidden').val("");
+                //$('#tipo_sanguineo_hidden').val("");
                 $('#info').val("");
 
                 // Habilitar os campos para nova seleção
@@ -1597,7 +1635,7 @@
             // event.currentTarget.submit(); // Descomente para executar envio padrão após processamento
         });
 
-        $('#tipo_sanguineo').on('change', function () {
+       /*  $('#tipo_sanguineo').on('change', function () {
             const valorAtual = $(this).val();
 
             if (carregandoInicial || alteracaoConfirmada || !tipoSanguineoOriginal) return;
@@ -1617,15 +1655,14 @@
                         //$('#modalDetalhes').modal('show');
 
                     } else {
-                        /* $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change'); */
                         updateTipoSanguineo(tipoSanguineoOriginal, true);
                         $('#tipo_sanguineo_confirmado').val('0');
                     }
                 });
             }
-        });
+        }); */
 
-        $('#btnSalvarJustificativa').on('click', function () {
+        /* $('#btnSalvarJustificativa').on('click', function () {
             const motivo = $('#motivo_alteracao').val();
             const justificativa = $('#justificativa').val().trim();
 
@@ -1641,14 +1678,13 @@
             $('#tipo_sanguineo_confirmado').val('1');
             $('#motivo_alteracao_hidden').val(motivo);
             $('#justificativa_alteracao_hidden').val(justificativa);
-        });
+        }); */
 
-        $('#btnCancelarJustificativa').on('click', function () {
-            if (tipoSanguineoOriginal !== null) {
-                /* $('#tipo_sanguineo').val(tipoSanguineoOriginal).trigger('change'); */
-                updateTipoSanguineo(tipoSanguineoOriginal, true);
-            }
-        });
+        /* $('#btnCancelarJustificativa').on('click', function () {
+                if (tipoSanguineoOriginal !== null) {
+                    updateTipoSanguineo(tipoSanguineoOriginal, true);
+                }
+        }); */
 
     });
 </script>

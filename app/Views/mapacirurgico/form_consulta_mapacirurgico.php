@@ -47,7 +47,7 @@
                                 <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario</label>
                                     <div class="input-group">
-                                        <input type="number" id="prontuario" maxlength="8"
+                                        <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                         name="prontuario" value="" />
                                         <?php if ($validation->getError('prontuario')): ?>

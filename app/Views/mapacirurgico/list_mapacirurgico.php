@@ -162,6 +162,7 @@
                 <th scope="col" data-field="nome" >Risco</th>
                 <th scope="col" data-field="nome" >Data Risco</th>
                 <th scope="col" data-field="nome" >Origem</th>
+                <th scope="col" data-field="nome" >Unidade Origem</th>
                 <th scope="col" data-field="nome" >Complex.</th>
             </tr>
         </thead>
@@ -350,6 +351,7 @@
                     data-hemocomponenteindisponivel="<?= $itemmapa->hemocomponente_indisponivel ?>"
                     data-indsituacao="<?= $itemmapa->indsituacao ?>"
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
+                    data-unidadeorigem="<?= htmlspecialchars($itemmapa->unidade_origem, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
@@ -503,6 +505,9 @@
                     <td><?php echo $itemmapa->dtrisco ? DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : NULL ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->origem_descricao); ?>">
                         <?php echo htmlspecialchars($itemmapa->origem_descricao); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->unidade_origem); ?>">
+                        <?php echo htmlspecialchars($itemmapa->unidade_origem); ?>
                     </td>
                     <td><?php echo $itemmapa->nmcomplexidade ?></td>
                     
@@ -1105,6 +1110,7 @@
                     <strong>CID:</strong> ${dados.cid_codigo} - ${dados.cid}<br>
                     <strong>Complexidade:</strong> ${dados.complexidade}<br>
                     <strong>Origem:</strong> ${dados.origem}<br>
+                    <strong>Unidade Origem:</strong> ${verificarValor(dados.unidadeorigem)}<br>
                 `);
 
                 // Atualiza o conteúdo do modal para a coluna direita
@@ -1192,6 +1198,7 @@
                     { "width": "150px" },  // risco
                     { "width": "90px" },  // dt risco
                     { "width": "130px" },  // origem
+                    { "width": "220px" },  // unidade origem
                     { "width": "100px" },  // complex
                     
                 ],
@@ -1258,6 +1265,7 @@
                 equipe: $(this).data('equipe'),
                 ordem: $(this).data('ordem'),
                 origem: $(this).data('origem'),
+                unidadeorigem: $(this).data('unidadeorigem'),
                 complexidade: $(this).data('complexidade'),
                 risco: $(this).data('risco'),
                 dtrisco: $(this).data('dtrisco'),

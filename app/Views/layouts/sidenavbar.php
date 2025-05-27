@@ -49,7 +49,7 @@
                             </a>
                         </li>
                         <?php } ?>
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-incluirurgencia')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/urgencia') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Incluir Urgência

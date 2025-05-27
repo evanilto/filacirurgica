@@ -33,6 +33,7 @@ use App\Models\LocalProfEspecialidadesModel;
 use App\Models\VwOrdemPacienteModel;
 use App\Models\LocalVwDetalhesPacientesModel;
 use App\Models\LocalAipContatosPacientesModel;
+use App\Models\LocalAghInstituicoesHospitalaresModel;
 use App\Models\PacientesModel;
 
 //use App\Controllers\MapaCirurgico;
@@ -66,6 +67,7 @@ class ListaEspera extends ResourceController
     private $localaippacientesmodel;
     private $localaipcontatospacientesmodel;
     private $localvwdetalhespacientesmodel;
+    private $localaghinstituicoeshospitalaresmodel;
     private $procedimentosadicionaismodel;
     private $equipamentosmodel;
     private $equipemedicamodel;
@@ -97,6 +99,7 @@ class ListaEspera extends ResourceController
     private $data;
     private $hemocomponentesmodel;
     private $selecthemocomponentes;
+    private $selectunidades;
     private $hemocomponentescirurgiamodel;
     private $pacientesmodel;
 
@@ -126,6 +129,7 @@ class ListaEspera extends ResourceController
         $this->localaghcidsmodel = new LocalAghCidsModel();
         $this->localaghespecialidadesmodel = new LocalAghEspecialidadesModel();
         $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
+        $this->localaghinstituicoeshospitalaresmodel = new LocalAghInstituicoesHospitalaresModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->historicomodel = new HistoricoModel();
         $this->usuariocontroller = new Usuarios();
@@ -138,7 +142,7 @@ class ListaEspera extends ResourceController
         //$this->aghucontroller = new Aghu();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------
-        $idsEspecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findColumn('idespecialidade');
+        $idsEspecialidade = $this->listaesperamodel->withDeleted()->distinct()->select('idespecialidade')->findColumn('idespecialidade');
 
         if((HUAP_Functions::tem_permissao('listaespera')) && (HUAP_Functions::tem_permissao('exames'))) {
             $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -186,6 +190,7 @@ class ListaEspera extends ResourceController
         $this->selectposoperatorio = $this->posoperatoriomodel->Where('indsituacao', 'A')->orderBy('id', 'ASC')->findAll();
         //$this->selectcids = $this->aghucontroller->getCIDs();
         $this->selectcids = $this->localaghcidsmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectunidades = $this->localaghinstituicoeshospitalaresmodel->orderBy('nome', 'ASC')->findAll();
         //$this->selectitensprocedhospit = $this->aghucontroller->getItensProcedimentosHospitalares();
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
         $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -341,7 +346,7 @@ class ListaEspera extends ResourceController
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         //$data['origens'] = $this->selectorigempaciente;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
         //die(var_dump($data));
 
@@ -372,6 +377,8 @@ class ListaEspera extends ResourceController
             //$data = $dataflash;
             $data = $_SESSION['listaespera'];
         }
+
+        //dd($data);
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -447,6 +454,8 @@ class ListaEspera extends ResourceController
                 $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
                 //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
                 $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['dtinicio'] = NULL;
+                $data['dtfim'] = NULL;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_listaespera',
@@ -535,12 +544,13 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idrisco = $data[risco]";
                 $builder->whereIn('vl.complexidade',  $data['complexidades']);
             };
-            if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
+            if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames'))) {
                 $builder->where('vl.tipoprc_tipo',  'C');
-            };
-            if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
-                $builder->where('vl.tipoprc_tipo',  'E');
-            };
+            } else {
+                if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+                    $builder->where('vl.tipoprc_tipo',  'E');
+                };
+            }
         }
 
         $builder->orderBy('vl.id', 'ASC');
@@ -837,9 +847,9 @@ class ListaEspera extends ResourceController
         $data['origens'] = $this->origempacientemodel->Where('indsituacao', 'A')->orderBy('nmorigem', 'ASC')->findAll(); */
 
         $data['filas'] = $this->selectfila;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
-        //die(var_dump($data));
+        //dd($data);
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                                             'data' => $data]);
@@ -898,7 +908,7 @@ class ListaEspera extends ResourceController
                 if (!empty($data['dtinicio']) || !empty($data['dtfim'])) {
 
                     $data['filas'] = $this->selectfila;
-                    $data['especialidades'] = $this->selectespecialidadeaghu;
+                    $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
                     if (empty($data['dtinicio'])) {
                         $this->validator->setError('dtinicio', 'Informe a data de início!');
@@ -930,8 +940,9 @@ class ListaEspera extends ResourceController
 
             if (empty($result)) {
 
-                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-                $data['especialidades'] = $this->selectespecialidadeaghu;
+                //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['filas'] = $this->selectfila;
+                $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente a recuperar localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
@@ -963,8 +974,9 @@ class ListaEspera extends ResourceController
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
-            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
-            $data['especialidades'] = $this->selectespecialidadeaghu;
+            //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['filas'] = $this->selectfila;
+            $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_excluidos',
                                                'validation' => $this->validator,
@@ -1206,15 +1218,18 @@ class ListaEspera extends ResourceController
 
         $data['dtinclusao'] = date('d/m/Y H:i');
         $data['ordem'] = '';
-        $data['tipo_sanguineo'] = '';
+        //$data['tipo_sanguineo'] = '';
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectriscoativos;
         $data['origens'] = $this->selectorigempacienteativos;
         $data['lateralidades'] = $this->selectlateralidadeativos;
         $data['especialidades'] = $this->selectAllespecialidadeaghu;
         $data['cids'] = $this->selectcids;
+        $data['unidades'] = $this->selectunidades;
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['habilitasalvar'] = true;
+        $data['dtrisco'] = null;
+        $data['unidadeorigem'] = null;
 
         //var_dump($data['dtinclusao']);die();
 
@@ -1261,8 +1276,9 @@ class ListaEspera extends ResourceController
         $dataform['riscos'] = $this->selectriscoativos;
         $dataform['origens'] = $this->selectorigempacienteativos;
         $dataform['lateralidades'] = $this->selectlateralidadeativos;
-        $dataform['especialidades'] = $this->selectespecialidadeaghu;
+        $dataform['especialidades'] = $this->selectAllespecialidadeaghu;
         $dataform['cids'] = $this->selectcids;
+        $dataform['unidades'] = $this->selectunidades;
         $dataform['procedimentos'] = $this->selectitensprocedhospitativos;
         $dataform['habilitasalvar'] = true;
 
@@ -1337,6 +1353,16 @@ class ListaEspera extends ResourceController
                 }
             }
 
+            if (!empty($data['dtrisco'])) {
+                 if (DateTime::createFromFormat('d/m/Y', $data['dtrisco'])->format('Y-m-d') > date('Y-m-d')) {
+                    $this->validator->setError('dtrisco', 'A data do risco não pode ser maior que a data atual!');
+                    return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
+                                                        'validation' => $this->validator,
+                                                        'data' => $dataform]);
+                }
+            }
+
+
             $db = \Config\Database::connect('default');
 
             $db->transStart();
@@ -1352,6 +1378,7 @@ class ListaEspera extends ResourceController
                     'idcomplexidade' => $data['complexidade'],
                     'idtipoprocedimento' => $data['fila'],
                     'idorigempaciente' => $data['origem'],
+                    'idunidadeorigem' => $data['unidadeorigem'],
                     'indcongelacao' => $data['congelacao'],
                     'indopme' => $data['opme'],
                     'idprocedimento' => $data['procedimento'],
@@ -1361,15 +1388,13 @@ class ListaEspera extends ResourceController
                     'txtorigemjustificativa' => $data['justorig'],
                 ];
                 
-                $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
-
-                //dd($data);
+                /* $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
 
                 if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])){
                     $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
                     log_message('error', 'Exception: ' . $msg);
                     throw new \Exception($msg);
-                }
+                } */
 
                 $idlista = $this->listaesperamodel->insert($paciente);
 
@@ -1383,17 +1408,17 @@ class ListaEspera extends ResourceController
                     );
                 }
 
-                $tiposangue = [
+               /*  $tiposangue = [
                     'prontuario' => $data['prontuario'],
                     'tiposanguineo' => $data['tipo_sanguineo'],
                     'idalttiposanguelogin' => session()->get('Sessao')['login']
-                ];
+                ]; */
 
 /*                 $pac = $this->pacientesmodel->find($data['prontuario']);
  */                
 
                 //dd($data);
-                if (!$pacienteregistroAtual && !empty($data['tipo_sanguineo']) ) {
+               /*  if (!$pacienteregistroAtual && !empty($data['tipo_sanguineo']) ) {
                     $this->pacientesmodel->insert($tiposangue);
                 } else {
                     if ($data['tipo_sanguineo_confirmado'] == '1') {
@@ -1412,6 +1437,7 @@ class ListaEspera extends ResourceController
                         sprintf('Erro ao atualizar tipo de sangue do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+                    */
 
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
@@ -1501,6 +1527,7 @@ class ListaEspera extends ResourceController
         $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
+        $data['unidadeorigem'] = $lista['idunidadeorigem'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['lateralidade'] = $lista['idlateralidade'];
@@ -1515,9 +1542,10 @@ class ListaEspera extends ResourceController
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
         $data['lateralidades'] = $this->selectlateralidade;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
+        $data['unidades'] = $this->selectunidades;
 
         /* if ($data['idexclusao']) {
             $historico = $this->historicomodel->where('idevento', 7)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
@@ -1614,6 +1642,7 @@ class ListaEspera extends ResourceController
         $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
+        $data['unidadeorigem'] = $lista['idunidadeorigem'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['opme'] = $lista['indopme'];
         $data['procedimento'] = $lista['idprocedimento'];
@@ -1627,14 +1656,13 @@ class ListaEspera extends ResourceController
         $data['especialidades'] = $this->selectespecialidadeaghu;
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospit;
+        $data['unidades'] = $this->selectunidades;
         
-        $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
-        $data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
+        //$data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
+        //$data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
         $data['lista_updated_at_original'] = $lista['updated_at']; 
 
-
-        //var_dump($data['procedimentos']);die();
-
+        //dd($data);
         return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                             'data' => $data]);
 
@@ -1658,6 +1686,7 @@ class ListaEspera extends ResourceController
             'especialidade' => 'required',
             'dtrisco' => 'permit_empty|valid_date[d/m/Y]',
             'fila' => 'required',
+            'cid' => 'required',
             'procedimento' => 'required',
             'complexidade' => 'required',
             'origem' => 'required',
@@ -1680,6 +1709,7 @@ class ListaEspera extends ResourceController
                 $data['especialidades'] = $this->selectespecialidadeaghu;
                 $data['cids'] = $this->selectcids;
                 $data['procedimentos'] = $this->selectitensprocedhospit;
+                $data['unidades'] = $this->selectunidades;
 
                 return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                 //'validation' => $this->validator,
@@ -1699,6 +1729,7 @@ class ListaEspera extends ResourceController
                     $data['especialidades'] = $this->selectespecialidadeaghu;
                     $data['cids'] = $this->selectcids;
                     $data['procedimentos'] = $this->selectitensprocedhospit;
+                    $data['unidades'] = $this->selectunidades;
 
                     return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                     //'validation' => $this->validator,
@@ -1714,12 +1745,32 @@ class ListaEspera extends ResourceController
                         $data['especialidades'] = $this->selectespecialidadeaghu;
                         $data['cids'] = $this->selectcids;
                         $data['procedimentos'] = $this->selectitensprocedhospit;
+                        $data['unidades'] = $this->selectunidades;
 
                         return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                         //'validation' => $this->validator,
                                                         'data' => $data]);
 
                     }
+                }
+            }
+
+            if (!empty($data['dtrisco'])) {
+                 if (DateTime::createFromFormat('d/m/Y', $data['dtrisco'])->format('Y-m-d') > date('Y-m-d')) {
+                    $this->validator->setError('dtrisco', 'A data do risco não pode ser maior que a data atual!');
+
+                    $data['filas'] = $this->selectfila;
+                    $data['riscos'] = $this->selectrisco;
+                    $data['origens'] = $this->selectorigempaciente;
+                    $data['lateralidades'] = $this->selectlateralidade;
+                    $data['especialidades'] = $this->selectespecialidadeaghu;
+                    $data['cids'] = $this->selectcids;
+                    $data['procedimentos'] = $this->selectitensprocedhospit;
+                    $data['unidades'] = $this->selectunidades;
+
+                    return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
+                                                    //'validation' => $this->validator,
+                                                    'data' => $data]);
                 }
             }
 
@@ -1737,6 +1788,7 @@ class ListaEspera extends ResourceController
                         'idcomplexidade' => $data['complexidade'],
                         'idtipoprocedimento' => $data['fila'],
                         'idorigempaciente' => $data['origem'],
+                        'idunidadeorigem' => empty($data['unidadeorigem']) ? NULL : $data['unidadeorigem'],
                         'indcongelacao' => $data['congelacao'],
                         'indopme' => $data['opme'],
                         'idprocedimento' => $data['procedimento'],
@@ -1745,23 +1797,23 @@ class ListaEspera extends ResourceController
                         'txtorigemjustificativa' => $data['justorig'],
                         ];
 
-                $pac = [
+                /* $pac = [
                     'prontuario' => $data['prontuario'],
                     'tiposanguineo' => $data['tipo_sanguineo'],
                     'idalttiposanguelogin' => session()->get('Sessao')['login']
-                ];
+                ]; */
 
                 $listaregistroAtual = $this->listaesperamodel->find($data['id']);
-                $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
+                //$pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
 
-                if (($listaregistroAtual['updated_at'] != $data['lista_updated_at_original']) ||
-                    ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])) ) {
+                if (($listaregistroAtual['updated_at'] != $data['lista_updated_at_original'])) {
+                //|| ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $data['paciente_updated_at_original'])) ) {
                     $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
                     log_message('error', 'Exception: ' . $msg);
                     throw new \Exception($msg);
                 }
 
-                if (!$pacienteregistroAtual) {
+                /* if (!$pacienteregistroAtual) {
 
                     if (!empty($data['tipo_sanguineo'])) {
                         $this->pacientesmodel->insert($pac);
@@ -1774,9 +1826,9 @@ class ListaEspera extends ResourceController
                         $pac['txtalttiposanguejustificativa'] = $data['justificativa_alteracao_hidden'];
                         $this->pacientesmodel->update($data['prontuario'], $pac);
                     }
-                }
+                } */
 
-                if ($db->transStatus() === false) {
+                /* if ($db->transStatus() === false) {
                     $error = $db->error();
                     $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
                     $errorCode = isset($error['code']) ? $error['code'] : 0;
@@ -1784,7 +1836,7 @@ class ListaEspera extends ResourceController
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
-                }
+                } */
 
                 $this->listaesperamodel->update($data['id'], $lista);
 
@@ -1846,6 +1898,7 @@ class ListaEspera extends ResourceController
             $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['cids'] = $this->selectcids;
             $data['procedimentos'] = $this->selectitensprocedhospit;
+            $data['unidades'] = $this->selectunidades;
 
             //$dados = $this->request->getPost();
 
@@ -1868,8 +1921,10 @@ class ListaEspera extends ResourceController
             $data['especialidades'] = $this->selectespecialidadeaghu;
             $data['cids'] = $this->selectcids;
             $data['procedimentos'] = $this->selectitensprocedhospit;
+            $data['unidades'] = $this->selectunidades;
 
             //die(var_dump($data));
+            //dd($this->validator->getErrors());
             return view('layouts/sub_content', ['view' => 'listaespera/form_edita_listaespera',
                                                 'data' => $data]);
         }
@@ -2047,6 +2102,7 @@ class ListaEspera extends ResourceController
         $data['complexidade'] = $lista['idcomplexidade'];
         $data['fila'] = $lista['idtipoprocedimento'];
         $data['origem'] = $lista['idorigempaciente'];
+        $data['unidadeorigem'] = $lista['idunidadeorigem'];
         $data['congelacao'] = $lista['indcongelacao'];
         $data['opme'] = $lista['indopme'];
         $data['procedimento'] = $lista['idprocedimento'];
@@ -2074,6 +2130,7 @@ class ListaEspera extends ResourceController
         $data['usarHemocomponentes'] = 'N';
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
+        $data['unidades'] = $this->selectunidades;
 
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
         $data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
@@ -2113,7 +2170,7 @@ class ListaEspera extends ResourceController
             'dtcirurgia' => 'required|valid_date[d/m/Y]',
             'hrcirurgia' => 'required|valid_time[H:i]',
             'tempoprevisto' => 'required|valid_time[H:i]',
-            'hemoderivados' => 'required',
+            //'hemoderivados' => 'required',
             //'risco' => 'required',
             'procedimento' => 'required',
             'posoperatorio' => 'required',
@@ -2127,7 +2184,7 @@ class ListaEspera extends ResourceController
             'justorig' => 'max_length[1024]|min_length[0]',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
-            'tipo_sanguineo' => 'required',
+            //'tipo_sanguineo' => 'required',
         ];
 
         if ($this->validate($rules)) {
@@ -2275,7 +2332,7 @@ class ListaEspera extends ResourceController
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
                         'indopme' => $this->data['opme'],
-                        'tiposanguineo' => $this->data['tipo_sanguineo'],
+                        //'tiposanguineo' => $this->data['tipo_sanguineo'],
                         'idlateralidade' => $this->data['lateralidade'],
                         'txtinfoadicionais' => $this->data['info'],
                         'txtorigemjustificativa' => $this->data['justorig'],
@@ -2283,23 +2340,23 @@ class ListaEspera extends ResourceController
                         'indsituacao' => 'P' // Programada
                         ];
 
-                $pac = [
+                /* $pac = [
                     'prontuario' => $this->data['prontuario'],
                     'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'idalttiposanguelogin' => session()->get('Sessao')['login']
-                ];
+                ]; */
 
                 $listaregistroAtual = $this->listaesperamodel->find($this->data['id']);
-                $pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
+                //$pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
 
-                if (($listaregistroAtual['updated_at'] != $this->data['lista_updated_at_original']) 
-                ||  ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $this->data['paciente_updated_at_original'])) ) {
+                if (($listaregistroAtual['updated_at'] != $this->data['lista_updated_at_original'])) {
+                //||  ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $this->data['paciente_updated_at_original'])) ) {
                     $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
                     log_message('error', 'Exception: ' . $msg);
                     throw new \Exception($msg);
                 }
 
-                if (!$pacienteregistroAtual) {
+                /* if (!$pacienteregistroAtual) {
 
                     if (!empty($this->data['tipo_sanguineo'])) {
                         $this->pacientesmodel->insert($pac);
@@ -2322,7 +2379,7 @@ class ListaEspera extends ResourceController
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
-                }
+                } */
 
                 //dd($lista);
                 $this->listaesperamodel->update($this->data['id'], $lista);
@@ -2344,7 +2401,7 @@ class ListaEspera extends ResourceController
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     //'tempoprevisto' => $tempoprevisto = DateTime::createFromFormat('H:i', $this->data['tempoprevisto']),
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    'indhemoderivados' => $this->data['hemoderivados'],
+                    //'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'txtjustificativaenvio' => $this->data['justenvio'],
                     'numordem' => $this->data['ordemfila'],
@@ -2697,6 +2754,7 @@ class ListaEspera extends ResourceController
         $this->data['especialidades_med'] = $this->selectespecialidadeaghu;
         $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $this->data['hemocomponentes'] = $this->selecthemocomponentes;
+        $this->data['unidades'] = $this->selectunidades;
 
         $this->data['proced_adic'] = is_array($this->data['proced_adic_hidden']) ? $this->data['proced_adic_hidden'] : explode(',', $this->data['proced_adic_hidden']);
         $this->data['proced_adic'] = array_filter($this->data['proced_adic']);
@@ -2718,7 +2776,7 @@ class ListaEspera extends ResourceController
         $db = Database::connect('default');
 
         $listaesperas = $this->vwlistaesperamodel->where('prontuario', $prontuario)->findAll();
-        
+      
         return $this->response->setJSON($listaesperas);
 
     }
@@ -2794,7 +2852,8 @@ class ListaEspera extends ResourceController
 
             if (empty($result)) {
 
-                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['filas'] = $this->selectfila;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
@@ -2823,7 +2882,8 @@ class ListaEspera extends ResourceController
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
             }
             
-            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['filas'] = $this->selectfila;
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_situacaocirurgica',
                                                'validation' => $this->validator,

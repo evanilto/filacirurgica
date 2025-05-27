@@ -27,6 +27,7 @@ class ListaEsperaModel extends Model
         'idtipoprocedimento',
         'idriscocirurgico',
         'idorigempaciente',
+        'idunidadeorigem',
         'idprocedimento',
         'idlateralidade',
         'indsituacao',

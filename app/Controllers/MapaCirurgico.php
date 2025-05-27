@@ -30,6 +30,7 @@ use App\Models\LocalAipPacientesModel;
 use App\Models\LocalCentrosCirurgicosModel;
 use App\Models\LocalMbcSalasCirurgicasModel;
 use App\Models\LocalProfEspecialidadesModel;
+use App\Models\LocalAghInstituicoesHospitalaresModel;
 use App\Models\JustificativasModel;
 use App\Models\FilaWebModel;
 use DateTime;
@@ -97,6 +98,7 @@ class MapaCirurgico extends ResourceController
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
     private $selectjustificativassuspensaoadm;
+    private $selectunidades;
     private $data;
     private $equipamentosmodel;
     private $equipamentoscirurgiamodel;
@@ -135,6 +137,7 @@ class MapaCirurgico extends ResourceController
         $this->localmbcsalascirurgicasmodel = new LocalMbcSalasCirurgicasModel();
         $this->localcentroscirurgicosmodel = new LocalCentrosCirurgicosModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
+        $this->localaghinstituicoeshospitalaresmodel = new LocalAghInstituicoesHospitalaresModel();
         $this->justificativasmodel = new JustificativasModel();
         $this->usuariocontroller = new Usuarios();
         $this->equipamentosmodel = new EquipamentosModel();
@@ -147,7 +150,7 @@ class MapaCirurgico extends ResourceController
         //$this->aghucontroller = new Aghu();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------
-        $idsEspecialidade = $this->listaesperamodel->distinct()->select('idespecialidade')->findColumn('idespecialidade');
+        $idsEspecialidade = $this->listaesperamodel->withDeleted()->distinct()->select('idespecialidade')->findColumn('idespecialidade');
 
         if((HUAP_Functions::tem_permissao('listaespera')) && (HUAP_Functions::tem_permissao('exames'))) {
             $this->selectfila = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
@@ -222,6 +225,7 @@ class MapaCirurgico extends ResourceController
         //$this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
         $this->selectsalascirurgicasaghu = $this->localmbcsalascirurgicasmodel->Where('situacao', 'A')->orderBy('nome', 'ASC')->findAll();
         $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectunidades = $this->localaghinstituicoeshospitalaresmodel->orderBy('nome', 'ASC')->findAll();
 
     }
 
@@ -375,7 +379,7 @@ class MapaCirurgico extends ResourceController
         $data['dtfim'] = NULL;
         $data['filas'] = $this->selectfilaativas;
         $data['riscos'] = $this->selectrisco;
-        $data['especialidades'] = $this->selectespecialidadeaghu;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
         //die(var_dump($data));
 
@@ -439,7 +443,7 @@ class MapaCirurgico extends ResourceController
 
                 $data['filas'] = $this->selectfilaativas;
                 $data['riscos'] = $this->selectrisco;
-                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
                 if (empty($data['dtinicio'])) {
                     $this->validator->setError('dtinicio', 'Informe a data de início!');
@@ -477,10 +481,11 @@ class MapaCirurgico extends ResourceController
 
             if (empty($result)) {
 
-                $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                //$data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+                $data['filas'] = $this->selectfilaativas;
                 $data['riscos'] = $this->riscomodel->Where('indsituacao', 'A')->orderBy('nmrisco', 'ASC')->findAll();
                 //$data['especialidades'] = $this->aghucontroller->getEspecialidades();
-                $data['especialidades'] = $this->selectespecialidadeaghu;
+                $data['especialidades'] = $this->selectAllespecialidadeaghu;
 
                 session()->setFlashdata('warning_message', 'Nenhum paciente localizado com os parâmetros informados!');
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_mapacirurgico',
@@ -925,12 +930,13 @@ class MapaCirurgico extends ResourceController
             $builder->whereIn('vw_mapacirurgico.indsituacao', $data['situacao']);
         }
 
-        if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
+        if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames'))) {
             $builder->where('vw_mapacirurgico.tipoprc_tipo',  'C');
-        };
-        if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
-            $builder->where('vw_mapacirurgico.tipoprc_tipo',  'E');
-        };
+        } else {
+            if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+                $builder->where('vw_mapacirurgico.tipoprc_tipo',  'E');
+            };
+        }
 
        $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
@@ -1436,7 +1442,7 @@ class MapaCirurgico extends ResourceController
         $this->data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
         $this->data['equipamentos'] = $this->selectequipamentos;
         $this->data['hemocomponentes'] = $this->selecthemocomponentes;
-
+        $this->data['unidades'] = $this->selectunidades;
     }
     /**
      * 
@@ -1505,6 +1511,7 @@ class MapaCirurgico extends ResourceController
         $data['complexidade'] = $mapa->complexidade;
         $data['fila'] = $mapa->idfila;
         $data['origem'] = $mapa->idorigempaciente;
+        $data['unidadeorigem'] = $mapa->idunidadeorigem;
         $data['congelacao'] = $mapa->indcongelacao;
         $data['opme'] = $mapa->indopme;
         $data['procedimento'] = $mapa->idprocedimento;
@@ -1534,6 +1541,7 @@ class MapaCirurgico extends ResourceController
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $data['unidades'] = $this->selectunidades;
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
         $data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
@@ -1566,7 +1574,10 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        //die(var_dump($this->data));
+        $this->data['status_fila'] = TRUE;
+
+
+        //dd($this->data);
 
         $rules = [
             'especialidade' => 'required',
@@ -1581,7 +1592,7 @@ class MapaCirurgico extends ResourceController
             'lateralidade' => 'required',
             'congelacao' => 'required',
             'complexidade' => 'required',
-            'hemoderivados' => 'required',
+            //'hemoderivados' => 'required',
             'opme' => 'required',
             'cid' => 'required',
             'risco' => 'required',
@@ -1651,7 +1662,7 @@ class MapaCirurgico extends ResourceController
                     'dthrcirurgia' => $dataCirurgia->format('d/m/Y H:i:s'),
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    'indhemoderivados' => $this->data['hemoderivados'],
+                    //'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'idcentrocirurgico' => $this->data['centrocirurgico'],
                     'idsala' => $this->data['sala']
@@ -3473,6 +3484,7 @@ class MapaCirurgico extends ResourceController
         $data['complexidade'] = '';
         $data['fila'] = null;
         $data['origem'] = '';
+        $data['unidadeorigem'] = '';
         $data['congelacao'] = '';
         $data['procedimento'] = '';
         $data['proced_adic'] = [];
@@ -3503,6 +3515,7 @@ class MapaCirurgico extends ResourceController
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
         $data['tipo_sanguineo'] = '';
+        $data['unidades'] = $this->selectunidades;
 
         $data['listapacienteSelect'] = [];
 
@@ -3539,6 +3552,8 @@ class MapaCirurgico extends ResourceController
 
         $this->data['fila'] = $this->data['fila'] ?? $this->data['fila_hidden'];
         $this->data['origem'] = $this->data['origem'] ?? $this->data['origem_hidden'];
+        $this->data['unidadeorigem'] = $this->data['unidadeorigem'] ?? $this->data['unidadeorigem_hidden'];
+        $this->data['tipo_sanguineo'] = $this->data['tipo_sanguineo'] ?? $this->data['tipo_sanguineo_hidden'];
         $this->data['risco'] = $this->data['risco'] ?? $this->data['risco_hidden'];
         $this->data['especialidade'] = $this->data['especialidade'] ?? $this->data['especialidade_hidden'];
         $this->data['procedimento'] = $this->data['procedimento'] ?? $this->data['procedimento_hidden'];
@@ -3567,7 +3582,7 @@ class MapaCirurgico extends ResourceController
             'profissional' => 'required',
             'lateralidade' => 'required',
             'congelacao' => 'required',
-            'hemoderivados' => 'required',
+            //'hemoderivados' => 'required',
             'opme' => 'required',
             'complexidade' => 'required',
             'cid' => 'required',
@@ -3583,7 +3598,7 @@ class MapaCirurgico extends ResourceController
             'justurgencia' => 'required|max_length[250]|min_length[3]',
             'usarHemocomponentes' => 'required',
             'usarEquipamentos' => 'required',
-            'tipo_sanguineo' => 'required'
+            //'tipo_sanguineo' => 'required'
         ];
 
         //dd($this->data);
@@ -3657,13 +3672,13 @@ class MapaCirurgico extends ResourceController
                                         'indsituacao' => 'P' // Programada
                                         ];
 
-                                    $pac = [
+                                   /*  $pac = [
                                         'prontuario' => $this->data['prontuario'],
                                         'tiposanguineo' => $this->data['tipo_sanguineo'],
                                         'idalttiposanguelogin' => session()->get('Sessao')['login']
-                                    ];
+                                    ]; */
                     
-                                    $pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
+                                    /* $pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
                     
                                     if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $this->data['paciente_updated_at_original'])) {
                                         $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
@@ -3694,7 +3709,7 @@ class MapaCirurgico extends ResourceController
                                         throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                                             sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
                                         );
-                                    }
+                                    } */
 
                                     if ($this->data['listapaciente'] != 0) {
                                         $idlista = $this->data['listapaciente'];
@@ -3791,7 +3806,7 @@ class MapaCirurgico extends ResourceController
                                         'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
                                         'tempoprevisto' => $this->data['tempoprevisto'],
                                         'idposoperatorio' => $this->data['posoperatorio'],
-                                        'indhemoderivados' => $this->data['hemoderivados'],
+                                        //'indhemoderivados' => $this->data['hemoderivados'],
                                         'txtnecessidadesproced' => $this->data['nec_proced'],
                                         'txtjustificativaurgencia' => $this->data['justurgencia'],
                                         'idcentrocirurgico' => $this->data['centrocirurgico'],
@@ -4016,7 +4031,7 @@ class MapaCirurgico extends ResourceController
 
        //die(var_dump($this->data['listapaciente']));
         if (empty($this->data['prontuario']) || $this->data['listapaciente'] == '') {
-            $this->data = [];
+            //$this->data = [];
             $this->data['listaesperas'] = [];
             $this->data['candidatos'] = null;
             $this->data['ordem'] = null;
@@ -4030,6 +4045,7 @@ class MapaCirurgico extends ResourceController
             $this->data['complexidade'] = '';
             $this->data['fila'] = null;
             $this->data['origem'] = '';
+            $this->data['unidadeorigem'] = '';
             $this->data['congelacao'] = '';
             $this->data['procedimento'] = '';
             $this->data['proced_adic'] = [];
@@ -4043,6 +4059,7 @@ class MapaCirurgico extends ResourceController
             $this->data['filas'] = $this->selectfila;
             $this->data['riscos'] = $this->selectrisco;
             $this->data['origens'] = $this->selectorigempaciente;
+            $this->data['unidades'] = $this->selectunidades;
             $this->data['lateralidades'] = $this->selectlateralidadeativos;
             $this->data['posoperatorios'] = $this->selectposoperatorio;
             $this->data['especialidades'] = $this->selectespecialidadeaghu;

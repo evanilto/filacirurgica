@@ -34,7 +34,8 @@ class UpdateTablesCommand extends BaseCommand
             local_prof_especialidades,
             local_centros_cirurgicos,
             local_aip_contatos_pacientes, 
-            local_vw_detalhes_pacientes
+            local_vw_detalhes_pacientes,
+            local_agh_instituicoes_hospitalares
         IN ACCESS EXCLUSIVE MODE');
 
         $insertStatus = 'truncing';
@@ -49,6 +50,7 @@ class UpdateTablesCommand extends BaseCommand
         $db->table('local_aip_contatos_pacientes')->truncate();
         $db->table('local_vw_detalhes_pacientes')->truncate();
         $db->table('local_vw_aghu_cirurgias')->truncate();
+        $db->table('local_agh_instituicoes_hospitalares')->truncate();
 
         $insertStatus = 'starting';
         $insertStatus = $db->query('INSERT INTO local_agh_cids SELECT * FROM remoto.agh_cids');
@@ -62,6 +64,7 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_aip_contatos_pacientes SELECT * FROM remoto.aip_contatos_pacientes;');
         $insertStatus = $db->query('INSERT INTO local_vw_detalhes_pacientes SELECT * FROM remoto.vw_detalhes_pacientes;');
         $insertStatus = $db->query('INSERT INTO local_vw_aghu_cirurgias SELECT * FROM remoto.vw_aghu_cirurgias;');
+        $insertStatus = $db->query('INSERT INTO local_agh_instituicoes_hospitalares SELECT * FROM remoto.agh_instituicoes_hospitalares;');
 
         $insertStatus = 'finishing';
 

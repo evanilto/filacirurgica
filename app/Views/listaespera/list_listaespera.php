@@ -9,7 +9,7 @@
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
-                <th scope="row" colspan="20" class="bg-light text-start" >
+                <th scope="row" colspan="21" class="bg-light text-start" >
                     <h5><strong>Fila Cirúrgica</strong></h5>
                 </th>
             </tr>
@@ -32,6 +32,7 @@
                 <th scope="col" data-field="prontuarioaghu" >CID</th>
                 <th scope="col" data-field="prontuarioaghu" >CID Descrição</th>
                 <th scope="col" data-field="prontuarioaghu" >Origem</th>
+                <th scope="col" data-field="prontuarioaghu" >Unidade Origem</th>
                 <th scope="col" data-field="prontuarioaghu" >Justificativas da Origem</th>
                 <th scope="col" data-field="prontuarioaghu" >Complexidade</th>
                 <th scope="col" data-field="prontuarioaghu" >Lateralidade</th>
@@ -60,6 +61,7 @@
                     data-cid="<?= $itemlista->cid_codigo ?>" 
                     data-ciddescr="<?= $itemlista->cid_descricao ?>" 
                     data-origem="<?= $itemlista->origem_descricao ?>" 
+                    data-unidadeorigem="<?= $itemlista->unidade_origem ?>" 
                     data-complexidade="<?= $itemlista->complexidade ?>" 
                     data-lateralidade="<?= $itemlista->nmlateralidade ?>" 
                     data-congelacao="<?= $itemlista->indcongelacao ?>" 
@@ -97,9 +99,12 @@
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemlista->origem_descricao); ?>">
                         <?php echo htmlspecialchars($itemlista->origem_descricao); ?>
-                        <td class="break-line" title="<?php echo htmlspecialchars($itemlista->just_orig); ?>">
-                        <?php echo htmlspecialchars($itemlista->just_orig); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->unidade_origem); ?>">
+                        <?php echo htmlspecialchars($itemlista->unidade_origem); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemlista->just_orig); ?>">
+                        <?php echo htmlspecialchars($itemlista->just_orig); ?>
                     </td>
                     <td>
                         <?php 
@@ -217,6 +222,7 @@
             cid = element.getAttribute('data-cid'); 
             ciddescr = element.getAttribute('data-ciddescr'); 
             origem = element.getAttribute('data-origem'); 
+            unidadeorigem = element.getAttribute('data-unidadeorigem'); 
             complexidade = element.getAttribute('data-complexidade') === 'A' ? 'ALTA'  :
                             element.getAttribute('data-complexidade') === 'M' ? 'MÉDIA'  :
                             element.getAttribute('data-complexidade') === 'B' ? 'BAIXA'  : 'N/D';
@@ -299,6 +305,7 @@
                         <strong>Data do Risco:</strong> ${verificarValor(dtrisco)}<br>
                         <strong>CID:</strong> ${verificarValor(cid)} - ${verificarValor(ciddescr)}<br>
                         <strong>Origem:</strong> ${origem}<br>
+                        <strong>Unidade Origem:</strong> ${verificarValor(unidadeorigem)}<br>
                     `);
 
                     // Atualiza o conteúdo do modal para a coluna direita
@@ -424,15 +431,15 @@
                 { "width": "300px" },
                 { "width": "60px"  },   // CID
                 { "width": "300px" },
-                { "width": "140px" },
-                { "width": "300px" },
-                { "width": "120px" }, // complex
-                { "width": "150px" },
-                { "width": "110px" },
-                { "width": "110px" },
-                { "width": "90px" }, // dt risco
-                { "width": "100px" } // tipo sangue
-
+                { "width": "140px" },   // Origem
+                { "width": "220px" },
+                { "width": "200px" },   
+                { "width": "120px" },
+                { "width": "120px" }, // lateralidade
+                { "width": "120px" }, // congelacao
+                { "width": "120px" }, // opme
+                { "width": "90px" },
+                { "width": "100px" }   // Tipo Sanguíneo
             ],
             "columnDefs": [
             { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
