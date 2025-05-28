@@ -15,6 +15,11 @@ body {
     color: #333;
 }
 
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 /* Reset básico */
 * {
     margin: 0;
@@ -63,7 +68,7 @@ body {
     /*max-height: calc(100vh - 100px); /* Altura total da tela menos o cabeçalho e rodapé */
     overflow-y: auto; /* Rolagem apenas vertical */
     overflow-x: hidden; /* Impede a rolagem horizontal */
-    height: 100%; /* Garante que use todo o espaço vertical permitido */
+    flex: 1;
     box-sizing: border-box; /* Inclui padding no cálculo da largura */
 }
 

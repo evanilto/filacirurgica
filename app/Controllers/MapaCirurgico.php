@@ -1965,6 +1965,7 @@ class MapaCirurgico extends ResourceController
         $data['complexidade'] = $mapa->complexidade;
         $data['fila'] = $mapa->idfila;
         $data['origem'] = $mapa->idorigempaciente;
+        $data['unidadeorigem'] = $mapa->idunidadeorigem;
         $data['congelacao'] = $mapa->indcongelacao;
         $data['opme'] = $mapa->indopme;
         $data['procedimento'] = $mapa->idprocedimento;
@@ -2005,6 +2006,8 @@ class MapaCirurgico extends ResourceController
         $data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
+        $data['unidades'] = $this->selectunidades;
+
 
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
@@ -2211,6 +2214,8 @@ class MapaCirurgico extends ResourceController
                 $candidato['complexidade'] = $values[10];
                 $candidato['infoadicionais'] = $values[11];
                 $candidato['opme'] = $values[14];
+                $candidato['origem'] = $values[15];
+                $candidato['unidadeorigem'] = $values[16];
 
                 $paciente = $this->pacientesmodel->find($candidato['prontuario']);
                 $candidato['tiposanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
@@ -2243,6 +2248,7 @@ class MapaCirurgico extends ResourceController
         $data['complexidade'] = '';
         $data['fila'] = $pacatrocar['idfila'];
         $data['origem'] = '';
+        $data['unidadeorigem'] = '';
         $data['congelacao'] = '';
         $data['procedimento'] = $pacatrocar['idprocedimento'];
         $data['proced_adic'] = [];
@@ -2269,6 +2275,7 @@ class MapaCirurgico extends ResourceController
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
         $data['tipo_sanguineo'] = '';
+        $data['unidades'] = $this->selectunidades;
 
         //$codToRemove = $mapapac1['idprocedimento'];
         //$procedimentos = $data['procedimentos'];
@@ -2317,6 +2324,9 @@ class MapaCirurgico extends ResourceController
 
         $this->data['fila'] = $this->data['fila_hidden'];
         $this->data['procedimento'] = $this->data['procedimento_hidden'];
+        $this->data['origem'] = $this->data['origem'] ?? $this->data['origem_hidden'];
+        $this->data['unidadeorigem'] = $this->data['unidadeorigem'] ?? $this->data['unidadeorigem_hidden'];
+        $this->data['tipo_sanguineo'] = $this->data['tipo_sanguineo'] ?? $this->data['tipo_sanguineo_hidden'];
 
         $rules = [
             'candidato' => 'required',
@@ -2332,13 +2342,13 @@ class MapaCirurgico extends ResourceController
             'lateralidade' => 'required',
             'congelacao' => 'required',
             'opme' => 'required',
-            'hemoderivados' => 'required',
+            //'hemoderivados' => 'required',
             'complexidade' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justtroca' => 'required|max_length[500]|min_length[3]',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'tipo_sanguineo' => 'required'
+            //'tipo_sanguineo' => 'required'
         ];
 
         //die(var_dump($_SESSION['candidatos']));
@@ -2393,8 +2403,8 @@ class MapaCirurgico extends ResourceController
             try {
 
                 $lista = [
-                        'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        //'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                        //'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
@@ -2404,7 +2414,7 @@ class MapaCirurgico extends ResourceController
                         'indsituacao' => 'P' // Programada
                 ];
 
-                $pac = [
+                /* $pac = [
                     'prontuario' => $this->data['prontuariopac2'],
                     'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'idalttiposanguelogin' => session()->get('Sessao')['login']
@@ -2441,7 +2451,7 @@ class MapaCirurgico extends ResourceController
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
-                }
+                } */
 
                 $listaregistroAtual = $this->listaesperamodel->find($this->data['idlistapac2']);
 
@@ -2469,9 +2479,9 @@ class MapaCirurgico extends ResourceController
                     'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    'indhemoderivados' => $this->data['hemoderivados'],
+                    //'indhemoderivados' => $this->data['hemoderivados'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
-                    'tiposanguineo' => $this->data['tipo_sanguineo'],
+                    //'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'indsituacao' => 'P' // Programada
                     ];
 
@@ -2742,7 +2752,7 @@ class MapaCirurgico extends ResourceController
 
             $this->data['candidatos'] = $_SESSION['candidatos'];                                   
 
-            //die(var_dump($this->data));
+            //dd($this->data);
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                 'validation' => $this->validator,
                                                 'data' => $this->data,

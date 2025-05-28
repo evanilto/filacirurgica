@@ -154,7 +154,7 @@
                 <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="nome" >Pós-Operatório</th>
                 <th scope="col" data-field="nome" >Congel.</th>
-                <th scope="col" data-field="nome" >Hemod.</th>
+                <!-- <th scope="col" data-field="nome" >Hemod.</th> -->
                 <th scope="col" data-field="nome" >OPME</th>
                 <th scope="col" data-field="eqpts" >Equipamentos</th>
                 <th scope="col" data-field="hemocomps" >Hemocomponentes</th>
@@ -418,7 +418,7 @@
                     </td>
                     <td><?php echo $itemmapa->posoperatorio ?></td>
                     <td><?php echo $itemmapa->congelacao ?></td>
-                    <td><?php echo $itemmapa->hemoderivados ?></td>
+                    <!-- <td><-?php echo $itemmapa->hemoderivados ?></td> -->
                     <td><?php echo $itemmapa->opme ?></td>
                     <!---------- Equipamentos -------------------------------------------------->
                     <?php 
@@ -1118,7 +1118,6 @@
                     <strong>Lateralidade:</strong> ${dados.lateralidade}<br>
                     <strong>Congelação:</strong> ${dados.congelacao}<br>
                     <strong>Tipo Sanguíneo:</strong> ${verificarValor(dados.tiposangue)}<br>
-                    <strong>Hemoderivados:</strong> ${dados.hemo}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
                     <strong>Equipamentos:</strong> ${verificarValor(dados.equipamentos)}<br>
                     <strong>Hemocomponentes:</strong> ${verificarValor(dados.hemocomponentes)}<br>
@@ -1190,7 +1189,7 @@
                     { "width": "250px" },  // fila
                     { "width": "120px" },  // posoer
                     { "width": "70px" },  // cong
-                    { "width": "70px" },  // hemod
+                    /* { "width": "70px" },  // hemod */
                     { "width": "70px" },  // opme
                     { "width": "350px" },  // equipamentos
                     { "width": "350px" },  // hemocomponentes
