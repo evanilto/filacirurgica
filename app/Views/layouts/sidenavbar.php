@@ -92,7 +92,7 @@
                     <?php if(HUAP_Functions::tem_permissao('relatorios-potencialcontaminacao')) { ?>
                     <li>
                         <a href="<?= base_url('relatorios/potencialcontaminacao') ?>" class="nav-link text-white p-2" aria-current="page">
-                            <i class="fa-solid fa-user-nurse"></i> Cirurgias
+                            <i class="fa-solid fa-user-nurse"></i> Cirurgias/PDT
                         </a>
                     <?php } ?>
                     </li>

@@ -87,6 +87,10 @@ html, body {
     align-items: center;
     justify-content: center;
     height: 35px; 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
 }
 
 .footer p {

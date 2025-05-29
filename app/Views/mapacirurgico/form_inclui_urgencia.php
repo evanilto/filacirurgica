@@ -9,17 +9,6 @@
     $data['usarHemocomponentes'] = $data['usarHemocomponentes'] ?? ['N']; 
     //dd($data);
 ?>
-<style>
-
-.footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-}
-
-</style>
-
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">

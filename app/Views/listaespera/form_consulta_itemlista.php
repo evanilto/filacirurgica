@@ -152,7 +152,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="risco" class="form-label">Risco Cirúrgico</label>
                                     <div class="input-group">
@@ -175,7 +175,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="dtrisco" class="form-label">Data Risco</label>
                                     <div class="input-group">
@@ -185,6 +185,29 @@
                                         <?php if ($validation->getError('dtrisco')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('dtrisco') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="lateralidade" class="form-label">Lateralidade</label>
+                                    <div class="input-group">
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
+                                            id="lateralidade" name="lateralidade" disabled
+                                            data-placeholder="" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
+                                            <?php
+                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
+                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
+                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
+                                            }
+                                            ?>
+                                        </select>
+                                        <?php if ($validation->getError('lateralidade')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('lateralidade') ?>
                                             </div>
                                         <?php endif; ?>
                                     </div>
@@ -236,30 +259,7 @@
                                         <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-1">
-                                <div class="mb-2">
-                                    <label for="lateralidade" class="form-label">Lateralidade</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
-                                            id="lateralidade" name="lateralidade" disabled
-                                            data-placeholder="" data-allow-clear="1">
-                                            <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
-                                            <?php
-                                            foreach ($data['lateralidades'] as $key => $lateralidade) {
-                                                $selected = ($data['lateralidade'] == $lateralidade['id']) ? 'selected' : '';
-                                                echo '<option value="'.$lateralidade['id'].'" '.$selected.'>'.$lateralidade['descricao'].'</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->getError('lateralidade')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('lateralidade') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label class="form-label">Congelação</label>
                                     <div class="input-group mb-2 bordered-container">
