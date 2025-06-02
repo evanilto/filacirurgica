@@ -810,10 +810,10 @@ class ListaEspera extends ResourceController
                 //$clausula_where .= " AND  idtipoprocedimento = $data[fila]";
                 $builder->where('vs.idfila', $data['fila']);
             };
-            if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
+            if (HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
                 $builder->where('fila.tipo',  'C');
             };
-            if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
+            if (HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
                 $builder->where('fila.tipo',  'E');
             };
         }
@@ -1190,7 +1190,7 @@ class ListaEspera extends ResourceController
         $builder->where('le.indurgencia', 'N');
         $builder->where('le.deleted_at IS NOT NULL', null, false);
 
-        if(HUAP_Functions::tem_permissao('listaespera') && (!HUAP_Functions::tem_permissao('exames') || HUAP_Functions::tem_permissao('admin'))) {
+        if(HUAP_Functions::tem_permissao('listaespera') && !HUAP_Functions::tem_permissao('exames')) {
                 $builder->where('fila.tipo',  'C');
         };
         if(HUAP_Functions::tem_permissao('exames') && !HUAP_Functions::tem_permissao('listaespera')) {
@@ -1378,7 +1378,7 @@ class ListaEspera extends ResourceController
                     'idcomplexidade' => $data['complexidade'],
                     'idtipoprocedimento' => $data['fila'],
                     'idorigempaciente' => $data['origem'],
-                    'idunidadeorigem' => $data['unidadeorigem'],
+                    'idunidadeorigem' =>empty($data['idunidadeorigem']) ? NULL : $data['idunidadeorigem'],
                     'indcongelacao' => $data['congelacao'],
                     'indopme' => $data['opme'],
                     'idprocedimento' => $data['procedimento'],
@@ -1396,6 +1396,8 @@ class ListaEspera extends ResourceController
                     throw new \Exception($msg);
                 } */
 
+                //dd($paciente);
+
                 $idlista = $this->listaesperamodel->insert($paciente);
 
                 if ($db->transStatus() === false) {
@@ -1404,7 +1406,7 @@ class ListaEspera extends ResourceController
                     $errorCode = isset($error['code']) ? $error['code'] : 0;
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                        sprintf('Erro ao incluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
+                        sprintf('Erro ao incluir um paciente na Lista! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
