@@ -425,7 +425,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
+                        <div class="row g-2">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
@@ -443,54 +443,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php if ($validation->getError('usarHemocomponentes')): ?>
-                                    <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('usarHemocomponentes') ?>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="mb-2">
-                                <label for="hemocomps" class="form-label">Hemocomponentes Necessários</label>
-                                <div class="input-group">
-                                    <select class="form-select select2-dropdown <?= $validation->hasError('hemocomps') ? 'is-invalid' : '' ?>"
-                                            id="hemocomps" name="hemocomps[]" multiple="multiple"
-                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('hemocomps') ? 'disabled' : '' ?>>
-                                        <?php
-                                        
-                                        foreach ($data['hemocomponentes'] as $hemocomponente) {
-                                            $selected = in_array($hemocomponente->id, $data['hemocomps']) ? 'selected' : '';
-                                            echo '<option value="' . $hemocomponente->id . '" ' . $selected . '>' . $hemocomponente->descricao . '</option>';
-                                        }
-                                        ?>
-                                    </select>
-                                    <?php if ($validation->hasError('hemocomps')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('hemocomps') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-2">
+                            <div class="col-md-3">
                                 <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -512,6 +465,64 @@
                                     </div>
                                 <?php endif; ?>
                             </div>
+                            <!-- Usar Hemocomponentes (já presente) -->
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Lista de hemocomponentes com campo de quantidade -->
+                            <div class="col-md-12" id="hemocomp-section">
+                                <div class="mb-2">
+                                    <label class="form-label">Selecionar Hemocomponentes e Quantidade</label>
+                                    <div class="bordered-container py-3"> <!-- Apenas padding vertical -->
+                                        <div class="row gx-3 px-3"> <!-- gx-3 = espaçamento horizontal entre colunas -->
+                                            <?php foreach ($data['hemocomponentes'] as $hemocomp): 
+                                                $checked = isset($data['hemocomp_qty'][$hemocomp->id]);
+                                                $quant = $checked ? htmlspecialchars($data['hemocomp_qty'][$hemocomp->id]) : '';
+                                            ?>
+                                                <div class="col-md-6 mb-3">
+                                                    <div class="row align-items-center">
+                                                        <div class="col-9">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input hemocomp-checkbox" type="checkbox" 
+                                                                    id="hemocomp_<?= $hemocomp->id ?>" 
+                                                                    name="hemocomps[<?= $hemocomp->id ?>]" 
+                                                                    value="<?= $quant ?>"
+                                                                    <?= $checked ? 'checked' : '' ?>>
+                                                                <label class="form-check-label" for="hemocomp_<?= $hemocomp->id ?>">
+                                                                    <?= $hemocomp->descricao ?>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <input type="number" class="form-control hemocomp-qty" 
+                                                                name="hemocomp_qty[<?= $hemocomp->id ?>]" 
+                                                                placeholder="Qtd." min="1"
+                                                                value="<?= $quant ?>"
+                                                                <?= $checked ? '' : 'disabled' ?>>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
@@ -528,7 +539,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-10">
                                 <div class="mb-4">
                                     <label for="eqpts" class="form-label">Equipamentos Necessários</label>
                                     <div class="input-group">
@@ -909,7 +920,7 @@
 
         //--------------Hemocomponentes------------------------------
 
-        $('#hemocomps').select2();
+        /* $('#hemocomps').select2();
 
         if ($('input[name="usarHemocomponentes"]:checked').val() === 'S') {
             $('#hemocomps').prop('disabled', false);
@@ -932,7 +943,7 @@
         if ($('#hemocomps').prop('disabled')) {
             $('#hemocomps').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
         }
-
+ */
         //--------------------------------------------------------
 
         //------------------------ Filtro de salas cirurgicas baseado no filtro selecionado ----------------
@@ -1078,6 +1089,56 @@
         prontuarioInput.addEventListener('change', function() {
             fetchPacienteNome(prontuarioInput.value);
         });
+
+        //------------- hemocomponentes --------------------------------
+
+        const hemocompSection = document.getElementById('hemocomp-section');
+        const radios = document.querySelectorAll('input[name="usarHemocomponentes"]');
+
+        function toggleHemocompSection() {
+            const selected = document.querySelector('input[name="usarHemocomponentes"]:checked');
+            if (selected && selected.value === 'S') {
+                document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
+                    cb.disabled = false;
+                    // Sobe até o .row.align-items-center (2 níveis acima do input)
+                    const parentRow = cb.closest('.row.align-items-center');
+                    const qtyInput = parentRow.querySelector('.hemocomp-qty');
+                    qtyInput.disabled = !cb.checked;
+                });
+            } else {
+                document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
+                    cb.checked = false;
+                    cb.disabled = true;
+                    const parentRow = cb.closest('.row.align-items-center');
+                    const qtyInput = parentRow.querySelector('.hemocomp-qty');
+                    qtyInput.value = '';
+                    qtyInput.disabled = true;
+                });
+            }
+        }
+
+        // Checkbox: ativa/desativa campo de quantidade
+        document.querySelectorAll('.hemocomp-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const parentRow = this.closest('.row.align-items-center');
+                const qtyInput = parentRow.querySelector('.hemocomp-qty');
+                if (this.checked && !this.disabled) {
+                    qtyInput.disabled = false;
+                } else {
+                    qtyInput.value = '';
+                    qtyInput.disabled = true;
+                }
+            });
+        });
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', toggleHemocompSection);
+        });
+
+        // Aplica na primeira carga
+        toggleHemocompSection();
+
+        //-------------------------------------------------------------------------
 
     });
 </script>

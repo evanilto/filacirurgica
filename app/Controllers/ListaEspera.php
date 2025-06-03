@@ -2514,28 +2514,36 @@ class ListaEspera extends ResourceController
                     }
                 }
 
-                if (isset($this->data['hemocomps'])) {
+                //-------------- Hemocomponentes -----------------------------------------------------------------
 
+                if (isset($this->data['hemocomps']) && isset($this->data['hemocomp_qty'])) {
                     foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+                        // Verifica se existe uma quantidade informada e se é maior que zero
+                        $quantidade = $this->data['hemocomp_qty'][$key] ?? null;
+                        if (!is_null($quantidade) && (int)$quantidade > 0) {
 
-                        $array['idmapacirurgico'] = (int) $idmapa;
-                        $array['idhemocomponente'] = (int) $hemocomponente;
-                        $array['inddisponibilidade'] = false;
+                            $array['idmapacirurgico'] = (int) $idmapa;
+                            $array['idhemocomponente'] = (int) $key;
+                            $array['qtd_solicitada'] = (int) $quantidade; // opcional, caso use
+                            $array['inddisponibilidade'] = false;
 
-                        $this->hemocomponentescirurgiamodel->insert($array);
+                            //dd($array);
+                            $this->hemocomponentescirurgiamodel->insert($array);
 
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-        
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
-                            );
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
                         }
-
                     }
                 }
+
+                // ----------------------------------------------------------------------------------
 
                 $this->listaesperamodel->delete($this->data['id']);
 
@@ -2608,7 +2616,7 @@ class ListaEspera extends ResourceController
 
             $this->carregaMapa();
 
-           // die(var_dump($this->data));
+           //dd($this->data);
 
             return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                 //'validation' => $this->validator,

@@ -1527,7 +1527,7 @@ class MapaCirurgico extends ResourceController
         $data['profissional'] = array_column($this->equipemedicamodel->where(['idmapacirurgico' => $id])->select('codpessoa')->findAll(), 'codpessoa');
         $data['proced_adic'] = array_column($this->procedimentosadicionaismodel->where(['idmapacirurgico' => $id])->select('codtabela')->findAll(), 'codtabela');
         $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
-        $data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
+        //$data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
         //dd($this->equipamentoscirurgiamodel->getLastQuery());
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
@@ -1549,14 +1549,28 @@ class MapaCirurgico extends ResourceController
         });
         $data['equipamentos'] = $this->selectequipamentos;
         $data['usarEquipamentos'] = empty($data['eqpts']) ? 'N' : 'S';
-        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['tipo_sanguineo'] = $mapa->tiposanguineo;
 
-       //var_dump($this->data['eqpts']);die();
-       //var_dump($data['salas_cirurgicas']);die();
+        $result = $this->hemocomponentescirurgiamodel
+            ->where(['idmapacirurgico' => $id])
+            ->select('idhemocomponente, qtd_solicitada') 
+            ->findAll();
+
+        // Monta um array com id => quantidade
+        $data['hemocomps'] = [];
+        $data['hemocomp_qty'] = [];
+
+        foreach ($result as $item) {
+            $data['hemocomps'][$item['idhemocomponente']] = $item['qtd_solicitada'];
+            $data['hemocomp_qty'][$item['idhemocomponente']] = $item['qtd_solicitada'];
+        }
+
+        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+
+       //dd($data);
         
-        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+       return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                             'data' => $data]);
     }
     /**
@@ -1575,7 +1589,6 @@ class MapaCirurgico extends ResourceController
         $this->data = $this->request->getVar();
 
         $this->data['status_fila'] = TRUE;
-
 
         //dd($this->data);
 
@@ -1816,7 +1829,7 @@ class MapaCirurgico extends ResourceController
 
                 // Trata hemocomponentes --------------------------------------------------------------
 
-                if (!isset($this->data['hemocomps'])) {
+                /* if (!isset($this->data['hemocomps'])) {
 
                     $this->hemocomponentescirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->delete();
 
@@ -1859,6 +1872,32 @@ class MapaCirurgico extends ResourceController
             
                                 throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                                     sprintf('Erro ao inserir hemocomponente [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
+                        }
+                    }
+                } */
+
+                // Sempre remove os hemocomponentes anteriores
+                $this->hemocomponentescirurgiamodel->where('idmapacirurgico', $this->data['idmapa'])->delete();
+
+                if (isset($this->data['hemocomp_qty']) && is_array($this->data['hemocomp_qty'])) {
+                    foreach ($this->data['hemocomp_qty'] as $idhemocomp => $quantidade) {
+                        // Insere somente se quantidade for válida (> 0)
+                        if (is_numeric($quantidade) && (int)$quantidade > 0) {
+                            $array = [
+                                'idmapacirurgico' => (int) $this->data['idmapa'],
+                                'idhemocomponente' => (int) $idhemocomp,
+                                'qtd_solicitada' => (int) $quantidade,
+                                'inddisponibilidade' => false
+                            ];
+
+                            $this->hemocomponentescirurgiamodel->insert($array);
+
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao inserir hemocomponente [%d] %s', $error['code'] ?? 0, $error['message'] ?? 'Erro desconhecido')
                                 );
                             }
                         }
@@ -1923,7 +1962,7 @@ class MapaCirurgico extends ResourceController
 
             $this->carregaMapa();
 
-            //die(var_dump($this->data));
+            //dd($this->data);
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'validation' => $this->validator,
@@ -2670,26 +2709,29 @@ class MapaCirurgico extends ResourceController
 
                 //-------------- Hemocomponentes -----------------------------------------------------------------
 
-                if (isset($this->data['hemocomps'])) {
-
+                if (isset($this->data['hemocomps']) && isset($this->data['hemocomp_qty'])) {
                     foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+                        // Verifica se existe uma quantidade informada e se é maior que zero
+                        $quantidade = $this->data['hemocomp_qty'][$key] ?? null;
+                        if (!is_null($quantidade) && (int)$quantidade > 0) {
 
-                        $array['idmapacirurgico'] = (int) $idmapa;
-                        $array['idhemocomponente'] = (int) $hemocomponente;
-                        $array['inddisponibilidade'] = false;
+                            $array['idmapacirurgico'] = (int) $idmapa;
+                            $array['idhemocomponente'] = (int) $key;
+                            $array['qtd_solicitada'] = (int) $quantidade; 
+                            $array['inddisponibilidade'] = false;
 
-                        $this->hemocomponentescirurgiamodel->insert($array);
+                            $this->hemocomponentescirurgiamodel->insert($array);
 
-                        if ($db->transStatus() === false) {
-                            $error = $db->error();
-                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-        
-                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
-                            );
+                            if ($db->transStatus() === false) {
+                                $error = $db->error();
+                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                    sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                );
+                            }
                         }
-
                     }
                 }
 
@@ -3955,26 +3997,29 @@ class MapaCirurgico extends ResourceController
                                         }
                                     }
 
-                                    if (isset($this->data['hemocomps'])) {
-
+                                    if (isset($this->data['hemocomps']) && isset($this->data['hemocomp_qty'])) {
                                         foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
-                    
-                                            $array['idmapacirurgico'] = (int) $idmapa;
-                                            $array['idhemocomponente'] = (int) $hemocomponente;
-                                            $array['inddisponibilidade'] = false;
-                    
-                                            $this->hemocomponentescirurgiamodel->insert($array);
-                    
-                                            if ($db->transStatus() === false) {
-                                                $error = $db->error();
-                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
-                            
-                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                    sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
-                                                );
+                                            // Verifica se existe uma quantidade informada e se é maior que zero
+                                            $quantidade = $this->data['hemocomp_qty'][$key] ?? null;
+                                            if (!is_null($quantidade) && (int)$quantidade > 0) {
+
+                                                $array['idmapacirurgico'] = (int) $idmapa;
+                                                $array['idhemocomponente'] = (int) $key;
+                                                $array['qtd_solicitada'] = (int) $quantidade; // opcional, caso use
+                                                $array['inddisponibilidade'] = false;
+
+                                                $this->hemocomponentescirurgiamodel->insert($array);
+
+                                                if ($db->transStatus() === false) {
+                                                    $error = $db->error();
+                                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                        sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                                    );
+                                                }
                                             }
-                    
                                         }
                                     }
 
