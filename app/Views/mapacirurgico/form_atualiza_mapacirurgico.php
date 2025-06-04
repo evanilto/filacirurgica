@@ -5,6 +5,14 @@
     // Inicializando valores padrão
     $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
     $data['hemocomps'] = isset($data['hemocomps']) ? (array)$data['hemocomps'] : [];
+
+    $usarHemocomponentes_disabled = false;
+    foreach ($data['hemocomp_qty_liberada'] ?? [] as $item) {
+        if (isset($item) && is_numeric($item) && $item >= 0) {
+            $usarHemocomponentes_disabled = true;
+            break;
+        }
+    }
 ?>
 
 <div class="container mt-5 mb-5">
@@ -425,7 +433,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
@@ -472,47 +480,85 @@
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>>
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>
+                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?>>
                                             <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
-                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>>
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>
+                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?>>
                                             <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3">
                             <!-- Lista de hemocomponentes com campo de quantidade -->
                             <div class="col-md-12" id="hemocomp-section">
-                                <div class="mb-2">
+                                <div class="mb-4">
                                     <label class="form-label">Selecionar Hemocomponentes e Quantidade</label>
-                                    <div class="bordered-container py-3"> <!-- Apenas padding vertical -->
-                                        <div class="row gx-3 px-3"> <!-- gx-3 = espaçamento horizontal entre colunas -->
+                                    <div class="bordered-container py-3">
+                                        <div class="row gx-3 px-3">
                                             <?php foreach ($data['hemocomponentes'] as $hemocomp): 
-                                                $checked = isset($data['hemocomp_qty'][$hemocomp->id]);
-                                                $quant = $checked ? htmlspecialchars($data['hemocomp_qty'][$hemocomp->id]) : '';
+
+                                                $hemocomp_id = $hemocomp->id;
+                                                $checked = isset($data['hemocomp_qty_solicitada'][$hemocomp_id]);
+
+                                                $raw_qty_solicitada = $checked && isset($data['hemocomp_qty_solicitada'][$hemocomp_id])
+                                                    ? $data['hemocomp_qty_solicitada'][$hemocomp_id]
+                                                    : null;
+
+                                                $raw_qty_liberada = $checked && isset($data['hemocomp_qty_liberada'][$hemocomp_id])
+                                                    ? $data['hemocomp_qty_liberada'][$hemocomp_id]
+                                                    : null;
+
+                                                $qty_solicitada = htmlspecialchars((string)$raw_qty_solicitada ?? '');
+                                                $qty_liberada   = htmlspecialchars((string)$raw_qty_liberada ?? '');
+
+                                                //dd($qty_solicitada, $qty_liberada);
+
+                                                // Habilita o campo SOMENTE se qty_liberada NÃO estiver definido ou NÃO for numérico
+                                                $enabled = !is_numeric($raw_qty_liberada);
                                             ?>
                                                 <div class="col-md-6 mb-3">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-9">
-                                                            <div class="form-check">
-                                                                <input class="form-check-input hemocomp-checkbox" type="checkbox" 
+                                                    <div class="row align-items-end">
+                                                        <div class="col-8 pt-4"> <!-- pt-4 alinha verticalmente com os inputs -->
+                                                            <div>
+                                                                <input class="form-check-input me-2 hemocomp-checkbox" type="checkbox" 
                                                                     id="hemocomp_<?= $hemocomp->id ?>" 
                                                                     name="hemocomps[<?= $hemocomp->id ?>]" 
-                                                                    value="<?= $quant ?>"
-                                                                    <?= $checked ? 'checked' : '' ?>>
+                                                                    value=""
+                                                                    <?= $checked ? 'checked' : '' ?>
+                                                                    <?= $enabled ? '' : 'disabled data-disabled-perm' ?>>
                                                                 <label class="form-check-label" for="hemocomp_<?= $hemocomp->id ?>">
                                                                     <?= $hemocomp->descricao ?>
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-3">
-                                                            <input type="number" class="form-control hemocomp-qty" 
-                                                                name="hemocomp_qty[<?= $hemocomp->id ?>]" 
-                                                                placeholder="Qtd." min="1"
-                                                                value="<?= $quant ?>"
-                                                                <?= $checked ? '' : 'disabled' ?>>
+                                                        <div class="col-2">
+                                                            <div class="form-group">
+                                                                <label for="qty_solicitada_<?= $hemocomp->id ?>" class="form-label small">Solicitado</label>
+                                                                <input type="number" class="form-control hemocomp-qty" 
+                                                                    id="qty_solicitada_<?= $hemocomp->id ?>"
+                                                                    name="hemocomp_qty_solicitada[<?= $hemocomp->id ?>]" 
+                                                                    placeholder="" min="1"
+                                                                    value="<?= $qty_solicitada ?>"
+                                                                    <?= ($checked && $enabled) ? '' : 'disabled' ?>>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2">
+                                                            <div class="form-group">
+                                                                <label for="qty_liberada_<?= $hemocomp->id ?>" class="form-label small">Liberado</label>
+                                                                <input type="number" class="form-control hemocomp-qty" 
+                                                                    id="qty_liberada_<?= $hemocomp->id ?>"
+                                                                    name="hemocomp_qty_liberada[<?= $hemocomp->id ?>]" 
+                                                                    placeholder="" min="0"
+                                                                    value="<?= $qty_liberada ?>" disabled>
+                                                                    <!-- Campo hidden que será submetido -->
+                                                                    <input type="hidden" name="hemocomp_qty_liberada[<?= $hemocomp->id ?>]" value="<?= $qty_liberada ?>">
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -523,48 +569,56 @@
                             </div>
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
-                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
-                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="mb-4">
-                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
-                                                id="eqpts" name="eqpts[]" multiple="multiple"
-                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
-                                            <?php
-                                            foreach ($data['equipamentos'] as $equipamento) {
-                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
-                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->hasError('eqpts')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('eqpts') ?>
+                            <div class="row g-2">
+                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
+                                    <div class="row g-3">
+                                        <div class="col-md-2">
+                                            <div class="mb-2">
+                                                <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                                <!-- ✅ Manter o bordered-container original aqui -->
+                                                <div class="input-group mb-2 bordered-container">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N"
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>
+                                                        <label class="form-check-label" for="eqptoN">Não</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                                        <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        <?php endif; ?>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div class="mb-4">
+                                                <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                                <div class="input-group">
+                                                    <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                            id="eqpts" name="eqpts[]" multiple="multiple"
+                                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                                        <?php
+                                                        foreach ($data['equipamentos'] as $equipamento) {
+                                                            $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                            echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                    <?php if ($validation->hasError('eqpts')): ?>
+                                                        <div class="invalid-feedback">
+                                                            <?= $validation->getError('eqpts') ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="row g-3">
                             <div class="row g-2">
-                                <div class="container bordered-container mb-4">
+                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -614,7 +668,7 @@
                         </div>
                         <div class="row g-3">
                             <div class="row g-2">
-                                <div class="container bordered-container mb-2">
+                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -715,6 +769,13 @@
                         <input type="hidden" name="status_fila" value="<?= $data['status_fila'] ?>" />
                         <input type="hidden" name="unidadeorigem" value="<?= $data['unidadeorigem'] ?>" />
                         <input type="hidden" name="tipo_sanguineo" value="<?= $data['tipo_sanguineo'] ?>" />
+                        <?php if ($usarHemocomponentes_disabled): ?>
+                            <input type="hidden" name="usarHemocomponentes" value="<?= $data['usarHemocomponentes'] ?>">
+                            <?php foreach ($data['hemocomp_qty_solicitada'] as $id => $quantidades): ?>
+                                <input type="hidden" name="hemocomps[<?= $id ?>]" value="1">
+                                <input type="hidden" name="hemocomp_qty_solicitada[<?= $id ?>]" value="<?= htmlspecialchars($quantidades[0]) ?>">
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </form>
                 </div>
             </div>
@@ -1092,51 +1153,63 @@
 
         //------------- hemocomponentes --------------------------------
 
-        const hemocompSection = document.getElementById('hemocomp-section');
         const radios = document.querySelectorAll('input[name="usarHemocomponentes"]');
 
         function toggleHemocompSection() {
             const selected = document.querySelector('input[name="usarHemocomponentes"]:checked');
-            if (selected && selected.value === 'S') {
-                document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
-                    cb.disabled = false;
-                    // Sobe até o .row.align-items-center (2 níveis acima do input)
-                    const parentRow = cb.closest('.row.align-items-center');
-                    const qtyInput = parentRow.querySelector('.hemocomp-qty');
-                    qtyInput.disabled = !cb.checked;
-                });
-            } else {
-                document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
+
+            document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
+                const parentRow = cb.closest('.row');
+                const qtySolicitada = parentRow.querySelector('[id^="qty_solicitada_"]');
+                const qtyLiberada = parentRow.querySelector('[id^="qty_liberada_"]');
+
+                if (selected && selected.value === 'S') {
+                    if (!cb.hasAttribute('data-disabled-perm')) {
+                        cb.disabled = false;
+                    }
+
+                    // Só desabilita o campo solicitada se o checkbox não estiver marcado
+                    if (cb.checked && !cb.disabled) {
+                        qtySolicitada.disabled = false;
+                    } else {
+                        qtySolicitada.disabled = true;
+                        // ⚠️ Aqui NÃO limpamos o valor! Mantemos o que veio do PHP
+                    }
+
+                    qtyLiberada.disabled = true;
+
+                } else {
                     cb.checked = false;
                     cb.disabled = true;
-                    const parentRow = cb.closest('.row.align-items-center');
-                    const qtyInput = parentRow.querySelector('.hemocomp-qty');
-                    qtyInput.value = '';
-                    qtyInput.disabled = true;
-                });
-            }
+                    qtySolicitada.value = '';
+                    qtySolicitada.disabled = true;
+                    qtyLiberada.value = '';
+                    qtyLiberada.disabled = true;
+                }
+            });
         }
 
-        // Checkbox: ativa/desativa campo de quantidade
+        // Quando checkbox for alterado (usuário clica)
         document.querySelectorAll('.hemocomp-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', function () {
-                const parentRow = this.closest('.row.align-items-center');
-                const qtyInput = parentRow.querySelector('.hemocomp-qty');
+                const parentRow = this.closest('.row');
+                const qtySolicitada = parentRow.querySelector('[id^="qty_solicitada_"]');
                 if (this.checked && !this.disabled) {
-                    qtyInput.disabled = false;
+                    qtySolicitada.disabled = false;
                 } else {
-                    qtyInput.value = '';
-                    qtyInput.disabled = true;
+                    qtySolicitada.value = '';
+                    qtySolicitada.disabled = true;
                 }
             });
         });
 
+        // Aplica a lógica ao carregar
+        toggleHemocompSection();
+
+        // E quando mudar o "Sim"/"Não"
         radios.forEach(radio => {
             radio.addEventListener('change', toggleHemocompSection);
         });
-
-        // Aplica na primeira carga
-        toggleHemocompSection();
 
         //-------------------------------------------------------------------------
 

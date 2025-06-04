@@ -111,28 +111,28 @@ use App\Models\HemocomponentesModel;
                             </div>
                         </div>
                         <div class="row g-3">
-                             <div class="col-md-3">
+                             <!-- <div class="col-md-3">
                                 <div class="mb-3">
                                     <label class="form-label">Amostra Enviada<b class="text-danger">*</b></label>
                                     <div class="input-group bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="amostra" id="amostraS" value="S" disabled
-                                                <?= (isset($data['amostra']) && $data['amostra'] == 'S') ? 'checked' : '' ?>>
+                                                <-?= (isset($data['amostra']) && $data['amostra'] == 'S') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="amostraS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="amostra" id="amostraN" value="N" disabled
-                                                <?= (isset($data['amostra']) && $data['amostra'] == 'N') ? 'checked' : '' ?>>
+                                                <-?= (isset($data['amostra']) && $data['amostra'] == 'N') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="amostraN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('amostra')): ?>
+                                <-?php if ($validation->getError('amostra')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('amostra') ?>
+                                        <-?= $validation->getError('amostra') ?>
                                     </div>
-                                <?php endif; ?>
-                            </div>
+                                <-?php endif; ?>
+                            </div> -->
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo <b class="text-danger">*</b></label>
