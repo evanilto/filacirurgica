@@ -2054,7 +2054,8 @@ class MapaCirurgico extends ResourceController
         $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
         $data['equipamentos'] = $this->selectequipamentos;
         $data['eqpts'] = array_column($this->equipamentoscirurgiamodel->where(['idmapacirurgico' => $id])->select('idequipamento')->findAll(), 'idequipamento');
-        $data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
+        $data['usarEquipamentos'] = empty($data['eqpts']) ? 'N' : 'S';
+        //$data['hemocomps'] = array_column($this->hemocomponentescirurgiamodel->where(['idmapacirurgico' => $id])->select('idhemocomponente')->findAll(), 'idhemocomponente');
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
         $data['unidades'] = $this->selectunidades;
@@ -2066,8 +2067,25 @@ class MapaCirurgico extends ResourceController
             return $procedimento->cod_tabela !== $codToRemove;
         });
 
-        //var_dump($data['salas_cirurgicas'][0]['salas']);die();
-        //var_dump($data['salas_cirurgicas']);die();
+        $data['hemocomponentes'] = $this->selecthemocomponentes;
+
+        $result = $this->hemocomponentescirurgiamodel
+            ->where(['idmapacirurgico' => $id])
+            ->select('idhemocomponente, qtd_solicitada, qtd_liberada') 
+            ->findAll();
+
+        // Monta um array com id => quantidade
+        $data['hemocomps'] = [];
+        $data['hemocomp_qty'] = [];
+
+        foreach ($result as $item) {
+            $data['hemocomps'][$item['idhemocomponente']] = [$item['qtd_solicitada'], $item['qtd_liberada']];
+            $data['hemocomp_qty_solicitada'][$item['idhemocomponente']] = $item['qtd_solicitada'];
+            $data['hemocomp_qty_liberada'][$item['idhemocomponente']] = $item['qtd_liberada'];
+
+        }
+
+        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
                                             'data' => $data]);

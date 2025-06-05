@@ -499,14 +499,16 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row g-3 mb-2">
                             <div class="col-md-12" id="hemocomp-section">
-                                <div class="mb-2">
+                                <div class="mb-4">
                                     <label class="form-label">Selecionar Hemocomponentes e Quantidade</label>
                                     <div class="bordered-container py-3"> <!-- Apenas padding vertical -->
                                         <div class="row gx-3 px-3"> <!-- gx-3 = espaçamento horizontal entre colunas -->
                                             <?php foreach ($data['hemocomponentes'] as $hemocomp): 
                                                 $checked = isset($data['hemocomps'][$hemocomp->id]);
-                                                $quant = $checked ? htmlspecialchars($data['hemocomps'][$hemocomp->id]) : '';
+                                                $quant = isset($data['hemocomp_qty'][$hemocomp->id]) ? htmlspecialchars($data['hemocomp_qty'][$hemocomp->id]) : '';
                                             ?>
                                                 <div class="col-md-6 mb-3">
                                                     <div class="row align-items-center">
@@ -525,7 +527,7 @@
                                                         <div class="col-3">
                                                             <input type="number" class="form-control hemocomp-qty" 
                                                                 name="hemocomp_qty[<?= $hemocomp->id ?>]" 
-                                                                placeholder="Qtd." min="1"
+                                                                placeholder="" min="1"
                                                                 value="<?= $quant ?>"
                                                                 <?= $checked ? '' : 'disabled' ?>>
                                                         </div>
@@ -537,49 +539,57 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <div class="mb-2">
-                                    <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
-                                    <div class="input-group mb-2 bordered-container">
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N" 
-                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>                                          <label class="form-check-label" for="eqptoN">Não</label>
-                                        </div>
-                                        <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
-                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-10">
-                                <div class="mb-4">
-                                    <label for="eqpts" class="form-label">Equipamentos Necessários</label>
-                                    <div class="input-group">
-                                        <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
-                                                id="eqpts" name="eqpts[]" multiple="multiple"
-                                                data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
-                                            <?php
-                                            foreach ($data['equipamentos'] as $equipamento) {
-                                                $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
-                                                echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
-                                            }
-                                            ?>
-                                        </select>
-                                        <?php if ($validation->hasError('eqpts')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('eqpts') ?>
+                       <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container mb-4" style="margin-left: 5px; margin-right: 3px;">
+                                    <div class="row g-3">
+                                        <div class="col-md-2">
+                                            <div class="mb-2">
+                                                <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
+                                                <!-- ✅ Manter o bordered-container original aqui -->
+                                                <div class="input-group mb-2 bordered-container">
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N"
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?>>
+                                                        <label class="form-check-label" for="eqptoN">Não</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
+                                                        <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        <?php endif; ?>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <div class="mb-4">
+                                                <label for="eqpts" class="form-label">Equipamentos Necessários</label>
+                                                <div class="input-group">
+                                                    <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
+                                                            id="eqpts" name="eqpts[]" multiple="multiple"
+                                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?>>
+                                                        <?php
+                                                        foreach ($data['equipamentos'] as $equipamento) {
+                                                            $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
+                                                            echo '<option value="' . $equipamento->id . '" data-qtd="' . $equipamento->qtd . '" ' . $selected . '>' . $equipamento->descricao . '</option>';
+                                                        }
+                                                        ?>
+                                                    </select>
+                                                    <?php if ($validation->hasError('eqpts')): ?>
+                                                        <div class="invalid-feedback">
+                                                            <?= $validation->getError('eqpts') ?>
+                                                        </div>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="row g-2">
-                                <div class="container bordered-container mb-2">
+                        <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container" style="margin-left: 5px; margin-right: 3px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">

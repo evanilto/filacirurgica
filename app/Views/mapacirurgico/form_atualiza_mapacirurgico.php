@@ -494,13 +494,13 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
+                        <div class="row g-3 mb-2">
                             <!-- Lista de hemocomponentes com campo de quantidade -->
                             <div class="col-md-12" id="hemocomp-section">
                                 <div class="mb-4">
                                     <label class="form-label">Selecionar Hemocomponentes e Quantidade</label>
                                     <div class="bordered-container py-3">
-                                        <div class="row gx-3 px-3">
+                                        <div class="row gx-3 px-3 mb-4">
                                             <?php foreach ($data['hemocomponentes'] as $hemocomp): 
 
                                                 $hemocomp_id = $hemocomp->id;
@@ -568,9 +568,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="row g-2">
-                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
+                        <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container mb-4" style="margin-left: 5px; margin-right: 3px;">
                                     <div class="row g-3">
                                         <div class="col-md-2">
                                             <div class="mb-2">
@@ -616,9 +616,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="row g-2">
-                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
+                        <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container mb-4" style="margin-left: 5px; margin-right: 3px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -666,9 +666,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="row g-2">
-                                <div class="col-12 bordered-container mb-4" style="margin-left: 10px;">
+                        <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container" style="margin-left: 5px; margin-right: 3px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">
