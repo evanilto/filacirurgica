@@ -73,6 +73,7 @@ class MapaCirurgico extends ResourceController
     private $localmbcsalascirurgicasmodel;
     private $localcentroscirurgicosmodel;
     private $localaippacientesmodel;
+    private $localaghinstituicoeshospitalaresmodel;
     private $justificativasmodel;
     private $usuariocontroller;
     private $aghucontroller;
@@ -98,6 +99,7 @@ class MapaCirurgico extends ResourceController
     private $selectjustificativastroca;
     private $selectjustificativassuspensao;
     private $selectjustificativassuspensaoadm;
+    private $selectjustificativassuspensaoAll;
     private $selectunidades;
     private $data;
     private $equipamentosmodel;
@@ -211,6 +213,7 @@ class MapaCirurgico extends ResourceController
         //$this->selectprofespecialidadeaghu = $this->aghucontroller->getProfEspecialidades($this->selectespecialidade);
         $this->selectjustificativassuspensao = $this->justificativasmodel->Where('tipojustificativa', 'S')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         $this->selectjustificativassuspensaoadm = $this->justificativasmodel->Where('tipojustificativa', 'SADM')->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
+        $this->selectjustificativassuspensaoAll = $this->justificativasmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
         //$this->selectprofespecialidadeaghu = $this->localprofespecialidadesmodel->whereIn('esp_seq', array_column($this->selectespecialidade, 'idespecialidade'))
                                                                                //->orderBy('nome', 'ASC')->findAll(); // disable for migration
         //$this->selectcids = $this->aghucontroller->getCIDs();
@@ -2031,7 +2034,7 @@ class MapaCirurgico extends ResourceController
         //$data['dtsuspensao'] = $mapa->dthrsuspensao;
         $data['dtsuspensao'] = $mapa->dthrsuspensao ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrsuspensao)->format('d/m/Y H:i') : NULL;
         $data['justsuspensao'] = $mapa->justificativasuspensao;
-        $data['justificativassuspensao'] = $this->selectjustificativassuspensao;
+        $data['justificativassuspensao'] = $this->selectjustificativassuspensaoAll;
         $data['dttroca'] = $mapa->dthrtroca ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrtroca)->format('d/m/Y H:i') : NULL;
         $data['justtroca'] = $mapa->justificativatroca;
         $data['justurgencia'] = $mapa->justificativaurgencia;
@@ -2086,6 +2089,8 @@ class MapaCirurgico extends ResourceController
         }
 
         $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+
+        //dd($data);
         
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_cirurgia',
                                             'data' => $data]);
