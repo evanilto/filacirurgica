@@ -56,6 +56,7 @@ use function PHPUnit\Framework\isEmpty;
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente saiu do Centro Cirúrgico (cirurgia realizada)">
                         <i class="fa-solid fa-circle" style="color: <-?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th> -->
+                <th scope="col" data-field="hemocomps" >Usa Hemoc.</th>
                 <th scope="col" data-field="hemocomps" >Hemocomponentes</th>
                 <th scope="col" class="col-0" >Especialidade</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
@@ -286,6 +287,9 @@ use function PHPUnit\Framework\isEmpty;
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->sala); ?>">
                         <?php echo htmlspecialchars($itemmapa->sala); ?>
+                    </td>
+                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->hemoderivados); ?>">
+                        <?php echo htmlspecialchars($itemmapa->hemoderivados); ?>
                     </td>
                    <!--  <td><-?php echo $itemmapa->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrpacientesolicitado)->format('H:i') : ' ' ?></td>
                     <td><-?php echo $itemmapa->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
@@ -1061,6 +1065,7 @@ use function PHPUnit\Framework\isEmpty;
                     { "width": "57px" }, 
                     { "width": "57px" }, 
                     { "width": "57px" },  */
+                    { "width": "80px" },  // usa hemocomp
                     { "width": "350px" },  // hemocomponentes
                     { "width": "180px" },  // especial
                     { "width": "95px" },  // pront
