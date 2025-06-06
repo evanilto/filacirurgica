@@ -526,12 +526,12 @@
                                                     <div class="row align-items-end">
                                                         <div class="col-8 pt-4"> <!-- pt-4 alinha verticalmente com os inputs -->
                                                             <div>
-                                                                <input class="form-check-input me-2 hemocomp-checkbox" type="checkbox" 
+                                                                <input class="form-check-input me-2 hemocomp-checkbox" 
+                                                                    type="checkbox" 
                                                                     id="hemocomp_<?= $hemocomp->id ?>" 
                                                                     name="hemocomps[<?= $hemocomp->id ?>]" 
-                                                                    value=""
-                                                                    <?= $checked ? 'checked' : '' ?>
-                                                                    <?= $enabled ? '' : 'disabled data-disabled-perm' ?>>
+                                                                    value="1"
+                                                                   <?= isset($data['hemocomps'][$hemocomp->id]) ? 'checked' : '' ?>>
                                                                 <label class="form-check-label" for="hemocomp_<?= $hemocomp->id ?>">
                                                                     <?= $hemocomp->descricao ?>
                                                                 </label>

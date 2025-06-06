@@ -154,9 +154,9 @@
                 <th scope="col" class="col-0" >Fila</th>
                 <th scope="col" data-field="nome" >Pós-Operatório</th>
                 <th scope="col" data-field="nome" >Congel.</th>
-                <!-- <th scope="col" data-field="nome" >Hemod.</th> -->
                 <th scope="col" data-field="nome" >OPME</th>
                 <th scope="col" data-field="eqpts" >Equipamentos</th>
+                <th scope="col" data-field="nome" >Usar Hemocomp.</th>
                 <th scope="col" data-field="hemocomps" >Hemocomponentes</th>
                 <th scope="col" data-field="tiposangue" >Tipo Sanguíneo</th>
                 <th scope="col" data-field="nome" >Risco</th>
@@ -418,7 +418,6 @@
                     </td>
                     <td><?php echo $itemmapa->posoperatorio ?></td>
                     <td><?php echo $itemmapa->congelacao ?></td>
-                    <!-- <td><-?php echo $itemmapa->hemoderivados ?></td> -->
                     <td><?php echo $itemmapa->opme ?></td>
                     <!---------- Equipamentos -------------------------------------------------->
                     <?php 
@@ -459,6 +458,7 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($tooltip); ?>">
                         <?= $equipamentos; ?>
                     </td>
+                    <td><?php echo $itemmapa->hemoderivados?></td>
                     <!---------- Hemocomponentes -------------------------------------------------->
                     <?php 
                         $hemocomponentes = json_decode($itemmapa->hemocomponentes_cirurgia_info, true);
@@ -1120,6 +1120,7 @@
                     <strong>Tipo Sanguíneo:</strong> ${verificarValor(dados.tiposangue)}<br>
                     <strong>OPME:</strong> ${verificarValor(dados.opme)}<br>
                     <strong>Equipamentos:</strong> ${verificarValor(dados.equipamentos)}<br>
+                    <strong>Usar Hemocomponentes:</strong> ${verificarValor(dados.hemo)}<br>
                     <strong>Hemocomponentes:</strong> ${verificarValor(dados.hemocomponentes)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
@@ -1189,9 +1190,9 @@
                     { "width": "250px" },  // fila
                     { "width": "120px" },  // posoer
                     { "width": "70px" },  // cong
-                    /* { "width": "70px" },  // hemod */
                     { "width": "70px" },  // opme
                     { "width": "350px" },  // equipamentos
+                    { "width": "110px" },  // hemod
                     { "width": "350px" },  // hemocomponentes
                     { "width": "100px" },  // tipo sanguineo
                     { "width": "150px" },  // risco

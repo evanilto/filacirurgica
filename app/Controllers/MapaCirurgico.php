@@ -1571,7 +1571,8 @@ class MapaCirurgico extends ResourceController
 
         }
 
-        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+        //$data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+        $data['usarHemocomponentes'] = $mapa->indhemoderivados;
 
        //dd($data);
         
@@ -1615,7 +1616,8 @@ class MapaCirurgico extends ResourceController
             'cid' => 'required',
             'risco' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'usarHemocomponentes' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'centrocirurgico' => 'required',
             'sala' => 'required'
@@ -1637,6 +1639,18 @@ class MapaCirurgico extends ResourceController
 
             if ($this->data['tempoprevisto'] == '00:00') {
                 $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+            if (isset($this->data['hemocomps']) && empty(array_filter($this->data['hemocomp_qty_solicitada'], fn($v) => $v !== null && $v !== ''))) {
+
+                //dd($this->data);
+                session()->setFlashdata('exception', 'Informe a quantidade para o hemocomponente!');
+
+                //dd('ok');
 
                 $this->carregaMapa();
 
@@ -1680,7 +1694,7 @@ class MapaCirurgico extends ResourceController
                     'dthrcirurgia' => $dataCirurgia->format('d/m/Y H:i:s'),
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    //'indhemoderivados' => $this->data['hemoderivados'],
+                    'indhemoderivados' => $this->data['usarHemocomponentes'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'idcentrocirurgico' => $this->data['centrocirurgico'],
                     'idsala' => $this->data['sala']
@@ -1978,6 +1992,7 @@ class MapaCirurgico extends ResourceController
             $this->carregaMapa();
 
             //dd($this->data);
+            //dd($this->validator->getErrors());
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
                                                 'validation' => $this->validator,
@@ -2088,7 +2103,8 @@ class MapaCirurgico extends ResourceController
 
         }
 
-        $data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+       //$data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
+       $data['usarHemocomponentes'] = $mapa->indhemoderivados;
 
         //dd($data);
         
@@ -2421,7 +2437,8 @@ class MapaCirurgico extends ResourceController
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             'justtroca' => 'required|max_length[500]|min_length[3]',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'usarHemocomponentes' => 'required',
+            //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             //'tipo_sanguineo' => 'required'
         ];
 
@@ -2470,6 +2487,19 @@ class MapaCirurgico extends ResourceController
                 return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                                     'data' => $this->data,
                                                     'pacatrocar' => $_SESSION['pacatrocar']]);   
+            }
+
+            if (isset($this->data['hemocomps']) && empty(array_filter($this->data['hemocomp_qty'], fn($v) => $v !== null && $v !== ''))) {
+
+                session()->setFlashdata('failed', 'Informe a quantidade para o hemocomponente!');
+
+                $this->carregaMapa();
+
+                $this->data['candidatos'] = $_SESSION['candidatos'];                                   
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
+                                                    'data' => $this->data,
+                                                    'pacatrocar' => $_SESSION['pacatrocar']]); 
             }
 
             $db->transStart();
@@ -2553,7 +2583,7 @@ class MapaCirurgico extends ResourceController
                     'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    //'indhemoderivados' => $this->data['hemoderivados'],
+                    'indhemoderivados' => $this->data['usarHemocomponentes'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     //'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'indsituacao' => 'P' // Programada
@@ -3678,7 +3708,8 @@ class MapaCirurgico extends ResourceController
             'centrocirurgico' => 'required',
             'sala' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            'usarHemocomponentes' => 'required',
+            //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             //'justorig' => 'max_length[1024]|min_length[0]',
@@ -3711,167 +3742,220 @@ class MapaCirurgico extends ResourceController
 
             $db = \Config\Database::connect('default');
 
-            if(isset($resultAGHUX) && empty($resultAGHUX)) {
-                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+             if (isset($this->data['hemocomps']) && empty(array_filter($this->data['hemocomp_qty'], fn($v) => $v !== null && $v !== ''))) {
+                session()->setFlashdata('failed', 'Informe a quantidade para o hemocomponente!');
 
             } else {
-                //dd($this->data);
-                if ($this->getPacienteNoMapa($this->data)) {
-                    session()->setFlashdata('failed', 'Já existe uma cirurgia programada para esse paciente nesse dia!');
+
+                if(isset($resultAGHUX) && empty($resultAGHUX)) {
+                    $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
 
                 } else {
+                    //dd($this->data);
+                    if ($this->getPacienteNoMapa($this->data)) {
+                        session()->setFlashdata('failed', 'Já existe uma cirurgia programada para esse paciente nesse dia!');
 
-                   /*  if (isset($this->data['origem']) && ($this->data['origem'] == 3 || $this->data['origem'] == 4) && empty($this->data['justorig'])) { // Interesse Acadêmico ou Judicialização
-                        $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
+                    } else {
 
-                    } else { */
+                    /*  if (isset($this->data['origem']) && ($this->data['origem'] == 3 || $this->data['origem'] == 4) && empty($this->data['justorig'])) { // Interesse Acadêmico ou Judicialização
+                            $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
 
-                       /*  if ($this->data['risco'] != 8) { // Risco Liberado
-                            $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
-            
                         } else { */
 
-                         if (DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('Y-m-d') < date('Y-m-d')) {
-                            $this->validator->setError('dtcirurgia', 'Não é possível agendar a cirurgia para uma data anterior a data atual!');
+                        /*  if ($this->data['risco'] != 8) { // Risco Liberado
+                                $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
+                
+                            } else { */
 
-                        } else {
+                            if (DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('Y-m-d') < date('Y-m-d')) {
+                                $this->validator->setError('dtcirurgia', 'Não é possível agendar a cirurgia para uma data anterior a data atual!');
 
-                            if ($this->data['tempoprevisto'] == '00:00') {
-                                $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
-    
                             } else {
 
-                                $this->validator->reset();
+                                if ($this->data['tempoprevisto'] == '00:00') {
+                                    $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
+        
+                                } else {
 
-                                $db->transStart();
+                                    $this->validator->reset();
+
+                                    $db->transStart();
+                            
+                                    try {
+
+                                        $lista = [
+                                            'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                                            'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                                            'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
+                                            'idcomplexidade' => $this->data['complexidade'],
+                                            'indcongelacao' => $this->data['congelacao'],
+                                            'indopme' => $this->data['opme'],
+                                            'idlateralidade' => $this->data['lateralidade'],
+                                            'txtinfoadicionais' => $this->data['info'],
+                                            'indsituacao' => 'P' // Programada
+                                            ];
+
+                                    /*  $pac = [
+                                            'prontuario' => $this->data['prontuario'],
+                                            'tiposanguineo' => $this->data['tipo_sanguineo'],
+                                            'idalttiposanguelogin' => session()->get('Sessao')['login']
+                                        ]; */
                         
-                                try {
-
-                                    $lista = [
-                                        'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
-                                        'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
-                                        'idcomplexidade' => $this->data['complexidade'],
-                                        'indcongelacao' => $this->data['congelacao'],
-                                        'indopme' => $this->data['opme'],
-                                        'idlateralidade' => $this->data['lateralidade'],
-                                        'txtinfoadicionais' => $this->data['info'],
-                                        'indsituacao' => 'P' // Programada
-                                        ];
-
-                                   /*  $pac = [
-                                        'prontuario' => $this->data['prontuario'],
-                                        'tiposanguineo' => $this->data['tipo_sanguineo'],
-                                        'idalttiposanguelogin' => session()->get('Sessao')['login']
-                                    ]; */
-                    
-                                    /* $pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
-                    
-                                    if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $this->data['paciente_updated_at_original'])) {
-                                        $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
-                                        log_message('error', 'Exception: ' . $msg);
-                                        throw new \Exception($msg);
-                                    }
-                    
-                                    if (!$pacienteregistroAtual) {
-                    
-                                        if (!empty($this->data['tipo_sanguineo'])) {
-                                            $this->pacientesmodel->insert($pac);
-                                        }
-                    
-                                    } else {
-                    
-                                        if ($this->data['tipo_sanguineo_confirmado'] == '1') {
-                                            $pac['idalttiposanguemotivo'] = $this->data['motivo_alteracao_hidden'];
-                                            $pac['txtalttiposanguejustificativa'] = $this->data['justificativa_alteracao_hidden'];
-                                            $this->pacientesmodel->update($this->data['prontuario'], $pac);
-                                        }
-                                    }
-                    
-                                    if ($db->transStatus() === false) {
-                                        $error = $db->error();
-                                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-                    
-                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
-                                        );
-                                    } */
-
-                                    if ($this->data['listapaciente'] != 0) {
-                                        $idlista = $this->data['listapaciente'];
-
-                                        $listaregistroAtual = $this->listaesperamodel->find($idlista);
-
-                                        if ($listaregistroAtual['updated_at'] != $this->data['lista_updated_at_original']) {
+                                        /* $pacienteregistroAtual = $this->pacientesmodel->find($this->data['prontuario']);
+                        
+                                        if ($pacienteregistroAtual && ($pacienteregistroAtual['updated_at'] != $this->data['paciente_updated_at_original'])) {
                                             $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
                                             log_message('error', 'Exception: ' . $msg);
                                             throw new \Exception($msg);
                                         }
-
-                                        $this->listaesperamodel->update($this->data['listapaciente'], $lista);
-
-                                        if ($db->transStatus() === false) {
-                                            $error = $db->error();
-                                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-            
-                                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
-                                            );
+                        
+                                        if (!$pacienteregistroAtual) {
+                        
+                                            if (!empty($this->data['tipo_sanguineo'])) {
+                                                $this->pacientesmodel->insert($pac);
+                                            }
+                        
+                                        } else {
+                        
+                                            if ($this->data['tipo_sanguineo_confirmado'] == '1') {
+                                                $pac['idalttiposanguemotivo'] = $this->data['motivo_alteracao_hidden'];
+                                                $pac['txtalttiposanguejustificativa'] = $this->data['justificativa_alteracao_hidden'];
+                                                $this->pacientesmodel->update($this->data['prontuario'], $pac);
+                                            }
                                         }
-
-                                        $array = [
-                                            'dthrevento' => date('Y-m-d H:i:s'),
-                                            'idlistaespera' => $this->data['listapaciente'],
-                                            'idevento' => 6,
-                                            'idlogin' => session()->get('Sessao')['login']
-                                        ];
-                            
-                                        $this->historicomodel->insert($array);
-                            
+                        
                                         if ($db->transStatus() === false) {
                                             $error = $db->error();
                                             $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
                                             $errorCode = isset($error['code']) ? $error['code'] : 0;
-                            
+                        
                                             throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                                sprintf('Erro ao atualizar o tipo sanguíneo do paciente! [%d] %s', $errorCode, $errorMessage)
                                             );
-                                        }
-                            
+                                        } */
 
-                                    } else {
-                                        $lista = $lista + [
-                                            'idespecialidade' => $this->data['especialidade'],
-                                            'idtipoprocedimento' => $this->data['fila'],
-                                            'idprocedimento' => $this->data['procedimento'],
-                                            'numprontuario' => $this->data['prontuario'],
-                                            'idriscocirurgico' => $this->data['risco'],
-                                            'dtriscocirurgico' => $this->data['dtrisco'],
-                                            'idorigempaciente' => $this->data['origem'],
-                                            'txtorigemjustificativa' => $this->data['justorig'],
-                                            //'indsituacao' => 'A',
-                                            'indsituacao' => 'P', // Programada
-                                            'indurgencia' => 'S'
+                                        if ($this->data['listapaciente'] != 0) {
+                                            $idlista = $this->data['listapaciente'];
+
+                                            $listaregistroAtual = $this->listaesperamodel->find($idlista);
+
+                                            if ($listaregistroAtual['updated_at'] != $this->data['lista_updated_at_original']) {
+                                                $msg = "Este registro foi alterado por outro usuário. Recarregue a página antes de salvar.";
+                                                log_message('error', 'Exception: ' . $msg);
+                                                throw new \Exception($msg);
+                                            }
+
+                                            $this->listaesperamodel->update($this->data['listapaciente'], $lista);
+
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao atualizar Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+
+                                            $array = [
+                                                'dthrevento' => date('Y-m-d H:i:s'),
+                                                'idlistaespera' => $this->data['listapaciente'],
+                                                'idevento' => 6,
+                                                'idlogin' => session()->get('Sessao')['login']
+                                            ];
+                                
+                                            $this->historicomodel->insert($array);
+                                
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                                
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+                                
+
+                                        } else {
+                                            $lista = $lista + [
+                                                'idespecialidade' => $this->data['especialidade'],
+                                                'idtipoprocedimento' => $this->data['fila'],
+                                                'idprocedimento' => $this->data['procedimento'],
+                                                'numprontuario' => $this->data['prontuario'],
+                                                'idriscocirurgico' => $this->data['risco'],
+                                                'dtriscocirurgico' => $this->data['dtrisco'],
+                                                'idorigempaciente' => $this->data['origem'],
+                                                'txtorigemjustificativa' => $this->data['justorig'],
+                                                //'indsituacao' => 'A',
+                                                'indsituacao' => 'P', // Programada
+                                                'indurgencia' => 'S'
+                                                ];
+
+                                            $idlista = $this->listaesperamodel->insert($lista);
+
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao incluir paciente na Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+
+                                            $array = [
+                                                'dthrevento' => date('Y-m-d H:i:s'),
+                                                'idlistaespera' => $idlista,
+                                                'idevento' => 5,
+                                                'idlogin' => session()->get('Sessao')['login']
+                                            ];
+                                
+                                            $this->historicomodel->insert($array);
+                                
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = isset($error['code']) ? $error['code'] : 0;
+                                
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+                                        }
+
+                                        $mapa = [
+                                            'idlistaespera' => $idlista,
+                                            'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
+                                            'tempoprevisto' => $this->data['tempoprevisto'],
+                                            'idposoperatorio' => $this->data['posoperatorio'],
+                                            'indhemoderivados' => $this->data['usarHemocomponentes'],
+                                            'txtnecessidadesproced' => $this->data['nec_proced'],
+                                            'txtjustificativaurgencia' => $this->data['justurgencia'],
+                                            'idcentrocirurgico' => $this->data['centrocirurgico'],
+                                            'idsala' => $this->data['sala'],
+                                            'indurgencia' => 'S',
+                                            'indsituacao' => 'P' // Programada
                                             ];
 
-                                        $idlista = $this->listaesperamodel->insert($lista);
+                                            //die(var_dump($mapa));
+
+                                        $idmapa = $this->mapacirurgicomodel->insert($mapa);
 
                                         if ($db->transStatus() === false) {
                                             $error = $db->error();
                                             $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
                                             $errorCode = !empty($error['code']) ? $error['code'] : 0;
-            
+
                                             throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                sprintf('Erro ao incluir paciente na Fila Cirúrgica [%d] %s', $errorCode, $errorMessage)
+                                                sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
                                             );
                                         }
 
                                         $array = [
                                             'dthrevento' => date('Y-m-d H:i:s'),
                                             'idlistaespera' => $idlista,
-                                            'idevento' => 5,
+                                            'idevento' => 1,
                                             'idlogin' => session()->get('Sessao')['login']
                                         ];
                             
@@ -3886,77 +3970,10 @@ class MapaCirurgico extends ResourceController
                                                 sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
                                             );
                                         }
-                                    }
 
-                                    $mapa = [
-                                        'idlistaespera' => $idlista,
-                                        'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
-                                        'tempoprevisto' => $this->data['tempoprevisto'],
-                                        'idposoperatorio' => $this->data['posoperatorio'],
-                                        //'indhemoderivados' => $this->data['hemoderivados'],
-                                        'txtnecessidadesproced' => $this->data['nec_proced'],
-                                        'txtjustificativaurgencia' => $this->data['justurgencia'],
-                                        'idcentrocirurgico' => $this->data['centrocirurgico'],
-                                        'idsala' => $this->data['sala'],
-                                        'indurgencia' => 'S',
-                                        'indsituacao' => 'P' // Programada
-                                        ];
+                                        if (isset($this->data['proced_adic'])) {
 
-                                        //die(var_dump($mapa));
-
-                                    $idmapa = $this->mapacirurgicomodel->insert($mapa);
-
-                                    if ($db->transStatus() === false) {
-                                        $error = $db->error();
-                                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
-                                        );
-                                    }
-
-                                    $array = [
-                                        'dthrevento' => date('Y-m-d H:i:s'),
-                                        'idlistaespera' => $idlista,
-                                        'idevento' => 1,
-                                        'idlogin' => session()->get('Sessao')['login']
-                                    ];
-                        
-                                    $this->historicomodel->insert($array);
-                        
-                                    if ($db->transStatus() === false) {
-                                        $error = $db->error();
-                                        $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                        $errorCode = isset($error['code']) ? $error['code'] : 0;
-                        
-                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao atualizar histórico! [%d] %s', $errorCode, $errorMessage)
-                                        );
-                                    }
-
-                                    if (isset($this->data['proced_adic'])) {
-
-                                        $this->procedimentosadicionaismodel->where('id', $idlista)->delete();
-
-                                        if ($db->transStatus() === false) {
-                                            $error = $db->error();
-                                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-                        
-                                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
-                                            );
-                                        }
-
-
-                                        foreach ($this->data['proced_adic'] as $key => $procedimento) {
-
-                                            $array = [];
-                                            $array['idmapacirurgico'] = (int) $idmapa;
-                                            $array['codtabela'] = (int) $procedimento;
-
-                                            $this->procedimentosadicionaismodel->insert($array);
+                                            $this->procedimentosadicionaismodel->where('id', $idlista)->delete();
 
                                             if ($db->transStatus() === false) {
                                                 $error = $db->error();
@@ -3964,149 +3981,169 @@ class MapaCirurgico extends ResourceController
                                                 $errorCode = !empty($error['code']) ? $error['code'] : 0;
                             
                                                 throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                    sprintf('Erro ao inserir procedimento adicional [%d] %s', $errorCode, $errorMessage)
+                                                    sprintf('Erro ao excluir procedimento adicional [%d] %s', $errorCode, $errorMessage)
                                                 );
                                             }
 
-                                        }
-                                    }
 
-                                    if (isset($this->data['profissional'])) {
+                                            foreach ($this->data['proced_adic'] as $key => $procedimento) {
 
-                                        $this->equipemedicamodel->where('id', $idlista)->delete();
-
-                                        if ($db->transStatus() === false) {
-                                            $error = $db->error();
-                                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
-                        
-                                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
-                                            );
-                                        }
-
-                                        foreach ($this->data['profissional'] as $key => $profissional) {
-
-                                            $array = [];
-                                            $array['idmapacirurgico'] = (int) $idmapa;
-                                            $array['codpessoa'] = (int) $profissional;
-
-                                            $this->equipemedicamodel->insert($array);
-
-                                            if ($db->transStatus() === false) {
-                                                $error = $db->error();
-                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
-                            
-                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                    sprintf('Erro ao inserir equipe médica [%d] %s', $errorCode, $errorMessage)
-                                                );
-                                            }
-
-                                        }
-                                    }
-
-                                    if (isset($this->data['eqpts'])) {
-
-                                        foreach ($this->data['eqpts'] as $key => $equipamento) {
-                    
-                                            $dtcirurgia = $this->data['dtcirurgia'];
-                   
-                                            $eqpExcedente = $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento);
-                                            $array['idmapacirurgico'] = (int) $idmapa;
-                                            $array['idequipamento'] = (int) $equipamento;
-                                            $array['indexcedente'] = $eqpExcedente;
-                    
-                                            $this->equipamentoscirurgiamodel->insert($array);
-                    
-                                            if ($db->transStatus() === false) {
-                                                $error = $db->error();
-                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
-                            
-                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                    sprintf('Erro ao inserir equipamento cirúrgico [%d] %s', $errorCode, $errorMessage)
-                                                );
-                                            }
-                    
-                                        }
-                                    }
-
-                                    if (isset($this->data['hemocomps']) && isset($this->data['hemocomp_qty'])) {
-                                        foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
-                                            // Verifica se existe uma quantidade informada e se é maior que zero
-                                            $quantidade = $this->data['hemocomp_qty'][$key] ?? null;
-                                            if (!is_null($quantidade) && (int)$quantidade > 0) {
-
+                                                $array = [];
                                                 $array['idmapacirurgico'] = (int) $idmapa;
-                                                $array['idhemocomponente'] = (int) $key;
-                                                $array['qtd_solicitada'] = (int) $quantidade; // opcional, caso use
-                                                $array['inddisponibilidade'] = false;
+                                                $array['codtabela'] = (int) $procedimento;
 
-                                                $this->hemocomponentescirurgiamodel->insert($array);
+                                                $this->procedimentosadicionaismodel->insert($array);
 
                                                 if ($db->transStatus() === false) {
                                                     $error = $db->error();
                                                     $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
                                                     $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
+                                
                                                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                                        sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                                        sprintf('Erro ao inserir procedimento adicional [%d] %s', $errorCode, $errorMessage)
                                                     );
+                                                }
+
+                                            }
+                                        }
+
+                                        if (isset($this->data['profissional'])) {
+
+                                            $this->equipemedicamodel->where('id', $idlista)->delete();
+
+                                            if ($db->transStatus() === false) {
+                                                $error = $db->error();
+                                                $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                            
+                                                throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                    sprintf('Erro ao excluir equipe médica [%d] %s', $errorCode, $errorMessage)
+                                                );
+                                            }
+
+                                            foreach ($this->data['profissional'] as $key => $profissional) {
+
+                                                $array = [];
+                                                $array['idmapacirurgico'] = (int) $idmapa;
+                                                $array['codpessoa'] = (int) $profissional;
+
+                                                $this->equipemedicamodel->insert($array);
+
+                                                if ($db->transStatus() === false) {
+                                                    $error = $db->error();
+                                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                                
+                                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                        sprintf('Erro ao inserir equipe médica [%d] %s', $errorCode, $errorMessage)
+                                                    );
+                                                }
+
+                                            }
+                                        }
+
+                                        if (isset($this->data['eqpts'])) {
+
+                                            foreach ($this->data['eqpts'] as $key => $equipamento) {
+                        
+                                                $dtcirurgia = $this->data['dtcirurgia'];
+                    
+                                                $eqpExcedente = $this->filawebmodel->atualizaLimiteExcedidoEquipamento($dtcirurgia, (int) $equipamento);
+                                                $array['idmapacirurgico'] = (int) $idmapa;
+                                                $array['idequipamento'] = (int) $equipamento;
+                                                $array['indexcedente'] = $eqpExcedente;
+                        
+                                                $this->equipamentoscirurgiamodel->insert($array);
+                        
+                                                if ($db->transStatus() === false) {
+                                                    $error = $db->error();
+                                                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+                                
+                                                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                        sprintf('Erro ao inserir equipamento cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                                    );
+                                                }
+                        
+                                            }
+                                        }
+
+                                        if (isset($this->data['hemocomps']) && isset($this->data['hemocomp_qty'])) {
+                                            foreach ($this->data['hemocomps'] as $key => $hemocomponente) {
+                                                // Verifica se existe uma quantidade informada e se é maior que zero
+                                                $quantidade = $this->data['hemocomp_qty'][$key] ?? null;
+                                                if (!is_null($quantidade) && (int)$quantidade > 0) {
+
+                                                    $array['idmapacirurgico'] = (int) $idmapa;
+                                                    $array['idhemocomponente'] = (int) $key;
+                                                    $array['qtd_solicitada'] = (int) $quantidade; // opcional, caso use
+                                                    $array['inddisponibilidade'] = false;
+
+                                                    $this->hemocomponentescirurgiamodel->insert($array);
+
+                                                    if ($db->transStatus() === false) {
+                                                        $error = $db->error();
+                                                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                            sprintf('Erro ao inserir hemocomponente cirúrgico [%d] %s', $errorCode, $errorMessage)
+                                                        );
+                                                    }
                                                 }
                                             }
                                         }
+
+                                        //$this->listaesperamodel->delete($this->data['listapaciente']);
+                                        $this->listaesperamodel->where('id', $idlista)->delete();
+
+                                        if ($db->transStatus() === false) {
+                                            $error = $db->error();
+                                            $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                            $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
+                                            );
+                                        }
+
+                                        $db->transComplete();
+
+                                        session()->setFlashdata('success', 'Cirurgia urgente incluída com sucesso!');
+
+                                        $this->validator->reset();
+
+                                    } catch (\Throwable $e) {
+                                        $db->transRollback(); // Reverte a transação em caso de erro
+                                        $msg = sprintf('Exception - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                                        log_message('error', 'Exception: ' . $msg);
+                                        session()->setFlashdata('exception', $msg);
+
+                                        $this->carregaMapa('I');
+                                        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
+                                                        'validation' => $this->validator,
+                                                        'data' => $this->data]);
                                     }
-
-                                    //$this->listaesperamodel->delete($this->data['listapaciente']);
-                                    $this->listaesperamodel->where('id', $idlista)->delete();
-
-                                    if ($db->transStatus() === false) {
-                                        $error = $db->error();
-                                        $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
-                                        $errorCode = !empty($error['code']) ? $error['code'] : 0;
-
-                                        throw new \CodeIgniter\Database\Exceptions\DatabaseException(
-                                            sprintf('Erro ao excluir paciente da lista [%d] %s', $errorCode, $errorMessage)
-                                        );
-                                    }
-
-                                    $db->transComplete();
-
-                                    session()->setFlashdata('success', 'Cirurgia urgente incluída com sucesso!');
-
-                                    $this->validator->reset();
-
-                                } catch (\Throwable $e) {
-                                    $db->transRollback(); // Reverte a transação em caso de erro
-                                    $msg = sprintf('Exception - Falha na inclusão de cirurgia urgente - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
-                                    log_message('error', 'Exception: ' . $msg);
-                                    session()->setFlashdata('exception', $msg);
 
                                     $this->carregaMapa('I');
-                                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_inclui_urgencia',
-                                                    'validation' => $this->validator,
-                                                    'data' => $this->data]);
+
+                                    //$dados = $this->request->getPost();
+
+                                    //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
+
+                                    $dataflash['dtinicio'] = DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('d/m/Y');
+                                    $dataflash['dtfim'] = DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('d/m/Y');
+                                
+                                    session()->setFlashdata('dataflash', $dataflash);
+
+                                    //session()->setFlashdata('dados', $this->request->getPost());
+                                    return redirect()->to(base_url('mapacirurgico/exibir'));
                                 }
-
-                                $this->carregaMapa('I');
-
-                                //$dados = $this->request->getPost();
-
-                                //$dadosAntigos = session()->getFlashdata('dados') ?? []; // Pega dados existentes ou um array vazio se não houver
-
-                                $dataflash['dtinicio'] = DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('d/m/Y');
-                                $dataflash['dtfim'] = DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])->format('d/m/Y');
-                            
-                                session()->setFlashdata('dataflash', $dataflash);
-
-                                //session()->setFlashdata('dados', $this->request->getPost());
-                                return redirect()->to(base_url('mapacirurgico/exibir'));
                             }
-                        }
 
-                       /*  } */
-                  /*   } */
+                        /*  } */
+                    /*   } */
+                    }
                 }
             }
 

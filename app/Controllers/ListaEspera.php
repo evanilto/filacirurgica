@@ -2181,8 +2181,9 @@ class ListaEspera extends ResourceController
             'complexidade' => 'required',
             'congelacao' => 'required',
             'opme' => 'required',
+            'usarHemocomponentes' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
+            //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'justorig' => 'max_length[1024]|min_length[0]',
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
@@ -2199,6 +2200,16 @@ class ListaEspera extends ResourceController
             //dd($dataCirurgia);
 
             $dataComparacao = new DateTime();
+
+            if (isset($this->data['hemocomps']) && empty(array_filter($this->data['hemocomp_qty'], fn($v) => $v !== null && $v !== ''))) {
+
+                session()->setFlashdata('exception', 'Informe a quantidade para o hemocomponente!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                        'data' => $this->data]);
+            }
             
             if ($this->filamodel->find($this->data['fila'])['tipo'] ==='E') {
 
@@ -2403,7 +2414,7 @@ class ListaEspera extends ResourceController
                     'tempoprevisto' => $this->data['tempoprevisto'],
                     //'tempoprevisto' => $tempoprevisto = DateTime::createFromFormat('H:i', $this->data['tempoprevisto']),
                     'idposoperatorio' => $this->data['posoperatorio'],
-                    //'indhemoderivados' => $this->data['hemoderivados'],
+                    'indhemoderivados' => $this->data['usarHemocomponentes'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     'txtjustificativaenvio' => $this->data['justenvio'],
                     'numordem' => $this->data['ordemfila'],

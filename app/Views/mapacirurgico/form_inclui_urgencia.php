@@ -527,6 +527,11 @@
                                         </div>
                                     </div>
                                 </div>
+                                <?php if ($validation->getError('usarHemocomponentes')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('usarHemocomponentes') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row g-3 mb-4">
