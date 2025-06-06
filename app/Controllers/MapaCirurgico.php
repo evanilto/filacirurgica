@@ -1230,7 +1230,11 @@ class MapaCirurgico extends ResourceController
     //$builder->where('vw_mapacirurgico.dthrcirurgia >= ', (new DateTime())->format('Y-m-d'));
     $builder->where('vw_mapacirurgico.dthrsuspensao IS NULL'); 
     $builder->where('vw_mapacirurgico.dthrtroca IS NULL'); 
-    $builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
+    //$builder->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL'); 
+    $builder->groupStart()
+        ->where('vw_mapacirurgico.hemocomponentes_cirurgia IS NOT NULL')
+        ->orWhere('vw_mapacirurgico.hemoderivados', 'SIM')
+    ->groupEnd();
 
     if (!empty($data['idmapa'])) {
     
@@ -1280,7 +1284,7 @@ class MapaCirurgico extends ResourceController
 
 /*     var_dump($builder->getCompiledSelect());die();
  */    
-    return $builder->get()->getResult();
+        return $builder->get()->getResult();
 }
     /**
      * Return a new resource object, with default properties

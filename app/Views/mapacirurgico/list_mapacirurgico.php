@@ -300,11 +300,15 @@
 
                     $hemocomponenteindisponivel = 0;
 
-                    if ($hemocomponentes) {
-                        foreach ($hemocomponentes as $key => $hemocomponente) {
-                            if (!$hemocomponente['inddisponibilidade']) {
-                                $hemocomponenteindisponivel = 1;
-                            };
+                    if ($itemmapa->hemoderivados == 'SIM') {
+                        if ($hemocomponentes) {
+                            foreach ($hemocomponentes as $key => $hemocomponente) {
+                                if (!$hemocomponente['inddisponibilidade']) {
+                                    $hemocomponenteindisponivel = 1;
+                                };
+                            }
+                        } else {
+                            $hemocomponenteindisponivel = 1;
                         }
                     }
 
@@ -461,40 +465,42 @@
                     <td><?php echo $itemmapa->hemoderivados?></td>
                     <!---------- Hemocomponentes -------------------------------------------------->
                     <?php 
+                       
                         $hemocomponentes = json_decode($itemmapa->hemocomponentes_cirurgia_info, true);
 
-                        if ($hemocomponentes) {
+                        $hemocomponentes_formatados = [];
+                        $hemocomponentes_indisponiveis = [];
+                        $hemocomponentes_disponiveis = [];
 
-                            $hemocomponentes_formatados = [];
-                            $hemocomponentes_indisponiveis = [];
-                            $hemocomponentes_disponiveis = [];
-
+                        if ($itemmapa->hemoderivados == 'SIM') {
                             if ($hemocomponentes) {
                                 foreach ($hemocomponentes as $hemocomponente) {
-
                                     $cor = $hemocomponente['inddisponibilidade'] || $itemmapa->indsituacao != 'P' ? 'black' : 'red';
                                     $hemocomponentes_formatados[] = '<span style="color: ' . $cor . ';">' . htmlspecialchars($hemocomponente['descricao']) . '</span>';
 
                                     if ($hemocomponente['inddisponibilidade']) {
-                                        $hemocomponentes_disponiveis[] = $hemocomponente['descricao'];  
+                                        $hemocomponentes_disponiveis[] = $hemocomponente['descricao'];
                                     } else {
-                                        $hemocomponentes_indisponiveis[] = $hemocomponente['descricao']; 
-
+                                        $hemocomponentes_indisponiveis[] = $hemocomponente['descricao'];
                                     }
                                 }
+
+                                $hemocomponentes = implode(', ', $hemocomponentes_formatados);
+
+                                $indisponiveis = !empty($hemocomponentes_indisponiveis) ? implode(', ', $hemocomponentes_indisponiveis) : 'Nenhum hemocomponente indisponível';
+                                $disponiveis = !empty($hemocomponentes_disponiveis) ? implode(', ', $hemocomponentes_disponiveis) : 'Nenhum hemocomponente disponível';
+
+                                $tooltip = "hemocomponentes SEM RESERVA confirmada:\n$indisponiveis\n\nhemocomponentes COM RESERVA confirmada:\n$disponiveis";
+                            } else {
+                                $hemocomponentes = '<span style="color: red;">SEM hemocomponentes informados</span>';
+                                $tooltip = 'Nenhum hemocomponente informado.';
                             }
-
-                            $hemocomponentes = implode(', ', $hemocomponentes_formatados);
-
-                            $indisponiveis = !empty($hemocomponentes_indisponiveis) ? implode(', ', $hemocomponentes_indisponiveis) : 'Nenhum hemocomponente indisponível';
-                            $disponiveis = !empty($hemocomponentes_disponiveis) ? implode(', ', $hemocomponentes_disponiveis) : 'Nenhum hemocomponente disponível';
-
-                            $tooltip = "hemocomponentes SEM RESERVA confirmada:\n$indisponiveis\n\nhemocomponentes COM RESERVA confirmada:\n$disponiveis";
-                            //$tooltip = "$nao_excedentes\n\nExcedentes:\n$excedentes";
                         } else {
+                            // Caso não use hemocomponentes
                             $hemocomponentes = '';
                             $tooltip = '';
                         }
+
                     ?>
                     <td class="break-line" title="<?php echo htmlspecialchars($tooltip); ?>">
                         <?= $hemocomponentes; ?>
