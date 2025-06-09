@@ -522,7 +522,7 @@
             <?php endforeach; ?>
         </tbody>
     </table>
-    <div class="container-legend mt-2">
+    <div class="col-md-12 table-actions">
         <a class="btn btn-warning" href="<?= base_url('mapacirurgico/consultar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
@@ -1149,7 +1149,12 @@
         $('#janelaAguarde').show();
 
         $('[data-toggle="tooltip"]').tooltip();
+
+        let windowHeight = window.innerHeight;
+        let scrollYHeight = windowHeight - 420; // ajuste conforme seu layout
         
+        //alert(scrollYHeight);
+
         $('#table').DataTable({
             "order": [[0, 'asc']],
             "language": {
@@ -1159,7 +1164,8 @@
             leftColumns: 13 // Número de colunas a serem fixadas
             },
             fixedHeader: true,
-            scrollY: '500px',
+            //scrollY: '500px',
+            scrollY: scrollYHeight + "px",
             scrollX: true,
             scrollCollapse: true,
             paging: false,
