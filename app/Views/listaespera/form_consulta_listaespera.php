@@ -15,7 +15,7 @@
                                 <div class="mb-1">
                                     <label for="dtinicio" class="form-label">Data Início</label>
                                     <div class="input-group">
-                                        <input type="text" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="date" id="dtinicio" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtinicio')): ?>is-invalid<?php endif ?>"
                                             name="dtinicio" value="<?= set_value('dtinicio', $data['dtinicio']) ?>"/>
                                         <?php if ($validation->getError('dtinicio')): ?>
@@ -30,7 +30,7 @@
                                 <div class="mb-1">
                                     <label for="dtfim" class="form-label">Data Final</label>
                                     <div class="input-group">
-                                        <input type="text" id="dtfim" maxlength="10" placeholder="DD/MM/AAAA"
+                                        <input type="date" id="dtfim" maxlength="10" placeholder="DD/MM/AAAA"
                                             class="form-control Data <?php if($validation->getError('dtfim')): ?>is-invalid<?php endif ?>"
                                             name="dtfim" value="<?= set_value('dtfim', $data['dtfim']) ?>"/>
                                         <?php if ($validation->getError('dtfim')): ?>
@@ -183,6 +183,25 @@
     </div>
 </div>
 <script>
+    function setupDateClearBehavior(inputId) {
+        const input = document.getElementById(inputId);
+
+        input.addEventListener('keydown', function (e) {
+            if ((e.key === 'Backspace' || e.key === 'Delete')) {
+                e.preventDefault();
+                input.value = '';
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+
+                input.blur();
+                setTimeout(() => input.focus(), 10);
+            }
+        });
+    }
+
+    // Aplica o comportamento aos campos desejados
+    setupDateClearBehavior('dtinicio');
+    setupDateClearBehavior('dtfim');
+
     $(document).ready(function() {
         $('#idForm').submit(function(event) {
             $('#janelaAguarde').show();

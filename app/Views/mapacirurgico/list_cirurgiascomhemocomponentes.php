@@ -608,7 +608,11 @@ use function PHPUnit\Framework\isEmpty;
                 } */
 
                 //if (tempermissaoconsultar) {
-                if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
+
+                //let temhemocomponentes = (Array.isArray(selectedRow.dataset.hemocomponentesinfo) && selectedRow.dataset.hemocomponentesinfo.length > 0);
+                let temhemocomponentes = !!selectedRow.dataset.hemocomponentes;
+
+                if (temhemocomponentes && !["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
                     reservar.disabled = false;
                     reservar.removeAttribute("disabled");
                     reservar.style.backgroundColor = "Red";

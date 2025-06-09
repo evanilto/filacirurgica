@@ -70,6 +70,7 @@ html, body {
     overflow-x: hidden; /* Impede a rolagem horizontal */
     flex: 1;
     box-sizing: border-box; /* Inclui padding no cálculo da largura */
+    /*padding-bottom: 35px; /* altura igual ou maior que a do rodapé */
 }
 
 .sidebar {

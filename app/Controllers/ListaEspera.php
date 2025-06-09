@@ -378,6 +378,13 @@ class ListaEspera extends ResourceController
             $data = $_SESSION['listaespera'];
         }
 
+        if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
+            $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
+        }
+        if (!empty($data['dtfim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtfim'])) {
+            $data['dtfim'] = \DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('d/m/Y');
+        }
+
         //dd($data);
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
@@ -1353,14 +1360,14 @@ class ListaEspera extends ResourceController
                 }
             }
 
-            if (!empty($data['dtrisco'])) {
+           /*  if (!empty($data['dtrisco'])) {
                  if (DateTime::createFromFormat('d/m/Y', $data['dtrisco'])->format('Y-m-d') > date('Y-m-d')) {
                     $this->validator->setError('dtrisco', 'A data do risco não pode ser maior que a data atual!');
                     return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                         'validation' => $this->validator,
                                                         'data' => $dataform]);
                 }
-            }
+            } */
 
 
             $db = \Config\Database::connect('default');
@@ -1757,7 +1764,7 @@ class ListaEspera extends ResourceController
                 }
             }
 
-            if (!empty($data['dtrisco'])) {
+           /*  if (!empty($data['dtrisco'])) {
                  if (DateTime::createFromFormat('d/m/Y', $data['dtrisco'])->format('Y-m-d') > date('Y-m-d')) {
                     $this->validator->setError('dtrisco', 'A data do risco não pode ser maior que a data atual!');
 
@@ -1774,7 +1781,7 @@ class ListaEspera extends ResourceController
                                                     //'validation' => $this->validator,
                                                     'data' => $data]);
                 }
-            }
+            } */
 
             try {
 
@@ -2284,6 +2291,18 @@ class ListaEspera extends ResourceController
                                                     'validation' => \Config\Services::validation()
                                                     ]);
             } */
+
+            //dd(DateTime::createFromFormat('d/m/Y', $this->data['dtrisco']) > DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia']));
+            if (!empty($this->data['dtrisco'])) {
+                if (DateTime::createFromFormat('d/m/Y', $this->data['dtrisco']) > DateTime::createFromFormat('d/m/Y', $this->data['dtcirurgia'])) {
+                $this->validator->setError('dtrisco', 'A data do risco não pode ser maior que a data da cirurgia!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                    'data' => $this->data]);
+                }
+            }
 
             $data_clone = $this->data;
             $data_clone['listapaciente'] = $this->data['id'];

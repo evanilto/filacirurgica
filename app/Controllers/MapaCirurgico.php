@@ -415,7 +415,14 @@ class MapaCirurgico extends ResourceController
             $data = $_SESSION['mapacirurgico'];
         }
 
-        //die(var_dump($dataflash));
+        if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
+            $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
+        }
+        if (!empty($data['dtfim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtfim'])) {
+            $data['dtfim'] = \DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('d/m/Y');
+        }
+
+        //dd($data);
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
@@ -435,8 +442,8 @@ class MapaCirurgico extends ResourceController
         if (!$dataflash) {
             if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
                 $rules = $rules + [
-                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
-                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtinicio' => 'permit_empty|valid_date[Y-m-d]',
+                    'dtfim' => 'permit_empty|valid_date[Y-m-d]',
                 ];
             }
         }
@@ -1284,6 +1291,7 @@ class MapaCirurgico extends ResourceController
 
 /*     var_dump($builder->getCompiledSelect());die();
  */    
+        //dd($builder->get()->getResult());
         return $builder->get()->getResult();
 }
     /**
@@ -1669,8 +1677,8 @@ class MapaCirurgico extends ResourceController
             try {
 
                 $lista = [
-                        'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        //'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                        //'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
