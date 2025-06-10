@@ -994,10 +994,16 @@ class MapaCirurgico extends ResourceController
             $data = $this->request->getVar();
         }
 
+        if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
+            $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
+        }
+        if (!empty($data['dtfim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtfim'])) {
+            $data['dtfim'] = \DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('d/m/Y');
+        }
+
         if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
             $data = $_SESSION['mapacirurgico'];
         }
-
 
         if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
             $paciente = $this->localaippacientesmodel->find($data['prontuario']);
@@ -1015,8 +1021,8 @@ class MapaCirurgico extends ResourceController
         if (!$dataflash) {
             if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
                 $rules = $rules + [
-                    'dtinicio' => 'permit_empty|valid_date[d/m/Y]',
-                    'dtfim' => 'permit_empty|valid_date[d/m/Y]',
+                    'dtinicio' => 'permit_empty',
+                    'dtfim' => 'permit_empty',
                 ];
             }
         }

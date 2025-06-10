@@ -762,6 +762,7 @@
                         <input type="hidden" name="origem" value="<?= $data['origem'] ?>" />
                         <input type="hidden" name="tipo_sanguineo" value="<?= $data['tipo_sanguineo'] ?>" />
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
+                        <input type="hidden" name="dtrisco" value="<?= $data['dtrisco'] ?>" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
                         <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />

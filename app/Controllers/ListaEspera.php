@@ -2957,7 +2957,12 @@ class ListaEspera extends ResourceController
             echo json_encode(['error' => $msg]);
         } else {
             $paciente = $this->localvwdetalhespacientesmodel->find($prontuario);
-            echo json_encode(['nome' => $paciente->nome]);
+
+            if (!$paciente) {
+                echo json_encode(['error' => 'Paciente não encontrado.']);
+            } else {
+                echo json_encode(['nome' => $paciente->nome]);
+            }
         }
        
     }
