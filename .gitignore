@@ -135,5 +135,6 @@ sparks
 
 #App
 atualizar_tabelas.log
+output.log
 
 venv_fila/
