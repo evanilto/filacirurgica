@@ -51,6 +51,9 @@ class UpdateTablesCommand extends BaseCommand
         $db->table('local_vw_detalhes_pacientes')->truncate();
         $db->table('local_vw_aghu_cirurgias')->truncate();
         $db->table('local_agh_instituicoes_hospitalares')->truncate();
+        $db->table('local_vw_aghu_antimicrobianos')->truncate();
+        $db->table('local_vw_aghu_gmr')->truncate();
+
 
         $insertStatus = 'starting';
         $insertStatus = $db->query('INSERT INTO local_agh_cids SELECT * FROM remoto.agh_cids');
@@ -65,6 +68,8 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_vw_detalhes_pacientes SELECT * FROM remoto.vw_detalhes_pacientes;');
         $insertStatus = $db->query('INSERT INTO local_vw_aghu_cirurgias SELECT * FROM remoto.vw_aghu_cirurgias;');
         $insertStatus = $db->query('INSERT INTO local_agh_instituicoes_hospitalares SELECT * FROM remoto.agh_instituicoes_hospitalares;');
+        $insertStatus = $db->query('INSERT INTO local_vw_aghu_antimicrobianos SELECT * FROM remoto.vw_aghu_antimicrobianos');
+        $insertStatus = $db->query('INSERT INTO local_vw_aghu_gmr SELECT * FROM remoto.vw_aghu_gmr');
 
         $insertStatus = 'finishing';
 

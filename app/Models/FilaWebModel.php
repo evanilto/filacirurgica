@@ -5,6 +5,8 @@ use CodeIgniter\Model;
 
 use App\Models\EquipamentosModel;
 use App\Models\LocalAipContatosPacientesModel;
+use App\Models\LocalVwAghuAntimicrobianosModel;
+use App\Models\LocalVwAghuGmrModel;
 
 use Config\Database;
 use DateTime;
@@ -14,14 +16,75 @@ class FilaWebModel extends Model
 
     private $equipamentosmodel;
     private $localaipcontatospacientesmodel;
+    private $localvwaghuantimicrobianos;
+    private $localvwaghugmr;
+
 
     public function __construct()
 {
 
     $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
+    $this->localvwaghuantimicrobianos = new LocalVwAghuAntimicrobianosModel();
+    $this->localvwaghugmr = new LocalVwAghuGmrModel();
 
 }
 
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    private function listarMedicamentos($resultados) 
+    {
+        if (empty($resultados)) {
+            return 'N/D';
+        }
+
+        $medicamentos = [];
+
+        foreach ($resultados as $item) {
+            $data = date('d/m/Y', strtotime($item->data_inicio));
+            $nome = trim($item->descricao_medicamento);
+
+            // Chave composta para garantir unicidade: data + nome
+            $chave = "{$data} - {$nome}";
+
+            $medicamentos[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
+        }
+
+        ksort($medicamentos);
+
+        // Retorna os itens separados por "; "
+        return implode('; ', array_keys($medicamentos));
+    }
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    private function listarGmr($resultados) 
+    {
+        if (empty($resultados)) {
+            return 'N/D';
+        }
+
+        $gmrs = [];
+
+        foreach ($resultados as $item) {
+            $data = date('d/m/Y', strtotime($item->dt_identificacao));
+            $nome = trim($item->descr_gmr);
+
+            // Chave composta para garantir unicidade: data + nome
+            $chave = "{$data} - {$nome}";
+
+            $gmrs[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
+        }
+
+        ksort($gmrs);
+
+        // Retorna os itens separados por "; "
+        return implode('; ', array_keys($gmrs));
+    }
     /**
      * Return a new resource object, with default properties
      *
@@ -227,12 +290,80 @@ class FilaWebModel extends Model
 
             $cirurgia->contatos = $this->localaipcontatospacientesmodel->where('pac_codigo', $cirurgia->codigo)->findAll();
 
+            /************ Antimicrobianos *****************************************************/
+
+            $baseDate = date('Y-m-d', strtotime($cirurgia->data_cirurgia));
+            $inicio_cirurgia = $baseDate . ' 00:00:00';
+            $fim_cirurgia = $baseDate . ' 23:59:59';
+
+            // ==================================
+            // 🔸 No dia da cirurgia
+            $result_dia = $this->localvwaghuantimicrobianos
+                ->select('data_inicio, descricao_medicamento')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('data_inicio >=', $inicio_cirurgia)
+                ->where('data_inicio <=', $fim_cirurgia)
+                ->get()
+                ->getResult();
+            $cirurgia->antimicrobianos_dia = $this->listarMedicamentos($result_dia);
+
+            // ==================================
+            // 🔸 Até 24 horas após (excluindo o dia da cirurgia)
+            $inicio_24h = date('Y-m-d H:i:s', strtotime($fim_cirurgia . ' +1 second'));
+            $fim_24h = date('Y-m-d H:i:s', strtotime($fim_cirurgia . ' +1 day'));
+
+            $result_24h = $this->localvwaghuantimicrobianos
+                ->select('data_inicio, descricao_medicamento')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('data_inicio >=', $inicio_24h)
+                ->where('data_inicio <=', $fim_24h)
+                ->get()
+                ->getResult();
+            $cirurgia->antimicrobianos_24h = $this->listarMedicamentos($result_24h);
+
+            // ==================================
+            // 🔸 Até 48 horas após
+            $inicio_48h = date('Y-m-d H:i:s', strtotime($fim_24h . ' +1 second'));
+            $fim_48h = date('Y-m-d H:i:s', strtotime($fim_24h . ' +1 day'));
+
+            $result_48h = $this->localvwaghuantimicrobianos
+                ->select('data_inicio, descricao_medicamento')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('data_inicio >=', $inicio_48h)
+                ->where('data_inicio <=', $fim_48h)
+                ->get()
+                ->getResult();
+            $cirurgia->antimicrobianos_48h = $this->listarMedicamentos($result_48h);
+
+            // ==================================
+            // 🔸 De 48 horas até 30 dias após a cirurgia
+            $inicio_30d = date('Y-m-d H:i:s', strtotime($fim_48h . ' +1 second'));
+            $fim_30d = date('Y-m-d H:i:s', strtotime($baseDate . ' +30 day')); // ✅ Correção aqui
+
+            $result_30d = $this->localvwaghuantimicrobianos
+                ->select('data_inicio, descricao_medicamento')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('data_inicio >=', $inicio_30d)
+                ->where('data_inicio <=', $fim_30d)
+                ->get()
+                ->getResult();
+            $cirurgia->antimicrobianos_30d = $this->listarMedicamentos($result_30d);
+
+            $gmr = $this->localvwaghugmr
+                ->select('dt_identificacao, descr_gmr')
+                ->where('codigo', $cirurgia->codigo)
+                //->where('data_inicio >=', $inicio_30d)
+                //->where('data_inicio <=', $fim_30d)
+                ->get()
+                ->getResult();
+            $cirurgia->gmr = $this->listarGmr($gmr);
+
+
             //$paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
 
             //print_r($paciente->cirurgias);
         }
-
-        //die(var_dump($cirurgias));
+            //dd($cirurgias);
 
         return $cirurgias;
 

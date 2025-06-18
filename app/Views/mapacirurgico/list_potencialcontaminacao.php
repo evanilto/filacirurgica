@@ -50,6 +50,12 @@
                 <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Descrição Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
+                <th scope="col" data-field="meddia" >Antimicrobianos no dia</th>
+                <th scope="col" data-field="meddia" >Antimicrobianos em 24h</th>
+                <th scope="col" data-field="meddia" >Antimicrobianos em 48h</th>
+                <th scope="col" data-field="meddia" >Antimicrobianos em 30 dias</th>
+                <th scope="col" data-field="gmr" >Colonização MDR</th>
+
             </tr>
         </thead>
         <tbody>
@@ -131,6 +137,12 @@
                         <?php echo htmlspecialchars($cirurgia->indicacao_pdt ?: 'N/D'); ?>
                     <td><?php echo $situacao_descr ?></td>
                     <td><?php echo $cirurgia->situacao_cir ?></td>
+                    <td><?= htmlspecialchars($cirurgia->antimicrobianos_dia) ?></td>
+                    <td><?= htmlspecialchars($cirurgia->antimicrobianos_24h) ?></td>
+                    <td><?= htmlspecialchars($cirurgia->antimicrobianos_48h) ?></td>
+                    <td><?= htmlspecialchars($cirurgia->antimicrobianos_30d) ?></td>
+                    <td><?= htmlspecialchars($cirurgia->gmr) ?></td>
+
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -426,6 +438,13 @@
                 { "width": "300px" },  // Fila
                 { "width": "200px" },  // Fila
                 { "width": "100px" },  // Lista
+                { "width": "300px" },  // Antimicr dia
+                { "width": "300px" },  // Antimicr 24h
+                { "width": "300px" },  // Antimicr 28h
+                { "width": "300px" },  // Antimicr 30d
+                { "width": "300px" },  // Gmr
+
+
             ],
             "columnDefs": [
            // { "orderable": false, "targets": [] },
