@@ -83,6 +83,8 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->get('vercirurgiasemaprovacao', 'MapaCirurgico::verCirurgiasEmAprovacao');
     $routes->post('verificacirurgiasemaprovacao', 'MapaCirurgico::verificaCirurgiasEmAprovacao');
     $routes->post('verificacirurgiascomhemocomponentes', 'MapaCirurgico::verificaCirurgiasComHemocomponentes');
+    $routes->get('reqtransf/(:num)', 'MapaCirurgico::reqTransfusao/$1');
+    $routes->post('getcirurgias', 'MapaCirurgico::getCirurgiasPaciente');
 });
 
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {
@@ -121,6 +123,15 @@ $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
     $routes->get('potencialcontaminacao', 'MapaCirurgico::consultarPotencialContaminacao');
     $routes->post('exibirpotencialcontaminacao', 'MapaCirurgico::exibirPotencialContaminacao');
 });
+
+$routes->group('transfusao', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'Transfusao::index');
+    $routes->get('requisitar', 'Transfusao::requisitarTransfusao');
+    $routes->post('salvar', 'Transfusao::salvar');
+    $routes->get('editar/(:num)', 'Transfusao::editar/$1');
+    $routes->get('excluir/(:num)', 'Transfusao::excluir/$1');
+});
+
 
 /* $routes->get('inserir-paciente', 'PacientesController::inserir_paciente');
  */

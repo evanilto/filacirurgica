@@ -314,7 +314,14 @@ class ListaEspera extends ResourceController
             $updated_at = NULL;
         }
 
+        $mapaSexo = [
+            'F' => 'Feminino',
+            'M' => 'Masculino'
+        ];
+
         return $this->response->setJSON(['nome' => $paciente->nome,
+                                         'sexo' =>  $mapaSexo[$paciente->sexo] ?? 'Não informado',
+                                         'dtnascimento' =>  DateTime::createFromFormat('Y-m-d H:i:s', $paciente->dt_nascimento)->format('d/m/Y'),
                                          'tiposanguineo' => $tiposanguineo,
                                          'updated_at' => $updated_at]);
     }
@@ -412,7 +419,7 @@ class ListaEspera extends ResourceController
             //die(var_dump($dataflash));
 
             if (!$_SESSION['listaespera']) {
-                if ($data['dtinicio'] || $data['dtfim']) {
+                if (($data['dtinicio'] ?? null) || ($data['dtfim'] ?? null)) {
 
                     $data['filas'] = $this->selectfila;
                     $data['riscos'] = $this->selectrisco;

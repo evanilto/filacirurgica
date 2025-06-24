@@ -19,6 +19,8 @@
     $corEditar = $corAtualizarHorarios;
     $corConsultar = $corEditar;
     $corCirurgiaCancelada = $corCirurgiaSuspensa;
+    $corReqTransf = $corEditar;
+
 
     $coresBotoes = [
         'pacientesolicitado' => $corPacienteSolicitado,
@@ -33,7 +35,8 @@
         'trocar' => $corTrocaPaciente,
         'atualizarhorarios' => $corAtualizarHorarios,
         'editar' => $corEditar,
-        'consultar' => $corConsultar
+        'consultar' => $corConsultar,
+        'reqtransf' => $corReqTransf
     ];
 ?>
  
@@ -535,6 +538,7 @@
         <button class="btn btn-primary" id="suspender" disabled> Suspender </button>
         <button class="btn btn-primary" id="suspenderadm" disabled> Suspensão Administrativa </button>
         <button class="btn btn-primary" id="atualizarhorarios" disabled> Horários </button>
+        <button class="btn btn-primary" id="reqtransf" disabled> Requisição de Transfusão </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
     </div>
@@ -642,7 +646,8 @@
                     'trocar',
                     'atualizarhorarios',
                     'editar',
-                    'consultar'
+                    'consultar',
+                    'reqtransf'
                 ];
 
                 // Percorrer os botões e definir a cor ao desativá-los
@@ -723,6 +728,12 @@
                 if (tempermissaoconsultar) {
                     consultar.disabled = false;
                     consultar.removeAttribute("disabled");
+
+                }
+
+                if (tempermissaoconsultar || tempermissaoalterar) {
+                    reqtransf.disabled = false;
+                    reqtransf.removeAttribute("disabled");
 
                 }
             });
@@ -823,6 +834,7 @@
         handleButtonOthers(suspender, 'suspendercirurgia');
         handleButtonOthers(suspenderadm, 'suspendercirurgia');
         handleButtonOthers(atualizarhorarios, 'atualizarhorarioscirurgia');
+        handleButtonOthers(reqtransf, 'reqtransf');
         handleButtonOthers(editar, 'atualizarcirurgia');
         handleButtonOthers(consultar, 'consultarcirurgia');
 

@@ -82,6 +82,26 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
+        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') && (!HUAP_Functions::tem_permissao('exames') ||  HUAP_Functions::tem_permissao('admin'))) { ?>
+        <li>
+                <a href="#transfusao" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                    <i class="fa-solid fa-plus toggle-icon"></i> Transfusão
+                </a>
+                <div class="collapse" id="transfusao">
+                    <ul class="nav flex-column submenu-2">
+                        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
+                        <li>
+                            <a href="<?= base_url('transfusao/requisitar') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                <i class="fa-solid fa-user-nurse"></i> Requisitar
+                            </a>
+                        </li-->
+                        <?php } ?>
+                    </ul>
+                </div>
+            </li>
+        <?php } ?>
+    </ul>
+    <ul class="nav navbar-nav flex-column">
         <?php if(HUAP_Functions::tem_permissao('relatorios')) { ?>
         <li>
             <a href="#relatorios" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">

@@ -449,7 +449,7 @@ class MapaCirurgico extends ResourceController
         }
 
         if ($this->validate($rules)) {
-            if ($data['dtinicio'] || $data['dtfim']) {
+            if (($data['dtinicio'] ?? null) || ($data['dtfim'] ?? null)) {
 
                 $data['filas'] = $this->selectfilaativas;
                 $data['riscos'] = $this->selectrisco;
@@ -1028,7 +1028,7 @@ class MapaCirurgico extends ResourceController
         }
 
         if ($this->validate($rules)) {
-            if ($data['dtinicio'] || $data['dtfim']) {
+            if (($data['dtinicio'] ?? null) || ($data['dtfim'] ?? null)) {
 
                 $data['filas'] = $this->selectfilaativas;
                 $data['riscos'] = $this->selectrisco;
@@ -1347,13 +1347,22 @@ class MapaCirurgico extends ResourceController
         $builder->where('dthrtroca', null);
         $builder->where('dthrsaidacentrocirurgico', null);
 
-        //$builder->where('nmlateralidade', $data['lateralidade']);
-
-        //var_dump($builder->getCompiledSelect());die();
-
-        //die(var_dump($builder->get()->getResult()));
-
         return $builder->get()->getResult();
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getCirurgiasPaciente () 
+    {
+        //die(var_dump($data));
+
+        $prontuario = $this->request->getPost('prontuario');
+
+        $cirurgias = $this->vwmapacirurgicomodel->where('prontuario', $prontuario)->findAll();
+
+        return $this->response->setJSON($cirurgias ?? []);
     }
     /**
      * Return a new resource object, with default properties
