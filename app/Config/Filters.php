@@ -28,6 +28,7 @@ class Filters extends BaseConfig
         'invalidchars'  => InvalidChars::class,
         'secureheaders' => SecureHeaders::class,
         'auth' => AuthFilter::class,
+        'logacesso' => \App\Filters\LogAcessoFilter::class,
     ];
 
     /**
@@ -71,5 +72,28 @@ class Filters extends BaseConfig
      * Example:
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
      */
-    public array $filters = [];
+    //public array $filters = [];
+    public $filters = [
+        'logacesso' => ['before' => ['listaespera/incluir',
+                                     'listaespera/editar',
+                                     'listaespera/enviar',
+                                     'listaespera/excluir',
+                                     'listaespera/recuperar',
+                                     'listaespera/exibirsituacao',
+                                     'listaespera/exibirexcluidos',
+                                     'listaespera/sincronizaraghux',
+                                     'mapacirurgico/exibir',
+                                     'mapacirurgico/incluir',
+                                     'mapacirurgico/atualizar',
+                                     'mapacirurgico/atualizarhorarios',
+                                     'mapacirurgico/trocar',
+                                     'mapacirurgico/suspender',
+                                     'mapacirurgico/exibircirurgiacomhemocomps',
+                                     'mapacirurgico/exibirhistorico',
+                                     'relatorios/exibirpotencialcontaminacao',
+                                     'transfusao/requisitar',
+                                    ]], 
+    ];
+
+    
 }
