@@ -542,9 +542,72 @@
         <button class="btn btn-primary" id="reqtransf" disabled> Requisição de Transfusão </button>
         <button class="btn btn-primary" id="editar" disabled> Editar </button>
         <button class="btn btn-primary" id="consultar" disabled> Consultar </button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalLegendaCores">Legenda</button>
+
     </div>
 </div>
-
+<!------------------- Modal Legenda -------------------------------------------------------------------->
+<div class="modal fade" id="modalLegendaCores" tabindex="-1" aria-labelledby="modalLegendaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header py-2">
+        <h5 class="modal-title" id="modalLegendaLabel">Legenda das Cores</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body py-3 px-4">
+        <h6 class="mb-3"><strong>Fluxo Cirúrgico</strong></h6>
+        <div class="row row-cols-1 g-2 mb-4">
+          <?php
+            $legendaFluxo = [
+              'Paciente Solicitado' => $corPacienteSolicitado,
+              'No Centro Cirúrgico' => $corNoCentroCirúrgico,
+              'Em Cirurgia' => $corEmCirurgia,
+              'Saída da Sala' => $corSaídaDaSala,
+              'Entrada no RPA' => $corSaídaCentroCirúrgico,
+              'Leito Pós-Operatório' => $corLeitoPosOper,
+              'Alta Day Clinic' => $corAltaDayClinic,
+              'Troca de Paciente' => $corTrocaPaciente,
+              'Cirurgia Suspensa' => $corCirurgiaSuspensa,
+              'Suspensão Administrativa' => $corCirurgiaSuspensaAdm,
+            ];
+            foreach ($legendaFluxo as $desc => $cor) {
+              echo "
+              <div class='col'>
+                <div class='d-flex align-items-center border rounded px-2 py-1'>
+                  <div class='me-2' style='width: 20px; height: 20px; background-color: $cor; border: 1px solid #000;'></div>
+                  <small>$desc</small>
+                </div>
+              </div>";
+            }
+          ?>
+        </div>
+        <h6 class="mb-3"><strong>Condições da Cirurgia</strong> (cor das linhas) </h6>
+        <div class="row row-cols-1 g-2">
+          <?php
+            $legendaCondicoes = [
+            'Equipamentos acima da capacidade diária' => '#fff9c4',         // amarelo claro
+            'Hemocomponentes sem aprovação' => '#ffcdd2',            // vermelho claro
+            'Ambos (equipamento e hemocomponente)' => '#ffe0b2'      // laranja claro
+            ];
+            foreach ($legendaCondicoes as $desc => $cor) {
+              echo "
+              <div class='col'>
+                <div class='d-flex align-items-center border rounded px-2 py-1'>
+                  <div class='me-2' style='width: 20px; height: 20px; background-color: $cor; border: 1px solid #000;'></div>
+                  <small>$desc</small>
+                </div>
+              </div>";
+            }
+          ?>
+        </div>
+      </div>
+      <div class="modal-footer py-2">
+        <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Fechar</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!------------------- Fim Modal Legenda ----------------------------------------------------------------->
 <script src="https://cdn.datatables.net/fixedheader/4.0.1/js/dataTables.fixedHeader.min.js"></script>
 <script src="https://cdn.datatables.net/fixedcolumns/5.0.4/js/dataTables.fixedColumns.min.js"></script>
 
