@@ -364,6 +364,7 @@
                     data-permiteatualizar="<?= $permiteatualizar ?>"
                     data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames') ?>"
                     data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') || HUAP_Functions::tem_permissao('exames') ?>"
+                    data-tempermissaotransfusao="<?= HUAP_Functions::tem_permissao('transfusao-requisitar') || HUAP_Functions::tem_permissao('transfusao-atender') ?>"
                     >
                     
                     <!-- <td><--?php echo DateTime::createFromFormat('Y-m-d H:i:s', $itemmapa->dthrcirurgia)->format('d/m/Y').$itemmapa->status_fila ?></td> -->
@@ -624,10 +625,11 @@
                 const permiteatualizar = Number(selectedRow.dataset.permiteatualizar);
                 const tempermissaoalterar = Number(selectedRow.dataset.tempermissaoalterar);
                 const tempermissaoconsultar = Number(selectedRow.dataset.tempermissaoconsultar);
+                const tempermissaotransfusao = Number(selectedRow.dataset.tempermissaotransfusao);
 
                 const cirurgiaurgente = selectedRow.dataset.indurgencia;
 
-                console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
+                //console.log(statuscirurgia, permiteatualizar, tempermissaoalterar);
 
                 const coresBotoes = <?= json_encode($coresBotoes) ?>;
 
@@ -725,17 +727,16 @@
                     editar.removeAttribute("disabled");
                 }
 
+                 if (tempermissaotransfusao) {
+                    reqtransf.disabled = false;
+                    reqtransf.removeAttribute("disabled");
+                }
+
                 if (tempermissaoconsultar) {
                     consultar.disabled = false;
                     consultar.removeAttribute("disabled");
-
                 }
 
-                if (tempermissaoconsultar || tempermissaoalterar) {
-                    reqtransf.disabled = false;
-                    reqtransf.removeAttribute("disabled");
-
-                }
             });
             
         });
