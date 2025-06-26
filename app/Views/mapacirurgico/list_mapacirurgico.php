@@ -1247,6 +1247,7 @@
             paging: false,
             ordering: true,
             autoWidth: false,
+            stateSave: true,
                 "columns": [
                     { "width": "100px" },  // Primeira coluna
                     { "width": "40px" },       

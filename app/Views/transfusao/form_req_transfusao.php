@@ -2,239 +2,516 @@
 <?php $validation = \Config\Services::validation(); ?>
 
 <div class="container mt-4 mb-4">
-    <div class="card form-container">
-        <div class="card-header text-center text-black">
-            <b>Requisição Transfusional</b>
-        </div>
-
-        <div class="card-body has-validation">
-            <form id="formTransfusao" method="post" action="<?= base_url('transfusao/salvar') ?>">
-                <!-- Dados do Paciente -->
-                <div class="row g-3">
-                    <div class="col-md-1">
-                        <div class="mb-2">
-                            <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
-                            <div class="input-group">
-                                <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
-                                class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
-                                name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
-                                <?php if ($validation->getError('prontuario')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('prontuario') ?>
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card form-container">
+                <div class="card-header text-center text-black">
+                    <b>Requisição Transfusional</b>
+                </div>
+                <div class="card-body has-validation">
+                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/salvar') ?>">
+                        <!-- Dados do Paciente -->
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
+                                        class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
+                                        name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
+                                        <?php if ($validation->getError('prontuario')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('prontuario') ?>
+                                                </div>
+                                            <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label for="nome" class="form-label">Nome do Paciente</b></label>
+                                    <div class="input-group mb-12">
+                                        <input type="text" id="nome" maxlength="100" 
+                                        class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
+                                        name="nome" value="<?= set_value('nome') ?>" readonly/>
+                                        <?php if ($validation->getError('nome')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('nome') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Data Nascimento<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="dtnascimento" id="dtnascimento" class="form-control <?= $validation->hasError('dtnascimento') ? 'is-invalid' : '' ?>" value="<?= set_value('dtnascimento') ?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('dtnascimento') ?></div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Sexo<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="sexo" id="sexo" class="form-control <?= $validation->hasError('sexo') ? 'is-invalid' : '' ?>" value="<?= set_value('sexo') ?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('sexo') ?></div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-5 mb-2">
+                                <label class="form-label">Enfermaria<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="enfermaria" class="form-control <?= $validation->hasError('enfermaria') ? 'is-invalid' : '' ?>" value="<?= set_value('enfermaria') ?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('enfermaria') ?></div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Andar<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar') ?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('andar') ?></div>
+                            </div>
+                            <div class="col-md-5 mb-2">
+                                <label class="form-label">Leito<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito') ?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('leito') ?></div>
+                            </div>
+                        </div>
+                        <!-- Diagnóstico e Indicação -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" for="diagnostico">Diagnóstico</label>
+                                    <div class="input-group mb-12">
+                                        <textarea id="diagnostico" maxlength="250" rows="3"
+                                                class="form-control <?= isset($validation) && $validation->getError('diagnostico') ? 'is-invalid' : '' ?>"
+                                                name="diagnostico"><?= isset($data['diagnostico']) ? $data['diagnostico'] : '' ?></textarea>
+                                        <?php if (isset($validation) && $validation->getError('diagnostico')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('diagnostico') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label" for="indicacao">Indicação</label>
+                                    <div class="input-group mb-12">
+                                        <textarea id="indicacao" maxlength="250" rows="3"
+                                                class="form-control <?= isset($validation) && $validation->getError('indicacao') ? 'is-invalid' : '' ?>"
+                                                name="indicacao"><?= isset($data['indicacao']) ? $data['indicacao'] : '' ?></textarea>
+                                        <?php if (isset($validation) && $validation->getError('indicacao')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('indicacao') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="mb-2">
+                                    <label for="listapaciente" class="form-label">Cirurgia<b class="text-danger">*</b></label>
+                                    <select class="form-select select2-dropdown <?php if($validation->getError('listapaciente')): ?>is-invalid<?php endif ?>" 
+                                    id="listapaciente" name="listapaciente">
+                                        <option value="">Selecione uma opção</option>
+                                        <!-- As opções serão preenchidas dinamicamente -->
+                                    </select>
+                                    <?php if ($validation->getError('listapaciente')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('listapaciente') ?>
+                                            </div>
+                                        <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label">Peso (Kg)</label>
+                                <div class="input-group mb-12">
+                                    <input type="number" step="0.1" name="peso" class="form-control" value="<?= set_value('peso') ?>" />
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label class="form-label">Sangramento Ativo<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sangramento" id="sangramentoN" value="N"
+                                                <?= (isset($data['sangramento']) && $data['sangramento'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="sangramentoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
-                                    <?php endif; ?>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="sangramento" id="sangramentoS" value="S"
+                                                <?= (isset($data['sangramento']) && $data['sangramento'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="sangramentoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('sangramento')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('sangramento') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="mb-2">
-                            <label for="nome" class="form-label">Nome do Paciente</b></label>
-                            <div class="input-group mb-12">
-                                <input type="text" id="nome" maxlength="100" 
-                                class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                name="nome" value="<?= set_value('nome') ?>" readonly/>
-                                <?php if ($validation->getError('nome')): ?>
-                                    <div class="invalid-feedback">
-                                        <?= $validation->getError('nome') ?>
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label class="form-label">Transfusão Anterior<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="transfant" id="transfantN" value="N"
+                                                <?= (isset($data['transfant']) && $data['transfant'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfantN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="transfant" id="transfantS" value="S"
+                                                <?= (isset($data['transfant']) && $data['transfant'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfantS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('transfant')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('transfant') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-2">
+                                    <label class="form-label">Reação Transf<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="reacaotransf" id="reacaotransfN" value="N"
+                                                <?= (isset($data['reacaotransf']) && $data['reacaotransf'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="reacaotransfN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="reacaotransf" id="reacaotransfS" value="S"
+                                                <?= (isset($data['reacaotransf']) && $data['reacaotransf'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="reacaotransfS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('reacaotransf')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('reacaotransf') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-2 mb-2">
-                        <label class="form-label">Data Nascimento<b class="text-danger">*</b></label>
-                        <div class="input-group mb-12">
-                            <input type="text" name="dtnascimento" id="dtnascimento" class="form-control <?= $validation->hasError('dtnascimento') ? 'is-invalid' : '' ?>" value="<?= set_value('dtnascimento') ?>" disabled/>
-                        </div>
-                        <div class="invalid-feedback"><?= $validation->getError('dtnascimento') ?></div>
-                    </div>
-                    <div class="col-md-2 mb-2">
-                        <label class="form-label">Sexo<b class="text-danger">*</b></label>
-                        <div class="input-group mb-12">
-                            <input type="text" name="sexo" id="sexo" class="form-control <?= $validation->hasError('sexo') ? 'is-invalid' : '' ?>" value="<?= set_value('sexo') ?>" disabled/>
-                        </div>
-                        <div class="invalid-feedback"><?= $validation->getError('sexo') ?></div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">Enfermaria<b class="text-danger">*</b></label>
-                        <div class="input-group mb-12">
-                            <input type="text" name="enfermaria" class="form-control <?= $validation->hasError('enfermaria') ? 'is-invalid' : '' ?>" value="<?= set_value('enfermaria') ?>" disabled/>
-                        </div>
-                        <div class="invalid-feedback"><?= $validation->getError('enfermaria') ?></div>
-                    </div>
-                    <div class="col-md-2 mb-2">
-                        <label class="form-label">Andar<b class="text-danger">*</b></label>
-                        <div class="input-group mb-12">
-                            <input type="text" name="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar') ?>" disabled/>
-                        </div>
-                        <div class="invalid-feedback"><?= $validation->getError('andar') ?></div>
-                    </div>
-                    <div class="col-md-4 mb-2">
-                        <label class="form-label">Leito<b class="text-danger">*</b></label>
-                        <div class="input-group mb-12">
-                            <input type="text" name="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito') ?>" disabled/>
-                        </div>
-                        <div class="invalid-feedback"><?= $validation->getError('leito') ?></div>
-                    </div>
-                </div>
-                <!-- Diagnóstico e Indicação -->
-                <div class="row g-3">
-                    <div class="col-md-2 mb-2">
-                        <label class="form-label">Peso (Kg)</label>
-                        <div class="input-group mb-12">
-                            <input type="number" step="0.1" name="peso" class="form-control" value="<?= set_value('peso') ?>" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label" for="diagnostico">Diagnóstico</label>
-                            <div class="input-group mb-12">
-                                <textarea id="diagnostico" maxlength="250" rows="3"
-                                        class="form-control <?= isset($validation) && $validation->getError('diagnostico') ? 'is-invalid' : '' ?>"
-                                        name="diagnostico"><?= isset($data['diagnostico']) ? $data['diagnostico'] : '' ?></textarea>
-                                <?php if (isset($validation) && $validation->getError('diagnostico')): ?>
-                                    <div class="invalid-feedback">
-                                        <?= $validation->getError('diagnostico') ?>
+                        <!-- Hemocomponentes -->
+                        <div class="row g-3">
+                            <div class="col-md-12" id="hemocomp-section">
+                                <div class="mb-2">
+                                    <label class="form-label">Hemocomponentes (unid/ml)</label>
+                                    <div class="bordered-container p-3">
+                                        <div class="row g-2">
+                                            <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="ch" class="form-control" value="<?= set_value('ch') ?>"></div>
+                                            <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="cp" class="form-control" value="<?= set_value('cp') ?>"></div>
+                                            <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="pfc" class="form-control" value="<?= set_value('pfc') ?>"></div>
+                                            <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio') ?>"></div>
+                                        </div>
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label" for="indicacao">Indicação</label>
-                            <div class="input-group mb-12">
-                                <textarea id="indicacao" maxlength="250" rows="3"
-                                        class="form-control <?= isset($validation) && $validation->getError('indicacao') ? 'is-invalid' : '' ?>"
-                                        name="indicacao"><?= isset($data['indicacao']) ? $data['indicacao'] : '' ?></textarea>
-                                <?php if (isset($validation) && $validation->getError('indicacao')): ?>
-                                    <div class="invalid-feedback">
-                                        <?= $validation->getError('indicacao') ?>
+                        <!-- Dados laboratoriais -->
+                        <div class="row g-3">
+                            <div class="col-md-12" id="hemocomp-section">
+                                <div class="mb-2">
+                                    <label class="form-label">Dados Laboratoriais</label>
+                                    <div class="bordered-container p-3">
+                                        <div class="row g-3">
+                                            <!-- Hematócrito -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>Hematócrito (%)</label>
+                                                            <input type="number" step="0.1" name="hematocrito" class="form-control" value="<?= set_value('hematocrito') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_hematocrito" class="form-control" value="<?= set_value('data_hematocrito') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Hemoglobina -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>Hemoglobina (g/dL)</label>
+                                                            <input type="number" step="0.1" name="hemoglobina" class="form-control" value="<?= set_value('hemoglobina') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_hemoglobina" class="form-control" value="<?= set_value('data_hemoglobina') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                             <!-- Plaqutas -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>Plaquetas (g/dl)</label>
+                                                            <input type="number" step="0.1" name="plaquetas" class="form-control" value="<?= set_value('plaquetas') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_plaquetas" class="form-control" value="<?= set_value('data_plaquetas') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- TAP -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>TAP (seg)</label>
+                                                            <input type="number" step="0.1" name="tap" class="form-control" value="<?= set_value('tap') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_tap" class="form-control" value="<?= set_value('data_tap') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- INR -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>INR</label>
+                                                            <input type="number" step="0.01" name="inr" class="form-control" value="<?= set_value('inr') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_inr" class="form-control" value="<?= set_value('data_inr') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- PTT -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>PTT (seg)</label>
+                                                            <input type="number" step="0.1" name="ptt" class="form-control" value="<?= set_value('ptt') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_ptt" class="form-control" value="<?= set_value('data_ptt') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Fibrinogênio -->
+                                            <div class="col-md-6">
+                                                <div class="border rounded p-2">
+                                                    <div class="row g-2 align-items-end">
+                                                        <div class="col-md-6">
+                                                            <label>Fibrinogênio (mg/dL)</label>
+                                                            <input type="number" name="fibrinogenio" class="form-control" value="<?= set_value('fibrinogenio') ?>">
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <label>Data</label>
+                                                            <input type="date" name="data_fibrinogenio" class="form-control" value="<?= set_value('data_fibrinogenio') ?>">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div> <!-- /.row -->
                                     </div>
-                                <?php endif; ?>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="row g-3">
-                    <div class="col-md-12">
-                        <div class="mb-2">
-                            <label for="listapaciente" class="form-label">Cirurgia<b class="text-danger">*</b></label>
-                            <select class="form-select select2-dropdown <?php if($validation->getError('listapaciente')): ?>is-invalid<?php endif ?>" 
-                            id="listapaciente" name="listapaciente">
-                                <option value="">Selecione uma opção</option>
-                                <!-- As opções serão preenchidas dinamicamente -->
-                            </select>
-                            <?php if ($validation->getError('listapaciente')): ?>
-                                    <div class="invalid-feedback">
-                                        <?= $validation->getError('listapaciente') ?>
+                        <!-- Procedimentos Especiais -->
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label">Procedimentos Especiais</label>
+                                    <div class="bordered-container p-3">
+                                        <!-- Opções -->
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="procedimento_filtrado" value="1" <?= set_checkbox('procedimento_filtrado', '1') ?>>
+                                            <label class="form-check-label">Filtrado</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="procedimento_irradiado" value="1" <?= set_checkbox('procedimento_irradiado', '1') ?>>
+                                            <label class="form-check-label">Irradiado</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="procedimento_lavado" value="1" <?= set_checkbox('procedimento_lavado', '1') ?>>
+                                            <label class="form-check-label">Lavado</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" name="procedimento_outros" value="1" <?= set_checkbox('procedimento_outros', '1') ?>>
+                                            <label class="form-check-label">Outros</label>
+                                        </div>
+                                        <!-- Justificativa abaixo de "Outros" -->
+                                        <div class="mt-1">
+                                            <label for="justificativa_procedimentos" class="form-label">Justificativa</label>
+                                            <textarea name="justificativa_procedimentos" id="justificativa_procedimentos" class="form-control" rows="2"><?= set_value('justificativa_procedimentos') ?></textarea>
+                                        </div>
                                     </div>
-                                <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Dados laboratoriais -->
-                <div class="row g-3">
-                    <div class="col-md-12" id="hemocomp-section">
-                        <div class="mb-2">
-                            <label class="form-label">Dados Laboratoriais</label>
-                            <div class="bordered-container p-3">
-                                <div class="row g-2">
-                                    <div class="col-md-2"><label>Hematócrito (%)</label><input type="number" step="0.1" name="hematocrito" class="form-control" value="<?= set_value('hematocrito') ?>"></div>
-                                    <div class="col-md-2"><label>Hemoglobina (g/dL)</label><input type="number" step="0.1" name="hemoglobina" class="form-control" value="<?= set_value('hemoglobina') ?>"></div>
-                                    <div class="col-md-2"><label>TAP (seg)</label><input type="number" step="0.1" name="tap" class="form-control" value="<?= set_value('tap') ?>"></div>
-                                    <div class="col-md-2"><label>PTT (seg)</label><input type="number" step="0.1" name="ptt" class="form-control" value="<?= set_value('ptt') ?>"></div>
-                                    <div class="col-md-2"><label>INR</label><input type="number" step="0.01" name="inr" class="form-control" value="<?= set_value('inr') ?>"></div>
-                                    <div class="col-md-2"><label>Fibrinogênio (mg/dL)</label><input type="number" name="fibrinogenio" class="form-control" value="<?= set_value('fibrinogenio') ?>"></div>
+                                </div>
+                            </div>
+                            <!-- Tipo de Transfusão -->
+                            <div class="col-md-6">
+                                <div class="mb-2">
+                                    <label class="form-label">Tipo de Transfusão</label>
+                                    <div class="bordered-container p-3">
+                                        <!-- Rotina -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="rotina" <?= set_radio('tipo_transfusao', 'rotina') ?>>
+                                            <label class="form-check-label" for="transfusao_rotina">
+                                                Rotina (em até 24h)
+                                            </label>
+                                        </div>
+                                        <!-- Urgência -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="urgencia" <?= set_radio('tipo_transfusao', 'urgencia') ?>>
+                                            <label class="form-check-label" for="transfusao_urgencia">
+                                                Urgência (em até 3h)
+                                            </label>
+                                        </div>
+                                        <!-- Emergência -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="emergencia" <?= set_radio('tipo_transfusao', 'emergencia') ?>>
+                                            <label class="form-check-label" for="transfusao_emergencia">
+                                                Emergência
+                                            </label>
+                                        </div>
+                                         <!-- Emergência sem compatibilidade -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="emergencia_semteste" <?= set_radio('tipo_transfusao', 'emergencia_semteste') ?>>
+                                            <label class="form-check-label" for="transfusao_emergencia_semteste">
+                                                Emergência (sem teste de compatibilidade)
+                                            </label>
+                                        </div>
+                                        <!-- Programada + Data -->
+                                        <div class="form-check d-flex align-items-center" style="margin-bottom: 32px;">
+                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="programada" <?= set_radio('tipo_transfusao', 'programada') ?>>
+                                            <label class="form-check-label me-2" for="transfusao_programada">
+                                                Programada
+                                            </label>
+                                            <input type="date"
+                                                name="data_programada"
+                                                id="data_programada"
+                                                class="form-control form-control-sm"
+                                                style="width: 100%; max-width: 200px; display: <?= set_radio('tipo_transfusao', 'programada') ? 'inline-block' : 'none' ?>;"
+                                                value="<?= set_value('data_programada') ?>">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                        <!-- Amostra -->
+                        <div class="row g-3">
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label">Amostra</label>
+                                <div class="bordered-container p-3">
+                                    <div class="row g-2 align-items-end">
 
-                <!-- Hemocomponentes -->
-                 <div class="row g-3">
-                    <div class="col-md-12" id="hemocomp-section">
-                        <div class="mb-2">
-                            <label class="form-label">Hemocomponentes (unid/ml)</label>
-                            <div class="bordered-container p-3">
-                                <div class="row g-2">
-                                    <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="ch" class="form-control" value="<?= set_value('ch') ?>"></div>
-                                    <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="cp" class="form-control" value="<?= set_value('cp') ?>"></div>
-                                    <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="pfc" class="form-control" value="<?= set_value('pfc') ?>"></div>
-                                    <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio') ?>"></div>
+                                        <!-- Data da Coleta -->
+                                        <div class="col-md-3">
+                                            <label for="data_coleta">Data da Coleta</label>
+                                            <input type="date" name="data_coleta" id="data_coleta" class="form-control" value="<?= set_value('data_coleta') ?>">
+                                        </div>
+
+                                        <!-- Hora da Coleta -->
+                                        <div class="col-md-3">
+                                            <label for="hora_coleta">Hora da Coleta</label>
+                                            <input type="time" name="hora_coleta" id="hora_coleta" class="form-control" value="<?= set_value('hora_coleta') ?>">
+                                        </div>
+
+                                        <!-- Nome do Coletor -->
+                                        <div class="col-md-6">
+                                            <label for="nome_coletor">Nome do Coletor</label>
+                                            <input type="text" name="nome_coletor" id="nome_coletor" class="form-control" value="<?= set_value('nome_coletor') ?>">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <!-- Solicitação -->
+<div class="row g-3">
+    <div class="col-md-12 mb-2">
+        <label class="form-label">Solicitação</label>
+        <div class="bordered-container p-3">
+            <div class="row g-2 align-items-end">
+                <!-- Médico Solicitante -->
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="profissional" class="form-label">Médico Solicitante <b class="text-danger">*</b></label>
+                        <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
+                                id="profissional" name="profissional" data-placeholder="" data-allow-clear="1">
+                            <option value=""></option> <!-- valor vazio para placeholder -->
+                            <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
+                                <option value="<?= $prof_espec->pes_codigo ?>"
+                                    <?= set_select('profissional', $prof_espec->pes_codigo) ?>>
+                                    <?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                        <?php if ($validation->hasError('profissional')): ?>
+                            <div class="invalid-feedback">
+                                <?= $validation->getError('profissional') ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- Procedimentos Especiais -->
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label">Procedimentos Especiais</label>
-                            <div class="bordered-container p-3">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="procedimento_filtrado" value="1" <?= set_checkbox('procedimento_filtrado', '1') ?>>
-                                    <label class="form-check-label">Filtrado</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="procedimento_irradiado" value="1" <?= set_checkbox('procedimento_irradiado', '1') ?>>
-                                    <label class="form-check-label">Irradiado</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="checkbox" name="procedimento_lavado" value="1" <?= set_checkbox('procedimento_lavado', '1') ?>>
-                                    <label class="form-check-label">Lavado</label>
-                                </div>
+                <!-- Data da Solicitação -->
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="data_solicitacao" class="form-label">Data</label>
+                        <input type="date" name="data_solicitacao" id="data_solicitacao" class="form-control" value="<?= set_value('data_solicitacao') ?>">
+                    </div>
+                </div>
+
+                <!-- Hora da Solicitação -->
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label for="hora_solicitacao" class="form-label">Hora</label>
+                        <input type="time" name="hora_solicitacao" id="hora_solicitacao" class="form-control" value="<?= set_value('hora_solicitacao') ?>">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+                        <!-- Observações -->
+                        <div class="mb-3">
+                            <label class="form-label">Observações</label>
+                            <textarea class="form-control" rows="3" name="observacoes"><?= set_value('observacoes') ?></textarea>
+                        </div>
+                         <div class="row g-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary mt-4">
+                                    <i class="fa-solid fa-floppy-disk"></i> Salvar
+                                </button>
+                                <a class="btn btn-warning mt-4" href="javascript:history.go(-1)">
+                                    <i class="fa-solid fa-arrow-left"></i> Voltar
+                                </a>
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Tipo de Transfusão -->
-                     <div class="col-md-6">
-                        <div class="mb-2">
-                            <label class="form-label">Tipo de Transfusão</label>
-                            <div class="bordered-container p-3">
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="tipo_transfusao" value="rotina" <?= set_radio('tipo_transfusao', 'rotina') ?>>
-                                    <label class="form-check-label">Rotina (até 24h)</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="tipo_transfusao" value="urgencia" <?= set_radio('tipo_transfusao', 'urgencia') ?>>
-                                    <label class="form-check-label">Urgência (até 3h)</label>
-                                </div>
-                                <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="tipo_transfusao" value="emergencia" <?= set_radio('tipo_transfusao', 'emergencia') ?>>
-                                    <label class="form-check-label">Emergência (sem compatibilidade)</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
-
-                <!-- Observações -->
-                <div class="mb-3">
-                    <label class="form-label">Observações</label>
-                    <textarea class="form-control" rows="3" name="observacoes"><?= set_value('observacoes') ?></textarea>
-                </div>
-
-                <!-- Ações -->
-                <div class="text-center">
-                    <button class="btn btn-success" type="submit">
-                        <i class="fa-solid fa-floppy-disk"></i> Salvar
-                    </button>
-                    <a href="<?= base_url('transfusao') ?>" class="btn btn-warning">
-                        <i class="fa-solid fa-arrow-left"></i> Voltar
-                    </a>
-                </div>
-
-            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -430,8 +707,6 @@
         });
     }
     
-    
-
     function updatelistapaciente(prontuario, valorSelecionado = null) {
 
         const listapacienteSelect = document.getElementById('listapaciente');
@@ -453,7 +728,7 @@
                     //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
                     const option = document.createElement("option"); // Usando createElement para criar uma nova opção
                     option.value = 0; // ID que será usado como valor da opção
-                    option.text = `Paciente não está no Mapa`;
+                    option.text = `Paciente não está no Mapa Cirúrgico`;
                     
                     listapacienteSelect.add(option); // Adiciona a nova opção ao select
 
@@ -531,7 +806,22 @@
         fetchPacienteNome(prontuarioInput.value);
     }
 
-   
+    document.addEventListener('DOMContentLoaded', function () {
+        const radios = document.querySelectorAll('input[name="tipo_transfusao"]');
+        const dataField = document.getElementById('data_programada');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', function () {
+                if (this.value === 'programada') {
+                    dataField.style.display = 'inline-block';
+                } else {
+                    dataField.style.display = 'none';
+                    dataField.value = '';
+                }
+            });
+        });
+    });
+  
     $(document).ready(function() {
         
         $('.select2-dropdown').select2({

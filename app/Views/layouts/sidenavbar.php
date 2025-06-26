@@ -62,43 +62,65 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') && (!HUAP_Functions::tem_permissao('exames') ||  HUAP_Functions::tem_permissao('admin'))) { ?>
+        <?php if(
+            HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente') ||
+            HUAP_Functions::tem_permissao('transfusao-requisitar') ||
+            HUAP_Functions::tem_permissao('transfusao-atender')
+        ) { ?>
         <li>
-                <a href="#bcosangue" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-plus toggle-icon"></i> Banco de Sangue
-                </a>
-                <div class="collapse" id="bcosangue">
-                    <ul class="nav flex-column submenu-2">
-                        <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
-                        <li>
-                            <a href="<?= base_url('mapacirurgico/consultarcirurgiacomhemocomps') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Consultar Hemocomponentes
-                            </a>
-                        </li-->
-                        <?php } ?>
-                    </ul>
-                </div>
-            </li>
-        <?php } ?>
-    </ul>
-    <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar') ||  HUAP_Functions::tem_permissao('transfusao-atender')) { ?>
-        <li>
-                <a href="#transfusao" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
-                    <i class="fa-solid fa-plus toggle-icon"></i> Transfusão
-                </a>
-                <div class="collapse" id="transfusao">
-                    <ul class="nav flex-column submenu-2">
-                        <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
-                        <li>
-                            <a href="<?= base_url('transfusao/requisitar') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
-                                <i class="fa-solid fa-user-nurse"></i> Requisitar
-                            </a>
-                        </li-->
-                        <?php } ?>
-                    </ul>
-                </div>
-            </li>
+            <a href="#bcosangue" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                <i class="fa-solid fa-plus toggle-icon"></i> Banco de Sangue
+            </a>
+            <div class="collapse" id="bcosangue">
+                <ul class="nav flex-column submenu-2">
+
+                    <?php if(HUAP_Functions::tem_permissao('bcosangue-reservarhemocomponente')) { ?>
+                    <li>
+                        <a href="<?= base_url('mapacirurgico/consultarcirurgiacomhemocomps') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                            <i class="fa-solid fa-user-nurse"></i> Consultar Hemocomponentes
+                        </a>
+                    </li>
+                    <?php } ?>
+
+                    <?php if(
+                        HUAP_Functions::tem_permissao('transfusao-requisitar') ||
+                        HUAP_Functions::tem_permissao('transfusao-atender')
+                    ) { ?>
+                    <li>
+                        <a href="#submenuTransfusao" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
+                            <i class="fa-solid fa-plus toggle-icon"></i> Transfusão
+                        </a>
+                        <div class="collapse" id="submenuTransfusao">
+                            <ul class="nav flex-column submenu-3">
+                                <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('transfusao/requisitar') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Requisitar
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('transfusao/atender') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Atender Requisição
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                                <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
+                                    <li>
+                                        <a href="<?= base_url('transfusao/emitirtcle') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                            <i class="fa-solid fa-user-nurse"></i> Emitir TCLE
+                                        </a>
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                        </div>
+                    </li>
+                    <?php } ?>
+
+                </ul>
+            </div>
+        </li>
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">

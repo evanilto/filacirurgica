@@ -128,6 +128,7 @@ $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'Transfusao::index');
     $routes->get('requisitar', 'Transfusao::requisitarTransfusao');
     $routes->post('salvar', 'Transfusao::salvar');
+    $routes->get('atender', 'Transfusao::atenderRequisicao');
     $routes->get('editar/(:num)', 'Transfusao::editar/$1');
     $routes->get('excluir/(:num)', 'Transfusao::excluir/$1');
 });
