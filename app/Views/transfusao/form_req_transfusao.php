@@ -424,23 +424,20 @@
                                 <label class="form-label">Amostra</label>
                                 <div class="bordered-container p-3">
                                     <div class="row g-2 align-items-end">
-
+                                        <!-- Nome do Coletor -->
+                                        <div class="col-md-6">
+                                            <label for="nome_coletor">Nome do Coletor</label>
+                                            <input type="text" name="nome_coletor" id="nome_coletor" class="form-control" value="<?= set_value('nome_coletor') ?>">
+                                        </div>
                                         <!-- Data da Coleta -->
                                         <div class="col-md-3">
                                             <label for="data_coleta">Data da Coleta</label>
                                             <input type="date" name="data_coleta" id="data_coleta" class="form-control" value="<?= set_value('data_coleta') ?>">
                                         </div>
-
                                         <!-- Hora da Coleta -->
                                         <div class="col-md-3">
                                             <label for="hora_coleta">Hora da Coleta</label>
                                             <input type="time" name="hora_coleta" id="hora_coleta" class="form-control" value="<?= set_value('hora_coleta') ?>">
-                                        </div>
-
-                                        <!-- Nome do Coletor -->
-                                        <div class="col-md-6">
-                                            <label for="nome_coletor">Nome do Coletor</label>
-                                            <input type="text" name="nome_coletor" id="nome_coletor" class="form-control" value="<?= set_value('nome_coletor') ?>">
                                         </div>
                                     </div>
                                 </div>
