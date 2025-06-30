@@ -9,7 +9,7 @@
                     <b>Requisição Transfusional</b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/salvar') ?>">
+                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/incluir') ?>">
                         <!-- Dados do Paciente -->
                         <div class="row g-3">
                             <div class="col-md-2">
@@ -116,15 +116,15 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label for="listapaciente" class="form-label">Cirurgia<b class="text-danger">*</b></label>
-                                    <select class="form-select select2-dropdown <?php if($validation->getError('listapaciente')): ?>is-invalid<?php endif ?>" 
-                                    id="listapaciente" name="listapaciente">
+                                    <label for="cirurgia" class="form-label">Cirurgia<b class="text-danger">*</b></label>
+                                    <select class="form-select select2-dropdown <?php if($validation->getError('cirurgia')): ?>is-invalid<?php endif ?>" 
+                                    id="cirurgia" name="cirurgia">
                                         <option value="">Selecione uma opção</option>
                                         <!-- As opções serão preenchidas dinamicamente -->
                                     </select>
-                                    <?php if ($validation->getError('listapaciente')): ?>
+                                    <?php if ($validation->getError('cirurgia')): ?>
                                             <div class="invalid-feedback">
-                                                <?= $validation->getError('listapaciente') ?>
+                                                <?= $validation->getError('cirurgia') ?>
                                             </div>
                                         <?php endif; ?>
                                 </div>
@@ -164,20 +164,20 @@
                                     <label class="form-label">Transfusão Anterior<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="transfant" id="transfantN" value="N"
-                                                <?= (isset($data['transfant']) && $data['transfant'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="transfantN" style="margin-right: 10px;">&nbsp;Não</label>
+                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorN" value="N"
+                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfusao_anteriorN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="transfant" id="transfantS" value="S"
-                                                <?= (isset($data['transfant']) && $data['transfant'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="transfantS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorS" value="S"
+                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfusao_anteriorS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('transfant')): ?>
+                                <?php if ($validation->getError('transfusao_anterior')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('transfant') ?>
+                                        <?= $validation->getError('transfusao_anterior') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -186,20 +186,20 @@
                                     <label class="form-label">Reação Transf<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="reacaotransf" id="reacaotransfN" value="N"
-                                                <?= (isset($data['reacaotransf']) && $data['reacaotransf'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="reacaotransfN" style="margin-right: 10px;">&nbsp;Não</label>
+                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorN" value="N"
+                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfusao_anteriorN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="reacaotransf" id="reacaotransfS" value="S"
-                                                <?= (isset($data['reacaotransf']) && $data['reacaotransf'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="reacaotransfS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorS" value="S"
+                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="transfusao_anteriorS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('reacaotransf')): ?>
+                                <?php if ($validation->getError('transfusao_anterior')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('reacaotransf') ?>
+                                        <?= $validation->getError('transfusao_anterior') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -237,7 +237,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_hematocrito" class="form-control" value="<?= set_value('data_hematocrito') ?>">
+                                                            <input type="date" name="dt_hematocrito" class="form-control" value="<?= set_value('dt_hematocrito') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -252,7 +252,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_hemoglobina" class="form-control" value="<?= set_value('data_hemoglobina') ?>">
+                                                            <input type="date" name="dt_hemoglobina" class="form-control" value="<?= set_value('dt_hemoglobina') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -267,7 +267,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_plaquetas" class="form-control" value="<?= set_value('data_plaquetas') ?>">
+                                                            <input type="date" name="dt_plaquetas" class="form-control" value="<?= set_value('dt_plaquetas') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -282,7 +282,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_tap" class="form-control" value="<?= set_value('data_tap') ?>">
+                                                            <input type="date" name="dt_tap" class="form-control" value="<?= set_value('dt_tap') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -297,7 +297,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_inr" class="form-control" value="<?= set_value('data_inr') ?>">
+                                                            <input type="date" name="dt_inr" class="form-control" value="<?= set_value('dt_inr') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -312,7 +312,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_ptt" class="form-control" value="<?= set_value('data_ptt') ?>">
+                                                            <input type="date" name="dt_ptt" class="form-control" value="<?= set_value('dt_ptt') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -327,7 +327,7 @@
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="data_fibrinogenio" class="form-control" value="<?= set_value('data_fibrinogenio') ?>">
+                                                            <input type="date" name="dt_fibrinogenio" class="form-control" value="<?= set_value('dt_fibrinogenio') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -343,27 +343,35 @@
                                 <div class="mb-2">
                                     <label class="form-label">Procedimentos Especiais</label>
                                     <div class="bordered-container p-3">
-                                        <!-- Opções -->
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="procedimento_filtrado" value="1" <?= set_checkbox('procedimento_filtrado', '1') ?>>
-                                            <label class="form-check-label">Filtrado</label>
+                                            <input class="form-check-input" type="radio" name="congelacao" id="procedimento_especialF" value="F"
+                                                <?= (isset($data['procedimento_especial']) && $data['procedimento_especial'] == 'F') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="procedimento_especialF" style="margin-right: 10px;">&nbsp;Filtrado</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="procedimento_irradiado" value="1" <?= set_checkbox('procedimento_irradiado', '1') ?>>
-                                            <label class="form-check-label">Irradiado</label>
+                                            <input class="form-check-input" type="radio" name="procedimento_especial" id="procedimento_especialI" value="I"
+                                                <?= (isset($data['procedimento_especial']) && $data['procedimento_especial'] == 'I') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="procedimento_especialI" style="margin-right: 10px;">&nbsp;Irradiado</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="procedimento_lavado" value="1" <?= set_checkbox('procedimento_lavado', '1') ?>>
-                                            <label class="form-check-label">Lavado</label>
+                                            <input class="form-check-input" type="radio" name="congelacao" id="procedimento_especialL" value="L"
+                                                <?= (isset($data['procedimento_especial']) && $data['procedimento_especial'] == 'L') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="procedimento_especiaL" style="margin-right: 10px;">&nbsp;Lavado</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="checkbox" name="procedimento_outros" value="1" <?= set_checkbox('procedimento_outros', '1') ?>>
-                                            <label class="form-check-label">Outros</label>
+                                            <input class="form-check-input" type="radio" name="procedimento_especial" id="procedimento_especialO" value="O"
+                                                <?= (isset($data['procedimento_especial']) && $data['procedimento_especial'] == 'O') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="procedimento_especialO" style="margin-right: 10px;">&nbsp;Outros</label>
                                         </div>
+                                        <?php if ($validation->getError('procedimento_especial')): ?>
+                                            <div class="invalid-feedback d-block">
+                                                <?= $validation->getError('procedimento_especial') ?>
+                                            </div>
+                                        <?php endif; ?>
                                         <!-- Justificativa abaixo de "Outros" -->
                                         <div class="mt-1">
-                                            <label for="justificativa_procedimentos" class="form-label">Justificativa</label>
-                                            <textarea name="justificativa_procedimentos" id="justificativa_procedimentos" class="form-control" rows="2"><?= set_value('justificativa_procedimentos') ?></textarea>
+                                            <label for="justificativa_proc_esp" class="form-label">Justificativa</label>
+                                            <textarea name="justificativa_proc_esp" id="justificativa_proc_esp" class="form-control" rows="2"><?= set_value('justificativa_proc_esp') ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -408,11 +416,11 @@
                                                 Programada
                                             </label>
                                             <input type="date"
-                                                name="data_programada"
-                                                id="data_programada"
+                                                name="dt_programada"
+                                                id="dt_programada"
                                                 class="form-control form-control-sm"
                                                 style="width: 100%; max-width: 200px; display: <?= set_radio('tipo_transfusao', 'programada') ? 'inline-block' : 'none' ?>;"
-                                                value="<?= set_value('data_programada') ?>">
+                                                value="<?= set_value('dt_programada') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -431,66 +439,65 @@
                                         </div>
                                         <!-- Data da Coleta -->
                                         <div class="col-md-3">
-                                            <label for="data_coleta">Data da Coleta</label>
-                                            <input type="date" name="data_coleta" id="data_coleta" class="form-control" value="<?= set_value('data_coleta') ?>">
+                                            <label for="dt_coleta">Data da Coleta</label>
+                                            <input type="date" name="dt_coleta" id="dt_coleta" class="form-control" value="<?= set_value('dt_coleta') ?>">
                                         </div>
                                         <!-- Hora da Coleta -->
                                         <div class="col-md-3">
-                                            <label for="hora_coleta">Hora da Coleta</label>
-                                            <input type="time" name="hora_coleta" id="hora_coleta" class="form-control" value="<?= set_value('hora_coleta') ?>">
+                                            <label for="hr_coleta">Hora da Coleta</label>
+                                            <input type="time" name="hr_coleta" id="hr_coleta" class="form-control" value="<?= set_value('hr_coleta') ?>">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <!-- Solicitação -->
-<div class="row g-3">
-    <div class="col-md-12 mb-2">
-        <label class="form-label">Solicitação</label>
-        <div class="bordered-container p-3">
-            <div class="row g-2 align-items-end">
-                <!-- Médico Solicitante -->
-                <div class="col-md-6">
-                    <div class="mb-3">
-                        <label for="profissional" class="form-label">Médico Solicitante <b class="text-danger">*</b></label>
-                        <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
-                                id="profissional" name="profissional" data-placeholder="" data-allow-clear="1">
-                            <option value=""></option> <!-- valor vazio para placeholder -->
-                            <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
-                                <option value="<?= $prof_espec->pes_codigo ?>"
-                                    <?= set_select('profissional', $prof_espec->pes_codigo) ?>>
-                                    <?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                        <?php if ($validation->hasError('profissional')): ?>
-                            <div class="invalid-feedback">
-                                <?= $validation->getError('profissional') ?>
+                        <div class="row g-3">
+                            <div class="col-md-12 mb-2">
+                                <label class="form-label">Solicitação</label>
+                                <div class="bordered-container p-3">
+                                    <div class="row g-2 align-items-end">
+                                        <!-- Médico Solicitante -->
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="medico_solicitante" class="form-label">Médico Solicitante <b class="text-danger">*</b></label>
+                                                <select class="form-select select2-dropdown <?= $validation->hasError('medico_solicitante') ? 'is-invalid' : '' ?>"
+                                                        id="medico_solicitante" name="medico_solicitante" data-placeholder="" data-allow-clear="1">
+                                                    <option value=""></option> <!-- valor vazio para placeholder -->
+                                                    <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
+                                                        <option value="<?= $prof_espec->pes_codigo ?>"
+                                                            <?= set_select('medico_solicitante', $prof_espec->pes_codigo) ?>>
+                                                            <?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                </select>
+                                                <?php if ($validation->hasError('medico_solicitante')): ?>
+                                                    <div class="invalid-feedback">
+                                                        <?= $validation->getError('medico_solicitante') ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+
+                                        <!-- Data da Solicitação -->
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="dt_solicitacao" class="form-label">Data</label>
+                                                <input type="date" name="dt_solicitacao" id="dt_solicitacao" class="form-control" value="<?= set_value('dt_solicitacao') ?>">
+                                            </div>
+                                        </div>
+
+                                        <!-- Hora da Solicitação -->
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label for="hr_solicitacao" class="form-label">Hora</label>
+                                                <input type="time" name="hr_solicitacao" id="hr_solicitacao" class="form-control" value="<?= set_value('hr_solicitacao') ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Data da Solicitação -->
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label for="data_solicitacao" class="form-label">Data</label>
-                        <input type="date" name="data_solicitacao" id="data_solicitacao" class="form-control" value="<?= set_value('data_solicitacao') ?>">
-                    </div>
-                </div>
-
-                <!-- Hora da Solicitação -->
-                <div class="col-md-3">
-                    <div class="mb-3">
-                        <label for="hora_solicitacao" class="form-label">Hora</label>
-                        <input type="time" name="hora_solicitacao" id="hora_solicitacao" class="form-control" value="<?= set_value('hora_solicitacao') ?>">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+                        </div>
                         <!-- Observações -->
                         <div class="mb-3">
                             <label class="form-label">Observações</label>
@@ -506,6 +513,11 @@
                                 </a>
                             </div>
                         </div>
+
+                        <input type="hidden" name="idmapa_hidden" id="idmapa_hidden" value=""/>
+                        <input type="hidden" name="pac_codigo_hidden" id="pac_codigo_hidden" value=""/>
+                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value=""/>
+
                     </form>
                 </div>
             </div>
@@ -520,94 +532,7 @@
         });
     };
 
-    function confirma(button) {
-        event.preventDefault(); // Previne a submissão padrão do formulário
-
-        const equipamentos = $('#eqpts').val();
-
-        if (equipamentos && equipamentos.length > 0) {
-
-            const form = button.form;
-
-            const dtcirurgia = form.querySelector('input[name="dtcirurgia"]').value;
-
-            let equipamentosSelecionados = [];
-            $('#eqpts option:selected').each(function() {
-                let id = $(this).val();
-                let qtd = $(this).data('qtd');
-                equipamentosSelecionados.push({ id: id, qtd: qtd });
-            });
-
-            // Objeto de dados para enviar ao servidor
-            const data = {
-                dtcirurgia: dtcirurgia,
-                equipamentos: equipamentosSelecionados // Adiciona os equipamentos ao JSON
-            };
-
-            if (!dtcirurgia || dtcirurgia.trim() === "") {
-                return true;
-            } else {
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '<?= base_url('listaespera/verificaequipamentos') ?>', true); 
-                xhr.setRequestHeader('Content-Type', 'application/json');
-                xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
-                
-                xhr.onload = function() {
-                    if (xhr.status >= 200 && xhr.status < 400) {
-                        const response = JSON.parse(xhr.responseText);
-
-                        if (response.success) {
-                            Swal.fire({
-                                title: 'Limite excedido para reserva de equipamento. A cirurgia ficará pendente de aprovação pela equipe cirúrgica. Deseja prosseguir mesmo assim?',
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonText: 'Ok',
-                                cancelButtonText: 'Cancelar'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    $('#idsituacao_cirurgia_hidden').val('EA'); // Em Aprovação
-                                    $('#janelaAguarde').show();
-                                    $('#idForm').off('submit'); 
-                                    $('#idForm').submit(); 
-                                } else {
-                                    $('#janelaAguarde').hide();
-                                }
-                            });
-                        } else {
-                            $('#janelaAguarde').show();
-                            $('#idForm').off('submit'); 
-                            $('#idForm').submit();        
-                        }
-                    } else {
-                        console.error('Erro ao enviar os dados:', xhr.statusText);
-                        alert('Erro na comunicação com o servidor.');
-                        $('#janelaAguarde').hide();
-                        return false;  
-                    }
-                };
-
-                xhr.onerror = function() {
-                    console.error('Erro ao enviar os dados:', xhr.statusText);
-                    alert('Erro na comunicação com o servidor.');
-                    $('#janelaAguarde').hide();
-                    return false;
-                };
-
-                // Envia os dados como JSON, incluindo equipamentos
-                xhr.send(JSON.stringify(data));
-            }
-        } else {
-            $('#janelaAguarde').show();
-            $('#idForm').off('submit'); 
-            $('#idForm').submit(); 
-        }
-    }
-
-    /* let tipoSanguineoOriginal = $('#tipo_sanguineo_original').val();
-    let alteracaoConfirmada =  $('#tipo_sanguineo_confirmado').val() == '1';
-    let carregandoInicial = false; */
-
-    function fetchPacienteNome(prontuarioValue) {
+       function fetchPacienteNome(prontuarioValue) {
         if (!prontuarioValue) {
             document.getElementById('nome').value = '';
             return;
@@ -704,11 +629,11 @@
         });
     }
     
-    function updatelistapaciente(prontuario, valorSelecionado = null) {
+    function updatecirurgia(prontuario, valorSelecionado = null) {
 
-        const listapacienteSelect = document.getElementById('listapaciente');
+        const cirurgiaSelect = document.getElementById('cirurgia');
 
-        listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
+        cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
 
         //alert(valorSelecionado);
 
@@ -722,12 +647,12 @@
                 data: {prontuario: prontuario},
                 dataType: 'json',
                 success: function(data) {
-                    //listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
+                    //cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
                     const option = document.createElement("option"); // Usando createElement para criar uma nova opção
                     option.value = 0; // ID que será usado como valor da opção
                     option.text = `Paciente não está no Mapa Cirúrgico`;
                     
-                    listapacienteSelect.add(option); // Adiciona a nova opção ao select
+                    cirurgiaSelect.add(option); // Adiciona a nova opção ao select
 
                     // Preencher o select com os dados recebidos
                     data.forEach(item => {
@@ -739,19 +664,19 @@
                         const [horas, minutos] = hora.split(':');
                         const dthrcirurgia = `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 
-                        option.text = `Data/Hora: ${dthrcirurgia} - Especialidade: ${item.especialidade_descricao} - Fila: ${item.fila} - Procedimento: ${item.procedimento_principal}`;
+                        option.text = `Data/Hora: ${dthrcirurgia} - Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_principal}`;
                         
                         // Adicionando atributos data para os IDs
-                        option.setAttribute('data-id', item.id);
+                        option.setAttribute('data-idmapa', item.id);
+                        option.setAttribute('data-pac_codigo', item.codigo);
                         option.setAttribute('data-especialidade-id', item.idespecialidade);
-                        option.setAttribute('data-fila-id', item.idtipoprocedimento);
                         option.setAttribute('data-procedimento-id', item.idprocedimento);
                       
                         if (valorSelecionado == item.id) {
                             option.selected = true;
                         }
 
-                        listapacienteSelect.add(option); // Adiciona a nova opção ao select
+                        cirurgiaSelect.add(option); // Adiciona a nova opção ao select
                     });
 
                     $('#janelaAguarde').hide();
@@ -764,13 +689,13 @@
 
         } else {
             // Se o prontuário estiver vazio, limpe o select ou mantenha o estado atual
-            listapacienteSelect.innerHTML = '<option value="">Selecione uma opção</option>';
+            cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>';
         }
 
     }
 
-    function preencherSelectListaPaciente(dadosServidor) {
-        const lista = document.getElementById('listapaciente');
+    function preencherSelectcirurgia(dadosServidor) {
+        const lista = document.getElementById('cirurgia');
 
         // Limpar o select antes de adicionar novas opções
         lista.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
@@ -805,7 +730,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const radios = document.querySelectorAll('input[name="tipo_transfusao"]');
-        const dataField = document.getElementById('data_programada');
+        const dataField = document.getElementById('dt_programada');
 
         radios.forEach(radio => {
             radio.addEventListener('change', function () {
@@ -851,10 +776,10 @@
         prontuarioInput.addEventListener('change', function() {
             //alert(prontuarioInput.value);
             fetchPacienteNome(prontuarioInput.value);
-            updatelistapaciente(prontuarioInput.value);
+            updatecirurgia(prontuarioInput.value);
         });
 
-        $('#listapaciente').on('change', function() {
+        $('#cirurgia').on('change', function() {
             const selectedValue = this.value;
 
             //alert(this.value);
@@ -868,108 +793,20 @@
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
-                const origempacienteId = selectedOption.getAttribute('data-origempaciente-id');
-                const unidadeorigemId = selectedOption.getAttribute('data-unidadeorigem-id');
-                //const tiposanguineoId = selectedOption.getAttribute('data-tiposanguineo-id');
-                const justorig = selectedOption.getAttribute('data-justorig') == 'null' ? '' : selectedOption.getAttribute('data-justorig');
-                const info = selectedOption.getAttribute('data-info') == 'null' ? '' : selectedOption.getAttribute('data-info');
+                const paccodigoId = selectedOption.getAttribute('data-pac_codigo-id');
+                const mapaId = selectedOption.getAttribute('data-idmapa-id');
 
-                const risco = selectedOption.getAttribute('data-risco');
-                const dtrisco = selectedOption.getAttribute('data-dtrisco');
-                const cid = selectedOption.getAttribute('data-cid');
-                const lateralidade = selectedOption.getAttribute('data-lateralidade');
-                const congelacao = selectedOption.getAttribute('data-congelacao');
-                const opme = selectedOption.getAttribute('data-opme');
-                const complexidade = selectedOption.getAttribute('data-complexidade');
-
-                //const dataId = selectedOption.getAttribute('data-id'); // Captura o data-id
-                //alert("ID do item selecionado:", dataId);
-                //document.getElementById('hiddenDataIdField').value = dataId; // Supondo que você tenha um input escondido para armazená-lo
-
-                // Preencher os campos do formulário com os IDs
-                $('#especialidade').val(especialidadeId).trigger('change'); // Define o valor do select de especialidade e atualiza
-                $('#fila').val(filaId).trigger('change'); // Define o valor do select de fila e atualiza
-                $('#procedimento').val(procedimentoId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                $('#origem').val(origempacienteId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                $('#unidadeorigem').val(unidadeorigemId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                //$('#tipo_sanguineo').val(tiposanguineoId).trigger('change'); // Define o valor do select de procedimento e atualiza
-                $('#risco').val(risco).trigger('change'); 
-                $('#justorig').val(justorig);
-                $('#info').val(info);
-
-                $('#lateralidade').val(lateralidade).trigger('change'); 
-                $('#cid').val(cid).trigger('change'); 
-                $('input[name="congelacao"][value="' + congelacao + '"]').prop('checked', true);
-                $('input[name="opme"][value="' + opme + '"]').prop('checked', true);
-                $('input[name="complexidade"][value="' + complexidade + '"]').prop('checked', true);
-                $('#dtrisco').val(dtrisco);
-                $('input[name="hemoderivados"]').prop('checked', false);
-
-                $('#lista_updated_at_original').val(updated_at);
-                $('#especialidade_hidden').val(especialidadeId);
-                $('#fila').val(filaId);
-                $('#fila_hidden').val(filaId);
+                $('#pac_codigo_hidden').val(paccodigoId);
+                $('#idmapa').val(mapaId);
                 $('#procedimento_hidden').val(procedimentoId);
-                $('#origem').val(origempacienteId);
-                $('#origem_hidden').val(origempacienteId);
-                $('#unidadeorigem').val(unidadeorigemId);
-                $('#unidadeorigem_hidden').val(unidadeorigemId);
-                //$('#tipo_sanguineo').val(tiposanguineoId);
-                //$('#tipo_sanguineo_hidden').val(tiposanguineoId);
-                $('#risco').val(risco); 
-                $('#risco_hidden').val(risco);
-                /* $('#infoadic_hidden').val(info);
-                $('#justorig_hidden').val(justorig); */
-
-                // Desabilitar os campos após preencher
-                $('#especialidade').prop('disabled', true);
-                $('#fila').prop('disabled', true);
-                $('#procedimento').prop('disabled', true);
-                $('#origem').prop('disabled', true);
-                $('#justorig').prop('readonly', true);
-                $('#risco').prop('disabled', false);
-                $('#dtrisco').prop('readonly', false);
-            } else {
-                // Limpar os campos se a opção selecionada não for válida
-                $('#especialidade').val('').trigger('change');
-                $('#fila').val(177).trigger('change');
-                $('#origem').val(9).trigger('change');
-                $('#risco').val(11).trigger('change');
-                $('#dtrisco').val("");
-                $('#procedimento').val('').trigger('change');
-                $('#unidadeorigem').val("").trigger('change');
-                //$('#tipo_sanguineo').val("").trigger('change');
-
-                $('#lateralidade').val('').trigger('change'); 
-                $('#cid').val('').trigger('change'); 
-                $('#dtrisco').val('');
-                $('input[name="congelacao"]').prop('checked', false);
-                $('input[name="opme"]').prop('checked', false);
-                $('input[name="complexidade"]').prop('checked', false);
-                $('input[name="hemoderivados"]').prop('checked', false);
-
-                $('#fila_hidden').val(177);
-                $('#origem_hidden').val(9);
-                $('#risco_hidden').val(11);
-                $('#unidadeorigem_hidden').val("");
-                //$('#tipo_sanguineo_hidden').val("");
-                $('#info').val("");
-
-                // Habilitar os campos para nova seleção
-                $('#especialidade').prop('disabled', false);
-                $('#fila').prop('disabled', true);
-                $('#procedimento').prop('disabled', false);
-                $('#origem').prop('disabled', true);
-                $('#justorig').prop('readonly', true);
-                $('#risco').prop('disabled', true);
-                $('#dtrisco').prop('readonly', true);
+                
             }
         });
 
         document.getElementById('idForm').addEventListener('submit', function(event) {
             $('#janelaAguarde').show();
 
-            const listaEsperaSelect = document.getElementById('listapaciente');
+            const listaEsperaSelect = document.getElementById('cirurgia');
             const valoresTextos = Array.from(listaEsperaSelect.options)
                 .filter(option => option.value)  // Ignora opções sem valor
                 .map(option => {
@@ -978,7 +815,7 @@
                 });
 
             // Atribuir valores ao campo oculto
-            document.getElementById('listapacienteSelect').value = JSON.stringify(valoresTextos);
+            document.getElementById('cirurgiaSelect').value = JSON.stringify(valoresTextos);
 
             // Opcionalmente envie o formulário agora
             // event.currentTarget.submit(); // Descomente para executar envio padrão após processamento
