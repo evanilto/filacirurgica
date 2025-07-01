@@ -320,6 +320,7 @@ class ListaEspera extends ResourceController
         ];
 
         return $this->response->setJSON(['nome' => $paciente->nome,
+                                         'pac_codigo' => $paciente->codigo,
                                          'sexo' =>  $mapaSexo[$paciente->sexo] ?? 'Não informado',
                                          'dtnascimento' =>  DateTime::createFromFormat('Y-m-d H:i:s', $paciente->dt_nascimento)->format('d/m/Y'),
                                          'tiposanguineo' => $tiposanguineo,

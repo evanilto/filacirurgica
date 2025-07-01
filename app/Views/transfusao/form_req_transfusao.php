@@ -116,10 +116,10 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label for="cirurgia" class="form-label">Cirurgia<b class="text-danger">*</b></label>
+                                    <label for="cirurgia" class="form-label">Cirurgia</label>
                                     <select class="form-select select2-dropdown <?php if($validation->getError('cirurgia')): ?>is-invalid<?php endif ?>" 
                                     id="cirurgia" name="cirurgia">
-                                        <option value="">Selecione uma opção</option>
+                                        <option value=""></option>
                                         <!-- As opções serão preenchidas dinamicamente -->
                                     </select>
                                     <?php if ($validation->getError('cirurgia')): ?>
@@ -186,20 +186,20 @@
                                     <label class="form-label">Reação Transf<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorN" value="N"
-                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="transfusao_anteriorN" style="margin-right: 10px;">&nbsp;Não</label>
+                                            <input class="form-check-input" type="radio" name="reacao_transf" id="reacao_transfN" value="N"
+                                                <?= (isset($data['reacao_transf']) && $data['reacao_transf'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="reacao_transfN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="transfusao_anterior" id="transfusao_anteriorS" value="S"
-                                                <?= (isset($data['transfusao_anterior']) && $data['transfusao_anterior'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="transfusao_anteriorS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                            <input class="form-check-input" type="radio" name="reacao_transf" id="reacao_transfS" value="S"
+                                                <?= (isset($data['reacao_transf']) && $data['reacao_transf'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="reacao_transfS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('transfusao_anterior')): ?>
+                                <?php if ($validation->getError('reacao_transf')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('transfusao_anterior') ?>
+                                        <?= $validation->getError('reacao_transf') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -344,7 +344,7 @@
                                     <label class="form-label">Procedimentos Especiais</label>
                                     <div class="bordered-container p-3">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="congelacao" id="procedimento_especialF" value="F"
+                                            <input class="form-check-input" type="radio" name="procedimento_especial" id="procedimento_especialF" value="F"
                                                 <?= (isset($data['procedimento_especial']) && $data['procedimento_especial'] == 'F') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="procedimento_especialF" style="margin-right: 10px;">&nbsp;Filtrado</label>
                                         </div>
@@ -383,35 +383,35 @@
                                     <div class="bordered-container p-3">
                                         <!-- Rotina -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="rotina" <?= set_radio('tipo_transfusao', 'rotina') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="R" <?= set_radio('tipo_transfusao', 'rotina') ?>>
                                             <label class="form-check-label" for="transfusao_rotina">
                                                 Rotina (em até 24h)
                                             </label>
                                         </div>
                                         <!-- Urgência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="urgencia" <?= set_radio('tipo_transfusao', 'urgencia') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="U" <?= set_radio('tipo_transfusao', 'urgencia') ?>>
                                             <label class="form-check-label" for="transfusao_urgencia">
                                                 Urgência (em até 3h)
                                             </label>
                                         </div>
                                         <!-- Emergência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="emergencia" <?= set_radio('tipo_transfusao', 'emergencia') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="E" <?= set_radio('tipo_transfusao', 'emergencia') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia">
                                                 Emergência
                                             </label>
                                         </div>
                                          <!-- Emergência sem compatibilidade -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="emergencia_semteste" <?= set_radio('tipo_transfusao', 'emergencia_semteste') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="EST" <?= set_radio('tipo_transfusao', 'emergencia_semteste') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia_semteste">
                                                 Emergência (sem teste de compatibilidade)
                                             </label>
                                         </div>
                                         <!-- Programada + Data -->
                                         <div class="form-check d-flex align-items-center" style="margin-bottom: 32px;">
-                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="programada" <?= set_radio('tipo_transfusao', 'programada') ?>>
+                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="P" <?= set_radio('tipo_transfusao', 'programada') ?>>
                                             <label class="form-check-label me-2" for="transfusao_programada">
                                                 Programada
                                             </label>
@@ -434,8 +434,23 @@
                                     <div class="row g-2 align-items-end">
                                         <!-- Nome do Coletor -->
                                         <div class="col-md-6">
-                                            <label for="nome_coletor">Nome do Coletor</label>
-                                            <input type="text" name="nome_coletor" id="nome_coletor" class="form-control" value="<?= set_value('nome_coletor') ?>">
+                                            <label for="coletor">Nome do Coletor</label>
+                                            <select class="form-select select2-dropdown <?php if($validation->getError('coletor')): ?>is-invalid<?php endif ?>"
+                                                id="coletor" name="coletor"
+                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                                <option value="" <?php echo set_select('coletor', '', TRUE); ?>></option>
+                                                <?php
+                                                foreach ($data['servidores'] as $servidor) {
+                                                    $selected = ($data['coletor'] == $servidor->pes_codigo) ? 'selected' : '';
+                                                    echo '<option value="'.$servidor->pes_codigo.'" '.$selected.'>'.$servidor->nome.'</option>';
+                                                }
+                                                ?>
+                                            </select>
+                                            <?php if ($validation->getError('coletor')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('coletor') ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <!-- Data da Coleta -->
                                         <div class="col-md-3">
@@ -503,19 +518,38 @@
                             <label class="form-label">Observações</label>
                             <textarea class="form-control" rows="3" name="observacoes"><?= set_value('observacoes') ?></textarea>
                         </div>
-                         <div class="row g-3">
-                            <div class="col-md-12">
-                                <button class="btn btn-primary mt-4">
+                        <div class="row g-3">
+                            <div class="col-md-12 d-flex gap-2 mt-4">
+                                <button id="btnAcao" class="btn btn-primary mt-4">
                                     <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
+                                <?php if (session()->has('inclusao_sucesso')): ?>
+                                    <a class="btn btn-info mt-4" href="<?= base_url('transfusao/requisitar') ?>">
+                                        <i class="fa-solid fa-plus"></i> Novo Requerimento
+                                    </a>
+                                <?php endif; ?>
                                 <a class="btn btn-warning mt-4" href="javascript:history.go(-1)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
+                                <?php if (session()->has('inclusao_sucesso')): ?>
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const btn = document.getElementById('btnAcao');
+                                            if (btn) {
+                                                btn.className = 'btn btn-success mt-4';
+                                                btn.innerHTML = '<i class="fa-solid fa-print"></i> Imprimir';
+                                                btn.onclick = function () {
+                                                    window.print();
+                                                };
+                                            }
+                                        });
+                                    </script>
+                                <?php endif; ?>
                             </div>
                         </div>
 
                         <input type="hidden" name="idmapa_hidden" id="idmapa_hidden" value=""/>
-                        <input type="hidden" name="pac_codigo_hidden" id="pac_codigo_hidden" value=""/>
+                        <input type="hidden" name="pac_codigo_hidden" id="pac_codigo_hidden" value="<?= $data['pac_codigo'] ?>"/>
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value=""/>
 
                     </form>
@@ -559,6 +593,7 @@
                 document.getElementById('nome').value = data.nome;
                 document.getElementById('sexo').value = data.sexo;
                 document.getElementById('dtnascimento').value = data.dtnascimento;
+                document.getElementById('pac_codigo_hidden').value = data.pac_codigo;
                
             } else {
                 // Paciente não encontrado, exibe modal para sincronizar
@@ -633,7 +668,7 @@
 
         const cirurgiaSelect = document.getElementById('cirurgia');
 
-        cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>'; 
+        cirurgiaSelect.innerHTML = '<option value=""></option>'; 
 
         //alert(valorSelecionado);
 
@@ -647,37 +682,38 @@
                 data: {prontuario: prontuario},
                 dataType: 'json',
                 success: function(data) {
-                    //cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>'; // Adiciona o placeholder
-                    const option = document.createElement("option"); // Usando createElement para criar uma nova opção
-                    option.value = 0; // ID que será usado como valor da opção
-                    option.text = `Paciente não está no Mapa Cirúrgico`;
-                    
-                    cirurgiaSelect.add(option); // Adiciona a nova opção ao select
 
-                    // Preencher o select com os dados recebidos
-                    data.forEach(item => {
+                    if (data.length === 0) {
                         const option = document.createElement("option");
-                        option.value = item.id; // ID que será usado como valor da opção
+                        option.value = "0"; 
+                        option.text = 'Paciente não está no Mapa Cirúrgico';
+                        cirurgiaSelect.add(option);
+                    } else {
+                        data.forEach(item => {
+                            cirurgiaSelect.innerHTML = '<option value="">Selecione uma opção</option>';
 
-                        const [data, hora] = item.dthrcirurgia.split(' ');
-                        const [ano, mes, dia] = data.split('-');
-                        const [horas, minutos] = hora.split(':');
-                        const dthrcirurgia = `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+                            const option = document.createElement("option");
+                            option.value = item.id;
 
-                        option.text = `Data/Hora: ${dthrcirurgia} - Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_principal}`;
-                        
-                        // Adicionando atributos data para os IDs
-                        option.setAttribute('data-idmapa', item.id);
-                        option.setAttribute('data-pac_codigo', item.codigo);
-                        option.setAttribute('data-especialidade-id', item.idespecialidade);
-                        option.setAttribute('data-procedimento-id', item.idprocedimento);
-                      
-                        if (valorSelecionado == item.id) {
-                            option.selected = true;
-                        }
+                            const [data, hora] = item.dthrcirurgia.split(' ');
+                            const [ano, mes, dia] = data.split('-');
+                            const [horas, minutos] = hora.split(':');
+                            const dthrcirurgia = `${dia}/${mes}/${ano} ${horas}:${minutos}`;
 
-                        cirurgiaSelect.add(option); // Adiciona a nova opção ao select
-                    });
+                            option.text = `Data/Hora: ${dthrcirurgia} - Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_principal}`;
+
+                            option.setAttribute('data-idmapa-id', item.id);
+                            option.setAttribute('data-pac_codigo-id', item.codigo);
+                            option.setAttribute('data-especialidade-id', item.idespecialidade);
+                            option.setAttribute('data-procedimento-id', item.idprocedimento);
+
+                            if (valorSelecionado == item.id) {
+                                option.selected = true;
+                            }
+
+                            cirurgiaSelect.add(option);
+                        });
+                    }
 
                     $('#janelaAguarde').hide();
 
@@ -734,7 +770,7 @@
 
         radios.forEach(radio => {
             radio.addEventListener('change', function () {
-                if (this.value === 'programada') {
+                if (this.value === 'P') {
                     dataField.style.display = 'inline-block';
                 } else {
                     dataField.style.display = 'none';
@@ -742,6 +778,7 @@
                 }
             });
         });
+
     });
   
     $(document).ready(function() {
@@ -784,7 +821,7 @@
 
             //alert(this.value);
 
-            if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
+            //if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
                 // Encontrar a opção correspondente que foi selecionada
                 const selectedOption = this.options[this.selectedIndex];
 
@@ -797,10 +834,10 @@
                 const mapaId = selectedOption.getAttribute('data-idmapa-id');
 
                 $('#pac_codigo_hidden').val(paccodigoId);
-                $('#idmapa').val(mapaId);
+                $('#idmapa_hidden').val(mapaId);
                 $('#procedimento_hidden').val(procedimentoId);
                 
-            }
+            //}
         });
 
         document.getElementById('idForm').addEventListener('submit', function(event) {
