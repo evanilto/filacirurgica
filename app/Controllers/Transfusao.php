@@ -9,6 +9,7 @@ use App\Models\HemocomponentesModel;
 use App\Models\LocalProfEspecialidadesModel;
 use App\Models\HistoricoModel;
 use App\Models\LocalVwServidoresModel;
+use App\Models\LocalAipPacientesModel;
 
 use DateTime;
 
@@ -28,6 +29,7 @@ class Transfusao extends BaseController
     private $transfusaomodel;
     private $historicomodel;
     private $localvwservidoresmodel;
+    private $localaippacientesmodel;
 
     private $data;
 
@@ -40,6 +42,7 @@ class Transfusao extends BaseController
         $this->transfusaomodel = new TransfusaoModel();
         $this->historicomodel = new HistoricoModel();
         $this->localvwservidoresmodel = new LocalVwServidoresModel();
+        $this->localaippacientesmodel = new LocalAipPacientesModel();
               
         $this->selecthemocomponentes = $this->hemocomponentesmodel->orderBy('id', 'ASC')->findAll();
         $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
@@ -104,6 +107,162 @@ class Transfusao extends BaseController
                                            'data' => $data]);
 
     }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function consultarRequisicoes()
+    {
+        //HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['requisicoes'] = NULL;
+
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                                            'data' => $data]);
+
+    }
+/**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirRequisicoes()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $data = $this->request->getVar();
+
+        //die(var_dump($data));
+
+        //$dataflash = session()->getFlashdata('dataflash');
+
+        if ($_SESSION['requisicoes']) {
+            //$data = $dataflash;
+            $data = $_SESSION['requisicoes'];
+        }
+
+        if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
+            $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
+        }
+        if (!empty($data['dtfim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtfim'])) {
+            $data['dtfim'] = \DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('d/m/Y');
+        }
+
+        //dd($data);
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'nome' => 'permit_empty|min_length[3]',
+         ];
+
+        if (!$_SESSION['requisicoes']) {
+            $rules = $rules + [
+                'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']'
+            ];
+        }
+
+        if ($this->validate($rules)) {
+
+            //die(var_dump($dataflash));
+
+            if (!$_SESSION['requisicoes']) {
+                if (($data['dtinicio'] ?? null) || ($data['dtfim'] ?? null)) {
+
+                    if (empty($data['dtinicio'])) {
+                        $this->validator->setError('dtinicio', 'Informe a data de início!');
+                        return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }
+                    if (!$data['dtfim']) {
+                        $this->validator->setError('dtfim', 'Informe a data final!');
+                        return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                        'validation' => $this->validator,
+                        'data' => $data]);
+                    }
+                    if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                        $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                        return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                                                            'validation' => $this->validator,
+                                                            'data' => $data]);
+                    }
+                
+                    if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                        $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                        return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                                                            'validation' => $this->validator,
+                                                            'data' => $data]);
+                    }
+            
+                    $hora = '23:59:59';
+                    $data['dtfim'] = $data['dtfim'] . ' ' . $hora;
+                }
+            }
+
+            $this->validator->reset();
+
+            //die(var_dump($data));
+
+            $result = $this->getRequisicoes($data);
+
+            if (empty($result)) {
+
+                $data['dtinicio'] = NULL;
+                $data['dtfim'] = NULL;
+
+                session()->setFlashdata('warning_message', 'Nenhum paciente da Lista localizado com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            //die(var_dump($result));
+
+            if ($_SESSION['requisicoes']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['requisicoes'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'transfusao/list_requisicoes',
+                                               'requisicoes' => $result,
+                                               'data' => $data]);
+        } else {
+            //if(isset($resultAGHUX) && empty($resultAGHUX)) {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+          
+            return view('layouts/sub_content', ['view' => 'transfusao/form_consulta_requisicoes',
+                                               'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
 
     public function incluir()
     {
@@ -158,7 +317,7 @@ class Transfusao extends BaseController
             'medico_solicitante' => 'required|integer',
             'dt_solicitacao' => 'required|valid_date[Y-m-d]',
             'hr_solicitacao' => 'required|valid_time[H:i]',
-            'observacoes' => 'required|max_length[250]|min_length[3]',
+            //'observacoes' => 'required|max_length[250]|min_length[3]',
         ];
 
         $camposData = [
@@ -205,7 +364,6 @@ class Transfusao extends BaseController
         $this->data['idmapacirurgico'] = $this->data['cirurgia'];
         $this->data['pac_codigo'] = $this->data['pac_codigo_hidden'];
 
-
         //dd($this->data);
 
         if ($this->data['cirurgia'] == 0 || is_null($this->data['cirurgia'])) {
@@ -222,10 +380,14 @@ class Transfusao extends BaseController
             $db->transStart();
     
             try {
-                
-                $idreq = $this->transfusaomodel->insert($this->data);
 
-                //dd($this->transfusaomodel->db->getLastQuery());
+                $camposPermitidos = array_intersect_key($this->data, array_flip($this->transfusaomodel->allowedFields));
+
+                $idreq = $this->transfusaomodel->insert($camposPermitidos);
+
+                /* $builder = $this->transfusaomodel->builder();
+                $builder->insert($camposPermitidos);
+                dd($builder->db()->getLastQuery()); */
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -285,5 +447,52 @@ class Transfusao extends BaseController
     {
         $this->transfusaoModel->delete($id);
         return redirect()->to('/transfusao')->with('success', 'Registro excluído com sucesso!');
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getRequisicoes ($data) 
+    {
+        //die(var_dump($data));
+
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('vw_transfusoes as req');
+
+        $builder->select('*');
+
+        //die(var_dump($data));
+
+        if (!empty($data['idreq'])) {
+        
+            $builder->where('req.id', $data['idreq']);
+    
+        } else {
+
+            if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+                $builder->where("req.created_at BETWEEN '$data[dtinicio]' AND '$data[dtfim]'");
+            };
+            if (!empty($data['prontuario'])) {
+                //$clausula_where .= " AND prontuario = $data[prontuario]";
+                $builder->where('req.prontuario', $data['prontuario']);
+            };
+            if (!empty($data['nome'])) {
+                //$clausula_where .= " AND  nome_paciente LIKE '%".strtoupper($data['nome'])."%'";
+                $builder->where('req.nome_paciente LIKE', '%'.strtoupper($data['nome']).'%');
+            };
+            if (!empty($data['tipo_transf'])) {
+                $builder->whereIn('tipo_transfusao', $data['tipo_transf']);
+            }
+        }
+
+        $builder->orderBy('req.idreq', 'ASC');
+
+        //var_dump($builder->getCompiledSelect());die();
+
+        return $builder->get()->getResult();
+
+        //die(var_dump($builder->get()->getResult()));
     }
 }

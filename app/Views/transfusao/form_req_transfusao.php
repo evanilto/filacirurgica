@@ -59,23 +59,23 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-5 mb-2">
-                                <label class="form-label">Enfermaria<b class="text-danger">*</b></label>
+                                <label class="form-label">Unidade<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="enfermaria" class="form-control <?= $validation->hasError('enfermaria') ? 'is-invalid' : '' ?>" value="<?= set_value('enfermaria') ?>" disabled/>
+                                    <input type="text" name="enfermaria" id="enfermaria" class="form-control <?= $validation->hasError('enfermaria') ? 'is-invalid' : '' ?>" value="<?= set_value('enfermaria') ?>" disabled/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('enfermaria') ?></div>
                             </div>
                             <div class="col-md-2 mb-2">
                                 <label class="form-label">Andar<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar') ?>" disabled/>
+                                    <input type="text" name="andar" id="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar') ?>" disabled/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('andar') ?></div>
                             </div>
                             <div class="col-md-5 mb-2">
                                 <label class="form-label">Leito<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito') ?>" disabled/>
+                                    <input type="text" name="leito" id="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito') ?>" disabled/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('leito') ?></div>
                             </div>
@@ -593,6 +593,9 @@
                 document.getElementById('nome').value = data.nome;
                 document.getElementById('sexo').value = data.sexo;
                 document.getElementById('dtnascimento').value = data.dtnascimento;
+                document.getElementById('leito').value = data.leito_id ?? 'N/D';
+                document.getElementById('enfermaria').value = data.leito_unf ?? 'N/D';
+                document.getElementById('andar').value = data.leito_and ?? 'N/D';
                 document.getElementById('pac_codigo_hidden').value = data.pac_codigo;
                
             } else {

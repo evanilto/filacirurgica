@@ -126,6 +126,8 @@ $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
 
 $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'Transfusao::index');
+    $routes->get('consultar', 'Transfusao::consultarRequisicoes');
+    $routes->add('exibir', 'Transfusao::exibirRequisicoes');
     $routes->get('requisitar', 'Transfusao::requisitarTransfusao');
     $routes->post('incluir', 'Transfusao::incluir');
     $routes->get('atender', 'Transfusao::atenderRequisicao');

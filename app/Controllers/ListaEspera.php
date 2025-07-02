@@ -30,6 +30,7 @@ use App\Models\LocalAghCidsModel;
 use App\Models\LocalAghEspecialidadesModel;
 use App\Models\LocalAipPacientesModel;
 use App\Models\LocalProfEspecialidadesModel;
+use App\Models\LocalVwLeitosPacientesModel;
 use App\Models\VwOrdemPacienteModel;
 use App\Models\LocalVwDetalhesPacientesModel;
 use App\Models\LocalAipContatosPacientesModel;
@@ -67,6 +68,7 @@ class ListaEspera extends ResourceController
     private $localaippacientesmodel;
     private $localaipcontatospacientesmodel;
     private $localvwdetalhespacientesmodel;
+    private $localvwleitospacientesmodel;
     private $localaghinstituicoeshospitalaresmodel;
     private $procedimentosadicionaismodel;
     private $equipamentosmodel;
@@ -136,6 +138,7 @@ class ListaEspera extends ResourceController
         //$this->mapacirurgicocontroller = new MapaCirurgico(); // disable for migration
         $this->filawebmodel = new FilaWebModel(); // disable for migration
         $this->localvwdetalhespacientesmodel = new LocalVwDetalhesPacientesModel();
+        $this->localvwleitospacientesmodel = new LocalVwLeitosPacientesModel();
         $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
         $this->hemocomponentesmodel = new HemocomponentesModel();
         $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
@@ -319,11 +322,16 @@ class ListaEspera extends ResourceController
             'M' => 'Masculino'
         ];
 
+        $leito = $this->localvwleitospacientesmodel->find($numProntuario);
+
         return $this->response->setJSON(['nome' => $paciente->nome,
                                          'pac_codigo' => $paciente->codigo,
                                          'sexo' =>  $mapaSexo[$paciente->sexo] ?? 'Não informado',
                                          'dtnascimento' =>  DateTime::createFromFormat('Y-m-d H:i:s', $paciente->dt_nascimento)->format('d/m/Y'),
                                          'tiposanguineo' => $tiposanguineo,
+                                         'leito_id' => $leito->lto_lto_id ?? NULL,
+                                         'leito_and' => $leito->andar ?? NULL,
+                                         'leito_unf' => $leito->descricao_unf ?? NULL,
                                          'updated_at' => $updated_at]);
     }
 
