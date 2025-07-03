@@ -12,7 +12,7 @@ use App\Models\LocalVwServidoresModel;
 use App\Models\LocalAipPacientesModel;
 
 use DateTime;
-
+use App\Libraries\HUAP_Functions;
 
 
 class Transfusao extends BaseController
@@ -64,7 +64,7 @@ class Transfusao extends BaseController
      */
     public function RequisitarTransfusao()
     {
-        //HUAP_Functions::limpa_msgs_flash();
+        HUAP_Functions::limpa_msgs_flash();
 
        //dd($data);
 
@@ -87,7 +87,7 @@ class Transfusao extends BaseController
      */
     public function AtenderRequisicao()
     {
-        //HUAP_Functions::limpa_msgs_flash();
+        HUAP_Functions::limpa_msgs_flash();
 
        //dd($data);
 
@@ -114,7 +114,7 @@ class Transfusao extends BaseController
      */
     public function consultarRequisicoes()
     {
-        //HUAP_Functions::limpa_msgs_flash();
+        HUAP_Functions::limpa_msgs_flash();
 
         $_SESSION['requisicoes'] = NULL;
 
@@ -223,9 +223,9 @@ class Transfusao extends BaseController
 
             $this->validator->reset();
 
-            //die(var_dump($data));
-
             $result = $this->getRequisicoes($data);
+
+            //dd($result);
 
             if (empty($result)) {
 
@@ -465,9 +465,9 @@ class Transfusao extends BaseController
 
         //die(var_dump($data));
 
-        if (!empty($data['idreq'])) {
+        if (!empty($data['id'])) {
         
-            $builder->where('req.id', $data['idreq']);
+            $builder->where('req.id', $data['id']);
     
         } else {
 
@@ -495,4 +495,33 @@ class Transfusao extends BaseController
 
         //die(var_dump($builder->get()->getResult()));
     }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function consultarRequisicao($id)
+    {
+
+        HUAP_Functions::limpa_msgs_flash();
+
+        $requisicao = $this->getRequisicoes(['idreq' => $id])[0];
+        //$paciente = $this->pacientesmodel->find($mapa->prontuario);
+
+        //die(var_dump($mapa));
+
+        $data = [];
+        $data = (array) $requisicao;
+        $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $data['servidores'] = $this->selectservidores;
+        $data = [
+            'nome' => 'João da Silva',
+            'observacoes' => 'Paciente estável',
+            // Outros dados necessários para frente e verso
+        ];
+
+        return view('layouts/sub_content', ['view' => 'transfusao/form_requisicao',
+                                            'data' => $data]);
+    }
+
 }

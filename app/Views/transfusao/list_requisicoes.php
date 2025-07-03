@@ -18,7 +18,6 @@
     <table class="table table-hover table-bordered table-smaller-font table-striped" id="table">
         <thead>
             <tr>
-                <th scope="col" data-field="" ></th>
                 <th scope="col" data-field="" >Dt/Hr Requisição</th>
                 <th scope="col" data-field="" >Tipo</th>
                 <th scope="col" data-field="" >Prontuário</th>
@@ -26,11 +25,19 @@
                 <th scope="col" data-field="" >Data Nascimento</th>
                 <th scope="col" data-field="" >Idade</th>
                 <th scope="col" data-field="" >Sexo</th>
+                <th scope="col" data-field="" >Leito</th>
+                <th scope="col" data-field="" >Unidade</th>
+                <th scope="col" data-field="" >Médico Solicitante</th>
             </tr>
         </thead>
         <tbody>
             <?php foreach($requisicoes as $requisicao): 
-                $requisicao->created_at = \DateTime::createFromFormat('Y-m-d H:i:s', $requisicao->created_at)->format('d/m/Y H:i');
+                //$requisicao->created_at = \DateTime::createFromFormat('Y-m-d H:i:s.u', $requisicao->created_at)->format('d/m/Y H:i');
+                $createdAt = $requisicao->created_at;
+                if (strpos($createdAt, '.') !== false) {
+                    $createdAt = explode('.', $createdAt)[0];
+                }
+                $requisicao->created_at = DateTime::createFromFormat('Y-m-d H:i:s', $createdAt)->format('d/m/Y H:i');
             ?>
                 <tr 
                     data-id="<?= $requisicao->idreq ?>" 
@@ -45,6 +52,16 @@
                     <td><?php echo $requisicao->dtnascimento ?></td>
                     <td><?php echo $requisicao->idade ?></td>
                     <td><?php echo $requisicao->sexo ?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($requisicao->leito); ?>">
+                        <?php echo htmlspecialchars($requisicao->leito); ?>
+                    </td>
+                    <?php 
+                    $texto = $requisicao->unidade !== null ? htmlspecialchars($requisicao->unidade . ' - ' . $requisicao->andar . 'o. andar') : '';
+                    ?>
+                    <td class="break-line" <?php if ($texto) echo 'title="'.$texto.'"'; ?>>
+                        <?php echo $texto; ?>
+                    </td>
+                    <td><?php echo $requisicao->medico_solicitante ?></td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -87,28 +104,30 @@
                 //selectedRow.classList.add("selected");
                 selectedRow.classList.add("lineselected"); 
                 <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> atender.disabled = false;  <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('transfusao-imprimir')) { ?> imprimir.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('transfusao-consultar')) { ?> consultar.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> imprimir.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> consultar.disabled = false; <?php } ?>
             });
         });
 
         atender.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/listaespera/enviarmapa/${id}`;
+                window.location.href = `/transfusao/atender/${id}`;
             }
         });
 
         imprimir.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/listaespera/excluirpaciente/${id}`;
+                window.location.href = `/transfusao/consultarrequisicao/${id}`;
             }
         });
 
         consultar.addEventListener("click", function () {
             if (selectedRow) {
-               carregarDadosModal(selectedRow);
+                const id = selectedRow.dataset.id;
+                window.location.href = `/transfusao/consultarrequisicao/${id}`;
+               //carregarDadosModal(selectedRow);
             }
         });
     });
@@ -314,18 +333,21 @@
             ordering: true,
             autoWidth: false,
             "columns": [
-                { "width": "0px" },  // Primeira coluna
-                { "width": "90px" },  // Lista
-                { "width": "60px" },  // Fila
-                { "width": "130px" },                
-                { "width": "100px" },  // prontuario
-                { "width": "300px" }, 
-                { "width": "200px" },  // especialidade
+                //{ "width": "0px" },  // Primeira coluna
+                { "width": "120px" },  // 
+                { "width": "150px" },  // 
+                { "width": "90px" },  // prontuario            
+                { "width": "300px" },  // nome 
+                { "width": "100px" }, 
+                { "width": "70px" },  // idade
+                { "width": "100px" }, //Sexo
+                { "width": "100px" }, //Leito
                 { "width": "250px" }, 
+                { "width": "250px" }, // medico
             ],
             "columnDefs": [
             { "orderable": false, "targets": [0, 2, 4] },
-            { "visible": false, "targets": [0] },
+            { "visible": false, "targets": [] },
             { "width": "500px", "targets": [] }
             ],
             stateSave: true, // Habilita o salvamento do estado

@@ -130,9 +130,10 @@ $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
     $routes->add('exibir', 'Transfusao::exibirRequisicoes');
     $routes->get('requisitar', 'Transfusao::requisitarTransfusao');
     $routes->post('incluir', 'Transfusao::incluir');
-    $routes->get('atender', 'Transfusao::atenderRequisicao');
+    $routes->get('atender/(:num)', 'Transfusao::atenderRequisicao/$1');
     $routes->get('editar/(:num)', 'Transfusao::editar/$1');
     $routes->get('excluir/(:num)', 'Transfusao::excluir/$1');
+    $routes->get('consultarrequisicao/(:num)', 'Transfusao::consultarRequisicao/$1');
 });
 
 
