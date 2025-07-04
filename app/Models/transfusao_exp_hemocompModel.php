@@ -4,53 +4,30 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class TransfusaoModel extends Model
+class TransfusaoExpHemocompModel extends Model
 {
-    protected $table            = 'transfusoes';
+    protected $table            = 'transfusao_exp_hemocomp';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true; 
     protected $returnType       = 'array';
     protected $useSoftDeletes   = true; 
     protected $protectFields    = true;
     protected $allowedFields    = [
-    'pac_codigo',
-    'prontuario',
-    'peso',
-    'diagnostico',
-    'indicacao',
-    'idprocedimento',
-    'sangramento_ativo',
-    'transfusao_anterior',
-    'reacao_anterior',
-    'hematocrito',
-    'hemoglobina',
-    'tap',
-    'ptt',
-    'inr',
-    'fibrinogenio',
-    'hemacias',
-    'plaquetas',
-    'plasma',
-    'crio',
-    'outros',
-    'procedimento_especial',
-    'justificativa_proc_esp',
-    'tipo_transfusao',
-    'reserva_data',
-    'coletor',
-    'dthr_solicitacao',
-    'medico_solicitante',
-    'recebedor',
-    'data_recebimento',
-    'hora_recebimento',
-    'tipo1_aborh', 'tipo1_a', 'tipo1_b', 'tipo1_ab', 'tipo1_d', 'tipo1_c', 'tipo1_ra1', 'tipo1_rb',
-    'responsavel_tipo1',
-    'tipo2_pai_i', 'tipo2_pai_ii', 'tipo2_cd', 'tipo2_ac',
-    'responsavel',
-    'fenotipo_c', 'fenotipo_cw', 'fenotipo_c_min',
-    'fenotipo_e', 'fenotipo_e_min', 'fenotipo_k',
-    'anticorpos',
-    'observacoes',
+        'transfusao_id',
+        'data_expedicao',
+        'tipo',
+        'numero',
+        'abo_rh_expedicao',
+        'volume',
+        'origem',
+        'pc',
+        'th',
+        'iv',
+        'responsavel_expedicao',
+        'hora_expedicao',
+        'hora_inicio',
+        'hora_termino',
+        'responsavel_administracao'
     ];
 
     // Dates

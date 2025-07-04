@@ -9,7 +9,39 @@
                     <b>Atender Requisição Transfusional</b>
                 </div>
                 <div class="card-body has-validation">
-                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/salvar') ?>">
+                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/incluirtestes') ?>">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="prontuario" class="form-label">Dt/Hr Requisição<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="dthrequisicao" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
+                                        class="form-control <?php if($validation->getError('dthrequisicao')): ?>is-invalid<?php endif ?>"
+                                        name="dthrequisicao" value="<?= set_value('dthrequisicao', $data['dthrequisicao'] ?? '') ?>" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
+                                    <div class="input-group">
+                                        <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
+                                        class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
+                                            name="prontuario" value="<?= set_value('prontuario', $data['prontuario'] ?? '') ?>" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="mb-2">
+                                    <label for="nome" class="form-label">Nome do Paciente</b></label>
+                                    <div class="input-group mb-12">
+                                        <input type="text" id="nome" maxlength="100" 
+                                            class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
+                                            name="nome" value="<?= set_value('nome', $data['nome'] ?? '') ?>" readonly/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Amostra Recebida -->
                         <div class="row g-3">
                             <div class="col-md-12 mb-4">
@@ -17,9 +49,25 @@
                                 <div class="bordered-container p-3">
                                     <div class="row g-2 align-items-end">
                                         <!-- Nome do recebedor -->
-                                        <div class="col-md-6">
-                                            <label for="nome_recebedor">Nome</label>
-                                            <input type="text" name="nome_recebedor" id="nome_recebedor" class="form-control" value="<?= set_value('nome_recebedor') ?>">
+                                         <div class="col-md-6">
+                                            <label for="recebedor">Nome</label>
+                                            <select class="form-select select2-dropdown <?php if($validation->getError('recebedor')): ?>is-invalid<?php endif ?>"
+                                                id="recebedor" name="recebedor"
+                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                                <option value="" <?php echo set_select('recebedor', '', TRUE); ?>></option>
+                                                <?php
+                                                    $recebedorSelecionado = old('recebedor') ?? $data['recebedor'] ?? '';
+                                                    foreach ($data['servidores'] as $servidor) {
+                                                        $selected = ($recebedorSelecionado == $servidor->pes_codigo) ? 'selected' : '';
+                                                        echo '<option value="'.$servidor->pes_codigo.'" '.$selected.'>'.$servidor->nome.'</option>';
+                                                    }
+                                                    ?>
+                                            </select>
+                                            <?php if ($validation->getError('recebedor')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('recebedor') ?>
+                                                </div>
+                                            <?php endif; ?>
                                         </div>
                                         <!-- Data da recebimento -->
                                         <div class="col-md-3">
@@ -48,7 +96,18 @@
                                         <?php endforeach; ?>
                                         <div class="col-md-4">
                                             <label for="responsavel_tipo1" class="form-label">Responsável</label>
-                                            <input type="text" id="responsavel_tipo1" name="responsavel_tipo1" class="form-control" value="<?= set_value('responsavel_tipo1') ?>">
+                                            <select class="form-select select2-dropdown <?php if($validation->getError('responsavel_tipo1')): ?>is-invalid<?php endif ?>"
+                                                id="responsavel_tipo1" name="responsavel_tipo1"
+                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                                <option value="" <?php echo set_select('responsavel_tipo1', '', TRUE); ?>></option>
+                                                <?php
+                                                    $responsavel_tipo1Selecionado = old('responsavel_tipo1') ?? $data['responsavel_tipo1'] ?? '';
+                                                    foreach ($data['servidores'] as $servidor) {
+                                                        $selected = ($responsavel_tipo1Selecionado == $servidor->pes_codigo) ? 'selected' : '';
+                                                        echo '<option value="'.$servidor->pes_codigo.'" '.$selected.'>'.$servidor->nome.'</option>';
+                                                    }
+                                                ?>
+                                            </select> 
                                         </div>
                                     </div>
                                 </div>
@@ -63,9 +122,21 @@
                                     </div>
                                 <?php endforeach; ?>
                                 <div class="col-md"></div>
-                                <div class="col-md-4">
-                                    <label for="responsavel" class="form-label">Responsável</label>
-                                    <input type="text" id="responsavel" class="form-control" name="responsavel" value="<?= set_value("responsavel") ?>">
+                                    <div class="col-md-4">
+                                        <label for="responsavel_tipo2" class="form-label">Responsável</label>
+                                        <select class="form-select select2-dropdown <?php if($validation->getError('responsavel_tipo2')): ?>is-invalid<?php endif ?>"
+                                            id="responsavel_tipo2" name="responsavel_tipo2"
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1">
+                                            <option value="" <?php echo set_select('responsavel_tipo2', '', TRUE); ?>></option>
+                                            <?php
+                                                $responsavel_tipo2Selecionado = old('responsavel_tipo2') ?? $data['responsavel_tipo2'] ?? '';
+                                                foreach ($data['servidores'] as $servidor) {
+                                                    $selected = ($responsavel_tipo2Selecionado == $servidor->pes_codigo) ? 'selected' : '';
+                                                    echo '<option value="'.$servidor->pes_codigo.'" '.$selected.'>'.$servidor->nome.'</option>';
+                                                }
+                                            ?>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <!-- Fenótipo -->
@@ -223,3 +294,15 @@
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('.select2-dropdown').select2({
+        width: '100%',
+        placeholder: function(){
+            return $(this).data('placeholder') || 'Selecione uma opção';
+        },
+        allowClear: true
+    });
+});
+</script>
+

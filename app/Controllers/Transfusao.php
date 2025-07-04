@@ -85,27 +85,167 @@ class Transfusao extends BaseController
      *
      * @return mixed
      */
-    public function AtenderRequisicao()
+    public function AtenderRequisicao($idreq)
     {
         HUAP_Functions::limpa_msgs_flash();
 
        //dd($data);
 
+        $requisicao = $this->transfusaoModel->find($idreq);
+        $paciente = $this->localaippacientesmodel->find($requisicao['prontuario']);
+
+        //dd($paciente);
+
         $data = [];
-        //$data['listaespera'] = $this->vwlistaesperamodel->Where('prontuario', $prontuario)->findAll();
-        $data['listaesperas'] = [];
-        $data['listapaciente'] = '0';
+        $data['dthrequisicao'] = DateTime::createFromFormat('Y-m-d H:i:s', $requisicao['created_at'])->format('d/m/Y H:i');
+        $data['prontuario'] = $paciente->prontuario;
+        $data['nome'] = $paciente->nome;
+        $data['recebedor'] = '';
+        $data['procedimento'] = '';
         $data['procedimento'] = '';
         $data['profissional'] = [];
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['servidores'] = $this->selectservidores;
 
-        $data['listapacienteSelect'] = [];
-
-       return view('layouts/sub_content', ['view' => 'transfusao/form_atender_req_transfusao',
+        //dd($data);
+        return view('layouts/sub_content', ['view' => 'transfusao/form_atender_req_transfusao',
                                            'data' => $data]);
 
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+     public function incluirTestes()
+    {
+
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $prontuario = null;
+
+        $this->data = [];
+
+        $this->data = $this->request->getVar();
+
+        dd($this->data);
+
+        $rules = [
+            
+        ];
+
+        $camposData = [
+            'dt_hematocrito',
+            'dt_hemoglobina',
+            'dt_plaquetas',
+            'dt_tap',
+            'dt_inr',
+            'dt_ptt',
+            'dt_fibrinogenio',
+            'dt_programada',
+            'dt_coleta',
+            'dt_solicitacao'
+        ];
+
+        // Formatar os campos de data simples
+        foreach ($camposData as $campo) {
+            if (!empty($this->data[$campo])) {
+                $this->data[$campo] = date('d/m/Y', strtotime($this->data[$campo]));
+            }
+        }
+
+        // Campos que têm data e hora separadas — vamos sobrescrevê-los com a junção formatada
+        $camposDataHora = [
+            ['data' => 'dt_coleta', 'hora' => 'hr_coleta'],
+            ['data' => 'dt_solicitacao', 'hora' => 'hr_solicitacao'],
+        ];
+
+        foreach ($camposDataHora as $par) {
+            $campoData = $par['data'];
+            $campoHora = $par['hora'];
+
+            if (!empty($this->data[$campoData]) && !empty($this->data[$campoHora])) {
+                $dataHora = DateTime::createFromFormat('d/m/Y H:i', $this->data[$campoData] . ' ' . $this->data[$campoHora]);
+                if ($dataHora) {
+                    // Sobrescreve o campo de data com a data formatada completa
+                    $this->data[$campoData] = $dataHora->format('d/m/Y H:i');
+                    // Opcional: zera o campo de hora (ou você pode remover, se preferir)
+                    unset($this->data[$campoHora]);
+                }
+            }
+        }
+
+        //dd($this->data);
+
+        if ($this->validate($rules)) {
+
+            $db = \Config\Database::connect('default');
+
+            $this->validator->reset();
+
+            $db->transStart();
+    
+            try {
+
+                $camposPermitidos = array_intersect_key($this->data, array_flip($this->transfusaomodel->allowedFields));
+
+                $idreq = $this->transfusaomodel->insert($camposPermitidos);
+
+                /* $builder = $this->transfusaomodel->builder();
+                $builder->insert($camposPermitidos);
+                dd($builder->db()->getLastQuery()); */
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir Requisição [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                session()->setFlashdata('success', 'Dados de Testes incluídos com sucesso!');
+                session()->setFlashdata('inclusao_sucesso', true);
+
+                $this->validator->reset();
+
+                
+
+            } catch (\Throwable $e) {
+                $db->transRollback();
+                $msg = sprintf('Exception - Falha na requisição - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+
+                $this->data['procedimentos'] = $this->selectitensprocedhospitativos;
+                $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+                $this->data['servidores'] = $this->selectservidores;
+
+                return view('layouts/sub_content', ['view' => 'transfusao/form_req_transfusao',
+                                'validation' => $this->validator,
+                                'data' => $this->data]);
+            }
+
+        } else {
+            session()->setFlashdata('error', $this->validator);
+        }
+
+        $this->data['procedimentos'] = $this->selectitensprocedhospitativos;
+        $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $this->data['servidores'] = $this->selectservidores;
+
+        //dd($this->data);
+        //dd($this->validator->getErrors());
+
+        return view('layouts/sub_content', ['view' => 'transfusao/form_atender_req_transfusao',
+                                            /* 'validation' => $this->validator, */
+                                            'data' => $this->data]);
     }
     /**
      * Return a new resource object, with default properties
