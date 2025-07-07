@@ -13,7 +13,7 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="prontuario" class="form-label">Dt/Hr Requisição<b class="text-danger">*</b></label>
+                                    <label for="dthrequisicao" class="form-label">Dt/Hr Requisição<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="dthrequisicao" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
                                         class="form-control <?php if($validation->getError('dthrequisicao')): ?>is-invalid<?php endif ?>"
@@ -72,12 +72,15 @@
                                         <!-- Data da recebimento -->
                                         <div class="col-md-3">
                                             <label for="data_recebimento">Data</label>
-                                            <input type="date" name="data_recebimento" id="data_recebimento" class="form-control" value="<?= set_value('data_recebimento') ?>">
+                                            <input type="date" name="data_recebimento" id="data_recebimento" class="form-control"
+                                                value="<?= set_value('data_recebimento', $data['data_recebimento'] ?? '') ?>">
                                         </div>
+
                                         <!-- Hora da recebimento -->
                                         <div class="col-md-3">
                                             <label for="hora_recebimento">Hora</label>
-                                            <input type="time" name="hora_recebimento" id="hora_recebimento" class="form-control" value="<?= set_value('hora_recebimento') ?>">
+                                            <input type="time" name="hora_recebimento" id="hora_recebimento" class="form-control"
+                                                value="<?= set_value('hora_recebimento', $data['hora_recebimento'] ?? '') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -91,7 +94,9 @@
                                         <?php foreach (['ABO/RH', 'A', 'B', 'AB', 'D', 'C', 'RA1', 'RB'] as $tipo): ?>
                                             <div class="col-md-1">
                                                 <label for="tipo1_<?= $tipo ?>" class="form-label"><?= $tipo ?></label>
-                                                <input type="text" id="tipo1_<?= $tipo ?>" class="form-control" name="tipo_1[<?= $tipo ?>]" value="<?= set_value("tipo1_[$tipo]") ?>">
+                                                <input type="text" id="tipo1_<?= $tipo ?>" class="form-control"
+                                                    name="tipo1_[<?= $tipo ?>]"
+                                                    value="<?= set_value("tipo1_[$tipo]", $data['tipo1_'][$tipo] ?? '') ?>">
                                             </div>
                                         <?php endforeach; ?>
                                         <div class="col-md-4">
@@ -115,10 +120,15 @@
                         </div>
                        <div class="bordered-container p-3 mb-2">
                             <div class="row g-2 mb-3">
-                                <?php foreach (['PAI I', 'PAI II', 'CD', 'AC'] as $tipo): ?>
+                               <?php foreach (['PAI I', 'PAI II', 'CD', 'AC'] as $tipo): 
+                                    $chaveSanitizada = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '_', $tipo)));
+                                    $campo = "tipo2_" . $chaveSanitizada;
+                                ?>
                                     <div class="col-md-1">
-                                        <label for="tipo2_<?= $tipo ?>" class="form-label"><?= $tipo ?></label>
-                                        <input type="text" id="tipo2_<?= $tipo ?>" class="form-control" name="tipo2[<?= $tipo ?>]" value="<?= set_value("tipo2[$tipo]") ?>">
+                                        <label for="<?= $campo ?>" class="form-label"><?= $tipo ?></label>
+                                        <input type="text" id="<?= $campo ?>" class="form-control" 
+                                            name="tipo2[<?= $tipo ?>]" 
+                                            value="<?= set_value("tipo2[$tipo]", $data[$campo] ?? '') ?>">
                                     </div>
                                 <?php endforeach; ?>
                                 <div class="col-md"></div>
@@ -143,12 +153,25 @@
                             <div class="bordered-container p-3">
                                 <label class="form-label fw-bold">Fenótipo</label>
                                 <div class="row g-2">
-                                    <?php foreach (['C', 'Cw', 'c', 'E', 'e', 'K'] as $fenotipo): ?>
-                                        <div class="col-md-1">
-                                            <label for="fenotipo_<?= $fenotipo ?>" class="form-label"><?= $fenotipo ?></label>
-                                            <input type="text" id="fenotipo_<?= $fenotipo ?>" class="form-control" name="fenotipo[<?= $fenotipo ?>]" value="<?= set_value("fenotipo[$fenotipo]") ?>">
-                                        </div>
-                                    <?php endforeach; ?>
+                                    <?php
+                                        $fenotipos = [
+                                            'C'     => 'fenotipo_c',
+                                            'Cw'    => 'fenotipo_cw',
+                                            'c'     => 'fenotipo_c',
+                                            'E'     => 'fenotipo_e',
+                                            'e'     => 'fenotipo_e_min',
+                                            'K'     => 'fenotipo_k',
+                                        ];
+
+                                        foreach ($fenotipos as $label => $campo):
+                                        ?>
+                                            <div class="col-md-1">
+                                                <label for="<?= $campo ?>" class="form-label"><?= $label ?></label>
+                                                <input type="text" id="<?= $campo ?>" class="form-control"
+                                                    name="fenotipo[<?= $label ?>]"
+                                                    value="<?= set_value("fenotipo[$label]", $data[$campo] ?? '') ?>">
+                                            </div>
+                                        <?php endforeach; ?>
                                 </div>
                             </div>
                         </div>
@@ -185,81 +208,74 @@
                                         </thead>
                                         <tbody>
                                             <?php for ($i = 0; $i < 7; $i++): ?>
-                                            <tr>
-                                                <td style="width:110px;">
-                                                    <input type="date" name="data_expedicao[]" class="form-control form-control-sm" style="font-size: 0.85rem; min-width: 100px;" value="<?= set_value('data_expedicao['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="tipo[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.75rem; padding: 0.2rem 0.4rem; height: 24px; max-width: 60px; margin: auto;" 
-                                                        value="<?= set_value('tipo['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="numero[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.75rem; padding: 0.2rem 0.4rem; height: 24px; max-width: 60px; margin: auto;" 
-                                                        value="<?= set_value('numero['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="abo_rh_expedicao[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.75rem; padding: 0.2rem 0.4rem; height: 24px; max-width: 60px; margin: auto;" 
-                                                        value="<?= set_value('abo_rh_expedicao['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="volume[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.75rem; padding: 0.2rem 0.4rem; height: 24px; max-width: 60px; margin: auto;" 
-                                                        value="<?= set_value('volume['.$i.']') ?>" placeholder="ml">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="origem[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.75rem; padding: 0.2rem 0.4rem; height: 24px; max-width: 60px; margin: auto;" 
-                                                        value="<?= set_value('origem['.$i.']') ?>">
-                                                </td>
-                                                <td style="width:80px;">
-                                                    <div class="d-flex justify-content-center align-items-center" style="gap: 0.1rem; height: 100%;">
-                                                        <div class="form-check">
-                                                            <input type="radio" name="pc_<?= $i ?>" id="pc_c_<?= $i ?>" value="C" class="form-check-input" style="margin-left: 0.1rem;">
-                                                            <label for="pc_c_<?= $i ?>" class="form-check-label" style="font-size: 0.85rem;">C</label>
+                                                <tr>
+                                                    <td>
+                                                        <input type="date" name="data_expedicao[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("data_expedicao[$i]", $data['expedicoes'][$i]['data_expedicao'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="tipo[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("tipo[$i]", $data['expedicoes'][$i]['tipo'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="numero[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("numero[$i]", $data['expedicoes'][$i]['numero'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="abo_rh_expedicao[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("abo_rh_expedicao[$i]", $data['expedicoes'][$i]['abo_rh_expedicao'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="volume[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("volume[$i]", $data['expedicoes'][$i]['volume'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="origem[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("origem[$i]", $data['expedicoes'][$i]['origem'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <div class="d-flex justify-content-center align-items-center" style="gap: 0.1rem;">
+                                                            <div class="form-check">
+                                                                <input type="radio" name="pc_<?= $i ?>" id="pc_c_<?= $i ?>" value="C" class="form-check-input"
+                                                                    <?= set_radio("pc_$i", 'C', ($data['expedicoes'][$i]['pc'] ?? '') === 'C') ?>>
+                                                                <label for="pc_c_<?= $i ?>" class="form-check-label">C</label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input type="radio" name="pc_<?= $i ?>" id="pc_i_<?= $i ?>" value="I" class="form-check-input"
+                                                                    <?= set_radio("pc_$i", 'I', ($data['expedicoes'][$i]['pc'] ?? '') === 'I') ?>>
+                                                                <label for="pc_i_<?= $i ?>" class="form-check-label">I</label>
+                                                            </div>
                                                         </div>
-                                                        <div class="form-check">
-                                                            <input type="radio" name="pc_<?= $i ?>" id="pc_i_<?= $i ?>" value="I" class="form-check-input">
-                                                            <label for="pc_i_<?= $i ?>" class="form-check-label" style="font-size: 0.85rem;">I</label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="th_<?= $i ?>" class="form-control form-control-sm" 
-                                                        style="font-size: 0.8rem; max-width: 60px; margin: auto;" value="<?= set_value('th_'.$i) ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="iv_<?= $i ?>" class="form-control form-control-sm" 
-                                                        style="font-size: 0.8rem; max-width: 60px; margin: auto;" value="<?= set_value('iv_'.$i) ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="responsavel_expedicao[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.8rem; max-width: 90px; margin: auto;" value="<?= set_value('responsavel_expedicao['.$i.']') ?>">
-                                                </td>
-
-                                                <!-- Inputs de hora aumentados -->
-                                                <td>
-                                                    <input type="time" name="hora_expedicao[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.85rem; width: 100%; min-width: 80px; box-sizing: border-box;" 
-                                                        value="<?= set_value('hora_expedicao['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="time" name="hora_inicio[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.85rem; width: 100%; min-width: 80px; box-sizing: border-box;" 
-                                                        value="<?= set_value('hora_inicio['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="time" name="hora_termino[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.85rem; width: 100%; min-width: 80px; box-sizing: border-box;" 
-                                                        value="<?= set_value('hora_termino['.$i.']') ?>">
-                                                </td>
-                                                <td>
-                                                    <input type="text" name="responsavel_administracao[]" class="form-control form-control-sm" 
-                                                        style="font-size: 0.8rem; max-width: 90px; margin: auto;" value="<?= set_value('responsavel_administracao['.$i.']') ?>">
-                                                </td>
-                                            </tr>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="th_<?= $i ?>" class="form-control form-control-sm"
+                                                            value="<?= set_value("th_$i", $data['expedicoes'][$i]['th'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="iv_<?= $i ?>" class="form-control form-control-sm"
+                                                            value="<?= set_value("iv_$i", $data['expedicoes'][$i]['iv'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="responsavel_expedicao[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("responsavel_expedicao[$i]", $data['expedicoes'][$i]['responsavel_expedicao'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="time" name="hora_expedicao[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("hora_expedicao[$i]", $data['expedicoes'][$i]['hora_expedicao'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="time" name="hora_inicio[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("hora_inicio[$i]", $data['expedicoes'][$i]['hora_inicio'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="time" name="hora_termino[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("hora_termino[$i]", $data['expedicoes'][$i]['hora_termino'] ?? '') ?>">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" name="responsavel_administracao[]" class="form-control form-control-sm"
+                                                            value="<?= set_value("responsavel_administracao[$i]", $data['expedicoes'][$i]['responsavel_administracao'] ?? '') ?>">
+                                                    </td>
+                                                </tr>
                                             <?php endfor; ?>
                                         </tbody>
                                     </table>
@@ -288,6 +304,9 @@
                                 </a>
                             </div>
                         </div>
+
+                        <input type="hidden" name="idreq" id="idreq" value="<?= $data['idreq'] ?>"/>
+
                     </form>
                 </div>
             </div>

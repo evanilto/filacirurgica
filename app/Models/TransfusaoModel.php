@@ -47,7 +47,7 @@ class TransfusaoModel extends Model
     'responsavel_tipo1',
     'tipo2_pai_i', 'tipo2_pai_ii', 'tipo2_cd', 'tipo2_ac',
     'responsavel',
-    'fenotipo_c', 'fenotipo_cw', 'fenotipo_c_min',
+    'fenotipo_c', 'fenotipo_cw',
     'fenotipo_e', 'fenotipo_e_min', 'fenotipo_k',
     'anticorpos',
     'observacoes',
