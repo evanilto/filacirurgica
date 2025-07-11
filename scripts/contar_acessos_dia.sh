@@ -1,7 +1,14 @@
 #!/bin/bash
 
-# Caminho fixo do arquivo de log (log do dia atual)
-LOG_FILE="/var/www/html/filacirurgica/writable/logs/acessos-$(date +%Y-%m-%d).log"
+# Verifica se uma data foi passada como argumento (formato: YYYY-MM-DD)
+if [ -n "$1" ]; then
+    DATA="$1"
+else
+    DATA=$(date +%Y-%m-%d)
+fi
+
+# Caminho do arquivo de log baseado na data fornecida ou atual
+LOG_FILE="/var/www/html/filacirurgica/writable/logs/acessos-${DATA}.log"
 
 # Verifica se o arquivo existe
 if [ ! -f "$LOG_FILE" ]; then

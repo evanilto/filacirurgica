@@ -5089,5 +5089,76 @@ class MapaCirurgico extends ResourceController
             throw $e;
         }
     }
+    /**
+     * 
+     * @return mixed
+     */
+    /* public function suspenderCirurgiasUrgentesExpiradas()
+    {
+        $db = \Config\Database::connect('default');
+
+        try {
+            $cirurgias = $this->mapacirurgicomodel
+                ->where('indurgencia', 'S')
+                ->where('dthrcirurgia <', date('Y-m-d')) // data anterior a hoje as 00:00:00
+                ->where('indsituacao =', 'P') // Programado
+                ->where('dthrsaidasala', null) // cirurgia não concluída
+                ->findAll();
+
+            foreach ($cirurgias as $cirurgia) {
+                $db->transStart();
+
+                $mapa = [
+                    'idsuspensao' => 56, // ID padrão de suspensão por expiração da data
+                    'dthrsuspensao' => date('Y-m-d H:i:s'),
+                    'txtjustificativasuspensao' => 'Suspensão automática por data expirada',
+                    'indsituacao' => 'SADM'
+                ];
+
+                $this->mapacirurgicomodel->update($cirurgia['id'], $mapa);
+
+                $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $cirurgia['id'])->findAll();
+
+                foreach ($equipamentos as $equipamento) {
+                    $this->equipamentoscirurgiamodel->update($equipamento['id'], ['indexcedente' => false]);
+
+                    $this->filawebmodel->atualizaLimiteExcedidoEquipamento(
+                        $cirurgia['datacirurgia'],
+                        $equipamento['idequipamento'],
+                        true
+                    );
+                }
+
+                $listaespera = $this->listaesperamodel->withDeleted()->find($cirurgia['idlista']);
+
+                if ($listaespera['indurgencia'] == 'S') {
+                    $this->listaesperamodel->withDeleted()->update($cirurgia['idlista'], ['indsituacao' => 'E']);
+                } else {
+                    $this->listaesperamodel->withDeleted()->update($cirurgia['idlista'], [
+                        'deleted_at' => NULL,
+                        'indsituacao' => 'A'
+                    ]);
+                }
+
+                $this->historicomodel->insert([
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idlistaespera' => $cirurgia['idlista'],
+                    'idevento' => 11, // código de evento "suspensão automática"
+                    'idlogin' => 79 // infohu
+                ]);
+
+                $db->transComplete();
+
+                if ($db->transStatus() === false) {
+                    throw new \Exception("Erro na suspensão da cirurgia ID {$cirurgia['id']}");
+                }
+            }
+
+            log_message('info', 'Suspensões automáticas de cirurgias urgentes executadas com sucesso.');
+
+        } catch (\Throwable $e) {
+            log_message('error', 'Erro na suspensão automática: ' . $e->getMessage());
+        }
+    } */
    
 }

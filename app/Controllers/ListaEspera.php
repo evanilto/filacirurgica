@@ -578,7 +578,7 @@ class ListaEspera extends ResourceController
 
         $builder->orderBy('vl.id', 'ASC');
 
-        //var_dump($builder->getCompiledSelect());die();
+        //dd($builder->getCompiledSelect());
 
         return $builder->get()->getResult();
 
@@ -2287,12 +2287,20 @@ class ListaEspera extends ResourceController
                                                         'data' => $this->data]);
 
                 } else {
-                    if ($this->data['risco'] != 8) { // Risco Liberado
+                    if ($this->data['risco'] != 8) { // Risco Liberado 
                         $this->validator->setError('risco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado!');
                         $this->carregaMapa();
         
                         return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
                                                             'data' => $this->data]);
+                    } else {
+                        if (!$this->data['dtrisco']) { // Risco Liberado e data preenchida
+                            $this->validator->setError('dtrisco', 'Para envio do paciente ao mapa o risco cirúrgico deve estar liberado e com data do risco informada!');
+                            $this->carregaMapa();
+            
+                            return view('layouts/sub_content', ['view' => 'listaespera/form_envia_mapacirurgico',
+                                                                'data' => $this->data]);
+                        }
                     }
                 }
             }
