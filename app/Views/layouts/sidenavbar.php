@@ -95,24 +95,24 @@
                                 <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
                                     <li>
                                         <a href="<?= base_url('transfusao/requisitar') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Requisitar
+                                            <i class="fa-solid fa-user-nurse"></i> Nova Requisição
                                         </a>
                                     </li>
                                 <?php } ?>
                                 <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?>
                                     <li>
                                         <a href="<?= base_url('transfusao/consultar') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
-                                            <i class="fa-solid fa-user-nurse"></i> Atender Requisição
+                                            <i class="fa-solid fa-user-nurse"></i> Consultar Requisições
                                         </a>
                                     </li>
                                 <?php } ?>
-                                <?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
+                                <!-- <-?php if(HUAP_Functions::tem_permissao('transfusao-requisitar')) { ?>
                                     <li>
-                                        <a href="<?= base_url('transfusao/emitirtcle') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
+                                        <a href="<-= base_url('transfusao/emitirtcle') ?>" class="link-aguarde nav-link text-white p-2" aria-current="page">
                                             <i class="fa-solid fa-user-nurse"></i> Emitir TCLE
                                         </a>
                                     </li>
-                                <?php } ?>
+                                <-?php } ?> -->
                             </ul>
                         </div>
                     </li>

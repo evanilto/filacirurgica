@@ -69,6 +69,8 @@ class Transfusao extends BaseController
     {
         HUAP_Functions::limpa_msgs_flash();
 
+        //session()->remove('inclusao_sucesso');
+
        //dd($data);
 
        $data = [];
@@ -100,7 +102,7 @@ class Transfusao extends BaseController
 
         $this->data = [];
 
-        $this->data = $this->request->getVar();
+        $this->data = $this->request->getPost();
 
         //dd($this->data);
 
@@ -133,7 +135,7 @@ class Transfusao extends BaseController
             'fibrinogenio' => 'required|numeric',
             'dt_fibrinogenio' => 'required|valid_date[Y-m-d]',
             //'tipo_transfusao' => string (6) "rotina"
-            'dt_programada' => 'permit_empty|valid_date[Y-m-d]',
+            'reserva_data' => 'permit_empty|valid_date[Y-m-d]',
             //'nome_coletor' => string (8) "eeeeeeee"
             'dt_coleta' => 'required|valid_date[Y-m-d]',
             'hr_coleta' => 'required|valid_time[H:i]',
@@ -152,7 +154,7 @@ class Transfusao extends BaseController
             'dt_inr',
             'dt_ptt',
             'dt_fibrinogenio',
-            'dt_programada',
+            'reserva_data',
             'dt_coleta',
             'dt_solicitacao'
         ];
@@ -185,15 +187,14 @@ class Transfusao extends BaseController
             }
         }
 
-        $this->data['idmapacirurgico'] = $this->data['cirurgia'];
+        $this->data['idmapacirurgico'] = $this->data['cirurgia'] ?? NULL;
         $this->data['pac_codigo'] = $this->data['pac_codigo_hidden'];
 
         //dd($this->data);
 
-        if ($this->data['cirurgia'] == 0 || is_null($this->data['cirurgia'])) {
+        if (empty($this->data['reserva_data'])) {
+            $this->data['reserva_data'] = NULL;
         }
-
-        //die(var_dump($this->data));
 
         if ($this->validate($rules)) {
 
@@ -226,9 +227,15 @@ class Transfusao extends BaseController
                 $db->transComplete();
 
                 session()->setFlashdata('success', 'Requerimento incluído com sucesso!');
-                session()->setFlashdata('inclusao_sucesso', true);
+                //session()->setFlashdata('inclusao_sucesso', true);
 
                 $this->validator->reset();
+
+                $_SESSION['requisicoes'] = ["dtinicio" => date('Y-m-d'),
+                                           "dtfim" => date('Y-m-d') . ' 23:59:59'];
+
+                return redirect()->to(base_url('transfusao/exibir'));
+
 
             } catch (\Throwable $e) {
                 $db->transRollback();
@@ -331,7 +338,7 @@ class Transfusao extends BaseController
 
         $this->data = [];
 
-        $this->data = $this->request->getVar();
+        $this->data = $this->request->getPost();
 
         //dd($this->data);
 
@@ -347,7 +354,7 @@ class Transfusao extends BaseController
             'dt_inr',
             'dt_ptt',
             'dt_fibrinogenio',
-            'dt_programada',
+            'reserva_data',
             'dt_coleta',
             'dt_solicitacao'
         ];
@@ -441,8 +448,10 @@ class Transfusao extends BaseController
                     'responsavel_tipo1' => $this->request->getPost('responsavel_tipo1'),
                     'responsavel_tipo2' => $this->request->getPost('responsavel_tipo2'),
                     'anticorpos' => $this->request->getPost('anticorpos'),
-                    'observacoes_hemoterapia' => $this->request->getPost('observacoes')
+                    'observacoes_hemoterapia' => $this->request->getPost('observacoes_hemoterapia')
                 ]);
+
+                //dd($this->data);
 
                 // Expedição: arrays indexados com múltiplas linhas (ex: data_expedicao[0], tipo[0], ...)
                 $linhasExpedicao = $this->request->getPost('data_expedicao');
@@ -599,6 +608,8 @@ class Transfusao extends BaseController
             $data = $_SESSION['requisicoes'];
         }
 
+        //dd($data);
+
         if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
             $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
         }
@@ -667,6 +678,8 @@ class Transfusao extends BaseController
             }
 
             $this->validator->reset();
+
+            //dd($data);
 
             $result = $this->getRequisicoes($data);
 

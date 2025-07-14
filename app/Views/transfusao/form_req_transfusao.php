@@ -383,44 +383,44 @@
                                     <div class="bordered-container p-3">
                                         <!-- Rotina -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="R" <?= set_radio('tipo_transfusao', 'rotina') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="R" <?= set_radio('tipo_transfusao', 'R') ?>>
                                             <label class="form-check-label" for="transfusao_rotina">
                                                 Rotina (em até 24h)
                                             </label>
                                         </div>
                                         <!-- Urgência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="U" <?= set_radio('tipo_transfusao', 'urgencia') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="U" <?= set_radio('tipo_transfusao', 'U') ?>>
                                             <label class="form-check-label" for="transfusao_urgencia">
                                                 Urgência (em até 3h)
                                             </label>
                                         </div>
                                         <!-- Emergência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="E" <?= set_radio('tipo_transfusao', 'emergencia') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="E" <?= set_radio('tipo_transfusao', 'E') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia">
                                                 Emergência
                                             </label>
                                         </div>
                                          <!-- Emergência sem compatibilidade -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="EST" <?= set_radio('tipo_transfusao', 'emergencia_semteste') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="EST" <?= set_radio('tipo_transfusao', 'EST') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia_semteste">
                                                 Emergência (sem teste de compatibilidade)
                                             </label>
                                         </div>
                                         <!-- Programada + Data -->
                                         <div class="form-check d-flex align-items-center" style="margin-bottom: 32px;">
-                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="P" <?= set_radio('tipo_transfusao', 'programada') ?>>
+                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="P" <?= set_radio('tipo_transfusao', 'P') ?>>
                                             <label class="form-check-label me-2" for="transfusao_programada">
                                                 Programada
                                             </label>
                                             <input type="date"
-                                                name="dt_programada"
-                                                id="dt_programada"
+                                                name="reserva_data"
+                                                id="reserva_data"
                                                 class="form-control form-control-sm"
-                                                style="width: 100%; max-width: 200px; display: <?= set_radio('tipo_transfusao', 'programada') ? 'inline-block' : 'none' ?>;"
-                                                value="<?= set_value('dt_programada') ?>">
+                                                style="width: 100%; max-width: 200px; display: <?= set_radio('tipo_transfusao', 'P') ? 'inline-block' : 'none' ?>;"
+                                                value="<?= set_value('reserva_data') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -523,28 +523,17 @@
                                 <button id="btnAcao" class="btn btn-primary mt-4">
                                     <i class="fa-solid fa-floppy-disk"></i> Salvar
                                 </button>
-                                <?php if (session()->has('inclusao_sucesso')): ?>
-                                    <a class="btn btn-info mt-4" href="<?= base_url('transfusao/requisitar') ?>">
+                               <!--  <-?php if (session()->has('inclusao_sucesso')): ?>
+                                    <button class="btn btn-info mt-4" id="btnNovoRequerimento">
                                         <i class="fa-solid fa-plus"></i> Novo Requerimento
-                                    </a>
-                                <?php endif; ?>
+                                    </button>
+                                    <button id="btnImprimir" class="btn btn-success mt-4">
+                                        <i class="fa-solid fa-print"></i> Imprimir
+                                    </button>
+                                <-?php endif; ?> -->
                                 <a class="btn btn-warning mt-4" href="javascript:history.go(-1)">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
-                                <?php if (session()->has('inclusao_sucesso')): ?>
-                                    <script>
-                                        document.addEventListener('DOMContentLoaded', function () {
-                                            const btn = document.getElementById('btnAcao');
-                                            if (btn) {
-                                                btn.className = 'btn btn-success mt-4';
-                                                btn.innerHTML = '<i class="fa-solid fa-print"></i> Imprimir';
-                                                btn.onclick = function () {
-                                                    window.print();
-                                                };
-                                            }
-                                        });
-                                    </script>
-                                <?php endif; ?>
                             </div>
                         </div>
 
@@ -706,7 +695,7 @@
                             option.text = `Data/Hora: ${dthrcirurgia} - Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_principal}`;
 
                             option.setAttribute('data-idmapa-id', item.id);
-                            option.setAttribute('data-pac_codigo-id', item.codigo);
+                            //option.setAttribute('data-pac_codigo-id', item.codigo);
                             option.setAttribute('data-especialidade-id', item.idespecialidade);
                             option.setAttribute('data-procedimento-id', item.idprocedimento);
 
@@ -769,7 +758,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const radios = document.querySelectorAll('input[name="tipo_transfusao"]');
-        const dataField = document.getElementById('dt_programada');
+        const dataField = document.getElementById('reserva_data');
 
         radios.forEach(radio => {
             radio.addEventListener('change', function () {
@@ -781,6 +770,18 @@
                 }
             });
         });
+
+        // ------------------  Nova Requisição --------------------
+        /* const btn = document.getElementById('btnNovoRequerimento');
+        btn.addEventListener('click', function () {
+            const modal = new bootstrap.Modal(document.getElementById('modalAguarde'));
+            modal.show();
+
+            // Aguarde 500ms e redirecione
+            setTimeout(() => {
+                window.location.href = "<--?= base_url('transfusao/requisitar') ?>";
+            }, 500);
+        }); */
 
     });
   
@@ -833,10 +834,10 @@
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
-                const paccodigoId = selectedOption.getAttribute('data-pac_codigo-id');
+                //const paccodigoId = selectedOption.getAttribute('data-pac_codigo-id');
                 const mapaId = selectedOption.getAttribute('data-idmapa-id');
 
-                $('#pac_codigo_hidden').val(paccodigoId);
+                //$('#pac_codigo_hidden').val(paccodigoId);
                 $('#idmapa_hidden').val(mapaId);
                 $('#procedimento_hidden').val(procedimentoId);
                 

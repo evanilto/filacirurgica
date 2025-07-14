@@ -50,7 +50,7 @@ class TransfusaoModel extends Model
     'fenotipo_c', 'fenotipo_cw',
     'fenotipo_e', 'fenotipo_e_min', 'fenotipo_k',
     'anticorpos',
-    'observacoes',
+    'observacoes_hemoterapia',
     ];
 
     // Dates

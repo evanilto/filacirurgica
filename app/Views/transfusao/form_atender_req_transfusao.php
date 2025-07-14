@@ -179,7 +179,7 @@
                             <!-- Anticorpos -->
                             <div class="mb-2">
                                 <label class="form-label">Painel/Anticorpos Identificados:</label>
-                                <textarea class="form-control" name="anticorpos" rows="2"><?= set_value('anticorpos') ?></textarea>
+                                    <textarea class="form-control" name="anticorpos" rows="2"><?= set_value('anticorpos', $data['anticorpos'] ?? '') ?></textarea>
                             </div>
                         </div>
                         <div class="row g-3">
@@ -286,7 +286,7 @@
                             <!-- Observações -->
                             <div class="mb-3 mt-1">
                                 <label class="form-label">Observações:</label>
-                                <textarea class="form-control" name="observacoes" rows="3"><?= set_value('observacoes') ?></textarea>
+                               <textarea class="form-control" name="observacoes_hemoterapia" rows="3"><?= set_value('observacoes_hemoterapia', $data['observacoes_hemoterapia'] ?? '') ?></textarea>
                             </div>
                         </div>
                         <div class="row g-3">
