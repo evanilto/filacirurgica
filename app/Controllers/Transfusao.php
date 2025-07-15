@@ -791,20 +791,54 @@ class Transfusao extends BaseController
 
         HUAP_Functions::limpa_msgs_flash();
 
-        $requisicao = $this->getRequisicoes(['idreq' => $id])[0];
         //$paciente = $this->pacientesmodel->find($mapa->prontuario);
 
         //die(var_dump($mapa));
 
+        $requisicao = $this->transfusaoModel->find($id);
+
+        //dd($requisicao);
+
+        //$requisicao = $this->getRequisicoes(['idreq' => $id])[0];
         $data = [];
-        $data = (array) $requisicao;
+        $data = $requisicao;
+        $data['idreq'] = $id;
+        $data['dthrequisicao'] = DateTime::createFromFormat('Y-m-d H:i:s', $requisicao['created_at'])->format('d/m/Y H:i');
+        if ($data['hora_recebimento']){
+            $data['hora_recebimento'] = DateTime::createFromFormat('H:i:s', $requisicao['hora_recebimento'])->format('H:i');
+        }
+        $data['expedicoes'] = $this->transfusaoexphemocompmodel->Where('transfusao_id', $id)->findAll();
+        $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
         $data['servidores'] = $this->selectservidores;
-        $data = [
-            'nome' => 'João da Silva',
-            'observacoes' => 'Paciente estável',
-            // Outros dados necessários para frente e verso
+
+        $data['tipo1_'] = [
+            'ABO/RH' => $data['tipo1_aborh'],
+            'A'      => $data['tipo1_a'],
+            'B'      => $data['tipo1_b'],
+            'AB'     => $data['tipo1_ab'],
+            'D'      => $data['tipo1_d'],
+            'C'      => $data['tipo1_c'],
+            'RA1'    => $data['tipo1_ra1'],
+            'RB'     => $data['tipo1_rb'],
         ];
+
+        $data['tipo2_'] = [
+            'PAI I' => $data['tipo2_pai_i'],
+            'PAI II' => $data['tipo2_pai_ii'],
+            'CD' => $data['tipo2_cd'],
+            'AC' => $data['tipo2_ac'],
+        ];
+
+        $data['fenotipo_'] = [
+            'C' => $data['fenotipo_c'],
+            'Cw' => $data['fenotipo_cw'],
+            'c' => $data['fenotipo_c'],
+            'E' => $data['fenotipo_e'],
+            'e' => $data['fenotipo_e_min'],
+            'K' => $data['fenotipo_k'],
+        ];
+        
 
         return view('layouts/sub_content', ['view' => 'transfusao/form_requisicao',
                                             'data' => $data]);

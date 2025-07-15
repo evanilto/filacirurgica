@@ -294,17 +294,7 @@
                                 <strong>LEGENDAS:</strong> ORIGEM 1 = HUAP, 2 = IEHE ou SIGLA correspondente / PC = prova cruzada, C = compatível, I = Incompatível / TH = Teste de Hemólise / IV = Inspeção visual
                             </div>
                         </div>
-                        <div class="row g-3">
-                            <div class="col-md-12 d-flex gap-2 mt-4">
-                                <button id="btnAcao" class="btn btn-primary mt-4">
-                                    <i class="fa-solid fa-floppy-disk"></i> Salvar
-                                </button>
-                                <a class="btn btn-warning mt-4" href="<?= base_url('transfusao/exibir') ?>">
-                                    <i class="fa-solid fa-arrow-left"></i> Voltar
-                                </a>
-                            </div>
-                        </div>
-
+                        
                         <input type="hidden" name="idreq" id="idreq" value="<?= $data['idreq'] ?>"/>
 
                     </form>
