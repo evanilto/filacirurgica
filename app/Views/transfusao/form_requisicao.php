@@ -12,6 +12,7 @@
     .tabs-transfusao-form .nav-tabs .nav-link {
         background-color: #faf6f6ff;
         color: black;
+        font-size: 1rem; /* ou 16px, 18px, etc. */
         font-weight: 500;
         border-color: #dee2e6 #dee2e6 #fff;
         box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
@@ -19,7 +20,8 @@
     }
     .tabs-transfusao-form .nav-tabs .nav-link.active {
         background-color: #fff;
-        color: #1e8052ff;
+        color: black;
+        font-size: 1.1rem; /* ou 16px, 18px, etc. */
         font-weight: bold;
         border-color: #dee2e6 #dee2e6 #fff;
         box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.05);
