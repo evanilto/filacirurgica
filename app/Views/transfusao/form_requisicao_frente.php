@@ -3,7 +3,7 @@
 
     
                 <div class="card-body has-validation">
-                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/incluir') ?>">
+                    <form id="formTransfusao" method="post" action="<?= base_url('transfusao/editar') ?>">
                         <!-- Dados do Paciente -->
                         <div class="row g-3">
                             <div class="col-md-2">
@@ -12,7 +12,7 @@
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
-                                        name="prontuario" value="<?= set_value('prontuario', isset($idprontuario) ? $idprontuario : '') ?>" <?= isset($idprontuario) ? 'readonly' : '' ?> />
+                                            name="prontuario" value="<?= set_value('prontuario', $data['prontuario'] ?? '') ?>" readonly/>
                                         <?php if ($validation->getError('prontuario')): ?>
                                                 <div class="invalid-feedback">
                                                     <?= $validation->getError('prontuario') ?>
@@ -27,7 +27,7 @@
                                     <div class="input-group mb-12">
                                         <input type="text" id="nome" maxlength="100" 
                                         class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
-                                        name="nome" value="<?= set_value('nome') ?>" readonly/>
+                                            name="nome" value="<?= set_value('nome', $data['nome'] ?? '') ?>" readonly/>
                                         <?php if ($validation->getError('nome')): ?>
                                             <div class="invalid-feedback">
                                                 <?= $validation->getError('nome') ?>
@@ -39,14 +39,14 @@
                             <div class="col-md-2 mb-2">
                                 <label class="form-label">Data Nascimento<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="dtnascimento" id="dtnascimento" class="form-control <?= $validation->hasError('dtnascimento') ? 'is-invalid' : '' ?>" value="<?= set_value('dtnascimento') ?>" disabled/>
+                                    <input type="text" name="dtnascimento" id="dtnascimento" class="form-control <?= $validation->hasError('dtnascimento') ? 'is-invalid' : '' ?>" value="<?= set_value('dtnascimento', $data['dtnascimento']) ?? ''?>" readonly/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('dtnascimento') ?></div>
                             </div>
                             <div class="col-md-2 mb-2">
                                 <label class="form-label">Sexo<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="sexo" id="sexo" class="form-control <?= $validation->hasError('sexo') ? 'is-invalid' : '' ?>" value="<?= set_value('sexo') ?>" disabled/>
+                                    <input type="text" name="sexo" id="sexo" class="form-control <?= $validation->hasError('sexo') ? 'is-invalid' : '' ?>" value="<?= set_value('sexo', $data['sexo']) ?? ''?>" readonly/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('sexo') ?></div>
                             </div>
@@ -55,21 +55,21 @@
                             <div class="col-md-5 mb-2">
                                 <label class="form-label">Unidade<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="enfermaria" id="enfermaria" class="form-control <?= $validation->hasError('enfermaria') ? 'is-invalid' : '' ?>" value="<?= set_value('enfermaria') ?>" disabled/>
+                                    <input type="text" name="unidade" id="unidade" class="form-control <?= $validation->hasError('unidade') ? 'is-invalid' : '' ?>" value="<?= set_value('unidade', $data['unidade']) ?? ''?>" readonly/>
                                 </div>
-                                <div class="invalid-feedback"><?= $validation->getError('enfermaria') ?></div>
+                                <div class="invalid-feedback"><?= $validation->getError('unidade') ?></div>
                             </div>
                             <div class="col-md-2 mb-2">
                                 <label class="form-label">Andar<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="andar" id="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar') ?>" disabled/>
+                                    <input type="text" name="andar" id="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar', $data['andar']) ?? ''?>" readonly/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('andar') ?></div>
                             </div>
                             <div class="col-md-5 mb-2">
                                 <label class="form-label">Leito<b class="text-danger">*</b></label>
                                 <div class="input-group mb-12">
-                                    <input type="text" name="leito" id="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito') ?>" disabled/>
+                                    <input type="text" name="leito" id="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito', $data['leito']) ?? ''?>" readonly/>
                                 </div>
                                 <div class="invalid-feedback"><?= $validation->getError('leito') ?></div>
                             </div>
@@ -128,7 +128,7 @@
                             <div class="col-md-3 mb-2">
                                 <label class="form-label">Peso (Kg)</label>
                                 <div class="input-group mb-12">
-                                    <input type="number" step="0.1" name="peso" class="form-control" value="<?= set_value('peso') ?>" />
+                                    <input type="number" step="0.1" name="peso" class="form-control" value="<?= set_value('peso', $data['peso']) ?>" />
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -136,20 +136,20 @@
                                     <label class="form-label">Sangramento Ativo<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="sangramento" id="sangramentoN" value="N"
-                                                <?= (isset($data['sangramento']) && $data['sangramento'] == 'N') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="sangramentoN" style="margin-right: 10px;">&nbsp;Não</label>
+                                            <input class="form-check-input" type="radio" name="sangramento_ativo" id="sangramento_ativoN" value="N"
+                                                <?= (isset($data['sangramento_ativo']) && $data['sangramento_ativo'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="sangramento_ativoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="sangramento" id="sangramentoS" value="S"
-                                                <?= (isset($data['sangramento']) && $data['sangramento'] == 'S') ? 'checked' : '' ?>>
-                                            <label class="form-check-label" for="sangramentoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                            <input class="form-check-input" type="radio" name="sangramento_ativo" id="sangramento_ativoS" value="S"
+                                                <?= (isset($data['sangramento_ativo']) && $data['sangramento_ativo'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="sangramento_ativoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
                                 </div>
-                                <?php if ($validation->getError('sangramento')): ?>
+                                <?php if ($validation->getError('sangramento_ativo')): ?>
                                     <div class="invalid-feedback d-block">
-                                        <?= $validation->getError('sangramento') ?>
+                                        <?= $validation->getError('sangramento_ativo') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>
@@ -205,10 +205,10 @@
                                     <label class="form-label">Hemocomponentes (unid/ml)</label>
                                     <div class="bordered-container p-3">
                                         <div class="row g-2">
-                                            <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="ch" class="form-control" value="<?= set_value('ch') ?>"></div>
-                                            <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="cp" class="form-control" value="<?= set_value('cp') ?>"></div>
-                                            <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="pfc" class="form-control" value="<?= set_value('pfc') ?>"></div>
-                                            <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio') ?>"></div>
+                                            <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="hemacias" class="form-control" value="<?= set_value('hemacias', $data['hemacias']) ?>"></div>
+                                            <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="plaquetas" class="form-control" value="<?= set_value('plaquetas', $data['plaquetas']) ?>"></div>
+                                            <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="plasma" class="form-control" value="<?= set_value('plasma', $data['plasma']) ?>"></div>
+                                            <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio', $data['crio']) ?>"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -257,11 +257,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>Plaquetas (g/dl)</label>
-                                                            <input type="number" step="0.1" name="plaquetas" class="form-control" value="<?= set_value('plaquetas') ?>">
+                                                            <input type="number" step="0.1" name="plq" class="form-control" value="<?= set_value('plq') ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_plaquetas" class="form-control" value="<?= set_value('dt_plaquetas') ?>">
+                                                            <input type="date" name="dt_plq" class="form-control" value="<?= set_value('dt_plq') ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -531,6 +531,7 @@
                             </div>
                         </div>
 
+                        <input type="hidden" name="idreq" id="idreq" value="<?= $data['idreq'] ?>"/>
                         <input type="hidden" name="idmapa_hidden" id="idmapa_hidden" value=""/>
                         <input type="hidden" name="pac_codigo_hidden" id="pac_codigo_hidden" value="<?= $data['pac_codigo'] ?>"/>
                         <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value=""/>
@@ -538,4 +539,15 @@
                     </form>
                 </div>
            
+<script>
+    $(document).ready(function() {
+
+        $('.select2-dropdown').select2({
+            //placeholder: "",
+            allowClear: true,
+            //width: 'resolve' // Corrigir a largura
+        });
+    });
+
+</script>
 

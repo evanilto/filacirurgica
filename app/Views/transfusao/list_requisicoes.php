@@ -67,19 +67,18 @@
         </tbody>
     </table>
     <div class="col-md-12 table-actions">
-        <a class="btn btn-warning" href="<?= base_url('transfusao/consultar') ?>">
+        <a class="btn btn-warning" href="<?= base_url('transfusao/editar') ?>">
             <i class="fa-solid fa-arrow-left"></i> Voltar
         </a>
-        <button class="btn btn-primary" id="atender" disabled>
-            <!-- <i class="fa-solid fa-paper-plane"></i> --> Atender
+        <button class="btn btn-primary" id="editar" disabled>
+            <!-- <i class="fa-solid fa-magnifying-glass"></i> --> Editar
+        </button>
+        <button class="btn btn-primary" id="excluir" disabled>
+            <!-- <i class="fa-solid fa-paper-plane"></i> --> Excluir
         </button>
         <button class="btn btn-primary" id="imprimir" disabled>
             <!-- <i class="fas fa-pencil-alt"></i> --> Imprimir
         </button>
-        <button class="btn btn-primary" id="consultar" disabled>
-            <!-- <i class="fa-solid fa-magnifying-glass"></i> --> Consultar
-        </button>
-
     </div>
 </div>
 
@@ -90,9 +89,9 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const table = document.getElementById("table");
-        const atender = document.getElementById("atender");
+        const excluir = document.getElementById("excluir");
         const imprimir = document.getElementById("imprimir");
-        const consultar = document.getElementById("consultar");
+        const editar = document.getElementById("editar");
 
         let selectedRow = null;
 
@@ -103,30 +102,30 @@
                 selectedRow = this;
                 //selectedRow.classList.add("selected");
                 selectedRow.classList.add("lineselected"); 
-                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> atender.disabled = false;  <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> excluir.disabled = false;  <?php } ?>
                 <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> imprimir.disabled = false; <?php } ?>
-                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> consultar.disabled = false; <?php } ?>
+                <?php if(HUAP_Functions::tem_permissao('transfusao-atender')) { ?> editar.disabled = false; <?php } ?>
             });
         });
 
-        atender.addEventListener("click", function () {
+        excluir.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/transfusao/atender/${id}`;
+                window.location.href = `/transfusao/excluir/${id}`;
             }
         });
 
         imprimir.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/transfusao/consultarrequisicao/${id}`;
+                window.location.href = `/transfusao/imprimirrequisicao/${id}`;
             }
         });
 
-        consultar.addEventListener("click", function () {
+        editar.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/transfusao/consultarrequisicao/${id}`;
+                window.location.href = `/transfusao/editarrequisicao/${id}`;
                //carregarDadosModal(selectedRow);
             }
         });

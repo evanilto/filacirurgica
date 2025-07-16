@@ -11,6 +11,8 @@ use App\Models\HistoricoModel;
 use App\Models\LocalVwServidoresModel;
 use App\Models\LocalAipPacientesModel;
 use App\Models\transfusaoExpHemocompModel;
+use App\Models\LocalVwLeitosPacientesModel;
+
 
 use DateTime;
 use App\Libraries\HUAP_Functions;
@@ -32,6 +34,7 @@ class Transfusao extends BaseController
     private $localvwservidoresmodel;
     private $localaippacientesmodel;
     private $transfusaoexphemocompmodel;
+    private $localvwleitospacientesmodel;
 
     private $data;
 
@@ -46,6 +49,7 @@ class Transfusao extends BaseController
         $this->localvwservidoresmodel = new LocalVwServidoresModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->transfusaoexphemocompmodel = new transfusaoExpHemocompModel();
+         $this->localvwleitospacientesmodel = new LocalVwLeitosPacientesModel();
               
         $this->selecthemocomponentes = $this->hemocomponentesmodel->orderBy('id', 'ASC')->findAll();
         $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
@@ -113,7 +117,7 @@ class Transfusao extends BaseController
             'indicacao' => 'required|max_length[250]|min_length[3]',
             //'listapaciente' => string (0) ""
             'peso' => 'required|numeric',
-            'sangramento' => 'required',
+            'sangramento_ativo' => 'required',
             'transfusao_anterior' => 'required',
             'reacao_transf' => 'required',
             'ch' => 'required|numeric',
@@ -124,8 +128,8 @@ class Transfusao extends BaseController
             'dt_hematocrito' => 'required|valid_date[Y-m-d]',
             'hemoglobina' => 'required|numeric',
             'dt_hemoglobina' => 'required|valid_date[Y-m-d]',
-            'plaquetas' => 'required|numeric',
-            'dt_plaquetas' => 'required|valid_date[Y-m-d]',
+            'plq' => 'required|numeric',
+            'dt_plq' => 'required|valid_date[Y-m-d]',
             'tap' => 'required|numeric',
             'dt_tap' => 'required|valid_date[Y-m-d]',
             'inr' => 'required|numeric',
@@ -149,7 +153,7 @@ class Transfusao extends BaseController
         $camposData = [
             'dt_hematocrito',
             'dt_hemoglobina',
-            'dt_plaquetas',
+            'dt_plq',
             'dt_tap',
             'dt_inr',
             'dt_ptt',
@@ -349,7 +353,7 @@ class Transfusao extends BaseController
         $camposData = [
             'dt_hematocrito',
             'dt_hemoglobina',
-            'dt_plaquetas',
+            'dt_plq',
             'dt_tap',
             'dt_inr',
             'dt_ptt',
@@ -723,10 +727,188 @@ class Transfusao extends BaseController
     }
 
     
-    public function editar($id)
-    {
-        $dados['registro'] = $this->transfusaoModel->find($id);
-        return view('transfusao/form', $dados);
+    public function editar()
+     {
+        //ini_set('memory_limit', '1024M');
+
+        \Config\Services::session();
+
+        helper(['form', 'url', 'session']);
+
+        $prontuario = null;
+
+        $this->data = [];
+
+        $this->data = $this->request->getPost();
+
+        //dd($this->data);
+
+        $rules = [
+            //'prontuario' => 'required|min_length[1]|max_length[12]|equals['.$prontuario.']',
+            'prontuario' => 'required|integer',
+            /* 'diagnostico' => 'required|max_length[250]|min_length[3]',
+            'indicacao' => 'required|max_length[250]|min_length[3]',
+            //'listapaciente' => string (0) ""
+            'peso' => 'required|numeric',
+            'sangramento' => 'required',
+            'transfusao_anterior' => 'required',
+            'reacao_transf' => 'required',
+            'ch' => 'required|numeric',
+            'cp' => 'required|numeric',
+            'pfc' => 'required|numeric',
+            'crio' => 'required|numeric',
+            'hematocrito' => 'required|numeric',
+            'dt_hematocrito' => 'required|valid_date[Y-m-d]',
+            'hemoglobina' => 'required|numeric',
+            'dt_hemoglobina' => 'required|valid_date[Y-m-d]',
+            'plq' => 'required|numeric',
+            'dt_plq' => 'required|valid_date[Y-m-d]',
+            'tap' => 'required|numeric',
+            'dt_tap' => 'required|valid_date[Y-m-d]',
+            'inr' => 'required|numeric',
+            'dt_inr' => 'required|valid_date[Y-m-d]',
+            'ptt' => 'required|numeric',
+            'dt_ptt' => 'required|valid_date[Y-m-d]',
+            'fibrinogenio' => 'required|numeric',
+            'dt_fibrinogenio' => 'required|valid_date[Y-m-d]',
+            //'tipo_transfusao' => string (6) "rotina"
+            'reserva_data' => 'permit_empty|valid_date[Y-m-d]',
+            //'nome_coletor' => string (8) "eeeeeeee"
+            'dt_coleta' => 'required|valid_date[Y-m-d]',
+            'hr_coleta' => 'required|valid_time[H:i]',
+            'medico_solicitante' => 'required|integer',
+            'medico_solicitante' => 'required|integer',
+            'dt_solicitacao' => 'required|valid_date[Y-m-d]',
+            'hr_solicitacao' => 'required|valid_time[H:i]',
+            //'observacoes' => 'required|max_length[250]|min_length[3]', */
+        ];
+
+        $camposData = [
+            'dt_hematocrito',
+            'dt_hemoglobina',
+            'dt_plq',
+            'dt_tap',
+            'dt_inr',
+            'dt_ptt',
+            'dt_fibrinogenio',
+            'reserva_data',
+            'dt_coleta',
+            'dt_solicitacao'
+        ];
+
+        // Formatar os campos de data simples
+        foreach ($camposData as $campo) {
+            if (!empty($this->data[$campo])) {
+                $this->data[$campo] = date('d/m/Y', strtotime($this->data[$campo]));
+            }
+        }
+
+        // Campos que têm data e hora separadas — vamos sobrescrevê-los com a junção formatada
+        $camposDataHora = [
+            ['data' => 'dt_coleta', 'hora' => 'hr_coleta'],
+            ['data' => 'dt_solicitacao', 'hora' => 'hr_solicitacao'],
+        ];
+
+        foreach ($camposDataHora as $par) {
+            $campoData = $par['data'];
+            $campoHora = $par['hora'];
+
+            if (!empty($this->data[$campoData]) && !empty($this->data[$campoHora])) {
+                $dataHora = DateTime::createFromFormat('d/m/Y H:i', $this->data[$campoData] . ' ' . $this->data[$campoHora]);
+                if ($dataHora) {
+                    // Sobrescreve o campo de data com a data formatada completa
+                    $this->data[$campoData] = $dataHora->format('d/m/Y H:i');
+                    // Opcional: zera o campo de hora (ou você pode remover, se preferir)
+                    unset($this->data[$campoHora]);
+                }
+            }
+        }
+
+        $this->data['idmapacirurgico'] = $this->data['cirurgia'] ?? NULL;
+        $this->data['pac_codigo'] = $this->data['pac_codigo_hidden'];
+
+        //dd($this->data);
+
+        if (empty($this->data['reserva_data'])) {
+            $this->data['reserva_data'] = NULL;
+        }
+
+        if ($this->validate($rules)) {
+
+            $db = \Config\Database::connect('default');
+
+            $this->validator->reset();
+
+            $db->transStart();
+    
+            try {
+
+                $camposPermitidos = array_intersect_key($this->data, array_flip($this->transfusaomodel->allowedFields));
+
+                foreach ($camposPermitidos as $key => $value) {
+                    if ($value === '') {
+                        $camposPermitidos[$key] = null;
+                    }
+                }
+
+                //dd($this->data);
+                //dd($camposPermitidos);
+
+                $this->transfusaomodel->update($this->data['idreq'], $camposPermitidos);
+
+                /* $builder = $this->transfusaomodel->builder();
+                $builder->insert($camposPermitidos);
+                dd($builder->db()->getLastQuery());
+ */
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = !empty($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = !empty($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao editar Requisição [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                session()->setFlashdata('success', 'Requerimento alterado com sucesso!');
+                //session()->setFlashdata('inclusao_sucesso', true);
+
+                $this->validator->reset();
+
+                return redirect()->to(base_url('transfusao/exibir'));
+
+
+            } catch (\Throwable $e) {
+                $db->transRollback();
+                $msg = sprintf('Exception - Falha na requisição - prontuário: %d - cod: (%d) msg: %s', (int) $this->data['prontuario'], (int) $e->getCode(), $e->getMessage());
+                log_message('error', 'Exception: ' . $msg);
+                session()->setFlashdata('exception', $msg);
+
+                $this->data['procedimentos'] = $this->selectitensprocedhospitativos;
+                $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+                $this->data['servidores'] = $this->selectservidores;
+
+                return view('layouts/sub_content', ['view' => 'transfusao/form_requisicao',
+                                'validation' => $this->validator,
+                                'data' => $this->data]);
+            }
+
+        } else {
+            session()->setFlashdata('error', $this->validator);
+        }
+
+        $this->data['procedimentos'] = $this->selectitensprocedhospitativos;
+        $this->data['prof_especialidades'] = $this->selectprofespecialidadeaghu;
+        $this->data['servidores'] = $this->selectservidores;
+
+        //dd($this->data);
+        //dd($this->validator->getErrors());
+
+        return view('layouts/sub_content', ['view' => 'transfusao/form_requisicao',
+                                            /* 'validation' => $this->validator, */
+                                            'data' => $this->data]);
     }
 
     public function excluir($id)
@@ -786,22 +968,38 @@ class Transfusao extends BaseController
      *
      * @return mixed
      */
-    public function consultarRequisicao($id)
+    public function editarRequisicao($id)
     {
 
         HUAP_Functions::limpa_msgs_flash();
 
-        //$paciente = $this->pacientesmodel->find($mapa->prontuario);
-
-        //die(var_dump($mapa));
-
         $requisicao = $this->transfusaoModel->find($id);
 
-        //dd($requisicao);
+        $paciente = $this->localaippacientesmodel->find($requisicao['prontuario']);
 
-        //$requisicao = $this->getRequisicoes(['idreq' => $id])[0];
+        $leito = $this->localvwleitospacientesmodel->find($requisicao['prontuario']);
+
+        //dd($paciente);
+
         $data = [];
         $data = $requisicao;
+        $data['nome'] = $paciente->nome;
+        //$data['paciente'] = $paciente;
+        $data['dtnascimento'] = DateTime::createFromFormat('Y-m-d H:i:s',  $paciente->dt_nascimento)->format('d/m/Y');
+        switch ($paciente->dt_nascimento) {
+            case 'M':
+                $data['sexo'] = 'MASCULINO';
+                break;
+            case 'F':
+                $data['sexo'] = 'Feminino';
+                break;
+            default:
+                $data['sexo'] = 'Outros';
+        }
+        $data['leito'] = $leito->lto_lto_id ?? NULL;
+        $data['andar'] = $leito->andar ?? NULL;
+        $data['unidade'] = $leito->descricao_unf ?? NULL;
+
         $data['idreq'] = $id;
         $data['dthrequisicao'] = DateTime::createFromFormat('Y-m-d H:i:s', $requisicao['created_at'])->format('d/m/Y H:i');
         if ($data['hora_recebimento']){
@@ -839,6 +1037,8 @@ class Transfusao extends BaseController
             'K' => $data['fenotipo_k'],
         ];
         
+
+        //dd($data);
 
         return view('layouts/sub_content', ['view' => 'transfusao/form_requisicao',
                                             'data' => $data]);

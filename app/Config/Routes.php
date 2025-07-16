@@ -146,7 +146,7 @@ $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
     $routes->post('incluir', 'Transfusao::incluir');
     $routes->get('atender/(:num)', 'Transfusao::atenderRequisicao/$1');
     $routes->post('incluirtestes', 'Transfusao::incluirTestes');
-    $routes->get('editar/(:num)', 'Transfusao::editar/$1');
+    $routes->get('editarrequisicao/(:num)', 'Transfusao::editarRequisicao/$1');
     $routes->get('excluir/(:num)', 'Transfusao::excluir/$1');
     $routes->get('consultarrequisicao/(:num)', 'Transfusao::consultarRequisicao/$1');
 });

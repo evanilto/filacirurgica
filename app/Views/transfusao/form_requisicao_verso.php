@@ -6,33 +6,70 @@
                         <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label for="dthrequisicao" class="form-label">Dt/Hr Requisição<b class="text-danger">*</b></label>
-                                    <div class="input-group">
-                                        <input type="text" id="dthrequisicao" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
-                                        class="form-control <?php if($validation->getError('dthrequisicao')): ?>is-invalid<?php endif ?>"
-                                        name="dthrequisicao" value="<?= set_value('dthrequisicao', $data['dthrequisicao'] ?? '') ?>" readonly/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-2">
-                                <div class="mb-2">
                                     <label for="prontuario" class="form-label">Prontuario<b class="text-danger">*</b></label>
                                     <div class="input-group">
                                         <input type="text" id="prontuario" maxlength="8" inputmode="numeric" pattern="\d*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 8);"
                                         class="form-control <?php if($validation->getError('prontuario')): ?>is-invalid<?php endif ?>"
                                             name="prontuario" value="<?= set_value('prontuario', $data['prontuario'] ?? '') ?>" readonly/>
+                                        <?php if ($validation->getError('prontuario')): ?>
+                                                <div class="invalid-feedback">
+                                                    <?= $validation->getError('prontuario') ?>
+                                                </div>
+                                            <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-6">
                                 <div class="mb-2">
                                     <label for="nome" class="form-label">Nome do Paciente</b></label>
                                     <div class="input-group mb-12">
                                         <input type="text" id="nome" maxlength="100" 
-                                            class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
+                                        class="form-control <?php if($validation->getError('nome')): ?>is-invalid<?php endif ?>"
                                             name="nome" value="<?= set_value('nome', $data['nome'] ?? '') ?>" readonly/>
+                                        <?php if ($validation->getError('nome')): ?>
+                                            <div class="invalid-feedback">
+                                                <?= $validation->getError('nome') ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Data Nascimento<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="dtnascimento" id="dtnascimento" class="form-control <?= $validation->hasError('dtnascimento') ? 'is-invalid' : '' ?>" value="<?= set_value('dtnascimento', $data['dtnascimento']) ?? ''?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('dtnascimento') ?></div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Sexo<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="sexo" id="sexo" class="form-control <?= $validation->hasError('sexo') ? 'is-invalid' : '' ?>" value="<?= set_value('sexo', $data['sexo']) ?? ''?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('sexo') ?></div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-5 mb-2">
+                                <label class="form-label">Unidade<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="unidade" id="unidade" class="form-control <?= $validation->hasError('unidade') ? 'is-invalid' : '' ?>" value="<?= set_value('unidade', $data['unidade']) ?? ''?>" readonly/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('unidade') ?></div>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <label class="form-label">Andar<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="andar" id="andar" class="form-control <?= $validation->hasError('andar') ? 'is-invalid' : '' ?>" value="<?= set_value('andar', $data['andar']) ?? ''?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('andar') ?></div>
+                            </div>
+                            <div class="col-md-5 mb-2">
+                                <label class="form-label">Leito<b class="text-danger">*</b></label>
+                                <div class="input-group mb-12">
+                                    <input type="text" name="leito" id="leito" class="form-control <?= $validation->hasError('leito') ? 'is-invalid' : '' ?>" value="<?= set_value('leito', $data['leito']) ?? ''?>" disabled/>
+                                </div>
+                                <div class="invalid-feedback"><?= $validation->getError('leito') ?></div>
                             </div>
                         </div>
                         <!-- Amostra Recebida -->
@@ -301,6 +338,7 @@
                         <input type="hidden" name="idreq" id="idreq" value="<?= $data['idreq'] ?>"/>
 
                     </form>
+
                 </div>
 
 
