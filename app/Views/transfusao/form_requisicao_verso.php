@@ -150,8 +150,8 @@
                         </div>
                        <div class="bordered-container p-3 mb-2">
                             <div class="row g-2 mb-3">
-                               <?php foreach (['PAI I', 'PAI II', 'CD', 'AC'] as $tipo): 
-                                    $chaveSanitizada = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '_', $tipo)));
+                               <?php foreach (['PAI_I', 'PAI_II', 'CD', 'AC'] as $tipo): 
+                                    $chaveSanitizada = strtolower(trim(preg_replace('/[^a-zA-Z0-9_]+/', '_', $tipo)));
                                     $campo = "tipo2_" . $chaveSanitizada;
                                 ?>
                                     <div class="col-md-1">

@@ -7,7 +7,7 @@ use App\Models\TransfusaoModel;
 use App\Models\LocalFatItensProcedHospitalarModel;
 use App\Models\HemocomponentesModel;
 use App\Models\LocalProfEspecialidadesModel;
-use App\Models\HistoricoModel;
+use App\Models\HistoricoRequisicaoModel;
 use App\Models\LocalVwServidoresModel;
 use App\Models\LocalAipPacientesModel;
 use App\Models\transfusaoExpHemocompModel;
@@ -30,7 +30,7 @@ class Transfusao extends BaseController
     private $localfatitensprocedhospitalarmodel;
     private $localprofespecialidadesmodel;
     private $transfusaomodel;
-    private $historicomodel;
+    private $historicorequisicaomodel;
     private $localvwservidoresmodel;
     private $localaippacientesmodel;
     private $transfusaoexphemocompmodel;
@@ -45,7 +45,7 @@ class Transfusao extends BaseController
         $this->localfatitensprocedhospitalarmodel = new LocalFatItensProcedHospitalarModel();
         $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
         $this->transfusaomodel = new TransfusaoModel();
-        $this->historicomodel = new HistoricoModel();
+        $this->historicorequisicaomodel = new HistoricoRequisicaoModel();
         $this->localvwservidoresmodel = new LocalVwServidoresModel();
         $this->localaippacientesmodel = new LocalAipPacientesModel();
         $this->transfusaoexphemocompmodel = new transfusaoExpHemocompModel();
@@ -120,9 +120,9 @@ class Transfusao extends BaseController
             'sangramento_ativo' => 'required',
             'transfusao_anterior' => 'required',
             'reacao_transf' => 'required',
-            'ch' => 'required|numeric',
-            'cp' => 'required|numeric',
-            'pfc' => 'required|numeric',
+            'hemacias' => 'required|numeric',
+            'plaquetas' => 'required|numeric',
+            'plasma' => 'required|numeric',
             'crio' => 'required|numeric',
             'hematocrito' => 'required|numeric',
             'dt_hematocrito' => 'required|valid_date[Y-m-d]',
@@ -141,11 +141,11 @@ class Transfusao extends BaseController
             //'tipo_transfusao' => string (6) "rotina"
             'reserva_data' => 'permit_empty|valid_date[Y-m-d]',
             //'nome_coletor' => string (8) "eeeeeeee"
-            'dt_coleta' => 'required|valid_date[Y-m-d]',
+            'dthr_coleta' => 'required|valid_date[Y-m-d]',
             'hr_coleta' => 'required|valid_time[H:i]',
             'medico_solicitante' => 'required|integer',
             'medico_solicitante' => 'required|integer',
-            'dt_solicitacao' => 'required|valid_date[Y-m-d]',
+            'dthr_solicitacao' => 'required|valid_date[Y-m-d]',
             'hr_solicitacao' => 'required|valid_time[H:i]',
             //'observacoes' => 'required|max_length[250]|min_length[3]',
         ];
@@ -159,8 +159,8 @@ class Transfusao extends BaseController
             'dt_ptt',
             'dt_fibrinogenio',
             'reserva_data',
-            'dt_coleta',
-            'dt_solicitacao'
+            'dthr_coleta',
+            'dthr_solicitacao'
         ];
 
         // Formatar os campos de data simples
@@ -172,8 +172,8 @@ class Transfusao extends BaseController
 
         // Campos que têm data e hora separadas — vamos sobrescrevê-los com a junção formatada
         $camposDataHora = [
-            ['data' => 'dt_coleta', 'hora' => 'hr_coleta'],
-            ['data' => 'dt_solicitacao', 'hora' => 'hr_solicitacao'],
+            ['data' => 'dthr_coleta', 'hora' => 'hr_coleta'],
+            ['data' => 'dthr_solicitacao', 'hora' => 'hr_solicitacao'],
         ];
 
         foreach ($camposDataHora as $par) {
@@ -191,8 +191,9 @@ class Transfusao extends BaseController
             }
         }
 
-        $this->data['idmapacirurgico'] = $this->data['cirurgia'] ?? NULL;
-        $this->data['pac_codigo'] = $this->data['pac_codigo_hidden'];
+        $this->data['idmapacirurgico'] = empty($this->data['cirurgia']) ? NULL : $this->data['cirurgia'];
+        $this->data['idprocedimento'] = empty($this->data['idprocedimento']) ? NULL : $this->data['idprocedimento'];
+        //$this->data['pac_codigo'] = $this->data['pac_codigo_hidden'];
 
         //dd($this->data);
 
@@ -225,6 +226,25 @@ class Transfusao extends BaseController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao incluir Requisição [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idrequisicao' => $idreq,
+                    'idevento' => 50,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicorequisicaomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir no histórico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -391,7 +411,7 @@ class Transfusao extends BaseController
             }
         }
 
-        //dd($this->data);
+        ($this->data);
 
         if ($this->validate($rules)) {
 
@@ -409,7 +429,7 @@ class Transfusao extends BaseController
                 // Lista de campos do tipo array associativo para tratar (tipo1, tipo2, fenotipo, etc)
                 // 1. tipo_1 e tipo2 continuam com sanitização
                 $arraysAssociativos = [
-                    'tipo_1' => 'tipo1_',
+                    'tipo1_' => 'tipo1_',
                     'tipo2'  => 'tipo2_'
                 ];
 
@@ -417,7 +437,7 @@ class Transfusao extends BaseController
                     $valores = $this->request->getPost($campoForm);
                     if (is_array($valores)) {
                         foreach ($valores as $chave => $valor) {
-                            $campoFormatado = $prefixoBanco . strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $chave));
+                            $campoFormatado = $prefixoBanco . strtolower(preg_replace('/[^a-zA-Z0-9_]/', '', $chave));
                             $this->data[$campoFormatado] = $valor;
                         }
                     }
@@ -522,6 +542,25 @@ class Transfusao extends BaseController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao incluir Dados de Testes [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idrequisicao' => $this->data['idreq'],
+                    'idevento' => 52,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicorequisicaomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir no histórico! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 
@@ -792,8 +831,8 @@ class Transfusao extends BaseController
             'dt_ptt',
             'dt_fibrinogenio',
             'reserva_data',
-            'dt_coleta',
-            'dt_solicitacao'
+            'dthr_coleta',
+            'dthr_solicitacao'
         ];
 
         // Formatar os campos de data simples
@@ -805,8 +844,8 @@ class Transfusao extends BaseController
 
         // Campos que têm data e hora separadas — vamos sobrescrevê-los com a junção formatada
         $camposDataHora = [
-            ['data' => 'dt_coleta', 'hora' => 'hr_coleta'],
-            ['data' => 'dt_solicitacao', 'hora' => 'hr_solicitacao'],
+            ['data' => 'dthr_coleta', 'hora' => 'hr_coleta'],
+            ['data' => 'dthr_solicitacao', 'hora' => 'hr_solicitacao'],
         ];
 
         foreach ($camposDataHora as $par) {
@@ -870,6 +909,25 @@ class Transfusao extends BaseController
                     );
                 }
 
+                $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idrequisicao' => $this->data['idreq'],
+                    'idevento' => 51,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicorequisicaomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir no histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
                 $db->transComplete();
 
                 session()->setFlashdata('success', 'Requerimento alterado com sucesso!');
@@ -911,10 +969,85 @@ class Transfusao extends BaseController
                                             'data' => $this->data]);
     }
 
-    public function excluir($id)
+    /* public function excluir($id)
     {
-        $this->transfusaoModel->delete($id);
         return redirect()->to('/transfusao')->with('success', 'Registro excluído com sucesso!');
+    } */
+    /**
+     * Return the editable properties of a resource object
+     *
+     * @return mixed
+     */
+    public function excluirRequisicao($id)
+    {
+
+        //dd($id);
+
+            try {
+
+                $db = \Config\Database::connect('default');
+
+                $db->transStart();
+
+                $this->transfusaoexphemocompmodel->delete(['transfusao_id' => $id]);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir expedição de hemocomponentes! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $this->transfusaoModel->delete($id);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir requisição! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                 $array = [
+                    'dthrevento' => date('Y-m-d H:i:s'),
+                    'idrequisicao' => $id,
+                    'idevento' => 53,
+                    'idlogin' => session()->get('Sessao')['login']
+                ];
+
+                $this->historicorequisicaomodel->insert($array);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir no histórico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                $db->transComplete();
+
+                session()->setFlashdata('success', 'requisição excluída com sucesso!');
+
+        
+            } catch (\Throwable $e) {
+                $db->transRollback(); // Reverte a transação em caso de erro
+                $msg = 'Erro na exclusão da requisição transfusional';
+                $msg .= ' - '.$e->getMessage();
+                log_message('error', $msg.': ' . $e->getMessage());
+                session()->setFlashdata('failed', $msg);
+            }
+
+
+            return redirect()->to(base_url('transfusao/exibir'));
+
     }
     /**
      * Return a new resource object, with default properties
@@ -1022,8 +1155,8 @@ class Transfusao extends BaseController
         ];
 
         $data['tipo2_'] = [
-            'PAI I' => $data['tipo2_pai_i'],
-            'PAI II' => $data['tipo2_pai_ii'],
+            'PAI_I' => $data['tipo2_pai_i'],
+            'PAI_II' => $data['tipo2_pai_ii'],
             'CD' => $data['tipo2_cd'],
             'AC' => $data['tipo2_ac'],
         ];
@@ -1036,7 +1169,28 @@ class Transfusao extends BaseController
             'e' => $data['fenotipo_e_min'],
             'K' => $data['fenotipo_k'],
         ];
-        
+
+        $camposDataHora = [
+            ['data' => 'dthr_coleta', 'hora' => 'hr_coleta', 'timestamp' => 'dthr_coleta'],
+            ['data' => 'dthr_solicitacao', 'hora' => 'hr_solicitacao', 'timestamp' => 'dthr_solicitacao'],
+        ];
+
+        foreach ($camposDataHora as $par) {
+            $campoTimestamp = $par['timestamp'];
+            $campoData = $par['data'];
+            $campoHora = $par['hora'];
+
+            if (!empty($data[$campoTimestamp])) {
+                try {
+                    $dateTime = new DateTime($data[$campoTimestamp]);
+                    $data[$campoData] = $dateTime->format('Y-m-d');  // para o input type="date"
+                    $data[$campoHora] = $dateTime->format('H:i');    // para o input type="time"
+                } catch (\Throwable $e) {
+                    $data[$campoData] = '';
+                    $data[$campoHora] = '';
+                }
+            }
+        }
 
         //dd($data);
 

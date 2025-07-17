@@ -227,11 +227,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>Hematócrito (%)</label>
-                                                            <input type="number" step="0.1" name="hematocrito" class="form-control" value="<?= set_value('hematocrito') ?>">
+                                                            <input type="number" step="0.1" name="hematocrito" class="form-control" value="<?= set_value('hematocrito', $data['hematocrito']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_hematocrito" class="form-control" value="<?= set_value('dt_hematocrito') ?>">
+                                                            <input type="date" name="dt_hematocrito" class="form-control" value="<?= set_value('dt_hematocrito', $data['dt_hematocrito']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -242,11 +242,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>Hemoglobina (g/dL)</label>
-                                                            <input type="number" step="0.1" name="hemoglobina" class="form-control" value="<?= set_value('hemoglobina') ?>">
+                                                            <input type="number" step="0.1" name="hemoglobina" class="form-control" value="<?= set_value('hemoglobina', $data['hemoglobina']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_hemoglobina" class="form-control" value="<?= set_value('dt_hemoglobina') ?>">
+                                                            <input type="date" name="dt_hemoglobina" class="form-control" value="<?= set_value('dt_hemoglobina', $data['dt_hemoglobina']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -257,11 +257,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>Plaquetas (g/dl)</label>
-                                                            <input type="number" step="0.1" name="plq" class="form-control" value="<?= set_value('plq') ?>">
+                                                            <input type="number" step="0.1" name="plq" class="form-control" value="<?= set_value('plq', $data['plq']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_plq" class="form-control" value="<?= set_value('dt_plq') ?>">
+                                                            <input type="date" name="dt_plq" class="form-control" value="<?= set_value('dt_plq', $data['dt_plq']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -272,11 +272,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>TAP (seg)</label>
-                                                            <input type="number" step="0.1" name="tap" class="form-control" value="<?= set_value('tap') ?>">
+                                                            <input type="number" step="0.1" name="tap" class="form-control" value="<?= set_value('tap', $data['tap']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_tap" class="form-control" value="<?= set_value('dt_tap') ?>">
+                                                            <input type="date" name="dt_tap" class="form-control" value="<?= set_value('dt_tap', $data['dt_tap']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -287,11 +287,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>INR</label>
-                                                            <input type="number" step="0.01" name="inr" class="form-control" value="<?= set_value('inr') ?>">
+                                                            <input type="number" step="0.01" name="inr" class="form-control" value="<?= set_value('inr', $data['inr']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_inr" class="form-control" value="<?= set_value('dt_inr') ?>">
+                                                            <input type="date" name="dt_inr" class="form-control" value="<?= set_value('dt_inr', $data['dt_inr']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -302,11 +302,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>PTT (seg)</label>
-                                                            <input type="number" step="0.1" name="ptt" class="form-control" value="<?= set_value('ptt') ?>">
+                                                            <input type="number" step="0.1" name="ptt" class="form-control" value="<?= set_value('ptt', $data['ptt']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_ptt" class="form-control" value="<?= set_value('dt_ptt') ?>">
+                                                            <input type="date" name="dt_ptt" class="form-control" value="<?= set_value('dt_ptt', $data['dt_ptt']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -317,11 +317,11 @@
                                                     <div class="row g-2 align-items-end">
                                                         <div class="col-md-6">
                                                             <label>Fibrinogênio (mg/dL)</label>
-                                                            <input type="number" name="fibrinogenio" class="form-control" value="<?= set_value('fibrinogenio') ?>">
+                                                            <input type="number" name="fibrinogenio" class="form-control" value="<?= set_value('fibrinogenio', $data['fibrinogenio']) ?>">
                                                         </div>
                                                         <div class="col-md-6">
                                                             <label>Data</label>
-                                                            <input type="date" name="dt_fibrinogenio" class="form-control" value="<?= set_value('dt_fibrinogenio') ?>">
+                                                            <input type="date" name="dt_fibrinogenio" class="form-control" value="<?= set_value('dt_fibrinogenio', $data['dt_fibrinogenio']) ?>">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -365,7 +365,7 @@
                                         <!-- Justificativa abaixo de "Outros" -->
                                         <div class="mt-1">
                                             <label for="justificativa_proc_esp" class="form-label">Justificativa</label>
-                                            <textarea name="justificativa_proc_esp" id="justificativa_proc_esp" class="form-control" rows="2"><?= set_value('justificativa_proc_esp') ?></textarea>
+                                            <textarea name="justificativa_proc_esp" id="justificativa_proc_esp" class="form-control" rows="2"><?= set_value('justificativa_proc_esp', $data['justificativa_proc_esp']) ?></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -377,35 +377,36 @@
                                     <div class="bordered-container p-3">
                                         <!-- Rotina -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="R" <?= set_radio('tipo_transfusao', 'R') ?>>
+<input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_rotina" value="R" <?= set_radio('tipo_transfusao', 'R', $data['tipo_transfusao'] === 'R') ?>>
                                             <label class="form-check-label" for="transfusao_rotina">
                                                 Rotina (em até 24h)
                                             </label>
                                         </div>
                                         <!-- Urgência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="U" <?= set_radio('tipo_transfusao', 'U') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_urgencia" value="U" <?= set_radio('tipo_transfusao', 'U', $data['tipo_transfusao'] === 'U') ?>>
                                             <label class="form-check-label" for="transfusao_urgencia">
                                                 Urgência (em até 3h)
                                             </label>
                                         </div>
                                         <!-- Emergência -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="E" <?= set_radio('tipo_transfusao', 'E') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia" value="E" <?= set_radio('tipo_transfusao', 'E', $data['tipo_transfusao'] === 'E') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia">
                                                 Emergência
                                             </label>
                                         </div>
                                          <!-- Emergência sem compatibilidade -->
                                         <div class="form-check mb-2">
-                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="EST" <?= set_radio('tipo_transfusao', 'EST') ?>>
+                                            <input class="form-check-input" type="radio" name="tipo_transfusao" id="transfusao_emergencia_semteste" value="EST" <?= set_radio('tipo_transfusao', 'EST', $data['tipo_transfusao'] === 'EST') ?>>
                                             <label class="form-check-label" for="transfusao_emergencia_semteste">
                                                 Emergência (sem teste de compatibilidade)
                                             </label>
                                         </div>
                                         <!-- Programada + Data -->
-                                        <div class="form-check d-flex align-items-center" style="margin-bottom: 32px;">
-                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="P" <?= set_radio('tipo_transfusao', 'P') ?>>
+                                        <div class="form-check d-flex align-items-center mb-2">
+                                            <input class="form-check-input me-2" type="radio" name="tipo_transfusao" id="transfusao_programada" value="P"
+                                                <?= set_radio('tipo_transfusao', 'P', $data['tipo_transfusao'] === 'P') ?>>
                                             <label class="form-check-label me-2" for="transfusao_programada">
                                                 Programada
                                             </label>
@@ -413,8 +414,8 @@
                                                 name="reserva_data"
                                                 id="reserva_data"
                                                 class="form-control form-control-sm"
-                                                style="width: 100%; max-width: 200px; display: <?= set_radio('tipo_transfusao', 'P') ? 'inline-block' : 'none' ?>;"
-                                                value="<?= set_value('reserva_data') ?>">
+                                                style="width: 100%; max-width: 200px; <?= ($data['tipo_transfusao'] === 'P') ? '' : 'display: none;' ?>"
+                                                value="<?= set_value('reserva_data', $data['reserva_data']) ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -449,12 +450,12 @@
                                         <!-- Data da Coleta -->
                                         <div class="col-md-3">
                                             <label for="dt_coleta">Data da Coleta</label>
-                                            <input type="date" name="dt_coleta" id="dt_coleta" class="form-control" value="<?= set_value('dt_coleta') ?>">
+                                            <input type="date" name="dthr_coleta" id="dthr_coleta" class="form-control" value="<?= set_value('dthr_coleta', $data['dthr_coleta'] ?? '') ?>">
                                         </div>
                                         <!-- Hora da Coleta -->
                                         <div class="col-md-3">
                                             <label for="hr_coleta">Hora da Coleta</label>
-                                            <input type="time" name="hr_coleta" id="hr_coleta" class="form-control" value="<?= set_value('hr_coleta') ?>">
+                                            <input type="time" name="hr_coleta" id="hr_coleta" class="form-control" value="<?= set_value('hr_coleta', $data['hr_coleta'] ?? '') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -475,7 +476,7 @@
                                                     <option value=""></option> <!-- valor vazio para placeholder -->
                                                     <?php foreach ($data['prof_especialidades'] as $prof_espec): ?>
                                                         <option value="<?= $prof_espec->pes_codigo ?>"
-                                                            <?= set_select('medico_solicitante', $prof_espec->pes_codigo) ?>>
+                                                            <?= set_select('medico_solicitante', $prof_espec->pes_codigo, $data['medico_solicitante'] == $prof_espec->pes_codigo) ?>>
                                                             <?= $prof_espec->nome . ' - ' . $prof_espec->conselho ?>
                                                         </option>
                                                     <?php endforeach; ?>
@@ -492,15 +493,13 @@
                                         <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="dt_solicitacao" class="form-label">Data</label>
-                                                <input type="date" name="dt_solicitacao" id="dt_solicitacao" class="form-control" value="<?= set_value('dt_solicitacao') ?>">
-                                            </div>
+                                                <input type="date" name="dthr_solicitacao" id="dthr_solicitacao" class="form-control" value="<?= set_value('dthr_solicitacao', $data['dthr_solicitacao'] ?? '') ?>">                                            </div>
                                         </div>
-
                                         <!-- Hora da Solicitação -->
                                         <div class="col-md-3">
                                             <div class="mb-3">
                                                 <label for="hr_solicitacao" class="form-label">Hora</label>
-                                                <input type="time" name="hr_solicitacao" id="hr_solicitacao" class="form-control" value="<?= set_value('hr_solicitacao') ?>">
+                                                <input type="time" name="hr_solicitacao" id="hr_solicitacao" class="form-control" value="<?= set_value('hr_solicitacao', $data['hr_solicitacao'] ?? '') ?>">
                                             </div>
                                         </div>
                                     </div>
@@ -510,7 +509,7 @@
                         <!-- Observações -->
                         <div class="mb-3">
                             <label class="form-label">Observações</label>
-                            <textarea class="form-control" rows="3" name="observacoes"><?= set_value('observacoes') ?></textarea>
+                            <textarea class="form-control" rows="3" name="observacoes"><?= set_value('observacoes', $data['observacoes']) ?></textarea>
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12 d-flex gap-2 mt-4">
@@ -548,6 +547,29 @@
             //width: 'resolve' // Corrigir a largura
         });
     });
+    
+    document.addEventListener('DOMContentLoaded', function () {
+    const radios = document.querySelectorAll('input[name="tipo_transfusao"]');
+    const reservaData = document.getElementById('reserva_data');
+
+    function toggleReservaData() {
+        const selected = document.querySelector('input[name="tipo_transfusao"]:checked');
+        if (selected && selected.value === 'P') {
+            reservaData.style.display = 'inline-block';
+        } else {
+            reservaData.style.display = 'none';
+            reservaData.value = ''; // opcional: limpa o valor
+        }
+    }
+
+    // Executa ao carregar
+    toggleReservaData();
+
+    // Escuta mudança nos rádios
+    radios.forEach(radio => {
+        radio.addEventListener('change', toggleReservaData);
+    });
+});
 
 </script>
 

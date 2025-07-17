@@ -211,10 +211,10 @@
                                     <label class="form-label">Hemocomponentes (unid/ml)</label>
                                     <div class="bordered-container p-3">
                                         <div class="row g-2">
-                                            <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="hemacias" class="form-control" value="<?= set_value('hemacias', $data['hemacias']) ?>"></div>
-                                            <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="plaquetas" class="form-control" value="<?= set_value('plaquetas', $data['plaquetas']) ?>"></div>
-                                            <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="plasma" class="form-control" value="<?= set_value('plasma', $data['plasma']) ?>"></div>
-                                            <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio', $data['crio']) ?>"></div>
+                                            <div class="col-md-3"><label>CH - Concentrado de Hemácias</label><input type="number" step="1" name="hemacias" class="form-control" value="<?= set_value('hemacias') ?>"></div>
+                                            <div class="col-md-3"><label>CP - Concentrado de Plaquetas</label><input type="number" step="1" name="plaquetas" class="form-control" value="<?= set_value('plaquetas') ?>"></div>
+                                            <div class="col-md-3"><label>PFC - Plasma Fresco Congelado</label><input type="number" step="1" name="plasma" class="form-control" value="<?= set_value('plasma') ?>"></div>
+                                            <div class="col-md-3"><label>Crioprecipitado</label><input type="number" step="1" name="crio" class="form-control" value="<?= set_value('crio') ?>"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -454,8 +454,8 @@
                                         </div>
                                         <!-- Data da Coleta -->
                                         <div class="col-md-3">
-                                            <label for="dt_coleta">Data da Coleta</label>
-                                            <input type="date" name="dt_coleta" id="dt_coleta" class="form-control" value="<?= set_value('dt_coleta') ?>">
+                                            <label for="dthr_coleta">Data da Coleta</label>
+                                            <input type="date" name="dthr_coleta" id="dthr_coleta" class="form-control" value="<?= set_value('dthr_coleta') ?>">
                                         </div>
                                         <!-- Hora da Coleta -->
                                         <div class="col-md-3">
@@ -497,8 +497,8 @@
                                         <!-- Data da Solicitação -->
                                         <div class="col-md-3">
                                             <div class="mb-3">
-                                                <label for="dt_solicitacao" class="form-label">Data</label>
-                                                <input type="date" name="dt_solicitacao" id="dt_solicitacao" class="form-control" value="<?= set_value('dt_solicitacao') ?>">
+                                                <label for="dthr_solicitacao" class="form-label">Data</label>
+                                                <input type="date" name="dthr_solicitacao" id="dthr_solicitacao" class="form-control" value="<?= set_value('dthr_solicitacao') ?>">
                                             </div>
                                         </div>
 
@@ -537,9 +537,9 @@
                             </div>
                         </div>
 
-                        <input type="hidden" name="idmapa_hidden" id="idmapa_hidden" value=""/>
-                        <input type="hidden" name="pac_codigo_hidden" id="pac_codigo_hidden" value="<?= $data['pac_codigo'] ?>"/>
-                        <input type="hidden" name="procedimento_hidden" id="procedimento_hidden" value=""/>
+                        <input type="hidden" name="idmapacirurgico" id="idmapacirurgico" value=""/>
+                        <input type="hidden" name="pac_codigo" id="pac_codigo" value="<?= $data['pac_codigo'] ?>"/>
+                        <input type="hidden" name="idprocedimento" id="idprocedimento" value=""/>
 
                     </form>
                 </div>
@@ -585,7 +585,7 @@
                 document.getElementById('leito').value = data.leito_id ?? 'N/D';
                 document.getElementById('enfermaria').value = data.leito_unf ?? 'N/D';
                 document.getElementById('andar').value = data.leito_and ?? 'N/D';
-                document.getElementById('pac_codigo_hidden').value = data.pac_codigo;
+                document.getElementById('pac_codigo').value = data.pac_codigo;
                
             } else {
                 // Paciente não encontrado, exibe modal para sincronizar
@@ -694,7 +694,7 @@
 
                             option.text = `Data/Hora: ${dthrcirurgia} - Espec: ${item.especialidade_descricao} - Fila: ${item.fila} - Proced: ${item.procedimento_principal}`;
 
-                            option.setAttribute('data-idmapa-id', item.id);
+                            option.setAttribute('data-idmapacirurgico-id', item.id);
                             //option.setAttribute('data-pac_codigo-id', item.codigo);
                             option.setAttribute('data-especialidade-id', item.idespecialidade);
                             option.setAttribute('data-procedimento-id', item.idprocedimento);
@@ -835,11 +835,11 @@
                 const filaId = selectedOption.getAttribute('data-fila-id');
                 const procedimentoId = selectedOption.getAttribute('data-procedimento-id');
                 //const paccodigoId = selectedOption.getAttribute('data-pac_codigo-id');
-                const mapaId = selectedOption.getAttribute('data-idmapa-id');
+                const mapaId = selectedOption.getAttribute('data-idmapacirurgico-id');
 
-                //$('#pac_codigo_hidden').val(paccodigoId);
-                $('#idmapa_hidden').val(mapaId);
-                $('#procedimento_hidden').val(procedimentoId);
+                //$('#pac_codigo').val(paccodigoId);
+                $('#idmapacirurgico').val(mapaId);
+                $('#procedimento').val(procedimentoId);
                 
             //}
         });
