@@ -118,7 +118,9 @@
         imprimir.addEventListener("click", function () {
             if (selectedRow) {
                 const id = selectedRow.dataset.id;
-                window.location.href = `/transfusao/imprimirrequisicao/${id}`;
+                //window.location.href = `/transfusao/imprimirrequisicao/${id}`;
+                        window.open(`/transfusao/imprimirrequisicao/${id}`, '_blank');
+
             }
         });
 

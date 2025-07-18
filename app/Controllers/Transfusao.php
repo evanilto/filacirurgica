@@ -40,7 +40,7 @@ class Transfusao extends BaseController
 
     public function __construct()
     {
-        $this->transfusaoModel = new TransfusaoModel();
+        #$this->transfusaoModel = new TransfusaoModel();
         $this->hemocomponentesmodel = new HemocomponentesModel();
         $this->localfatitensprocedhospitalarmodel = new LocalFatItensProcedHospitalarModel();
         $this->localprofespecialidadesmodel = new LocalProfEspecialidadesModel();
@@ -60,7 +60,7 @@ class Transfusao extends BaseController
 
     public function index()
     {
-        $dados['registros'] = $this->transfusaoModel->findAll();
+        $dados['registros'] = $this->transfusaomodel->findAll();
         return view('transfusao/listar', $dados);
     }
 
@@ -300,7 +300,7 @@ class Transfusao extends BaseController
     {
         HUAP_Functions::limpa_msgs_flash();
 
-        $requisicao = $this->transfusaoModel->find($idreq);
+        $requisicao = $this->transfusaomodel->find($idreq);
 
         //dd($requisicao);
 
@@ -1001,7 +1001,7 @@ class Transfusao extends BaseController
                     );
                 }
 
-                $this->transfusaoModel->delete($id);
+                $this->transfusaomodel->delete($id);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
@@ -1106,7 +1106,7 @@ class Transfusao extends BaseController
 
         HUAP_Functions::limpa_msgs_flash();
 
-        $requisicao = $this->transfusaoModel->find($id);
+        $requisicao = $this->transfusaomodel->find($id);
 
         $paciente = $this->localaippacientesmodel->find($requisicao['prontuario']);
 

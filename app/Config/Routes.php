@@ -149,7 +149,12 @@ $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
     $routes->get('editarrequisicao/(:num)', 'Transfusao::editarRequisicao/$1');
     $routes->get('excluir/(:num)', 'Transfusao::excluirRequisicao/$1');
     $routes->get('consultarrequisicao/(:num)', 'Transfusao::consultarRequisicao/$1');
+    $routes->get('imprimirrequisicao/(:num)', 'PdfController::gerar/$1');
 });
+
+$routes->post('/gerar-pdf', 'PdfController::gerar');
+$routes->get('testarpdf', 'PdfController::testar');
+
 
 
 /* $routes->get('inserir-paciente', 'PacientesController::inserir_paciente');
