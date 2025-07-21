@@ -17,14 +17,22 @@ class PdfController extends BaseController
 
     public function gerar($id)
     {
-        $this->transfusaoModel = new TransfusaoModel();
-
         #$dados = $this->request->getPost();
-        $requisicao = $this->transfusaoModel->find($id);
 
-        //dd($requisicao);
+        #$this->transfusaoModel = new TransfusaoModel();
+        #$requisicao = $this->transfusaoModel->find($id);
 
-        $html = view('transfusao/pdf_template_completo', ['dados' => $requisicao]);
+        $db = \Config\Database::connect('default');
+
+        $builder = $db->table('vw_transfusoes');
+
+        $requisicao = $builder->select('vw_transfusoes.*')->where('vw_transfusoes.idreq', $id)->get()->getResult();
+
+        $dados = isset($requisicao[0]) ? (array) $requisicao[0] : [];
+
+        //dd($dados);
+
+        $html = view('transfusao/pdf_template_completo', ['dados' => $dados]);
 
         // Configuração moderna
         $options = new Options();

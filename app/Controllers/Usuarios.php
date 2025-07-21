@@ -310,12 +310,14 @@ class Usuarios extends ResourceController
 
             $db = \Config\Database::connect('default');
             $db->transStart();
+
+            //dd($data);
             
             try {
 
                 $data['idlogin'] = mb_strtolower($data['login'], 'UTF-8');
                 $data['nmusuario'] = $usuario;
-                $data['indsituacao'] = $data['indSituacao'];
+                $data['indsituacao'] = 'A';
                 $data['user_ult_atu'] = session()->get('Sessao')['Nome'];;
 
 
@@ -383,8 +385,12 @@ class Usuarios extends ResourceController
                 session()->setFlashdata('exception', $msg);
             }
 
-            return view('usuarios/incluir_usuario', ['validation' => $this->validator,
-                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]);
+           /*  return view('usuarios/form_incluir_usuario', ['validation' => $this->validator,
+                                                     'selectPerfil' => $this->perfilcontroller->getPerfis()]); */
+
+            return view('layouts/sub_content', ['view' => 'usuarios/form_incluir_usuario',
+                                                'selectPerfil' => $this->perfilcontroller->getPerfis(),
+                                                'validation' => $this->validator]);
 
         } else {
             session()->setFlashdata('error', $this->validator);

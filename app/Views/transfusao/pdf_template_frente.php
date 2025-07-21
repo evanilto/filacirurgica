@@ -31,20 +31,30 @@
 </head>
 <body>
 
-<!-- Cabeçalho com imagem -->
-<div style="text-align: center; margin-bottom: 10px;">
-    <img src="<?= 'file://' . FCPATH . 'img/huap-logo3.png' ?>" style="width: 100%; max-height: 120px;">
-</div>
+<<table>
+    <tr>
+        <td>
+            <img src="<?= 'file://' . FCPATH . 'img/huap-logo1.png' ?>" style="width: 100%; max-height: 50px;">
+        </td>
+        <td style="vertical-align: top;">
+            <strong>UNIVERSIDADE FEDERAL FLUMINENSE - UFF</strong><br>
+            <strong>HOSPITAL UNIVERSITÁRIO ANTÔNIO PEDRO - HUAP</strong><br>
+            <strong>HEMOCENTRO REGIONAL DE NITERÓI - HEMONIT</strong>
 
-<!-- ========== FRENTE ========== -->
+            <div style="text-align: right;">
+                <img src="<?= 'file://' . FCPATH . 'img/hemonit.svg' ?>" style="width: 80px; height: auto; vertical-align: top;">
+            </div>
+        </td>
+    </tr>
+</table>
 
 <h3 class="section-title">SERVIÇO DE HEMOTERAPIA - REQUISIÇÃO DE TRANSFUSÃO</h3>
 
 <!-- Identificação do paciente -->
 <table>
     <tr>
-        <td><strong>Nome:</strong> <?= esc($dados['nome'] ?? '') ?></td>
-        <td><strong>Data de Nascimento:</strong> <?= esc($dados['data_nascimento'] ?? '') ?></td>
+        <td><strong>Nome:</strong> <?= esc($dados['nome_paciente'] ?? '') ?></td>
+        <td><strong>Data de Nascimento:</strong> <?= esc($dados['dtnascimento'] ?? '') ?></td>
         <td><strong>Sexo:</strong> <?= esc($dados['sexo'] ?? '') ?></td>
         <td><strong>Peso:</strong> <?= esc($dados['peso'] ?? '') ?> kg</td>
     </tr>
@@ -53,10 +63,10 @@
         <td colspan="2"><strong>Telefone/Ramal:</strong> <?= esc($dados['telefone'] ?? '') ?></td>
     </tr>
     <tr>
-        <td><strong>Enfermaria:</strong> <?= esc($dados['enfermaria'] ?? '') ?></td>
+        <td><strong>Unidade:</strong> <?= esc($dados['unidade'] ?? '') ?></td>
         <td><strong>Andar:</strong> <?= esc($dados['andar'] ?? '') ?></td>
         <td><strong>Leito:</strong> <?= esc($dados['leito'] ?? '') ?></td>
-        <td><strong>Data Solicitação:</strong> <?= esc($dados['data_solicitacao'] ?? '') ?></td>
+        <td><strong>Data Solicitação:</strong> <?= esc($dados['dthr_solicitacao'] ?? '') ?></td>
     </tr>
 </table>
 
@@ -91,10 +101,10 @@
         <td colspan="4"><?= esc($dados['indicacao'] ?? '') ?></td>
     </tr>
     <tr>
-        <td><strong>Sangramento ativo:</strong> <?= esc($dados['sangramento'] ?? 'NÃO') ?></td>
-        <td><strong>Transfusão anterior:</strong> <?= esc($dados['transfusao_anterior'] ?? 'NÃO') ?></td>
-        <td><strong>Reação anterior:</strong> <?= esc($dados['reacao_anterior'] ?? 'NÃO') ?></td>
-        <td><strong>Pré-medicação:</strong> <?= esc($dados['premedicacao'] ?? 'NÃO') ?></td>
+        <td><strong>Sangramento ativo:</strong> <?= ($dados['sangramento_ativo'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Transfusão anterior:</strong> <?= ($dados['transfusao_anterior'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Reação anterior:</strong> <?= ($dados['reacao_transf'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Pré-medicação:</strong> <?= ($dados['premedicacao'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
     </tr>
 </table>
 
@@ -104,10 +114,10 @@
         <th colspan="4" class="section-title">TIPO DE TRANSFUSÃO</th>
     </tr>
     <tr>
-        <td><strong>Rotina:</strong> <?= !empty($dados['rotina']) ? 'Sim' : 'Não' ?></td>
-        <td><strong>Urgência:</strong> <?= !empty($dados['urgencia']) ? 'Sim' : 'Não' ?></td>
-        <td><strong>Programada:</strong> <?= !empty($dados['programada']) ? 'Sim' : 'Não' ?></td>
-        <td><strong>Reserva para o dia:</strong> <?= esc($dados['data_reserva'] ?? '') ?> <?= esc($dados['hora_reserva'] ?? '') ?></td>
+        <td><strong>Rotina:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'ROTINA' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Urgência:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'URGENTE' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Programada:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'PROGRAMADA' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Reserva para o dia:</strong> <?= esc($dados['reserva_data'] ?? '') ?> <?= esc($dados['time'] ?? '') ?></td>
     </tr>
 </table>
 
@@ -126,22 +136,22 @@
     </tr>
     <tr>
         <td>Concentrado de Hemácias</td>
-        <td><?= esc($dados['hemacias_unidades'] ?? '') ?></td>
-        <td><?= esc($dados['hemacias_ml'] ?? '') ?></td>
-        <td><?= !empty($dados['filtrado']) ? 'Sim' : 'Não' ?></td>
-        <td><?= !empty($dados['irradiado']) ? 'Sim' : 'Não' ?></td>
-        <td><?= !empty($dados['lavado']) ? 'Sim' : 'Não' ?></td>
+        <td><?= esc($dados['hemacias'] ?? '') ?></td>
+        <td></td>
+        <td><?= ($dados['filtrado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><?= ($dados['irradiado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><?= ($dados['lavado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
     </tr>
     <tr>
         <td>Plaquetas</td>
-        <td><?= esc($dados['plaquetas_unidades'] ?? '') ?></td>
-        <td><?= esc($dados['plaquetas_ml'] ?? '') ?></td>
+        <td><?= esc($dados['plaquetas'] ?? '') ?></td>
+        <td></td>
         <td colspan="3"></td>
     </tr>
     <tr>
         <td>Plasma Fresco</td>
-        <td><?= esc($dados['plasma_unidades'] ?? '') ?></td>
-        <td><?= esc($dados['plasma_ml'] ?? '') ?></td>
+        <td><?= esc($dados['plasma'] ?? '') ?></td>
+        <td></td>
         <td colspan="3"></td>
     </tr>
 </table>
@@ -149,8 +159,8 @@
 <!-- Coleta -->
 <table>
     <tr>
-        <td><strong>Data da Coleta:</strong> <?= esc($dados['data_coleta'] ?? '') ?></td>
-        <td><strong>Hora da Coleta:</strong> <?= esc($dados['hora_coleta'] ?? '') ?></td>
+        <td><strong>Data da Coleta:</strong> <?= esc($dados['dthr_coleta'] ?? '') ?></td>
+        <td><strong>Hora da Coleta:</strong> <?= esc($dados['time'] ?? '') ?></td>
         <td><strong>Coletor:</strong> <?= esc($dados['coletor'] ?? '') ?></td>
     </tr>
 </table>
@@ -165,7 +175,7 @@
 <!-- Médico -->
 <table>
     <tr>
-        <td><strong>Nome do Médico:</strong> <?= esc($dados['medico'] ?? '') ?></td>
+        <td><strong>Nome do Médico:</strong> <?= esc($dados['medico_solicitante'] ?? '') ?></td>
         <td><strong>CRM:</strong> <?= esc($dados['crm'] ?? '') ?></td>
     </tr>
 </table>
@@ -174,9 +184,27 @@
 <table>
     <tr>
         <td style="font-size: 10px; line-height: 1.4;">
-            As transfusões serão realizadas, preferencialmente, no período diurno. Portaria de consolidação nº 5 de 03/10/2017.<br><br>
+            <strong>Observações:</strong><p>
+            As transfusões serão realizadas, preferencialmente, no período diurno. Portaria de consolidação nº 5 de 03/10/2017.<br>
             Só serão atendidas as requisições corretamente preenchidas e assinadas por médicos (registro CRM).<br>
             Os concentrados de plaquetas serão liberados na forma de pool de 4 ou 5 unidades ou por aférese.
         </td>
     </tr>
 </table>
+
+<!-- Rodapé -->
+<table>
+    <tr>
+        <td>
+            <div style="text-align: left; margin-bottom: 10px; width: 20%; max-height: 15px;">
+                <img src="<?= 'file://' . FCPATH . 'img/ebserh_logo.jpg' ?>" style="width: 100%; max-height: 120px;">
+            </div>
+            <div style="text-align: right; margin-top: 10px; ">
+                Formulário FilaWeb - 31/07/2025
+            </div>
+        </td>
+    </tr>
+</table>
+
+</body>
+</html>

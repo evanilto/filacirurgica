@@ -69,54 +69,50 @@
     <?php endfor; ?>
 </table>
 
-<!-- Transfusão de Emergência -->
 <h3 class="section-title">TRANSFUSÃO DE EMERGÊNCIA SEM TESTE DE COMPATIBILIDADE</h3>
 <p class="small">
-    AUTORIZO A EXPEDIÇÃO DE <?= esc($dados['emergencia_unidades'] ?? '____') ?> UNIDADES DE CONCENTRADO DE HEMÁCIAS SEM A FINALIZAÇÃO DOS TESTES PRÉ-TRANSFUSIONAIS,
+    AUTORIZO A EXPEDIÇÃO DE <?= esc($dados['hemacias'] ?? '____') ?> UNIDADES DE CONCENTRADO DE HEMÁCIAS SEM A FINALIZAÇÃO DOS TESTES PRÉ-TRANSFUSIONAIS,
     JUSTIFICADA PELO RISCO DE MORTE DO PACIENTE, CASO A TRANSFUSÃO NÃO SEJA REALIZADA IMEDIATAMENTE.
 </p>
 
 <table>
     <tr>
-        <td><strong>Observações:</strong><br><?= nl2br(esc($dados['observacoes_verso'] ?? '')) ?></td>
+        <td><strong>Observações:</strong><br><?= nl2br(esc($dados['observacoes_hemoterapia'] ?? '')) ?></td>
     </tr>
     <tr>
         <td><strong>Volume Total:</strong> <?= esc($dados['volume_total'] ?? '') ?> ml</td>
     </tr>
 </table>
 
-<!-- Testes Pré-Transfusionais -->
 <h3 class="section-title">TESTES PRÉ-TRANSFUSIONAIS (PREENCHIMENTO EXCLUSIVO DA HEMOTERAPIA)</h3>
 
 <table>
     <tr>
-        <td><strong>ABO/Rh:</strong> <?= esc($dados['abo_rh'] ?? '') ?></td>
-        <td><strong>PAI I:</strong> <?= esc($dados['pai_i'] ?? '') ?></td>
-        <td><strong>PAI II:</strong> <?= esc($dados['pai_ii'] ?? '') ?></td>
-        <td><strong>CD:</strong> <?= esc($dados['cd'] ?? '') ?></td>
-        <td><strong>AC:</strong> <?= esc($dados['ac'] ?? '') ?></td>
+        <td><strong>ABO/Rh:</strong> <?= esc($dados['tipo1_aborh'] ?? '') ?></td>
+        <td><strong>PAI I:</strong> <?= esc($dados['tipo2_pai_i'] ?? '') ?></td>
+        <td><strong>PAI II:</strong> <?= esc($dados['tipo2_pai_ii'] ?? '') ?></td>
+        <td><strong>CD:</strong> <?= esc($dados['tipo2_cd'] ?? '') ?></td>
+        <td><strong>AC:</strong> <?= esc($dados['tipo2_ac'] ?? '') ?></td>
     </tr>
     <tr>
-        <td><strong>Dia:</strong> <?= esc($dados['teste_dia'] ?? '') ?></td>
-        <td colspan="2"><strong>Hora:</strong> <?= esc($dados['teste_hora'] ?? '') ?></td>
+        <td><strong>Dia:</strong> <?= esc($dados['data_recebimento'] ?? '') ?></td>
+        <td colspan="2"><strong>Hora:</strong> <?= esc($dados['time'] ?? '') ?></td>
         <td colspan="2"><strong>Anticorpos identificados:</strong> <?= esc($dados['anticorpos'] ?? '') ?></td>
     </tr>
 </table>
 
-<!-- Assinaturas -->
 <table>
     <tr>
-        <td><strong>Amostra Recebida Por:</strong> <?= esc($dados['amostra_por'] ?? '') ?></td>
-        <td><strong>Data:</strong> <?= esc($dados['amostra_data'] ?? '') ?></td>
-        <td><strong>Hora:</strong> <?= esc($dados['amostra_hora'] ?? '') ?></td>
+        <td><strong>Amostra Recebida Por:</strong> <?= esc($dados['recebedor'] ?? '') ?></td>
+        <td><strong>Data:</strong> <?= esc($dados['data_recebimento'] ?? '') ?></td>
+        <td><strong>Hora:</strong> <?= esc($dados['time'] ?? '') ?></td>
     </tr>
     <tr>
-        <td colspan="2"><strong>Médico Solicitante:</strong> <?= esc($dados['medico'] ?? '') ?></td>
-        <td><strong>Data Solicitação:</strong> <?= esc($dados['data_solicitacao'] ?? '') ?></td>
+        <td colspan="2"><strong>Médico Solicitante:</strong> <?= esc($dados['medico_solicitante'] ?? '') ?></td>
+        <td><strong>Data Solicitação:</strong> <?= esc($dados['dthr_solicitacao'] ?? '') ?></td>
     </tr>
 </table>
 
-<!-- Rodapé legal -->
 <p class="small">
     § 2º O médico solicitante deve estar ciente dos riscos das transfusões de urgência ou emergência e será responsável pelas consequências do ato transfusional, 
     se esta situação houver sido criada por seu esquecimento, omissão ou pela indicação da transfusão sem aprovação prévia nos protocolos definidos pelo Comitê Transfusional.
