@@ -31,36 +31,35 @@
 </head>
 <body>
 
-<<table>
+<table>
     <tr>
         <td>
             <img src="<?= 'file://' . FCPATH . 'img/huap-logo1.png' ?>" style="width: 100%; max-height: 50px;">
         </td>
-        <td style="vertical-align: top;">
+        <td style="position: relative; vertical-align: top;">
             <strong>UNIVERSIDADE FEDERAL FLUMINENSE - UFF</strong><br>
             <strong>HOSPITAL UNIVERSITÁRIO ANTÔNIO PEDRO - HUAP</strong><br>
             <strong>HEMOCENTRO REGIONAL DE NITERÓI - HEMONIT</strong>
 
-            <div style="text-align: right;">
-                <img src="<?= 'file://' . FCPATH . 'img/hemonit.svg' ?>" style="width: 80px; height: auto; vertical-align: top;">
-            </div>
+            <img src="<?= 'file://' . FCPATH . 'img/hemonit.svg' ?>" 
+                 style="position: absolute; top: 0; right: 0; width: 80px; height: auto;">
         </td>
     </tr>
 </table>
+
 
 <h3 class="section-title">SERVIÇO DE HEMOTERAPIA - REQUISIÇÃO DE TRANSFUSÃO</h3>
 
 <!-- Identificação do paciente -->
 <table>
     <tr>
-        <td><strong>Nome:</strong> <?= esc($dados['nome_paciente'] ?? '') ?></td>
-        <td><strong>Data de Nascimento:</strong> <?= esc($dados['dtnascimento'] ?? '') ?></td>
-        <td><strong>Sexo:</strong> <?= esc($dados['sexo'] ?? '') ?></td>
-        <td><strong>Peso:</strong> <?= esc($dados['peso'] ?? '') ?> kg</td>
+        <td colspan="3"><strong>Nome:</strong> <?= esc($dados['nome_paciente'] ?? '') ?></td>
+        <td><strong>Prontuário:</strong> <?= esc($dados['prontuario'] ?? '') ?></td>
     </tr>
     <tr>
-        <td colspan="2"><strong>Prontuário:</strong> <?= esc($dados['prontuario'] ?? '') ?></td>
-        <td colspan="2"><strong>Telefone/Ramal:</strong> <?= esc($dados['telefone'] ?? '') ?></td>
+        <td><strong>Data de Nascimento:</strong> <?= esc($dados['dtnascimento'] ?? '') ?></td>
+        <td><strong>Sexo:</strong> <?= esc($dados['sexo'] ?? '') ?></td>
+        <td colspan="2"><strong>Peso:</strong> <?= esc($dados['peso'] ?? '') ?> kg</td>
     </tr>
     <tr>
         <td><strong>Unidade:</strong> <?= esc($dados['unidade'] ?? '') ?></td>
@@ -74,6 +73,66 @@
 <table>
     <tr>
         <td colspan="4"><strong>Diagnóstico:</strong> <?= esc($dados['diagnostico'] ?? '') ?></td>
+    </tr>
+    <tr>
+        <td colspan="4"><strong>Indicação:</strong> <?= esc($dados['diagnostico'] ?? '') ?></td>
+    </tr>
+    <tr>
+        <td><strong>Sangramento ativo:</strong> <?= ($dados['sangramento_ativo'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><strong>Transfusão anterior:</strong> <?= ($dados['transfusao_anterior'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td colspan="2"><strong>Reação anterior:</strong> <?= ($dados['reacao_transf'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+    </tr>
+</table>
+
+<!-- Hemocomponentes -->
+
+<<!-- th>Filtrado</th>
+        <th>Irradiado</th>
+        <th>Lavado</th>
+
+<td></td>
+        <td><?= ($dados['filtrado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><?= ($dados['irradiado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+        <td><?= ($dados['lavado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td> -->
+
+<table>
+    <tr>
+        <th colspan="10" class="section-title">HEMOCOMPONENTES SOLICITADOS</th>
+    </tr>
+    <tr>
+        <th>Hemocomponente</th>
+        <th>Prescrição</th>
+        <th colspan="8">Dados Laboratoriais</th>
+    </tr>
+    <tr>
+        <td>Concentrado de Hemácias</td>
+        <td><?= esc($dados['hemacias'] ?? '') ?></td>
+        <td colspan="1">Hto.</td>
+        <td colspan="2">Data</td>
+        <td colspan="2">Hb</td>
+        <td colspan="3">Data</td>
+    </tr>
+    <tr>
+        <td>Plaquetas</td>
+        <td><?= esc($dados['plaquetas'] ?? '') ?></td>
+        <td colspan="4">No. Plaquetas</td>
+        <td colspan="4">Data</td>
+    </tr>
+    <tr>
+        <td>Plasma Fresco</td>
+        <td><?= esc($dados['plasma'] ?? '') ?></td>
+        <td colspan="1">Hto.</td>
+        <td colspan="2">Data</td>
+        <td colspan="1">Hb</td>
+        <td colspan="2">Data</td>
+        <td colspan="1">Hb</td>
+        <td colspan="1">Data</td>
+    </tr>
+    <tr>
+        <td>CRIO/Hemoderivados</td>
+        <td><?= esc($dados['crio'] ?? '') ?></td>
+        <td colspan="4">Fibrinogênio</td>
+        <td colspan="4">Data</td>
     </tr>
 </table>
 
@@ -92,22 +151,6 @@
     </tr>
 </table>
 
-<!-- Indicação -->
-<table>
-    <tr>
-        <th colspan="4" class="section-title">INDICAÇÃO</th>
-    </tr>
-    <tr>
-        <td colspan="4"><?= esc($dados['indicacao'] ?? '') ?></td>
-    </tr>
-    <tr>
-        <td><strong>Sangramento ativo:</strong> <?= ($dados['sangramento_ativo'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Transfusão anterior:</strong> <?= ($dados['transfusao_anterior'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Reação anterior:</strong> <?= ($dados['reacao_transf'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Pré-medicação:</strong> <?= ($dados['premedicacao'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-    </tr>
-</table>
-
 <!-- Tipo de transfusão -->
 <table>
     <tr>
@@ -118,41 +161,6 @@
         <td><strong>Urgência:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'URGENTE' ? 'Sim' : 'Não' ?></td>
         <td><strong>Programada:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'PROGRAMADA' ? 'Sim' : 'Não' ?></td>
         <td><strong>Reserva para o dia:</strong> <?= esc($dados['reserva_data'] ?? '') ?> <?= esc($dados['time'] ?? '') ?></td>
-    </tr>
-</table>
-
-<!-- Hemocomponentes -->
-<table>
-    <tr>
-        <th colspan="6" class="section-title">HEMOCOMPONENTES SOLICITADOS</th>
-    </tr>
-    <tr>
-        <th>Componente</th>
-        <th>Unidades</th>
-        <th>mL</th>
-        <th>Filtrado</th>
-        <th>Irradiado</th>
-        <th>Lavado</th>
-    </tr>
-    <tr>
-        <td>Concentrado de Hemácias</td>
-        <td><?= esc($dados['hemacias'] ?? '') ?></td>
-        <td></td>
-        <td><?= ($dados['filtrado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-        <td><?= ($dados['irradiado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-        <td><?= ($dados['lavado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
-    </tr>
-    <tr>
-        <td>Plaquetas</td>
-        <td><?= esc($dados['plaquetas'] ?? '') ?></td>
-        <td></td>
-        <td colspan="3"></td>
-    </tr>
-    <tr>
-        <td>Plasma Fresco</td>
-        <td><?= esc($dados['plasma'] ?? '') ?></td>
-        <td></td>
-        <td colspan="3"></td>
     </tr>
 </table>
 
