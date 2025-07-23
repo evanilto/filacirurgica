@@ -86,7 +86,8 @@
 
 <!-- Hemocomponentes -->
 
-<<!-- th>Filtrado</th>
+<table>
+        <th>Filtrado</th>
         <th>Irradiado</th>
         <th>Lavado</th>
 
@@ -94,23 +95,20 @@
         <td><?= ($dados['filtrado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
         <td><?= ($dados['irradiado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
         <td><?= ($dados['lavado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td> -->
-
+</table>
 <table>
-    <tr>
-        <th colspan="10" class="section-title">HEMOCOMPONENTES SOLICITADOS</th>
-    </tr>
-    <tr>
-        <th>Hemocomponente</th>
-        <th>Prescrição</th>
-        <th colspan="8">Dados Laboratoriais</th>
+    <tr class="section-title">
+        <th><strong>HEMOCOMPONENTE</strong></th>
+        <th><strong>PRESCRIÇÃO</strong></th>
+        <th colspan="8"><strong>DADOS LABORATORIAIS</strong></th>
     </tr>
     <tr>
         <td>Concentrado de Hemácias</td>
         <td><?= esc($dados['hemacias'] ?? '') ?></td>
-        <td colspan="1">Hto.</td>
-        <td colspan="2">Data</td>
-        <td colspan="2">Hb</td>
-        <td colspan="3">Data</td>
+        <td colspan="1">Hto.: <?= esc($dados['hematocrito'] ?? '') ?> %</td>
+        <td colspan="2">Data: </td>
+        <td colspan="2">Hb: <?= esc($dados['hemoglobina'] ?? '') ?> g/dL</td>
+        <td colspan="3">Data: </td>
     </tr>
     <tr>
         <td>Plaquetas</td>
@@ -121,70 +119,84 @@
     <tr>
         <td>Plasma Fresco</td>
         <td><?= esc($dados['plasma'] ?? '') ?></td>
-        <td colspan="1">Hto.</td>
-        <td colspan="2">Data</td>
-        <td colspan="1">Hb</td>
-        <td colspan="2">Data</td>
-        <td colspan="1">Hb</td>
-        <td colspan="1">Data</td>
+        <td colspan="1">TAP: <?= esc($dados['tap'] ?? '') ?> seg</td>
+        <td colspan="2">Data: </td>
+        <td colspan="1">INR: <?= esc($dados['inr'] ?? '') ?></td>
+        <td colspan="2">Data: </td>
+        <td colspan="1">PTT: <<?= esc($dados['ptt'] ?? '') ?> seg</td>
+        <td colspan="1">Data: </td>
     </tr>
     <tr>
         <td>CRIO/Hemoderivados</td>
         <td><?= esc($dados['crio'] ?? '') ?></td>
-        <td colspan="4">Fibrinogênio</td>
+        <td colspan="4">Fibrinogênio: <?= esc($dados['fibrinogenio'] ?? '') ?> mg/dL</td>
         <td colspan="4">Data</td>
     </tr>
 </table>
 
-<!-- Dados laboratoriais -->
-<table>
-    <tr>
-        <th colspan="6" class="section-title">DADOS LABORATORIAIS</th>
-    </tr>
-    <tr>
-        <td><strong>Hemoglobina:</strong><br><?= esc($dados['hemoglobina'] ?? '') ?> g/dL</td>
-        <td><strong>Hematócrito:</strong><br><?= esc($dados['hematocrito'] ?? '') ?> %</td>
-        <td><strong>TAP:</strong><br><?= esc($dados['tap'] ?? '') ?> seg</td>
-        <td><strong>INR:</strong><br><?= esc($dados['inr'] ?? '') ?></td>
-        <td><strong>PTT:</strong><br><?= esc($dados['ptt'] ?? '') ?> seg</td>
-        <td><strong>Fibrinogênio:</strong><br><?= esc($dados['fibrinogenio'] ?? '') ?> mg/dL</td>
-    </tr>
+<!-- Amostra/Procedimentos especiais -->
+<table style="width: 100%; border-collapse: collapse; table-layout: fixed;">
+  <colgroup>
+    <col style="width: 16.66%;">
+    <col style="width: 16.66%;">
+    <col style="width: 16.66%;">
+    <col style="width: 16.66%;">
+    <col style="width: 16.66%;">
+    <col style="width: 16.66%;">
+  </colgroup>
+
+  <tr class="section-title">
+    <th colspan="3"><strong>AMOSTRA</strong></th>
+    <th colspan="3"><strong>PROCEDIMENTOS ESPECIAIS</strong></th>
+  </tr>
+
+  <tr>
+    <td colspan="3">Data/Hora da coleta: <?= esc($dados['dthr_coleta'] ?? '') ?></td>
+    <td colspan="1">Filtrado: <?= ($dados['filtrado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+    <td colspan="2">Irradiado: <?= ($dados['irradiado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+
+  </tr>
+
+  <tr>
+    <td colspan="3" style="border-bottom: none;">Coletor: <?= esc($dados['coletor'] ?? '') ?></td>
+    <td colspan="1">Lavado <?= ($dados['lavado'] ?? '') === 'S' ? 'Sim' : 'Não' ?></td>
+    <td colspan="2">Outros: <?= ($dados['outros'] ?? '') ?></td>
+  </tr>
+
+  <tr>
+    <td colspan="3" style="border-top: none;"></td>
+    <td colspan="3">Justificativa:</td>
+  </tr>
 </table>
 
 <!-- Tipo de transfusão -->
 <table>
+     <colgroup>
+        <col style="width: 25%;">
+        <col style="width: 25%;">
+        <col style="width: 25%;">
+        <col style="width: 25%;">
+    </colgroup>
+
     <tr>
         <th colspan="4" class="section-title">TIPO DE TRANSFUSÃO</th>
     </tr>
     <tr>
-        <td><strong>Rotina:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'ROTINA' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Urgência:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'URGENTE' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Programada:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'PROGRAMADA' ? 'Sim' : 'Não' ?></td>
-        <td><strong>Reserva para o dia:</strong> <?= esc($dados['reserva_data'] ?? '') ?> <?= esc($dados['time'] ?? '') ?></td>
+        <td style="border-bottom: none;"><strong>Programada:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'PROGRAMADA' ? 'Sim' : 'Não' ?></td>
+        <td style="border-bottom: none;"><strong>Emergência:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'EMERGÊNCIA' ? 'Sim' : 'Não' ?></td>
+        <td style="border-bottom: none;"><strong>Rotina:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'ROTINA' ? 'Sim' : 'Não' ?></td>
+        <td style="border-bottom: none;"><strong>Urgência:</strong> <?= ($dados['tipotransfusao'] ?? '') === 'URGENTE' ? 'Sim' : 'Não' ?></td>
     </tr>
-</table>
-
-<!-- Coleta -->
-<table>
     <tr>
-        <td><strong>Data da Coleta:</strong> <?= esc($dados['dthr_coleta'] ?? '') ?></td>
-        <td><strong>Hora da Coleta:</strong> <?= esc($dados['time'] ?? '') ?></td>
-        <td><strong>Coletor:</strong> <?= esc($dados['coletor'] ?? '') ?></td>
+        <td style="border-top: none;">Reserva para o dia: <?= esc($dados['reserva_data'] ?? '') ?> <?= esc($dados['time'] ?? '') ?></td>
+        <td style="border-top: none;">Imediate (vide verso) </td>
+        <td style="border-top: none;">Realizada em até 24h </td>
+        <td style="border-top: none;">Realizada em até 3h </td>
     </tr>
-</table>
-
-<!-- Observações -->
-<table>
     <tr>
-        <td><strong>Observações:</strong><br><?= nl2br(esc($dados['observacoes'] ?? '')) ?></td>
-    </tr>
-</table>
-
-<!-- Médico -->
-<table>
-    <tr>
-        <td><strong>Nome do Médico:</strong> <?= esc($dados['medico_solicitante'] ?? '') ?></td>
-        <td><strong>CRM:</strong> <?= esc($dados['crm'] ?? '') ?></td>
+        <td colspan="2"><strong>Médico Solicitante:</strong> <?= esc($dados['medico_solicitante'] ?? '') ?></td>
+        <td><strong>Data da Solicitação: </td>
+        <td><strong>Hora da Solicitação: </td>
     </tr>
 </table>
 
@@ -196,6 +208,11 @@
             As transfusões serão realizadas, preferencialmente, no período diurno. Portaria de consolidação nº 5 de 03/10/2017.<br>
             Só serão atendidas as requisições corretamente preenchidas e assinadas por médicos (registro CRM).<br>
             Os concentrados de plaquetas serão liberados na forma de pool de 4 ou 5 unidades ou por aférese.
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <p></p><p></p><p></p><p></p><p></p><p></p><p></p>
         </td>
     </tr>
 </table>
