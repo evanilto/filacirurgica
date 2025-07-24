@@ -99,7 +99,7 @@
 <table>
     <tr class="section-title">
         <th><strong>HEMOCOMPONENTE</strong></th>
-        <th><strong>PRESCRIÇÃO</strong></th>
+        <th><strong>QUANTIDADE</strong></th>
         <th colspan="8"><strong>DADOS LABORATORIAIS</strong></th>
     </tr>
     <tr>
