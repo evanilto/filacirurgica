@@ -1664,6 +1664,20 @@ class MapaCirurgico extends ResourceController
                                                     'data' => $this->data]);
             } */
 
+            $dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5));
+
+            $dataComparacao = new DateTime();
+            $dataComparacao->modify('+'.DIAS_AGENDA_CIRURGICA.' days')->setTime(0, 0);
+
+            if ($dataCirurgia->getTimestamp() < $dataComparacao->getTimestamp()) {
+                $this->validator->setError('dtcirurgia', 'O tempo mínimo para agendar uma cirurgia eletiva é de '.DIAS_AGENDA_CIRURGICA.' dias!');
+
+                $this->carregaMapa();
+
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                    'data' => $this->data]);
+            }
+
             if ($this->data['tempoprevisto'] == '00:00') {
                 $this->validator->setError('tempoprevisto', 'Informe um tempo previsto maior que zero!');
 
