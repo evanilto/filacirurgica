@@ -1666,16 +1666,23 @@ class MapaCirurgico extends ResourceController
 
             $dataCirurgia = DateTime::createFromFormat('d/m/Y H:i', $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5));
 
-            $dataComparacao = new DateTime();
-            $dataComparacao->modify('+'.DIAS_AGENDA_CIRURGICA.' days')->setTime(0, 0);
+            $mapa = $this->mapacirurgicomodel->find($this->data['idmapa']);
 
-            if ($dataCirurgia->getTimestamp() < $dataComparacao->getTimestamp()) {
-                $this->validator->setError('dtcirurgia', 'O tempo mínimo para agendar uma cirurgia eletiva é de '.DIAS_AGENDA_CIRURGICA.' dias!');
+            $mapaDataCirurgia = DateTime::createFromFormat('Y-m-d H:i:s', $mapa['dthrcirurgia']);
 
-                $this->carregaMapa();
+            if ($mapaDataCirurgia->getTimestamp() !== $dataCirurgia->getTimestamp()) {
 
-                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
-                                                    'data' => $this->data]);
+                $dataComparacao = new DateTime();
+                $dataComparacao->modify('+'.DIAS_AGENDA_CIRURGICA.' days')->setTime(0, 0);
+
+                if ($dataCirurgia->getTimestamp() < $dataComparacao->getTimestamp()) {
+                    $this->validator->setError('dtcirurgia', 'O tempo mínimo para agendar uma cirurgia eletiva é de '.DIAS_AGENDA_CIRURGICA.' dias!');
+
+                    $this->carregaMapa();
+
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
+                                                        'data' => $this->data]);
+                }
             }
 
             if ($this->data['tempoprevisto'] == '00:00') {
