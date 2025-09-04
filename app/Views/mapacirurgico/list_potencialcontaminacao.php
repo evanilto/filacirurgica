@@ -55,6 +55,7 @@
                 <th scope="col" data-field="meddia" >Antimicrobianos em 48h</th>
                 <th scope="col" data-field="meddia" >Antimicrobianos em 30 dias</th>
                 <th scope="col" data-field="gmr" >Colonização MDR</th>
+                <th scope="col" data-field="matusu" >Materiais Utilizados</th>
 
             </tr>
         </thead>
@@ -142,7 +143,9 @@
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_48h) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_30d) ?></td>
                     <td><?= htmlspecialchars($cirurgia->gmr) ?></td>
-
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->materiais_usados); ?>">
+                        <?php echo htmlspecialchars($cirurgia->materiais_usados); ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -443,8 +446,7 @@
                 { "width": "300px" },  // Antimicr 28h
                 { "width": "300px" },  // Antimicr 30d
                 { "width": "300px" },  // Gmr
-
-
+                { "width": "300px" },  // Materiais usados
             ],
             "columnDefs": [
            // { "orderable": false, "targets": [] },

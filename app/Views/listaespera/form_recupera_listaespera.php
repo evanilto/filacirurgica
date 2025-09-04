@@ -94,7 +94,7 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="justrecuperacao">Justificativa<b class="text-danger">*</b></label>
-                                    <textarea id="justrecuperacao" maxlength="255" rows="5"
+                                    <textarea id="justrecuperacao" maxlength="1000" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justrecuperacao') ? 'is-invalid' : '' ?>"
                                             name="justrecuperacao"><?= isset($data['justrecuperacao']) ? $data['justrecuperacao'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justrecuperacao')): ?>

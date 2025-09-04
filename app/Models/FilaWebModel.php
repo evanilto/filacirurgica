@@ -247,8 +247,8 @@ class FilaWebModel extends Model
             local_vw_aghu_cirurgias.situacao_descr_cir,
             local_vw_aghu_cirurgias.situacao_descr_pdt,
             local_vw_aghu_cirurgias.situacao_cir,
-            local_vw_aghu_cirurgias.tipo_cir
-
+            local_vw_aghu_cirurgias.tipo_cir,
+            local_vw_aghu_cirurgias.materiais_usados
         ');
     
         //die(var_dump($data));
