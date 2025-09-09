@@ -119,7 +119,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="justsuspensao">Observações</label>
-                                    <textarea id="justsuspensao" maxlength="255" rows="5"
+                                    <textarea id="justsuspensao" maxlength="500" rows="5"
                                             class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
                                             name="justsuspensao"><?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justsuspensao')): ?>

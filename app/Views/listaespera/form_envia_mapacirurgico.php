@@ -651,7 +651,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Justificativas de Envio ao Mapa Cirúrgico</label>
-                                    <textarea id="justenvio" maxlength="255" rows="3"  
+                                    <textarea id="justenvio" maxlength="500" rows="3"  
                                             class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
                                             name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justenvio')): ?>
@@ -666,7 +666,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" readonly 
+                                    <textarea id="info" maxlength="500" rows="3" readonly 
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -679,7 +679,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="3" readonly
+                                    <textarea id="justorig" maxlength="500" rows="3" readonly
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
                                             name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>

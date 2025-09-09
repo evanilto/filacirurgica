@@ -303,7 +303,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="justorig">Justificativa p/ Origem Paciente</label>
-                                    <textarea id="justorig" maxlength="255" rows="3" disabled
+                                    <textarea id="justorig" maxlength="1000" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('justorig') ? 'is-invalid' : '' ?>"
                                             name="justorig"><?= isset($data['justorig']) ? $data['justorig'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justorig')): ?>
@@ -316,7 +316,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" disabled
+                                    <textarea id="info" maxlength="500" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -370,7 +370,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-2">
                                         <label class="form-label" for="justexclusao">Observações sobre a exclusão</label>
-                                        <textarea id="justexclusao" maxlength="255" rows="3" disabled
+                                        <textarea id="justexclusao" maxlength="500" rows="3" disabled
                                                 class="form-control <?= isset($validation) && $validation->getError('justexclusao') ? 'is-invalid' : '' ?>"
                                                 name="justexclusao"><?= isset($data['justexclusao']) ? $data['justexclusao'] : '' ?></textarea>
                                         <?php if (isset($validation) && $validation->getError('justexclusao')): ?>
@@ -402,7 +402,7 @@
                                 <div class="col-md-10">
                                     <div class="mb-2">
                                         <label class="form-label" for="justrecuperacao">Justificativa para recuperação</label>
-                                        <textarea id="justrecuperacao" maxlength="255" rows="3" disabled
+                                        <textarea id="justrecuperacao" maxlength="500" rows="3" disabled
                                                 class="form-control <?= isset($validation) && $validation->getError('justrecuperacao') ? 'is-invalid' : '' ?>"
                                                 name="justrecuperacao"><?= isset($data['justrecuperacao']) ? $data['justrecuperacao'] : '' ?></textarea>
                                         <?php if (isset($validation) && $validation->getError('justrecuperacao')): ?>

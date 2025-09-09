@@ -646,7 +646,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" readonly
+                                    <textarea id="info" maxlength="500" rows="3" readonly
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -659,7 +659,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="nec_proced">Necessidades do Procedimento<b class="text-danger">*</b></label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3"
+                                    <textarea id="nec_proced" maxlength="500" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -674,7 +674,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="justtroca">Justificativa para troca<b class="text-danger">*</b></label>
-                                    <textarea id="justtroca" maxlength="255" rows="3"
+                                    <textarea id="justtroca" maxlength="500" rows="3"
                                             class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
                                             name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justtroca')): ?>

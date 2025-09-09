@@ -451,7 +451,7 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="nec_proced">Necessidades do Procedimento</label>
-                                    <textarea id="nec_proced" maxlength="255" rows="3" disabled
+                                    <textarea id="nec_proced" maxlength="500" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
                                             name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
@@ -466,7 +466,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="255" rows="3" disabled
+                                    <textarea id="info" maxlength="500" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
                                             name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
@@ -479,7 +479,7 @@
                             <div class="col-md-6">
                                 <div class="mb-2">
                                     <label class="form-label" for="justenvio">Justificativas Envio ao Mapa</label>
-                                    <textarea id="justenvio" maxlength="255" rows="3" disabled
+                                    <textarea id="justenvio" maxlength="500" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
                                             name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('justenvio')): ?>
@@ -495,7 +495,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-2">
                                         <label class="form-label" for="justurgencia">Justificativas da Urgência</label>
-                                        <textarea id="justurgencia" maxlength="255" rows="3" disabled
+                                        <textarea id="justurgencia" maxlength="500" rows="3" disabled
                                                 class="form-control <--?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
                                                 name="justurgencia"><--?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
                                         <--?php if (isset($validation) && $validation->getError('justurgencia')): ?>
@@ -550,7 +550,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-2">
                                         <label class="form-label" for="justsuspensao">Observações sobre a suspenssão</label>
-                                        <textarea id="justsuspensao" maxlength="255" rows="3" disabled
+                                        <textarea id="justsuspensao" maxlength="500" rows="3" disabled
                                                 class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
                                                 name="justsuspensao"><?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>
                                         <?php if (isset($validation) && $validation->getError('justsuspensao')): ?>
@@ -582,7 +582,7 @@
                                 <div class="col-md-10">
                                     <div class="mb-2">
                                         <label class="form-label" for="justtroca">Observações sobre a troca</label>
-                                        <textarea id="justtroca" maxlength="255" rows="3" disabled
+                                        <textarea id="justtroca" maxlength="500" rows="3" disabled
                                                 class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
                                                 name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
                                         <?php if (isset($validation) && $validation->getError('justtroca')): ?>
