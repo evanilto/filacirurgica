@@ -6,6 +6,8 @@ use CodeIgniter\Model;
 use App\Models\EquipamentosModel;
 use App\Models\LocalAipContatosPacientesModel;
 use App\Models\LocalVwAghuAntimicrobianosModel;
+use App\Models\LocalVwAghuEvolAmbModel;
+use App\Models\LocalVwAghuEvolIntModel;
 use App\Models\LocalVwAghuGmrModel;
 
 use Config\Database;
@@ -17,6 +19,8 @@ class FilaWebModel extends Model
     private $equipamentosmodel;
     private $localaipcontatospacientesmodel;
     private $localvwaghuantimicrobianos;
+    private $localvwaghuevolamb;
+    private $localvwaghuevolint;
     private $localvwaghugmr;
 
 
@@ -25,6 +29,8 @@ class FilaWebModel extends Model
 
     $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
     $this->localvwaghuantimicrobianos = new LocalVwAghuAntimicrobianosModel();
+    $this->localvwaghuevolamb = new LocalVwAghuEvolAmbModel();
+    $this->localvwaghuevolint = new LocalVwAghuEvolIntModel();
     $this->localvwaghugmr = new LocalVwAghuGmrModel();
 
 }
@@ -84,6 +90,34 @@ class FilaWebModel extends Model
 
         // Retorna os itens separados por "; "
         return implode('; ', array_keys($gmrs));
+    }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    private function listarEvolucoes($resultados) 
+    {
+        if (empty($resultados)) {
+            return 'N/D';
+        }
+
+        $evolucoes = [];
+
+        foreach ($resultados as $item) {
+            $data = date('d/m/Y H:i:s', strtotime($item->dthr_criacao));
+            $evol = trim($item->evolucao_descricao);
+
+            // Chave composta para garantir unicidade: data + nome
+            $chave = "{$data} - {$evol}";
+
+            $evolucoes[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
+        }
+
+        ksort($evolucoes);
+
+        // Retorna os itens separados por "; "
+        return implode("\n\n", array_keys($evolucoes));
     }
     /**
      * Return a new resource object, with default properties
@@ -215,6 +249,12 @@ class FilaWebModel extends Model
      */
     public function getCirurgiasPDT($data) 
     {
+        // Função auxiliar para normalizar texto
+        function normalizarTexto($texto) {
+            $texto = mb_strtolower($texto, 'UTF-8'); // tudo minúsculo
+            $texto = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto); // remove acentos
+            return $texto;
+        }
 
         $db = \Config\Database::connect('default');
 
@@ -358,15 +398,136 @@ class FilaWebModel extends Model
                 ->getResult();
             $cirurgia->gmr = $this->listarGmr($gmr);
 
+            /************ Evoluções *****************************************************/
+
+            // Ambulatorio ----------------
+
+            // 🔸 Até 30 dias após a cirurgia
+            $inicio_30d = date('Y-m-d H:i:s', strtotime($inicio_cirurgia . ' +1 second'));
+            $fim_30d = date('Y-m-d H:i:s', strtotime($baseDate . ' +30 day')); // ✅ Correção aqui
+
+            $result_30d = $this->localvwaghuevolamb
+                ->select('dthr_criacao, evolucao_descricao')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('dthr_criacao >=', $inicio_30d)
+                ->where('dthr_criacao <=', $fim_30d)
+                ->get()
+                ->getResult();
+            $cirurgia->evolamb_30d = $this->listarEvolucoes($result_30d);
+
+            // lista de palavras-chave a identificar
+            $palavras = ['febre', 'dor', 'alta', 'sangramento', 'infecção']; // pode expandir
+
+            $encontradas = [];
+
+            // normaliza o texto das evoluções
+            $textoEvolucao = normalizarTexto($cirurgia->evolamb_30d);
+
+            foreach ($palavras as $p) {
+                if (strpos($textoEvolucao, normalizarTexto($p)) !== false) {
+                    $encontradas[] = $p;
+                }
+            }
+
+            $cirurgia->palavras_encontradas_evolamb_30d = empty($encontradas) ? null : implode(', ', $encontradas);
+
+            // 🔸 De 30 até 60 dias após a cirurgia
+            $inicio_90d = date('Y-m-d H:i:s', strtotime($fim_30d . ' +1 second'));
+            $fim_90d = date('Y-m-d H:i:s', strtotime($baseDate . ' +90 day')); // ✅ Correção aqui
+
+            $result_90d = $this->localvwaghuevolamb
+                ->select('dthr_criacao, evolucao_descricao')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('dthr_criacao >=', $inicio_90d)
+                ->where('dthr_criacao <=', $fim_90d)
+                ->get()
+                ->getResult();
+            $cirurgia->evolamb_90d = $this->listarEvolucoes($result_90d);
+
+            $encontradas = [];
+
+            // normaliza o texto das evoluções
+            $textoEvolucao = normalizarTexto($cirurgia->evolamb_90d);
+
+            foreach ($palavras as $p) {
+                if (strpos($textoEvolucao, normalizarTexto($p)) !== false) {
+                    $encontradas[] = $p;
+                }
+            }
+
+            $cirurgia->palavras_encontradas_evolamb_90d = empty($encontradas) ? null : implode(', ', $encontradas);
+
+            // Internacao -------------------
+
+            // 🔸 Até 30 dias após a cirurgia
+            $result_30d = $this->localvwaghuevolint
+                ->select('dthr_criacao, evolucao_descricao')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('dthr_criacao >=', $inicio_30d)
+                ->where('dthr_criacao <=', $fim_30d)
+                ->get()
+                ->getResult();
+            $cirurgia->evolint_30d = $this->listarEvolucoes($result_30d);
+
+            $encontradas = [];
+
+            // normaliza o texto das evoluções
+            $textoEvolucao = normalizarTexto($cirurgia->evolint_30d);
+
+            foreach ($palavras as $p) {
+                if (strpos($textoEvolucao, normalizarTexto($p)) !== false) {
+                    $encontradas[] = $p;
+                }
+            }
+
+            $cirurgia->palavras_encontradas_evolint_30d = empty($encontradas) ? null : implode(', ', $encontradas);
+
+            // 🔸 De 30 até 60 dias após a cirurgia
+            
+            $result_90d = $this->localvwaghuevolint
+                ->select('dthr_criacao, evolucao_descricao')
+                ->where('pac_codigo', $cirurgia->codigo)
+                ->where('dthr_criacao >=', $inicio_90d)
+                ->where('dthr_criacao <=', $fim_90d)
+                ->get()
+                ->getResult();
+            $cirurgia->evolint_90d = $this->listarEvolucoes($result_90d);           
+            
+            $encontradas = [];
+
+            // normaliza o texto das evoluções
+            $textoEvolucao = normalizarTexto($cirurgia->evolint_90d);
+
+            foreach ($palavras as $p) {
+                if (strpos($textoEvolucao, normalizarTexto($p)) !== false) {
+                    $encontradas[] = $p;
+                }
+            }
+
+            $cirurgia->palavras_encontradas_evolint_90d = empty($encontradas) ? null : implode(', ', $encontradas);
 
             //$paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
 
             //print_r($paciente->cirurgias);
         }
-            //dd($cirurgias);
+            dd($cirurgias);
 
         return $cirurgias;
 
     }
+    /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    function normalizarTexto($texto)
+    {
+        // deixa em minúsculo
+        $texto = mb_strtolower($texto, 'UTF-8');
+        // remove acentos
+        $texto = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto);
+        return $texto;
+    }
+
 
 }
