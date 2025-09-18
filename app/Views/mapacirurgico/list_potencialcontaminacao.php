@@ -31,31 +31,40 @@
                 <th scope="col" data-field="prontuarioaghu" >Código Cirurgia/PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Seq Descr Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Tipo</th>
-                <th scope="col" data-field="prontuarioaghu" >Data Cirurgia/PDT</th>
-                <th scope="col" data-field="prontuarioaghu" >Início</th>
-                <th scope="col" data-field="prontuarioaghu" >Fim</th>
-                <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
+                <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Nome</th>
+                <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Nascimento</th>
                 <th scope="col" data-field="prontuarioaghu" >Contatos</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Cirurgia/PDT</th>
+                <th scope="col" data-field="prontuarioaghu" >Cirurgião/Executor</th>
+                <th scope="col" data-field="prontuarioaghu" >Anestesista</th>     
+                <th scope="col" data-field="prontuarioaghu" >Especialidade Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Procedimento</th>
                 <th scope="col" data-field="prontuarioaghu" >Potencial Contaminação</th>
-                <!-- <th scope="col" data-field="prontuarioaghu" >Descr. Cirúrgica</th> -->
-                <th scope="col" data-field="prontuarioaghu" >Cirurgião/Executor</th>
-                <th scope="col" data-field="prontuarioaghu" >Anestesista</th>
-                <th scope="col" data-field="prontuarioaghu" >Especialidade Cirúrgica</th>
-                <th scope="col" data-field="prontuarioaghu" >Data Internação</th>
+                <th scope="col" data-field="prontuarioaghu" >Início</th>
+                <th scope="col" data-field="prontuarioaghu" >Fim</th>                
                 <th scope="col" data-field="prontuarioaghu" >Data Alta</th>
-                <th scope="col" data-field="prontuarioaghu" >Motivo Internação</th>
                 <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
                 <th scope="col" data-field="prontuarioaghu" >Descrição Cirúrgica</th>
-                <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
                 <th scope="col" data-field="meddia" >Antimicrobianos no dia</th>
-                <th scope="col" data-field="meddia" >Antimicrobianos em 24h</th>
-                <th scope="col" data-field="meddia" >Antimicrobianos em 48h</th>
-                <th scope="col" data-field="meddia" >Antimicrobianos em 30 dias</th>
+                <th scope="col" data-field="meddia" >ATB 24h</th>
+                <th scope="col" data-field="meddia" >ATB 48h</th>
+                <th scope="col" data-field="meddia" >ATB 30 d</th>
                 <th scope="col" data-field="gmr" >Colonização MDR</th>
                 <th scope="col" data-field="matusu" >Materiais Utilizados</th>
+                <th scope="col" data-field="" >Evo. Hosp. 30 d</th>
+                <th scope="col" data-field="" >Evo. Hosp. 30 d-p. chave</th>
+                <th scope="col" data-field="" >Evo. Hosp. 90 d</th>
+                <th scope="col" data-field="" >Evo. Hosp. 90 d-p. chave</th>
+                <th scope="col" data-field="" >Evo. Amb. 30 d</th>
+                <th scope="col" data-field="" >Evo. Amb. 30 d-p. chave</th>
+                <th scope="col" data-field="" >Evo. Amb. 90 d</th>
+                <th scope="col" data-field="" >Evo. Amb. 90 d-p. chave</th>
+                <th scope="col" data-field="" >Culturas 30 d</th>
+                <th scope="col" data-field="" >Culturas 90 d</th>
 
             </tr>
         </thead>
@@ -102,22 +111,18 @@
                     <td><?php echo $cirurgia->crg_seq ?></td>
                     <td><?php echo $cirurgia->dcrg_seqp ?></td>
                     <td><?php echo $cirurgia->tipo_cir ?></td>
-                    <td><?php echo $dt_cirurgia ?></td>
-                    <td><?php echo $hr_inicio_cirurgia ?></td>
-                    <td><?php echo $hr_fim_cirurgia ?></td>
-                    <td><?php echo $cirurgia->prontuario ?></td>
+                    <td><?php echo $cirurgia->situacao_cir ?></td>
                     <td><?php echo $cirurgia->nome ?></td>
+                    <td><?php echo $cirurgia->prontuario ?></td>
                     <td><?php echo $dt_nascimento ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($contatos); ?>">
                         <?php echo htmlspecialchars($contatos ?: 'N/D'); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>">
-                        <?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>
+                    <td><?php echo $dt_internacao ?: 'N/D';?></td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
+                        <?php echo htmlspecialchars($cirurgia->aih_sintomas ?: 'N/D'); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($potencialcontaminacao); ?>">
-                        <?php echo htmlspecialchars($potencialcontaminacao ?: 'N/D'); ?>
-                    </td>
-                    <!-- <td><-?php echo $cirurgia->situacao_descr_cir ?: 'N/D'?></td> -->
+                    <td><?php echo $dt_cirurgia ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgioes); ?>">
                         <?php echo htmlspecialchars($cirurgioes ?: 'N/D'); ?>
                     </td>
@@ -127,17 +132,18 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>">
                         <?php echo htmlspecialchars($cirurgia->nome_especialidade); ?>
                     </td>
-                    <td><?php echo $dt_internacao ?: 'N/D';?></td>
-                    <td><?php echo $dt_alta ?: 'N/D';?></td>
-                    <!--td class="break-line" title="<-?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?>"-->
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->aih_sintomas); ?>">
-                        <!--?php echo htmlspecialchars($cirurgia->aih_sintomas.' - '.$cirurgia->aih_condicoes); ?-->
-                        <?php echo htmlspecialchars($cirurgia->aih_sintomas ?: 'N/D'); ?>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>">
+                        <?php echo htmlspecialchars($cirurgia->procedimento_cirurgia); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($potencialcontaminacao); ?>">
+                        <?php echo htmlspecialchars($potencialcontaminacao ?: 'N/D'); ?>
+                    </td>
+                    <td><?php echo $hr_inicio_cirurgia ?></td>
+                    <td><?php echo $hr_fim_cirurgia ?></td>
+                    <td><?php echo $dt_alta ?: 'N/D';?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>">
                         <?php echo htmlspecialchars($cirurgia->indicacao_pdt ?: 'N/D'); ?>
                     <td><?php echo $situacao_descr ?></td>
-                    <td><?php echo $cirurgia->situacao_cir ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_dia) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_24h) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_48h) ?></td>
@@ -146,6 +152,36 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->materiais_usados); ?>">
                         <?php echo htmlspecialchars($cirurgia->materiais_usados); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->evolint_30d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->evolint_30d); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolint_30d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolint_30d); ?>
+                    </td>  
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->evolint_90d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->evolint_90d); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolint_90d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolint_90d); ?>
+                    </td>    
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->evolamb_30d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->evolamb_30d); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolamb_30d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolamb_30d); ?>
+                    </td>  
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->evolamb_90d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->evolamb_90d); ?>
+                    </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolamb_90d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->palavras_encontradas_evolamb_90d); ?>
+                    </td>            
+                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->cultura_30d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->cultura_30d); ?>
+                    </td>      
+                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->cultura_90d); ?>">
+                        <?php echo htmlspecialchars($cirurgia->cultura_90d); ?>
+                    </td>   
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -422,31 +458,41 @@
                 { "width": "120px" },  // Lista
                 { "width": "120px" },  // seq
                 { "width": "70px" },  // tipo procedimento
-                { "width": "120px" },  // Lista
-                { "width": "60px" },  // Fila
-                { "width": "60px" },  // Lista
-                { "width": "100px" },  // Lista
-                { "width": "250px" },  // Lista
-                { "width": "100px" },  // Fila
-                { "width": "120px" },  // Fila
-                { "width": "250px" },  // Lista
-               /*  { "width": "250px" },  // Fila */
-                { "width": "250px" },  // Lista
-                { "width": "250px" },  // Fila
-                { "width": "250px" },  // Lista
-                { "width": "250px" },  // Especialidade
-                { "width": "100px" },  // Dt Int
-                { "width": "100px" },  // Dt Alta
-                { "width": "300px" },  // Fila
-                { "width": "300px" },  // Fila
-                { "width": "200px" },  // Fila
-                { "width": "100px" },  // Lista
+                { "width": "120px" },  // sit cir
+                { "width": "300px" },  // nome
+                { "width": "120px" },  // pront
+                { "width": "100px" },  // dt nasc
+                { "width": "250px" },  // contat
+                { "width": "100px" },  // dt int
+                { "width": "300px" },  // motivo
+                { "width": "120px" },  // dt cir
+                { "width": "300px" },  // cirurgiao
+                { "width": "300px" },  // Anestisista
+                { "width": "300px" },  // especialidade
+                { "width": "300px" },  // procedimento
+                { "width": "200px" },  // pot contam
+                { "width": "100px" },  // inicio
+                { "width": "100px" },  // fim
+                { "width": "100px" },  // dt alta
+                { "width": "300px" },  // indic pdt
+                { "width": "150px" },  // descr cir
                 { "width": "300px" },  // Antimicr dia
                 { "width": "300px" },  // Antimicr 24h
                 { "width": "300px" },  // Antimicr 28h
                 { "width": "300px" },  // Antimicr 30d
                 { "width": "300px" },  // Gmr
                 { "width": "300px" },  // Materiais usados
+                { "width": "300px" },  // evol hosp 30 dias
+                { "width": "150px" },  // evol hosp 30 dias palavra chave
+                { "width": "300px" },  // evol hosp 90 dias
+                { "width": "150px" },  // evol hosp 90 dias palavra chave
+                { "width": "300px" },  // evol amb 30 dias
+                { "width": "150px" },  // evol amb 30 dias palavra chave
+                { "width": "300px" },  // evol amb 30 dias
+                { "width": "150px" },  // evol amb 30 dias palavra chave
+                { "width": "300px" },  // culturas 30 dias
+                { "width": "300px" },  // culturas 90 dias
+
             ],
             "columnDefs": [
            // { "orderable": false, "targets": [] },

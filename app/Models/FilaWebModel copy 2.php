@@ -9,7 +9,6 @@ use App\Models\LocalVwAghuAntimicrobianosModel;
 use App\Models\LocalVwAghuEvolAmbModel;
 use App\Models\LocalVwAghuEvolIntModel;
 use App\Models\LocalVwAghuGmrModel;
-use App\Models\LocalVwExamesLiberadosModel;
 
 use Config\Database;
 use DateTime;
@@ -23,7 +22,6 @@ class FilaWebModel extends Model
     private $localvwaghuevolamb;
     private $localvwaghuevolint;
     private $localvwaghugmr;
-    private $localvwexamesliberados;
 
 
     public function __construct()
@@ -34,7 +32,6 @@ class FilaWebModel extends Model
     $this->localvwaghuevolamb = new LocalVwAghuEvolAmbModel();
     $this->localvwaghuevolint = new LocalVwAghuEvolIntModel();
     $this->localvwaghugmr = new LocalVwAghuGmrModel();
-    $this->localvwexamesliberados = new LocalVwExamesLiberadosModel();
 
 }
 
@@ -224,59 +221,18 @@ class FilaWebModel extends Model
      */
     public function getCirurgiasPDT($data) 
     {
-        // lista de palavras-chave a identificar
-        $palavras = [
-        'Febre',
-        'Dor no local cirúrgico',
-        'Calor no local da ferida',
-        'Eritema',
-        'hiperemia',
-        'rubor',
-        'Edema',
-        'Secreção purulenta',
-        'Secreção serossanguinolenta',
-        'Secreção serosa',
-        'Secreção',
-        'Exsudato',
-        'Flutuação',
-        'endurecimento',
-        'Deiscência de ferida',
-        'Abertura de ponto',
-        'soltura de ponto',
-        'Mau cheiro',
-        'odor fétido',
-        'Necrose',
-        'Sinais flogísticos',
-        'Iniciado antibiótico',
-        'Coletado cultura',
-        'Solicitado hemocultura',
-        'Solicitado cultura de secreção',
-        'Solicitado ultrassom de partes moles',
-        'Solicitado TC de ferida',
-        'Solicitado TC de região cirúrgica',
-        'Avaliado pela infectologia',
-        'Avaliado pela CCIH',
-        'Indicado drenagem',
-        'Reabordagem cirúrgica',
-        'Reinternação por complicação da ferida',
-        'Hemocultura positiva',
-        'Cultura de secreção positiva',
-        'HMC',
-        'hemocultura',
-        'ATB',
-        'antibiótico',
-        'CCIH'
-        ];
-
-       function normalizarTexto($texto) {
-            $texto = mb_strtolower((string)$texto, 'UTF-8');
+        // Função auxiliar para normalizar texto
+        function normalizarTexto($texto) {
+            // tudo minúsculo
+            $texto = mb_strtolower($texto, 'UTF-8');
+            // remove acentos e normaliza
             $texto = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto);
+            // remove múltiplos espaços
             $texto = preg_replace('/\s+/', ' ', $texto);
             return trim($texto);
         }
 
         function palavrasEncontradasEvolucao($texto, $palavras) {
-            // recebe $texto como string (uma evolução) e $palavras como array
             $textoNormalizado = normalizarTexto($texto);
             $tokens = preg_split('/[^a-z0-9]+/i', $textoNormalizado, -1, PREG_SPLIT_NO_EMPTY);
 
@@ -285,12 +241,12 @@ class FilaWebModel extends Model
                 $pNorm = normalizarTexto($p);
 
                 if (strpos($pNorm, ' ') !== false) {
-                    // expressão composta: busca exata no texto normalizado
+                    // expressão composta
                     if (strpos($textoNormalizado, $pNorm) !== false) {
                         $encontradas[] = $p;
                     }
                 } else {
-                    // palavra simples: compara token a token (igualdade exata)
+                    // palavra simples
                     if (in_array($pNorm, $tokens, true)) {
                         $encontradas[] = $p;
                     }
@@ -300,26 +256,18 @@ class FilaWebModel extends Model
             return empty($encontradas) ? null : implode(', ', $encontradas);
         }
 
-        function listarEvolucoes($resultados, $limitePalavras = 1000) {
-            // aceita array ou Traversable; garante ordenação em PHP
-            if (empty($resultados) || (!is_array($resultados) && !($resultados instanceof \Traversable))) {
+        function listarEvolucoes($resultados, $limitePalavras = 30) {
+            if (empty($resultados)) {
                 return 'N/D';
             }
 
-            $items = $resultados instanceof \Traversable ? iterator_to_array($resultados) : $resultados;
-
-            // ordena cronologicamente (mais antigo primeiro)
-            usort($items, function($a, $b) {
-                return strtotime($a->dthr_criacao) <=> strtotime($b->dthr_criacao);
-            });
-
             $evolucoes = [];
 
-            foreach ($items as $item) {
+            foreach ($resultados as $item) {
                 $data = date('d/m/Y H:i:s', strtotime($item->dthr_criacao));
                 $textoCompleto = trim($item->evolucao_descricao);
 
-                // limita o texto às primeiras $limitePalavras palavras
+                // limita o texto às primeiras 1000 palavras
                 $palavrasTexto = preg_split('/\s+/', $textoCompleto);
                 if (count($palavrasTexto) > $limitePalavras) {
                     $textoLimitado = implode(' ', array_slice($palavrasTexto, 0, $limitePalavras)) . ' ...';
@@ -327,61 +275,32 @@ class FilaWebModel extends Model
                     $textoLimitado = $textoCompleto;
                 }
 
+                // monta formato final da evolução
                 $evolucoes[] = "**Evolução {$data} - {$textoLimitado}";
             }
 
             return implode("\n\n", $evolucoes);
         }
 
-        function listarPalavrasEncontradas($resultados, $palavras) {
-            if (empty($resultados) || (!is_array($resultados) && !($resultados instanceof \Traversable))) {
+        function listarPalavrasEncontradas($resultados, $palavras) 
+        {
+            if (empty($resultados)) {
                 return 'N/D';
             }
 
-            $items = $resultados instanceof \Traversable ? iterator_to_array($resultados) : $resultados;
-
-            // ordena cronologicamente (mais antigo primeiro)
-            usort($items, function($a, $b) {
-                return strtotime($a->dthr_criacao) <=> strtotime($b->dthr_criacao);
-            });
-
             $saida = [];
 
-            foreach ($items as $item) {
+            foreach ($resultados as $item) {
                 $data = date('d/m/Y H:i:s', strtotime($item->dthr_criacao));
                 $texto = trim($item->evolucao_descricao);
 
                 $encontradas = palavrasEncontradasEvolucao($texto, $palavras);
 
-                $saida[] = "{$data} - " . ($encontradas ?? 'N/D');
+                $saida[] = "Evolução {$data} - " . ($encontradas ?? 'N/D');
             }
 
             return implode("\n", $saida);
         }
-
-        function listarExames($result)
-        {
-   
-            if (empty($result)) {
-                return 'N/D';
-            }
-
-            // Ordena pelo campo de data/hora
-            usort($result, function ($a, $b) {
-                return strtotime($a->dthr_evento_extrato_item) <=> strtotime($b->dthr_evento_extrato_item);
-            });
-
-            $saida = '';
-            foreach ($result as $row) {
-                    $saida .= '[' . date('d/m/Y H:i', strtotime($row->dthr_evento_extrato_item)) . '] '
-                        . $row->descricao_mat_analise . ' - '
-                        . $row->descricao_usual . ': '
-                        . $row->result_descr . "\n";
-            }
-
-            return $saida;
-        }
-
 
         $db = \Config\Database::connect('default');
 
@@ -527,6 +446,52 @@ class FilaWebModel extends Model
 
             /************ Evoluções *****************************************************/
 
+            // lista de palavras-chave a identificar
+            $palavras = [
+            'Febre',
+            'dor',
+            'Dor no local cirúrgico',
+            'Calor no local da ferida',
+            'Eritema',
+            'hiperemia',
+            'rubor',
+            'Edema',
+            'Secreção purulenta',
+            'Secreção serossanguinolenta',
+            'Secreção serosa',
+            'Secreção',
+            'Exsudato',
+            'Flutuação',
+            'endurecimento',
+            'Deiscência de ferida',
+            'Abertura de ponto',
+            'soltura de ponto',
+            'Mau cheiro',
+            'odor fétido',
+            'Necrose',
+            'Sinais flogísticos',
+            'Iniciado antibiótico',
+            'Coletado cultura',
+            'Solicitado hemocultura',
+            'Solicitado cultura de secreção',
+            'Solicitado ultrassom de partes moles',
+            'Solicitado TC de ferida',
+            'Solicitado TC de região cirúrgica',
+            'TC',
+            'Avaliado pela infectologia',
+            'Avaliado pela CCIH',
+            'Indicado drenagem',
+            'Reabordagem cirúrgica',
+            'Reinternação por complicação da ferida',
+            'Hemocultura positiva',
+            'Cultura de secreção positiva',
+            'HMC',
+            'hemocultura',
+            'ATB',
+            'antibiótico',
+            'CCIH'
+            ];
+
             // Ambulatorio ----------------
 
             // 🔸 Até 30 dias após a cirurgia
@@ -581,36 +546,6 @@ class FilaWebModel extends Model
                 ->getResult();
             $cirurgia->evolint_90d = listarEvolucoes($result_90d);           
             $cirurgia->palavras_encontradas_evolint_90d = listarPalavrasEncontradas($result_90d, $palavras);
-
-            /************ Culturas *****************************************************/
-
-            // 🔸 Até 30 dias após a cirurgia
-            $inicio_30d = date('Y-m-d H:i:s', strtotime($inicio_cirurgia . ' +1 second'));
-            $fim_30d = date('Y-m-d H:i:s', strtotime($baseDate . ' +30 day')); // ✅ Correção aqui
-
-            $result_30d = $this->localvwexamesliberados
-                ->select('dthr_evento_extrato_item, descricao_mat_analise, descricao_usual, result_descr')
-                ->Where('unf_descricao', 'LABORATÓRIO DE MICROBIOLOGIA')
-                ->where('pac_codigo', $cirurgia->codigo)
-                ->where('dthr_evento_extrato_item >=', $inicio_30d)
-                ->where('dthr_evento_extrato_item <=', $fim_30d)
-                ->get()
-                ->getResult();
-            $cirurgia->cultura_30d = listarExames($result_30d);
-
-            // 🔸 De 30 até 60 dias após a cirurgia
-            $inicio_90d = date('Y-m-d H:i:s', strtotime($fim_30d . ' +1 second'));
-            $fim_90d = date('Y-m-d H:i:s', strtotime($baseDate . ' +90 day')); // ✅ Correção aqui
-
-            $result_90d = $this->localvwexamesliberados
-                ->select('dthr_evento_extrato_item, descricao_mat_analise, descricao_usual, result_descr')
-                ->Where('unf_descricao', 'LABORATÓRIO DE MICROBIOLOGIA')
-                ->where('pac_codigo', $cirurgia->codigo)
-                ->where('dthr_evento_extrato_item >=', $inicio_90d)
-                ->where('dthr_evento_extrato_item <=', $fim_90d)
-                ->get()
-                ->getResult();
-            $cirurgia->cultura_90d = listarExames($result_90d);
 
             //$paciente->cirurgias = $this->localvwaghucirurgiasmodel->where('prontuario', $paciente->prontuario)->findAll();
 
