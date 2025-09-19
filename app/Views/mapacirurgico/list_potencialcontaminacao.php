@@ -15,7 +15,7 @@
 
 <script>$('#janelaAguarde').show();</script>
 
-<div class="table-container mt-4">
+<div class="table-container mt-3">
     <table class="table">
         <thead style="border: 1px solid black;">
             <tr>
@@ -431,6 +431,35 @@
 
         $('[data-toggle="tooltip"]').tooltip();
 
+        // Plugin de ordenação para datas no formato dd/mm/yyyy
+        jQuery.extend(jQuery.fn.dataTable.ext.type.order, {
+            "date-br-pre": function (data) {
+                if (!data) {
+                    return 0;
+                }
+
+                // Se vier com hora (dd/mm/yyyy HH:mm:ss), separa
+                var dateTime = data.split(' ');
+                var parts = dateTime[0].split('/'); // [dd, mm, yyyy]
+
+                var dateNum = parts[2] + parts[1] + parts[0]; // yyyyMMdd
+
+                if (dateTime.length > 1) {
+                    var timeParts = dateTime[1].split(':'); // [HH, mm, ss]
+                    var timeNum = timeParts[0] + timeParts[1] + (timeParts[2] || "00");
+                    return parseInt(dateNum + timeNum);
+                }
+
+                return parseInt(dateNum);
+            },
+            "date-br-asc": function (a, b) {
+                return a - b;
+            },
+            "date-br-desc": function (a, b) {
+                return b - a;
+            }
+        });
+
         $('#table').DataTable({
             "order": [[0, 'asc'], [1, 'asc']],
             /* "lengthChange": true,
@@ -447,12 +476,16 @@
             /* paging: true, 
             ordering: true,  */
             fixedHeader: true,
-            scrollY: '525px',
+            //scrollY: '525px',
             scrollX: true,
             scrollCollapse: true,
             paging: false,
             ordering: true,
-            stateSave: false, // Desabilita estado salvo para evitar que ordem antiga sobrescreva
+            stateSave: true,
+            stateLoadParams: function (settings, data) {
+                // força a ordem ao carregar
+                data.order = [[10, 'asc']];
+            },
             autoWidth: false,
             "columns": [
                 { "width": "120px" },  // Lista
@@ -494,9 +527,9 @@
                 { "width": "300px" },  // culturas 90 dias
 
             ],
-            "columnDefs": [
-           // { "orderable": false, "targets": [] },
-            { "visible": false, "targets": [0, 1] },
+            columnDefs: [
+                { type: "date-br", targets: 10 }, // força a coluna "dt cir" a usar ordenação BR
+                { visible: false, targets: [0, 1] }
             ],
             layout: { topStart: {
                 buttons: [
@@ -517,6 +550,9 @@
             initComplete: function() {
                 $('#janelaAguarde').hide();
                 $('#table tbody tr td').addClass('break-line');
+            },
+            language: {
+                url: "<?= base_url('assets/DataTables/i18n/pt-BR.json') ?>"
             }
         });
 
