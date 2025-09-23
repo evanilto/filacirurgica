@@ -476,7 +476,7 @@
             /* paging: true, 
             ordering: true,  */
             fixedHeader: true,
-            //scrollY: '525px',
+            scrollY: '525px',
             scrollX: true,
             scrollCollapse: true,
             paging: false,
