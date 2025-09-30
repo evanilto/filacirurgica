@@ -538,6 +538,42 @@ class MapaCirurgico extends ResourceController
                                                 'data' => $data]);
         }
     }
+     /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirPainelDiario()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $dt = new \DateTime('now');
+        $dt->modify('+3 days');
+
+        $data = [];
+        $data['dtinicio'] = $dt->format('d/m/Y');
+        $data['dtfim']    = $dt->format('d/m/Y');
+
+        $result = $this->getPainelDiario($data);
+
+        //die(var_dump($result));
+
+        /*
+        return view('layouts/sub_content_painel', ['view' => 'mapacirurgico/list_paineldiario',
+                                               'mapacirurgico' => $result,
+                                               'data' => $data]);
+        */
+
+        $data = [
+            'mapacirurgico' => $result,
+            'data' => date('Y-m-d')
+        ];
+
+        return view('mapacirurgico/list_paineldiario_minimal', $data);
+
+    }
     /**
      * Create a new resource object, from "posted" parameters
      *
@@ -957,7 +993,50 @@ class MapaCirurgico extends ResourceController
 
     return $builder->get()->getResult();
 }
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getPainelDiario($data) 
+    {
+        // Conexão com o banco de dados
+        $db = \Config\Database::connect('default');
 
+        // Iniciando o Query Builder na tabela vw_mapacirurgico
+        $builder = $db->table('vw_mapacirurgico');
+
+        // Adicionando o JOIN com vw_statusfilacirurgica
+        $builder->join('vw_statusfilacirurgica', 'vw_mapacirurgico.idlista = vw_statusfilacirurgica.idlistaespera', 'inner');
+        $builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
+
+
+        // Selecionando campos específicos com aliases
+        $builder->select('
+            vw_mapacirurgico.*,
+            (vw_statusfilacirurgica.campos_mapa).status AS status_fila,
+            COALESCE(vw_ordem_paciente.ordem_fila, 0) AS ordem_fila
+        ');
+    
+        if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+            $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+            $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+            $builder->where("vw_mapacirurgico.dthrcirurgia >=", $dtInicio);
+            $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
+        }
+
+        $tipos = ['P']; // sua lista de strings
+        $builder->whereIn('vw_mapacirurgico.indsituacao', $tipos);
+        
+        $builder->orderBy('vw_mapacirurgico.dthrnocentrocirurgico', 'ASC')
+                ->orderBy('vw_mapacirurgico.sala', 'ASC'); // segunda coluna
+
+        //var_dump($builder->getCompiledSelect());die();
+        //var_dump($builder->get()->getResult());die();
+
+        return $builder->get()->getResult();
+    }
     /**
      * Return a new resource object, with default properties
      *

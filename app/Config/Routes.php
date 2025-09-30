@@ -99,6 +99,7 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->post('verificacirurgiascomhemocomponentes', 'MapaCirurgico::verificaCirurgiasComHemocomponentes');
     $routes->get('reqtransf/(:num)', 'MapaCirurgico::reqTransfusao/$1');
     $routes->post('getcirurgias', 'MapaCirurgico::getCirurgiasPaciente');
+    $routes->add('exibirpaineldiario', 'MapaCirurgico::exibirPainelDiario');
 });
 
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {

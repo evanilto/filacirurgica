@@ -240,10 +240,19 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(true) { ?>
+        <?php if(!HUAP_Functions::tem_permissao('painel-cirurgico-diario')) { ?>
             <li>
                 <a href="<?= base_url('listaespera/situacaocirurgica') ?>" class="nav-link text-white p-2" aria-current="page">
                     <i class="fa-solid fa-user-nurse"></i> Situação Cirúrgica/PDT
+                </a>
+            </li>
+        <?php } ?>
+    </ul>
+    <ul class="nav navbar-nav flex-column">
+        <?php if(HUAP_Functions::tem_permissao('painel-cirurgico-diario')) { ?>
+            <li>
+                <a href="<?= base_url('mapacirurgico/exibirpaineldiario') ?>" class="nav-link text-white p-2" aria-current="page">
+                    <i class="fa-solid fa-user-nurse"></i> Painel Cirúrgico Diário
                 </a>
             </li>
         <?php } ?>

@@ -1155,6 +1155,9 @@ class HUAP_Functions
             case 'admin':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1']));
 
+            case 'painel-cirurgico-diario':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '73']));
+
             default:
                 return false;
         }

@@ -298,6 +298,15 @@ table tbody tr.combinado {
     max-width: 300px;   /* (Opcional) Largura máxima */
 }
 
+.datatable-container {
+    display: flex;
+    justify-content: center;  /* centraliza horizontalmente */
+    align-items: center;      /* centraliza verticalmente se o container tiver altura */
+    width: 100%;              /* ocupa toda a largura da tela */
+    min-height: 100vh;        /* altura mínima da janela */
+}
+
+
 .dt-search input { /* campos pesquisar do data-table */
     width: 500px !important;; /* Define o tamanho desejado */
 }
