@@ -571,6 +571,7 @@ class MapaCirurgico extends ResourceController
             'data' => date('Y-m-d')
         ];
 
+        //dd($data);
         return view('mapacirurgico/list_paineldiario_minimal', $data);
 
     }

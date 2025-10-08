@@ -8,65 +8,81 @@
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/fixedheader/4.0.1/css/fixedHeader.dataTables.min.css">
+<style>
+    body {
+        margin: 0;
+        padding: 10px; /* reduzido de 20px */
+        font-family: 'Montserrat', sans-serif;
+        background-color: #f8f9fa;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
 
-    <style>
-        body {
-            margin: 0;
-            padding: 20px;
-            font-family: 'Montserrat', sans-serif;
-            background-color: #f8f9fa;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+    h5 {
+        font-size: 0.9rem; /* um pouco menor */
+        margin-bottom: 8px;
+    }
 
-        h5 {
-            font-size: 1rem;
-            margin-bottom: 10px;
-        }
+    .table-responsive-custom {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
-        .table-responsive-custom {
-            width: 100%;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+    #table {
+        width: 100%;
+        table-layout: fixed;
+        font-size: 9px; /* reduzido de 11px */
+        line-height: 1.4; /* reduzido de 1.1 */
+        border-collapse: collapse;
+    }
 
-        /* Tabela compacta */
+    #table th, #table td {
+        padding: 3px 2px; /* reduzido de 2px 4px */
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    #table thead th {
+        font-size: 9px; /* reduzido de 11px */
+        text-align: left;
+        line-height: 1.4;     /* aumenta altura do header */
+
+    }
+
+    #table tbody td {
+        text-align: left;
+        font-size: 9px; /* reduzido de 12px */
+        line-height: 1.4;
+    }
+
+    .break-line {
+        white-space: normal;
+        word-wrap: break-word;
+        word-break: break-word;
+    }
+
+    @media (max-width: 1280px) {
         #table {
-            width: 100%;
-            table-layout: fixed;  /* força colunas a respeitar width */
-            font-size: 11px;
-            line-height: 1.1;
-            border-collapse: collapse;
+            font-size: 8px; /* fonte menor para telas menores */
         }
-
         #table th, #table td {
-            padding: 2px 4px;       /* espaço mínimo */
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            padding: 1px 1px;
         }
+    }
 
-        #table thead th {
-            font-size: 11px;
+    @media (max-width: 768px) {
+        #table {
+            font-size: 7px; /* para mobile */
         }
-
-        .break-line {
-            white-space: normal;
-            word-wrap: break-word;
-            word-break: break-word;
+        #table th, #table td {
+            padding: 1px 1px;
         }
-
-        @media (max-width: 768px) {
-            #table {
-                font-size: 10px;
-            }
-            #table th, #table td {
-                padding: 1px 3px;
-            }
-        }
-    </style>
+    }
+</style>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
@@ -75,92 +91,164 @@
 <body>
     <h5><strong>Painel Cirúrgico - <?= date('d/m/Y', strtotime($data)) ?></strong></h5>
 
- <div class="table-responsive-custom">
-    <table id="table" class="display" style="width:100%;">
-        <thead>
-            <tr>
-                <th>Sala</th>
-                <th>Hora Estimada</th>
-                <th>No Centro Cirúrgico</th>
-                <th>Em Cirurgia</th>
-                <th>Saída Sala Cirúrgica</th>
-                <th>Centro Cirúrgico</th>
-                <th>Especialidade</th>
-                <th>Nome do Paciente</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php foreach($mapacirurgico as $item): ?>
-            <tr>
-                <td><?= htmlspecialchars($item->sala) ?></td>
-                <td><?= DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') ?></td>
-                <td><?= $item->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
-                <td><?= $item->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthremcirurgia)->format('H:i') : ' ' ?></td>
-                <td><?= $item->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrsaidasala)->format('H:i') : ' ' ?></td>
-                <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
-                <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
-                <td><?= htmlspecialchars($item->nome_paciente) ?></td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
+    <div class="table-responsive-custom">
+        <table id="table" class="display" style="width:100%;">
+            <thead>
+                <tr>
+                    <th>Sala</th>
+                    <th>Hr Estimada</th>
+                    <th>No Centro Cir.</th>
+                    <th>Em Cirurgia</th>
+                    <th>Saída Sala</th>
+                    <th>Centro Cirúrgico</th>
+                    <th>Especialidade</th>
+                    <th>Procedimento Principal</th>
+                    <th>Nome do Paciente</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach($mapacirurgico as $item): ?>
+                <tr>
+                    <td><?= htmlspecialchars($item->sala) ?></td>
+                    <td><?= DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') ?></td>
+                    <td><?= $item->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrnocentrocirurgico)->format('H:i') : '' ?></td>
+                    <td><?= $item->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthremcirurgia)->format('H:i') : '' ?></td>
+                    <td><?= $item->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrsaidasala)->format('H:i') : '' ?></td>
+                    <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
+                    <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
+                    <td><?= htmlspecialchars($item->procedimento_principal) ?></td>
+                    <td><?= htmlspecialchars($item->nome_paciente) ?></td>
+                    <td class="break-line">
+                    <?php
+                        $obs = [];
 
-<style>
-    /* Alinha o corpo da tabela à esquerda */
-    #table tbody td {
-        text-align: left;
-        padding: 2px 4px;
-        font-size: 12px;
-        line-height: 1.1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+                        // ----------------------------------------------------
+                        // 1️⃣ HEMOCOMPONENTES (usa só a sigla antes do hífen)
+                        // ----------------------------------------------------
+                        $hemocomp = [];
+                        if (!empty($item->hemocomponentes_cirurgia_info)) {
+                            $dados = json_decode($item->hemocomponentes_cirurgia_info, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($dados)) {
+                                foreach ($dados as $equip) {
+                                    $nome = trim($equip['nome'] ?? $equip['descricao'] ?? '');
+                                    if ($nome !== '') {
+                                        if (strpos($nome, '-') !== false) {
+                                            // tem hífen → usa a sigla (antes do hífen)
+                                            $partes = explode('-', $nome, 2);
+                                            $sigla = trim($partes[0]);
+                                            if ($sigla !== '') {
+                                                $hemocomp[] = $sigla;
+                                            }
+                                        } else {
+                                            // sem hífen → usa o nome completo
+                                            $hemocomp[] = $nome;
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-    /* Cabeçalho opcionalmente centralizado */
-    #table thead th {
-        text-align: left; /* ou 'center' se quiser manter centralizado */
-        padding: 2px 4px;
-        font-size: 12px;
-        white-space: nowrap;
-    }
-</style>
+                        // ----------------------------------------------------
+                        // 2️⃣ EQUIPAMENTOS (usa a parte após o hífen, se houver)
+                        // ----------------------------------------------------
+                        $equipamentos = [];
+                        if (!empty($item->equipamentos_cirurgia_info)) {
+                            $dados = json_decode($item->equipamentos_cirurgia_info, true);
+                            if (json_last_error() === JSON_ERROR_NONE && is_array($dados)) {
+                                foreach ($dados as $equip) {
+                                    $nome = trim($equip['nome'] ?? $equip['descricao'] ?? '');
+                                    if ($nome !== '') {
+                                        if (strpos($nome, '-') !== false) {
+                                            // tem hífen → usa parte após o hífen
+                                            $partes = explode('-', $nome, 2);
+                                            $nomeAposHifen = trim($partes[1]);
+                                            if ($nomeAposHifen !== '') {
+                                                $equipamentos[] = $nomeAposHifen;
+                                            }
+                                        } else {
+                                            // sem hífen → usa o nome completo
+                                            $equipamentos[] = $nome;
+                                        }
+                                    }
+                                }
+                            }
+                        }
 
-<script>
-    $(document).ready(function() {
-        $('#table').DataTable({
-            autoWidth: false,
-            paging: false,
-            ordering: true,
-            info: false,
-            searching: false,
-            order: [[2, 'desc'], [0, 'asc']],
-            columnDefs: [
-                { width: "50px", targets: 0 },
-                { width: "80px", targets: 1 },
-                { width: "100px", targets: 2 },
-                { width: "100px", targets: 3 },
-                { width: "120px", targets: 4 },
-                { width: "150px", targets: 5 },
-                { width: "150px", targets: 6 },
-                { width: "200px", targets: 7 }
-            ],
-            createdRow: function(row, data) {
-                if (!data[2] || data[2].trim() === '') {
-                    $(row).css('background-color', '#fff3cd'); 
-                } else {
-                    $(row).css('background-color', '#c1e9ecff'); 
+                        // ----------------------------------------------------
+                        // 3️⃣ Montagem das observações
+                        // ----------------------------------------------------
+                    /*  if (strtoupper($item->opme) === 'NÃO') {
+                            $obs[] = 'Sem OPME';
+                        } */
+
+                        $partes = [];
+
+                        if (strtoupper($item->opme) === 'SIM') {
+                            $partes[] = 'OPME';
+                        }
+
+                        if (!empty($equipamentos)) {
+                            $partes = array_merge($partes, $equipamentos);
+                        }
+
+                        if (!empty($hemocomp)) {
+                            $partes = array_merge($partes, $hemocomp);
+                        }
+
+                        if (!empty($partes)) {
+                            //$obs[] = 'Utiliza ' . implode(', ', $partes);
+                            $obs[] = implode(', ', $partes);
+                        }
+
+                        if (empty($obs)) {
+                            $obs[] = '';
+                        }
+
+                        echo htmlspecialchars(implode(', ', $obs));
+                    ?>
+                </td>
+
+                </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#table').DataTable({
+                autoWidth: false,
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false,
+                order: [[2, 'desc'], [0, 'asc']],
+                columnDefs: [
+                    { width: "45px", targets: 0 },
+                    { width: "45px", targets: 1 },
+                    { width: "45px", targets: 2 },
+                    { width: "45px", targets: 3 },
+                    { width: "45px", targets: 4 },
+                    { width: "90px", targets: 5 },
+                    { width: "80px", targets: 6 },
+                    { width: "150px", targets: 7 },
+                    { width: "130px", targets: 8 },
+                    { width: "200px", targets: 9 }
+                ],
+                createdRow: function(row, data) {
+                    if (!data[2] || data[2].trim() === '') {
+                        $(row).css('background-color', '#fff3cd');
+                    } else {
+                        $(row).css('background-color', '#c1e9ecff');
+                    }
                 }
-            }
+            });
+
+            setInterval(function() {
+                window.location.reload();
+            }, 30000);
         });
-
-        setInterval(function() {
-            window.location.reload();
-        }, 30000);
-    });
-</script>
-
-
+    </script>
 </body>
 </html>
