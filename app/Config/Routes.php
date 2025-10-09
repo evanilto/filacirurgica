@@ -100,6 +100,9 @@ $routes->group('mapacirurgico', ['filter' => 'auth'], function ($routes) {
     $routes->get('reqtransf/(:num)', 'MapaCirurgico::reqTransfusao/$1');
     $routes->post('getcirurgias', 'MapaCirurgico::getCirurgiasPaciente');
     $routes->add('exibirpaineldiario', 'MapaCirurgico::exibirPainelDiario');
+    $routes->add('exibirpainelpacientesnocc', 'MapaCirurgico::exibirPainelPacientesNoCC');
+    $routes->add('exibirpainelpacientesaguardando', 'MapaCirurgico::exibirPainelPacientesAguardando');
+
 });
 
 $routes->group('usuarios', ['filter' => 'auth'], function ($routes) {

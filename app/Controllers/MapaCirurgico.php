@@ -549,14 +549,15 @@ class MapaCirurgico extends ResourceController
 
         \Config\Services::session();
 
-        $dt = new \DateTime('now');
-        $dt->modify('+3 days');
+        /* $dt = new \DateTime('now');
+        //$dt->modify('+3 days');
+        $dt->modify('+2 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
-        $data['dtfim']    = $dt->format('d/m/Y');
+        $data['dtfim']    = $dt->format('d/m/Y'); */
 
-        $result = $this->getPainelDiario($data);
+        //$result = $this->getPainelDiario($data);
 
         //die(var_dump($result));
 
@@ -566,13 +567,76 @@ class MapaCirurgico extends ResourceController
                                                'data' => $data]);
         */
 
+        /* $data = [
+            'mapacirurgico' => $result,
+            'data' => date('Y-m-d')
+        ]; */
+
+        //dd($data);
+        //return view('mapacirurgico/list_paineldiario_minimal', $data);
+        return view('mapacirurgico/painelrotativo');
+
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirPainelPacientesNoCC()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $dt = new \DateTime('now');
+        //$dt->modify('+3 days');
+        $dt->modify('+2 days');
+
+        $data = [];
+        $data['dtinicio'] = $dt->format('d/m/Y');
+        $data['dtfim']    = $dt->format('d/m/Y');
+        $data['status'] = 'nocentrocirurgico';
+
+        $result = $this->getPainelDiario($data);
+
         $data = [
             'mapacirurgico' => $result,
             'data' => date('Y-m-d')
         ];
 
         //dd($data);
-        return view('mapacirurgico/list_paineldiario_minimal', $data);
+        return view('mapacirurgico/list_paineldiario_nocc', $data);
+
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirPainelPacientesAguardando()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $dt = new \DateTime('now');
+        //$dt->modify('+3 days');
+        $dt->modify('+2 days');
+
+        $data = [];
+        $data['dtinicio'] = $dt->format('d/m/Y');
+        $data['dtfim']    = $dt->format('d/m/Y');
+        $data['status'] = 'aguardando';
+
+        $result = $this->getPainelDiario($data);
+
+        $data = [
+            'mapacirurgico' => $result,
+            'data' => date('Y-m-d')
+        ];
+
+        //dd($data);
+        return view('mapacirurgico/list_paineldiario_aguardando', $data);
 
     }
     /**
@@ -1027,8 +1091,14 @@ class MapaCirurgico extends ResourceController
             $builder->where("vw_mapacirurgico.dthrcirurgia <=", $dtFim);
         }
 
-        $tipos = ['P']; // sua lista de strings
+        $tipos = ['P'];
         $builder->whereIn('vw_mapacirurgico.indsituacao', $tipos);
+
+        if ($data['status'] == 'aguardando') {
+            $builder->where('vw_mapacirurgico.dthrnocentrocirurgico IS NULL', null, false);
+        } else {
+            $builder->where('vw_mapacirurgico.dthrnocentrocirurgico IS NOT NULL', null, false);
+        }
         
         $builder->orderBy('vw_mapacirurgico.dthrnocentrocirurgico', 'ASC')
                 ->orderBy('vw_mapacirurgico.sala', 'ASC'); // segunda coluna

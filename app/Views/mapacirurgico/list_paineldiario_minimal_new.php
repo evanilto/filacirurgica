@@ -1,4 +1,41 @@
 <!DOCTYPE html>
+<?php
+
+$corProgramada = 'yellow';
+    $corPacienteSolicitado = 'gold';
+    $corNoCentroCirúrgico = '#97DA4B';
+    $corEmCirurgia = '#277534';//'#804616';
+    $corSaídaDaSala = '#87CEFA';
+    $corSaídaCentroCirúrgico = '#00008B'; //'#277534'; /* Entrada no RPA */
+    $corLeitoPosOper = '#5d4037'; // '#8d6e63'
+    $corAltaDayClinic = '#78909c';
+    $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
+    $corCirurgiaSuspensa = 'Red';
+    $corCirurgiaSuspensaAdm = 'purple';
+    $corAtualizarHorarios = '#2c3e50';
+    $corEditar = $corAtualizarHorarios;
+    $corConsultar = $corEditar;
+    $corCirurgiaCancelada = $corCirurgiaSuspensa;
+    $corReqTransf = $corEditar;
+
+
+    $coresBotoes = [
+        'pacientesolicitado' => $corPacienteSolicitado,
+        'nocentrocirurgico' => $corNoCentroCirúrgico,
+        'emcirurgia' => $corEmCirurgia,
+        'saidadasala' => $corSaídaDaSala,
+        'saidadoccirurgico' => $corSaídaCentroCirúrgico,
+        'leitoposoper' => $corLeitoPosOper,
+        'altadayclinic' => $corAltaDayClinic,
+        'suspender' => $corCirurgiaSuspensa,
+        'suspenderadm' => $corCirurgiaSuspensaAdm,
+        'trocar' => $corTrocaPaciente,
+        'atualizarhorarios' => $corAtualizarHorarios,
+        'editar' => $corEditar,
+        'consultar' => $corConsultar,
+        'reqtransf' => $corReqTransf
+    ];
+?>
 <html>
 <head>
     <meta charset="UTF-8">
@@ -95,30 +132,48 @@
         <table id="table" class="display" style="width:100%;">
             <thead>
                 <tr>
-                    <th>Sala</th>
-                    <th>Hr Estimada</th>
-                    <th>No Centro Cir.</th>
-                    <th>Em Cirurgia</th>
-                    <th>Saída Sala</th>
                     <th>Centro Cirúrgico</th>
+                    <th>Sala</th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Paciente Solicitado">
+                        <i class="fa-solid fa-circle" style="color: <?= $corPacienteSolicitado ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no Centro Cirúrgico">
+                            <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada em Sala">
+                            <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Saída da Sala">
+                            <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Cirurgia Realizada">
+                            <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
+                            <i class="fa-solid fa-circle" style="color: <?= $corLeitoPosOper ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Alta Hospitalar Day Clinic">
+                            <i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>; "></i>
+                    </th>
                     <th>Especialidade</th>
-                    <th>Procedimento Principal</th>
+                    <th>Prontuário</th>
                     <th>Nome do Paciente</th>
+                    <th>Procedimento Principal</th>
                     <th>Observações</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($mapacirurgico as $item): ?>
                 <tr>
+                    <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
                     <td><?= htmlspecialchars($item->sala) ?></td>
-                    <td><?= DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') ?></td>
                     <td><?= $item->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrnocentrocirurgico)->format('H:i') : '' ?></td>
                     <td><?= $item->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthremcirurgia)->format('H:i') : '' ?></td>
                     <td><?= $item->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrsaidasala)->format('H:i') : '' ?></td>
-                    <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
                     <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
-                    <td><?= htmlspecialchars($item->procedimento_principal) ?></td>
+                    <td><?= htmlspecialchars($item->prontuario) ?></td>
                     <td><?= htmlspecialchars($item->nome_paciente) ?></td>
+                    <td><?= htmlspecialchars($item->procedimento_principal) ?></td>
                     <td class="break-line">
                     <?php
                         $obs = [];
