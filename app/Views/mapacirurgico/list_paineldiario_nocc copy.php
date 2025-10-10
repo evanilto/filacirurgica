@@ -8,29 +8,19 @@
                 <td class="right"><?= date('d/m/Y', strtotime($data)) ?></td>
             </tr>
         </table>
-        <div style="height:5px;"></div>
+
         <!-- Tabela principal -->
         <table id="table" cellspacing="0">
-            <colgroup>
-                <col style="width: 13%;">
-                <col style="width: 5%;">
-                <col style="width: 6%;">
-                <col style="width: 10%;">
-                <col style="width: 5%;">
-                <col style="width: 17%;">
-                <col style="width: 23%;">
-                <col style="width: 23%;">
-            </colgroup>
             <thead>
                 <tr>
-                <th>Centro Cirúrgico</th>
-                <th>Sala</th>
-                <th>Hora Estimada</th>
-                <th>Especialidade</th>
-                <th>Prontuário</th>
-                <th>Nome do Paciente</th>
-                <th>Procedimento Principal</th>
-                <th>Observações</th>
+                    <th style="width:10%;">Centro Cirúrgico</th>
+                    <th style="width:8%;">Sala</th>
+                    <th style="width:10%;">Hora Estimada</th>
+                    <th style="width:15%;">Especialidade</th>
+                    <th style="width:8%;">Prontuário</th>
+                    <th style="width:15%;">Nome do Paciente</th>
+                    <th style="width:20%;">Procedimento Principal</th>
+                    <th style="width:14%;">Observações</th>
                 </tr>
             </thead>
             <tbody>
@@ -85,12 +75,20 @@
     </div>
 
     <style>
+     
         .table-wrapper {
-            width: 85%;             
+            width: 80%;             
             margin: 0 auto;          
             display: flex;
             flex-direction: column;
             align-items: stretch;
+        }
+
+        #table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed; /* mantém as larguras respeitadas */
+            font-size: 12px;
         }
 
         /* Linha de título externa */
@@ -99,19 +97,33 @@
             table-layout: fixed;
             background-color: #1b7a81ff;
             color: white;
-            font-size: 20px;
             border-collapse: collapse;
-            margin-bottom: 25px;
+            margin-bottom: 5px;
+            border: none;
         }
 
-         .titulo-tabela td {
+        .titulo-tabela,
+        .dataTables_wrapper,
+        #table {
+            width: 100% !important;
+            margin: 0 !important;
+            border-spacing: 0 !important;
+            table-layout: fixed !important;
+        }
+
+        /* Remove possíveis deslocamentos criados pelo DataTables */
+        .dataTables_scrollHead,
+        .dataTables_scrollBody {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .titulo-tabela td {
             padding: 4px 5px;
-            font-size: 14px !important;  /* garante que sobrescreva qualquer outro estilo */
             font-weight: bold;
             vertical-align: middle;
             border: none;
-            height: 20px;              /* altura desejada da linha */
-            line-height: 20px;         /* centraliza texto verticalmente */
         }
 
         /* Força alinhamento mesmo com regras globais */
@@ -132,64 +144,11 @@
         .painel-rotativo .titulo-tabela td {
             display: table-cell !important;
         }
-
-        .titulo-tabela,
-        .dataTables_wrapper,
-        #table {
-            width: 100% !important;
-            margin: 0 !important;
-            border-spacing: 0 !important;
-            table-layout: fixed !important;
-        }
-
-        /* Remove possíveis deslocamentos criados pelo DataTables */
-        .dataTables_scrollHead,
-        .dataTables_scrollBody {
-            width: 100% !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        .dataTables_empty {
-            text-align: center !important;
-            font-weight: bold;
-            padding: 20px 0; /* opcional: aumenta o espaçamento vertical */
-        }
-
-        #table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed; /* mantém as larguras respeitadas */
-            font-size: 12px;
-        }
-
-       /* Cabeçalho da tabela principal */
-        #table thead th {
-            background-color: #bdd9e2ff; /* azul claro */
-            text-align: center;
-            font-weight: bold;
-            padding: 2px 2px;
-            border: 1px solid #999;
-        }
-
-        /* Corpo da tabela */
-        #table td {
-            padding: 3px 5px;
-            border: 1px solid #999;
-            text-align: left;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Centraliza a coluna “Hora Estimada” */
-        #table tbody td:nth-child(3) {
-            text-align: center;
-        }
-
-        /* Alinha o “Prontuário” à direita */
-        #table tbody td:nth-child(5) {
-            text-align: right;
+        
+        /* Remove margens internas que causam deslocamento */
+        #table th, #table td {
+            padding: 4px 5px;
+            box-sizing: border-box;
         }
 
         #table td.center { text-align:center; }
@@ -205,6 +164,25 @@
         @media screen and (max-width: 1024px) { #table, .titulo-tabela { font-size: 11px; } }
         @media screen and (max-width: 768px)  { #table, .titulo-tabela { font-size: 10px; padding: 2px; } }
         @media screen and (max-width: 480px)  { #table, .titulo-tabela { font-size: 9px; padding: 1px; } }
+    </style>
+
+     <style>
+        /* Títulos das colunas da tabela principal em br */
+        #table thead th {
+            background-color: #ffffff !important;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Centraliza a coluna “Hora Estimada” */
+        #table tbody td:nth-child(3) {
+            text-align: center;
+        }
+
+        /* Alinha o “Prontuário” à direita */
+        #table tbody td:nth-child(5) {
+            text-align: right;
+        }
     </style>
 
     <script>
@@ -235,7 +213,7 @@
         });
 
         table.columns.adjust().draw(false);
-        table.fixedHeader.adjust();
+    table.fixedHeader.adjust();
 
     </script>
 </div>

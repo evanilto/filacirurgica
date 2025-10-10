@@ -590,7 +590,6 @@ class MapaCirurgico extends ResourceController
 
         $dt = new \DateTime('now');
         //$dt->modify('+3 days');
-        $dt->modify('+2 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -621,7 +620,6 @@ class MapaCirurgico extends ResourceController
 
         $dt = new \DateTime('now');
         //$dt->modify('+3 days');
-        $dt->modify('+2 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
