@@ -589,7 +589,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        //$dt->modify('+3 days');
+        $dt->modify('+3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -619,7 +619,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        //$dt->modify('+3 days');
+        $dt->modify('+3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -1094,13 +1094,14 @@ class MapaCirurgico extends ResourceController
 
         if ($data['status'] == 'aguardando') {
             $builder->where('vw_mapacirurgico.dthrnocentrocirurgico IS NULL', null, false);
+            $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC')
+                    ->orderBy('vw_mapacirurgico.sala', 'ASC');
         } else {
             $builder->where('vw_mapacirurgico.dthrnocentrocirurgico IS NOT NULL', null, false);
+            $builder->orderBy('vw_mapacirurgico.dthrnocentrocirurgico', 'ASC')
+                    ->orderBy('vw_mapacirurgico.sala', 'ASC');
         }
         
-        $builder->orderBy('vw_mapacirurgico.dthrnocentrocirurgico', 'ASC')
-                ->orderBy('vw_mapacirurgico.sala', 'ASC'); // segunda coluna
-
         //var_dump($builder->getCompiledSelect());die();
         //var_dump($builder->get()->getResult());die();
 

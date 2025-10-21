@@ -1,3 +1,67 @@
+<?php
+    $corProgramada = 'yellow';
+    $corPacienteSolicitado = 'gold';
+    $corNoCentroCirúrgico = '#97DA4B';
+    $corEmCirurgia = '#277534';//'#804616';
+    $corSaídaDaSala = '#87CEFA';
+    $corSaídaCentroCirúrgico = '#00008B'; //'#277534'; /* Entrada no RPA */
+    $corLeitoPosOper = '#5d4037'; // '#8d6e63'
+    $corAltaDayClinic = '#78909c';
+    $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
+    $corCirurgiaSuspensa = 'Red';
+    $corCirurgiaSuspensaAdm = 'purple';
+    $corAtualizarHorarios = '#2c3e50';
+    $corEditar = $corAtualizarHorarios;
+    $corConsultar = $corEditar;
+    $corCirurgiaCancelada = $corCirurgiaSuspensa;
+    $corReqTransf = $corEditar;
+
+
+    $coresBotoes = [
+        'pacientesolicitado' => $corPacienteSolicitado,
+        'nocentrocirurgico' => $corNoCentroCirúrgico,
+        'emcirurgia' => $corEmCirurgia,
+        'saidadasala' => $corSaídaDaSala,
+        'saidadoccirurgico' => $corSaídaCentroCirúrgico,
+        'leitoposoper' => $corLeitoPosOper,
+        'altadayclinic' => $corAltaDayClinic,
+        'suspender' => $corCirurgiaSuspensa,
+        'suspenderadm' => $corCirurgiaSuspensaAdm,
+        'trocar' => $corTrocaPaciente,
+        'atualizarhorarios' => $corAtualizarHorarios,
+        'editar' => $corEditar,
+        'consultar' => $corConsultar,
+        'reqtransf' => $corReqTransf
+    ];
+
+    function textoCorLinha($corHex) {
+        // Remove # se existir
+        $corHex = str_replace('#', '', $corHex);
+
+        // Divide em RGB
+        $r = hexdec(substr($corHex, 0, 2));
+        $g = hexdec(substr($corHex, 2, 2));
+        $b = hexdec(substr($corHex, 4, 2));
+
+        // Calcula luminância (percepção humana)
+        $luminancia = (0.299*$r + 0.587*$g + 0.114*$b);
+
+        // Se a luminância for menor que 128, o fundo é escuro
+        return ($luminancia < 128) ? 'white' : 'black';
+    }
+
+    function corLinhaPaciente($item, $coresBotoes) {
+        if ($item->dthraltadayclinic) return $coresBotoes['altadayclinic'];
+        if ($item->dthrleitoposoper) return $coresBotoes['leitoposoper'];
+        if ($item->dthrsaidacentrocirurgico) return $coresBotoes['saidadoccirurgico'];
+        if ($item->dthrsaidasala) return $coresBotoes['saidadasala'];
+        if ($item->dthremcirurgia) return $coresBotoes['emcirurgia'];
+        if ($item->dthrnocentrocirurgico) return $coresBotoes['nocentrocirurgico'];
+        
+        return $coresBotoes['pacientesolicitado']; // cor padrão
+    }
+
+?>
 <div class="painel-rotativo">
     <div class="table-wrapper">
         <!-- Linha de título externa -->
@@ -14,7 +78,12 @@
             <colgroup>
                 <col style="width: 13%;">
                 <col style="width: 5%;">
-                <col style="width: 6%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
                 <col style="width: 10%;">
                 <col style="width: 5%;">
                 <col style="width: 17%;">
@@ -23,22 +92,47 @@
             </colgroup>
             <thead>
                 <tr>
-                <th>Centro Cirúrgico</th>
-                <th>Sala</th>
-                <th>Hora Estimada</th>
-                <th>Especialidade</th>
-                <th>Prontuário</th>
-                <th>Nome do Paciente</th>
-                <th>Procedimento Principal</th>
-                <th>Observações</th>
+                    <th>Centro Cirúrgico</th>
+                    <th>Sala</th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no Centro Cirúrgico">
+                            <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada em Sala">
+                            <i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Saída da Sala">
+                            <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Cirurgia Realizada">
+                            <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
+                            <i class="fa-solid fa-circle" style="color: <?= $corLeitoPosOper ?>; "></i>
+                    </th>
+                    <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Alta Hospitalar Day Clinic">
+                            <i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>; "></i>
+                    </th>
+                    <th>Especialidade</th>
+                    <th>Prontuário</th>
+                    <th>Nome do Paciente</th>
+                    <th>Procedimento Principal</th>
+                    <th>Observações</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach($mapacirurgico as $item): ?>
-                <tr>
+                <?php foreach($mapacirurgico as $item): 
+                    $corLinha = corLinhaPaciente($item, $coresBotoes);
+                    $corTexto = 'white'; //textoCorLinha($corLinha);
+                ?>
+                <tr style="background-color: <?= $corLinha ?>; color: <?= $corTexto ?>; font-weight: bold;">
                     <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
                     <td><?= htmlspecialchars($item->sala) ?></td>
-                    <td class="center"><?= $item->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') : '' ?></td>
+                    <td><?php echo $item->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $item->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthremcirurgia)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $item->dthrsaidasala ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrsaidasala)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $item->dthrsaidacentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrsaidacentrocirurgico)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $item->dthrleitoposoper ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrleitoposoper)->format('H:i') : ' ' ?></td>
+                    <td><?php echo $item->dthraltadayclinic ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthraltadayclinic)->format('H:i') : ' ' ?></td>
                     <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
                     <td class="right"><?= htmlspecialchars($item->prontuario) ?></td>
                     <td><?= htmlspecialchars($item->nome_paciente) ?></td>
@@ -82,6 +176,17 @@
                 <?php endforeach; ?>
             </tbody>
         </table>
+        <div style="height:20px;"></div>
+        <!-- Legenda de ícones -->
+        <div class="legenda-icones" style="margin-bottom:10px; font-size:13px; display:flex; gap:15px; flex-wrap:wrap;">
+            <div>Legenda: </div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>;"></i> Entrada no Centro Cirúrgico</div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>;"></i> Entrada na Sala Cirúrgica</div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>;"></i> Saída da Sala Cirúrgica</div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>;"></i> Entrada no RPA</div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corLeitoPosOper ?>;"></i> No Leito Pós-Operatório</div>
+            <div><i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>;"></i> Alta Day Clinic</div>
+        </div>
     </div>
 
     <style>
@@ -218,9 +323,9 @@
                 fixedHeader: true,
                 scrollX: false,
                 scrollCollapse: false,
-                createdRow: function(row, data) {
+                /* createdRow: function(row, data) {
                     $(row).css('background-color', '#fff3cd');
-                },
+                }, */
                 language: { emptyTable: `⚠️ Nenhum Paciente no Centro Cirúrgico ⚠️` },
                 drawCallback: function(settings) {
                     const api = this.api();

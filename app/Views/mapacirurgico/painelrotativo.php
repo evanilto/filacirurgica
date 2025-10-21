@@ -8,6 +8,7 @@
     <!-- jQuery e DataTables -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link href="<?= base_url('/assets/fontawesome.6.5.2/css/all.min.css') ?>" rel="stylesheet">
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
     <style>
@@ -81,8 +82,8 @@
 
 <script>
 const views = [
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 1000, tableId: 'table_nocc' },
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 10000, tableId: 'table_aguardando' }
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 20000, tableId: 'table_nocc' },
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 20000, tableId: 'table_aguardando' }
 ];
 
 let atual = 0;
@@ -113,13 +114,13 @@ function carregarProximaView() {
             fixedHeader: true,
             scrollX: true,
             scrollCollapse: true,
-            createdRow: function(row, data) {
+            /* createdRow: function(row, data) {
                 if (!data[2] || data[2].trim() === '') {
                     $(row).css('background-color', '#fff3cd');
                 } else {
                     $(row).css('background-color', '#c1e9ecff');
                 }
-            },
+            }, */
             language: {
                 emptyTable: "⚠️ Nenhum registro encontrado ⚠️"
             },

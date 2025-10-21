@@ -4,7 +4,7 @@
         <table class="titulo-tabela">
             <tr>
                 <td class="left">Painel Cirúrgico</td>
-                <td class="center">Pacientes Aguardando</td>
+                <td class="center">Pacientes no Centro Cirúrgico</td>
                 <td class="right"><?= date('d/m/Y', strtotime($data)) ?></td>
             </tr>
         </table>
@@ -14,8 +14,7 @@
             <colgroup>
                 <col style="width: 13%;">
                 <col style="width: 5%;">
-                <col style="width: 8%;">
-                <col style="width: 8%;">
+                <col style="width: 6%;">
                 <col style="width: 10%;">
                 <col style="width: 5%;">
                 <col style="width: 17%;">
@@ -27,7 +26,6 @@
                 <th>Centro Cirúrgico</th>
                 <th>Sala</th>
                 <th>Hora Estimada</th>
-                <th>Paciente Solicitado</th>
                 <th>Especialidade</th>
                 <th>Prontuário</th>
                 <th>Nome do Paciente</th>
@@ -41,7 +39,6 @@
                     <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
                     <td><?= htmlspecialchars($item->sala) ?></td>
                     <td class="center"><?= $item->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') : '' ?></td>
-                    <td class="center"><?= $item->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrpacientesolicitado)->format('H:i') : '' ?></td>
                     <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
                     <td class="right"><?= htmlspecialchars($item->prontuario) ?></td>
                     <td><?= htmlspecialchars($item->nome_paciente) ?></td>
@@ -100,7 +97,7 @@
         .titulo-tabela {
             width: 100%;
             table-layout: fixed;
-            background-color: #8d7908ff;
+            background-color: #1b7a81ff;
             color: white;
             font-size: 20px;
             border-collapse: collapse;
@@ -168,7 +165,7 @@
 
        /* Cabeçalho da tabela principal */
         #table thead th {
-            background-color: #cec670ff; /* azul claro */
+            background-color: #bdd9e2ff; /* azul claro */
             text-align: center;
             font-weight: bold;
             padding: 2px 2px;
@@ -178,7 +175,7 @@
         /* Corpo da tabela */
         #table td {
             padding: 3px 5px;
-            border: 1px solid #d3d0aeff;
+            border: 1px solid #999;
             text-align: left;
             white-space: nowrap;
             overflow: hidden;
@@ -211,37 +208,20 @@
     </style>
 
     <script>
-       $(document).ready(function() {
-            // 1️⃣ Plugin de ordenação para hora HH:MM
-            jQuery.extend(jQuery.fn.dataTable.ext.type.order, {
-                "time-hhmm-pre": function(a) {
-                    if (!a) return 0; // trata células vazias
-                    var parts = a.split(':');
-                    return parseInt(parts[0], 10)*60 + parseInt(parts[1], 10); // converte para minutos
-                }
-            });
-
-            // 2️⃣ Inicializa o DataTable
+        $(document).ready(function() {
             var table = $('#table').DataTable({
                 autoWidth: false,
                 paging: false,
-                ordering: false,         // precisa estar true para ordenar
+                ordering: false,
                 info: false,
                 searching: false,
                 fixedHeader: true,
                 scrollX: false,
                 scrollCollapse: false,
-                columnDefs: [
-                    {
-                        targets: 2, // coluna "Hora Estimada"
-                        type: 'time-hhmm'
-                    }
-                ],
-                order: [[2, 'asc']], // ordena pela coluna de hora
                 createdRow: function(row, data) {
                     $(row).css('background-color', '#fff3cd');
                 },
-                language: { emptyTable: `⚠️ Nenhum Paciente Aguardando ⚠️` },
+                language: { emptyTable: `⚠️ Nenhum Paciente no Centro Cirúrgico ⚠️` },
                 drawCallback: function(settings) {
                     const api = this.api();
                     const hasData = api.data().any();
