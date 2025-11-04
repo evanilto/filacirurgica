@@ -740,6 +740,21 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
+                                <div class="mb-2">
+                                    <label class="form-label" for="obs_enf">Observações da Enfermagem</label>
+                                    <textarea id="obs_enf" maxlength="500" rows="3" <?= $data['perfil_enfermagem'] ?>
+                                            class="form-control <?= isset($validation) && $validation->getError('obs_enf') ? 'is-invalid' : '' ?>"
+                                            name="obs_enf"><?= isset($data['obs_enf']) ? $data['obs_enf'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('obs_enf')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('obs_enf') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
                                 <?php if ($data['status_fila'] == 'enabled') { ?>
                                     <!--button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1"-->
                                     <button class="btn btn-primary mt-3" onclick="return confirma(this);">
@@ -770,6 +785,7 @@
                         <input type="hidden" name="status_fila" value="<?= $data['status_fila'] ?>" />
                         <input type="hidden" name="unidadeorigem" value="<?= $data['unidadeorigem'] ?>" />
                         <input type="hidden" name="tipo_sanguineo" value="<?= $data['tipo_sanguineo'] ?>" />
+                        <input type="hidden" name="perfil_enfermagem" value="<?= $data['perfil_enfermagem'] ?>" />
                         <?php if ($usarHemocomponentes_disabled): ?>
                             <input type="hidden" name="usarHemocomponentes" value="<?= $data['usarHemocomponentes'] ?>">
                             <?php foreach ($data['hemocomp_qty_solicitada'] as $id => $quantidades): ?>

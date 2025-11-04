@@ -12,37 +12,42 @@
         <!-- Tabela principal -->
         <table id="table" cellspacing="0">
             <colgroup>
-                <col style="width: 13%;">
-                <col style="width: 5%;">
-                <col style="width: 8%;">
-                <col style="width: 8%;">
+                <col style="width: 3%;">
+                <col style="width: 4%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 6%;">
+                <col style="width: 12%;">
+                <col style="width: 4%;">
                 <col style="width: 10%;">
-                <col style="width: 5%;">
-                <col style="width: 17%;">
-                <col style="width: 23%;">
-                <col style="width: 23%;">
+                <col style="width: 16%;">
+                <col style="width: 18%;">
+                <col style="width: 18%;">
             </colgroup>
             <thead>
                 <tr>
-                <th>Centro Cirúrgico</th>
-                <th>Sala</th>
-                <th>Hora Estimada</th>
-                <th>Paciente Solicitado</th>
-                <th>Especialidade</th>
-                <th>Prontuário</th>
-                <th>Nome do Paciente</th>
-                <th>Procedimento Principal</th>
-                <th>Observações</th>
+                    <th>C. Cir.</th>
+                    <th>Sala</th>
+                    <th>Previsto</th>
+                    <th>Solicitado</th>
+                    <th>Especialidade</th>
+                    <th>Equipe Médica</th>
+                    <th>Prontuário</th>
+                    <th>Nome do Paciente</th>
+                    <th>Procedimento Principal</th>
+                    <th>Observações Cirurgia</th>
+                    <th>Observações Enfermagem</th>
                 </tr>
             </thead>
             <tbody>
                 <?php foreach($mapacirurgico as $item): ?>
                 <tr>
-                    <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
+                    <td><?= htmlspecialchars(nomeCentroCirurgico($item->centrocirurgico)) ?></td>
                     <td><?= htmlspecialchars($item->sala) ?></td>
                     <td class="center"><?= $item->dthrcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrcirurgia)->format('H:i') : '' ?></td>
                     <td class="center"><?= $item->dthrpacientesolicitado ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrpacientesolicitado)->format('H:i') : '' ?></td>
                     <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
+                    <td><?= htmlspecialchars($item->equipe_cirurgica) ?></td>
                     <td class="right"><?= htmlspecialchars($item->prontuario) ?></td>
                     <td><?= htmlspecialchars($item->nome_paciente) ?></td>
                     <td><?= htmlspecialchars($item->procedimento_principal) ?></td>
@@ -81,6 +86,7 @@
                         echo htmlspecialchars(implode(', ', $obs));
                         ?>
                     </td>
+                    <td><?= htmlspecialchars($item->obsenfermagem) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>
@@ -186,14 +192,14 @@
         }
 
         /* Centraliza a coluna “Hora Estimada” */
-        #table tbody td:nth-child(3) {
+        /* #table tbody td:nth-child(3) {
             text-align: center;
-        }
+        } */
 
         /* Alinha o “Prontuário” à direita */
-        #table tbody td:nth-child(5) {
+        /* #table tbody td:nth-child(7) {
             text-align: right;
-        }
+        } */
 
         #table td.center { text-align:center; }
         #table td.right { text-align:right; }

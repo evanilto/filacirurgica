@@ -76,23 +76,25 @@
         <!-- Tabela principal -->
         <table id="table" cellspacing="0">
             <colgroup>
-                <col style="width: 13%;">
-                <col style="width: 5%;">
+                <col style="width: 3%;">
                 <col style="width: 4%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 3%;">
+                <col style="width: 8%;">
+                <col style="width: 11%;">
                 <col style="width: 4%;">
-                <col style="width: 4%;">
-                <col style="width: 4%;">
-                <col style="width: 4%;">
-                <col style="width: 4%;">
-                <col style="width: 10%;">
-                <col style="width: 5%;">
-                <col style="width: 17%;">
-                <col style="width: 23%;">
-                <col style="width: 23%;">
+                <col style="width: 12%;">
+                <col style="width: 14%;">
+                <col style="width: 18%;">
+                <col style="width: 18%;">
             </colgroup>
             <thead>
                 <tr>
-                    <th>Centro Cirúrgico</th>
+                    <th>C. Cir.</th>
                     <th>Sala</th>
                     <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no Centro Cirúrgico">
                             <i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>; "></i>
@@ -113,10 +115,12 @@
                             <i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>; "></i>
                     </th>
                     <th>Especialidade</th>
+                    <th>Equipe Médica</th>
                     <th>Prontuário</th>
                     <th>Nome do Paciente</th>
                     <th>Procedimento Principal</th>
-                    <th>Observações</th>
+                    <th>Observações Cirurgia</th>
+                    <th>Observações Enfermagem</th>
                 </tr>
             </thead>
             <tbody>
@@ -125,7 +129,7 @@
                     $corTexto = 'white'; //textoCorLinha($corLinha);
                 ?>
                 <tr style="background-color: <?= $corLinha ?>; color: <?= $corTexto ?>; font-weight: bold;">
-                    <td><?= htmlspecialchars($item->centrocirurgico) ?></td>
+                    <td><?= htmlspecialchars(nomeCentroCirurgico($item->centrocirurgico)) ?></td>
                     <td><?= htmlspecialchars($item->sala) ?></td>
                     <td><?php echo $item->dthrnocentrocirurgico ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrnocentrocirurgico)->format('H:i') : ' ' ?></td>
                     <td><?php echo $item->dthremcirurgia ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthremcirurgia)->format('H:i') : ' ' ?></td>
@@ -134,6 +138,7 @@
                     <td><?php echo $item->dthrleitoposoper ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthrleitoposoper)->format('H:i') : ' ' ?></td>
                     <td><?php echo $item->dthraltadayclinic ? DateTime::createFromFormat('Y-m-d H:i:s', $item->dthraltadayclinic)->format('H:i') : ' ' ?></td>
                     <td><?= htmlspecialchars($item->especialidade_descr_reduz) ?></td>
+                    <td><?= htmlspecialchars($item->equipe_cirurgica) ?></td>
                     <td class="right"><?= htmlspecialchars($item->prontuario) ?></td>
                     <td><?= htmlspecialchars($item->nome_paciente) ?></td>
                     <td><?= htmlspecialchars($item->procedimento_principal) ?></td>
@@ -172,6 +177,7 @@
                         echo htmlspecialchars(implode(', ', $obs));
                         ?>
                     </td>
+                    <td><?= htmlspecialchars($item->obsenfermagem) ?></td>
                 </tr>
                 <?php endforeach; ?>
             </tbody>

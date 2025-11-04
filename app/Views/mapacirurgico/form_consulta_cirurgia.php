@@ -716,6 +716,21 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <div class="mb-2">
+                                    <label class="form-label" for="obs_enf">Observações da Enfermagem</label>
+                                    <textarea id="obs_enf" maxlength="500" rows="3" disabled
+                                            class="form-control <?= isset($validation) && $validation->getError('obs_enf') ? 'is-invalid' : '' ?>"
+                                            name="obs_enf"><?= isset($data['obs_enf']) ? $data['obs_enf'] : '' ?></textarea>
+                                    <?php if (isset($validation) && $validation->getError('obs_enf')): ?>
+                                        <div class="invalid-feedback">
+                                            <?= $validation->getError('obs_enf') ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
                         <!-- <div class="row g-3">
                             <--?php if ($data['indurgencia'] == 'S') { ?>
                                 <div class="col-md-6">

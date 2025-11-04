@@ -1119,6 +1119,9 @@ class HUAP_Functions
             case 'mapacirurgico-alterar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','14']));
 
+            case 'mapacirurgico-enfermagem':
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','74']));
+
             case 'relatorios':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','65']));
 

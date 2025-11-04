@@ -1,28 +1,28 @@
 <?php use App\Libraries\HUAP_Functions; ?>
 <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-primary rounded menu-lateral">
     <ul class="nav ul-first navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('listaespera') || HUAP_Functions::tem_permissao('exames')){ ?>
+        <?php if(HUAP_Functions::tem_permissao('listaespera')) { ?>
         <li>
             <a href="#listaespera" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                 <i class="fa-solid fa-plus toggle-icon"></i> Fila
             </a>
             <div class="collapse" id="listaespera">
                 <ul class="nav flex-column submenu-2">
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-incluir') || HUAP_Functions::tem_permissao('exames')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-incluir')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/incluirpaciente') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Incluir
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-consultar') || HUAP_Functions::tem_permissao('exames')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-consultar')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Consultar
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if(HUAP_Functions::tem_permissao('listaespera-recuperar') || HUAP_Functions::tem_permissao('exames')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('listaespera-recuperar')) { ?>
                     <li>
                         <a href="<?= base_url('listaespera/consultarexcluidos') ?>" class="nav-link text-white p-2" aria-current="page">
                             <i class="fa-solid fa-user-nurse"></i> Recuperar Paciente
@@ -35,14 +35,14 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(HUAP_Functions::tem_permissao('mapacirurgico') || HUAP_Functions::tem_permissao('exames')) { ?>
+        <?php if(HUAP_Functions::tem_permissao('mapacirurgico')) { ?>
         <li>
                 <a href="#mapa" class="nav-link text-white p-2" data-bs-toggle="collapse" aria-expanded="false">
                     <i class="fa-solid fa-plus toggle-icon"></i> Mapa
                 </a>
                 <div class="collapse" id="mapa">
                     <ul class="nav flex-column submenu-2">
-                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames')) { ?>
+                        <?php if(HUAP_Functions::tem_permissao('mapacirurgico-consultar')) { ?>
                         <li>
                             <a href="<?= base_url('mapacirurgico/consultar') ?>" class="nav-link text-white p-2" aria-current="page">
                                 <i class="fa-solid fa-user-nurse"></i> Consultar
@@ -240,7 +240,7 @@
         <?php } ?>
     </ul>
     <ul class="nav navbar-nav flex-column">
-        <?php if(!HUAP_Functions::tem_permissao('painel-cirurgico-diario')) { ?>
+        <?php if(!HUAP_Functions::tem_permissao('painel-cirurgico-diario') || HUAP_Functions::tem_permissao('admin')) { ?>
             <li>
                 <a href="<?= base_url('listaespera/situacaocirurgica') ?>" class="nav-link text-white p-2" aria-current="page">
                     <i class="fa-solid fa-user-nurse"></i> Situação Cirúrgica/PDT

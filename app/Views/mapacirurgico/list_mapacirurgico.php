@@ -101,7 +101,7 @@
                         <button class="btn btn-header" id="saidadasala" style="background-color: <?= $corSaídaDaSala ?>;" disabled>Saída da Sala</button>
                         <i class="fa-solid fa-arrow-right"></i> 
                         <button class="btn btn-header" id="saidadoccirurgico" style="background-color: <?= $corSaídaCentroCirúrgico ?>;" disabled>Entrada no RPA</button>
-                        <i class="fa-solid fa-arrow-right"></i> 
+                        <i class="fa-solid fa-arrows-left-right"></i> 
                         <button class="btn btn-header" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Leito Pós-Operatório</button>
                         <i class="fa-solid fa-arrows-left-right"></i>
                         <button class="btn btn-header" id="altadayclinic" style="background-color: <?= $corAltaDayClinic ?>;" disabled>Alta Day Clinic</button>
@@ -132,7 +132,7 @@
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Saída da Sala">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaDaSala ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Cirurgia Realizada">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no RPA">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
@@ -167,6 +167,7 @@
                 <th scope="col" data-field="nome" >Origem</th>
                 <th scope="col" data-field="nome" >Unidade Origem</th>
                 <th scope="col" data-field="nome" >Complex.</th>
+                <th scope="col" data-field="nome" >Observações Enfermagem</th>
             </tr>
         </thead>
         <tbody>
@@ -224,26 +225,26 @@
                                 $background_color = $color;
                                 $title = 'Paciente em Cirurgia';
                                 break;
-                            case 'SaídaDaSala':
+                            case 'Realizada':
                                 $color =$corSaídaDaSala;
                                 $background_color = $color;
-                                $title = 'Paciente saiu da Sala';
+                                $title = 'Cirurgia Realizada';
                                 break;
-                            case 'Realizada': // No RPA
+                            case 'NoRPA': // No RPA
                                 $color = $corSaídaCentroCirúrgico;
                                 $background_color = $color;
-                                $title = 'Cirurgia Realizada';
+                                $title = 'No RPA';
                                 break;
                             case 'LeitoPosOper': 
                                 $color = $corLeitoPosOper;
                                 $background_color = $color;
                                 $title = 'Paciente encaminhado ao leito pós-operatório';
                                 break;
-                                case 'AltaDayClinic': 
-                                    $color = $corAltaDayClinic;
-                                    $background_color = $color;
-                                    $title = 'Paciente com alta hospitalar day clinic';
-                                    break;
+                            case 'AltaDayClinic': 
+                                $color = $corAltaDayClinic;
+                                $background_color = $color;
+                                $title = 'Paciente com alta hospitalar day clinic';
+                                break;
                             /* case 'TrocaPaciente':
                                 $color =$corTrocaPaciente;
                                 $background_color = $color;
@@ -265,7 +266,7 @@
                                 $title = 'Cirurgia Realizada';
                                 break; */
                             default:
-                                $color = 'gray';
+                                $color = 'black';
                                 $background_color = $color;
                                 $title = 'Undefined';
                         }
@@ -345,6 +346,7 @@
                     data-risco="<?= $itemmapa->risco_descricao ?>"
                     data-dtrisco="<?= $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : 'N/D' ?>"
                     data-infoadic="<?= htmlspecialchars($itemmapa->infoadicionais, ENT_QUOTES, 'UTF-8') ?>"
+                    data-obsenf="<?= htmlspecialchars($itemmapa->obsenfermagem, ENT_QUOTES, 'UTF-8') ?>"
                     data-posoperatorio="<?= $itemmapa->posoperatorio ?>"
                     data-necesspro="<?= htmlspecialchars($itemmapa->necessidadesproced, ENT_QUOTES, 'UTF-8') ?>"
                     data-hemo="<?= $itemmapa->hemoderivados ?>"
@@ -362,8 +364,8 @@
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
-                    data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') || HUAP_Functions::tem_permissao('exames') ?>"
-                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') || HUAP_Functions::tem_permissao('exames') ?>"
+                    data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
+                    data-tempermissaoalterar="<?= HUAP_Functions::tem_permissao('mapacirurgico-alterar') ?>"
                     data-tempermissaotransfusao="<?= HUAP_Functions::tem_permissao('transfusao-requisitar') || HUAP_Functions::tem_permissao('transfusao-atender') ?>"
                     >
                     
@@ -520,7 +522,9 @@
                         <?php echo htmlspecialchars($itemmapa->unidade_origem); ?>
                     </td>
                     <td><?php echo $itemmapa->nmcomplexidade ?></td>
-                    
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>">
+                        <?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>
+                    </td>
                     
                 </tr>
             <?php endforeach; ?>
@@ -742,11 +746,15 @@
                     saidadasala.disabled = false;
                     saidadasala.removeAttribute("disabled");
                     saidadasala.style.backgroundColor = "<?= $corSaídaDaSala ?>";
-                } else if (statuscirurgia === "SaídaDaSala" && permiteatualizar && tempermissaoalterar) {
+               /*  } else if (statuscirurgia === "SaídaDaSala" && permiteatualizar && tempermissaoalterar) {
+                    saidadoccirurgico.disabled = false;
+                    saidadoccirurgico.removeAttribute("disabled");
+                    saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>"; */
+                } else if (statuscirurgia === "Realizada" && permiteatualizar && tempermissaoalterar) {
                     saidadoccirurgico.disabled = false;
                     saidadoccirurgico.removeAttribute("disabled");
                     saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
-                } else if (statuscirurgia === "Realizada" && permiteatualizar && tempermissaoalterar) {
+
                     leitoposoper.disabled = false;
                     leitoposoper.removeAttribute("disabled");
                     leitoposoper.style.backgroundColor = "<?= $corLeitoPosOper ?>";
@@ -949,12 +957,16 @@
                 evento = 'dthrsaidasala';
                 message = 'Confirma a saída da sala cirúrgica?';
                 break;
-            case 'SaídaDaSala':
+           /*  case 'SaídaDaSala':
                 evento = 'dthrsaidacentrocirurgico';
                 message = 'Confirma a entrada no RPA?';
-                break;
-            case 'Realizada': // No RPA
+                break; */
+            case 'Realizada': // Saída da Sala Cirúrgica
                 switch (cirurgia.buttonId) {
+                    case 'saidadoccirurgico':
+                        evento = 'dthrsaidacentrocirurgico';
+                        message = 'Confirma a entrada no RPA?';
+                        break;
                     case 'leitoposoper':
                         evento = 'dthrleitoposoper';
                         message = 'Confirma o encaminhamento ao leito pós-operatório?';
@@ -1207,6 +1219,7 @@
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
+                    <strong>Observações da Enfermagem:</strong> ${verificarValor(dados.obsenf)}<br>
                 `);
 
                 $('#modalDetalhes').modal('show');
@@ -1289,6 +1302,7 @@
                     { "width": "130px" },  // origem
                     { "width": "220px" },  // unidade origem
                     { "width": "100px" },  // complex
+                    { "width": "250px" },  //  obs enfermagem
                     
                 ],
             "columnDefs": [
@@ -1300,7 +1314,7 @@
                 {
                     extend: 'colvis', // Botão para exibir/inibir colunas
                     text: 'Colunas', // Texto do botão
-                    columns: [2, 3, 4, 5, 6, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38] // Especifica quais colunas são visíveis
+                    columns: [2, 3, 4, 5, 6, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39] // Especifica quais colunas são visíveis
                 },
                 'copy',
                 'csv',
@@ -1367,6 +1381,7 @@
                 hemocomponentes: $(this).data('hemocomponentes'),
                 posoperatorio: $(this).data('posoperatorio'),
                 infoadic: $(this).data('infoadic'),
+                obsenf: $(this).data('obsenf'),
                 necesspro: $(this).data('necesspro'),
 
             };
