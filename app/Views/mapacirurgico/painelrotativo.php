@@ -101,8 +101,8 @@
 
 <script>
 const views = [
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 2000, tableId: 'table_nocc' },
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 2000, tableId: 'table_aguardando' }
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 50000, tableId: 'table_nocc' },
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 10000, tableId: 'table_aguardando' }
 ];
 
 let atual = 0;

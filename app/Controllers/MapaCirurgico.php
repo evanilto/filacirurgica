@@ -589,7 +589,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        $dt->modify('+3 days');
+        //$dt->modify('+3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
