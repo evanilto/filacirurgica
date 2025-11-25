@@ -293,10 +293,15 @@
             text-overflow: ellipsis;
         }
 
-        /* Centraliza a coluna “Hora Estimada” */
-        #table tbody td:nth-child(3) {
+        #table tbody td:nth-child(3),
+        #table tbody td:nth-child(4),
+        #table tbody td:nth-child(5),
+        #table tbody td:nth-child(6),
+        #table tbody td:nth-child(7),
+        #table tbody td:nth-child(8) {
             text-align: center;
         }
+
 
         /* Alinha o “Prontuário” à direita */
         #table tbody td:nth-child(5) {

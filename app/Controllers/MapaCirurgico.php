@@ -589,7 +589,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        //$dt->modify('+3 days');
+        //$dt->modify('-3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -619,7 +619,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        $dt->modify('+3 days');
+        //$dt->modify('+3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -2497,16 +2497,16 @@ class MapaCirurgico extends ResourceController
                 $candidato['fila'] = $this->filamodel->find($ordempaciente['idfila'])['nmtipoprocedimento'];
                 $trimmed = trim($candidato['campos_mapa'], '()');
                 $values = str_getcsv($trimmed);
-                $candidato['riscocirurgico'] = $values[4];
-                $candidato['congelacao'] = $values[5];
-                $candidato['lateralidade'] = $values[7];
-                $candidato['cid'] = $values[8];
-                $candidato['datariscocirurgico'] = $values[9] ?? '';
-                $candidato['complexidade'] = $values[10];
-                $candidato['infoadicionais'] = $values[11];
-                $candidato['opme'] = $values[14];
-                $candidato['origem'] = $values[15];
-                $candidato['unidadeorigem'] = $values[16];
+                $candidato['riscocirurgico'] = $values[5];
+                $candidato['congelacao'] = $values[6];
+                $candidato['lateralidade'] = $values[8];
+                $candidato['cid'] = $values[9];
+                $candidato['datariscocirurgico'] = $values[10] ?? '';
+                $candidato['complexidade'] = $values[11];
+                $candidato['infoadicionais'] = $values[12];
+                $candidato['opme'] = $values[18];
+                $candidato['origem'] = $values[19];
+                $candidato['unidadeorigem'] = $values[20];
 
                 $paciente = $this->pacientesmodel->find($candidato['prontuario']);
                 $candidato['tiposanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
