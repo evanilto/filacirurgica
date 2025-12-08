@@ -170,6 +170,7 @@ class Home extends ResourceController
     public function logout($data = NULL)
     {
 
+        /*
         $session = \Config\Services::session();
         $usuario = new UsuarioModel();
         $acesso = new AuditoriaAcessoModel();
@@ -192,7 +193,24 @@ class Home extends ResourceController
         print_r($_SESSION);
         echo "</pre>";
         exit('??');*/
-        return redirect()->to('/');
+//        return redirect()->to('/');
+
+        $session = session();
+        $session->remove(['isLoggedIn', 'usuario', 'perfil']);
+
+        // limpa $_SESSION apenas (eliminar o uso de $_SESSION assim que possível é a melhor prática)
+        $_SESSION = [];
+
+        // destrói a sessão PHP
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        //$session->destroy();
+
+        helper('cookie');
+        delete_cookie(session_name()); 
+
+        return redirect()->to('/login');
 
     }
 
