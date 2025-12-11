@@ -299,7 +299,7 @@
         #table tbody td:nth-child(6),
         #table tbody td:nth-child(7),
         #table tbody td:nth-child(8) {
-            text-align: center;
+            text-align: center !important;
         }
 
 
