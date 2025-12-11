@@ -589,7 +589,7 @@ class MapaCirurgico extends ResourceController
         \Config\Services::session();
 
         $dt = new \DateTime('now');
-        //$dt->modify('-3 days');
+        //$dt->modify('+3 days');
 
         $data = [];
         $data['dtinicio'] = $dt->format('d/m/Y');
@@ -3914,7 +3914,16 @@ class MapaCirurgico extends ResourceController
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             //'justorig' => 'max_length[1024]|min_length[0]',
-            'justurgencia' => 'required|max_length[250]|min_length[3]',
+            //'justurgencia' => 'required|trim|max_length[500]|min_length[30]',
+            'justurgencia' => [
+                'rules' => [
+                    'required',
+                    'trim',
+                    'regex_match[/^(?! )[A-Za-zÀ-ÿ0-9.,;:!?()\[\]{}\-"\'%&@#\/\\\\]+(?: [A-Za-zÀ-ÿ0-9.,;:!?()\[\]{}\-"\'%&@#\/\\\\]+)*$/]',
+                    'min_length[30]',
+                    'max_length[500]',
+                ]
+            ],
             'usarHemocomponentes' => 'required',
             'usarEquipamentos' => 'required',
             //'tipo_sanguineo' => 'required'

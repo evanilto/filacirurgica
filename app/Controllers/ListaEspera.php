@@ -2208,6 +2208,16 @@ class ListaEspera extends ResourceController
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'justorig' => 'max_length[1024]|min_length[0]',
+            //'justenvio' => 'permit_empty|max_length[500]|min_length[30]',
+            'justenvio' => [
+                'rules' => [
+                    'permit_empty',
+                    'trim',
+                    'regex_match[/^(?! )[A-Za-zÀ-ÿ0-9.,;:!?()\[\]{}\-"\'%&@#\/\\\\]+(?: [A-Za-zÀ-ÿ0-9.,;:!?()\[\]{}\-"\'%&@#\/\\\\]+)*$/]',
+                    'min_length[30]',
+                    'max_length[500]',
+                ]
+            ],
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
             //'tipo_sanguineo' => 'required',

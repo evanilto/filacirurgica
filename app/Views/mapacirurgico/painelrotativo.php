@@ -60,7 +60,7 @@
         #painel-container table {
             border-collapse: collapse;
             height: 100%;
-            font-size: 11px;
+            font-size: 9px;
             line-height: 1.2;
             table-layout: fixed; /* tenta respeitar col widths do colgroup quando houver */
         }
@@ -101,8 +101,8 @@
 
 <script>
 const views = [
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 50000, tableId: 'table_nocc' },
-    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 10000, tableId: 'table_aguardando' }
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesnocc') ?>", tempo: 20000, tableId: 'table_nocc' },
+    { url: "<?= site_url('mapacirurgico/exibirpainelpacientesaguardando') ?>", tempo: 20000, tableId: 'table_aguardando' }
 ];
 
 let atual = 0;

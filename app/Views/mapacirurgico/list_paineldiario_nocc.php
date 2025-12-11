@@ -76,21 +76,21 @@
         <!-- Tabela principal -->
         <table id="table" cellspacing="0">
             <colgroup>
-                <col style="width: 3%;">
                 <col style="width: 4%;">
-                <col style="width: 3%;">
-                <col style="width: 3%;">
-                <col style="width: 3%;">
-                <col style="width: 3%;">
-                <col style="width: 3%;">
-                <col style="width: 3%;">
+                <col style="width: 5%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
+                <col style="width: 4%;">
                 <col style="width: 8%;">
                 <col style="width: 11%;">
-                <col style="width: 4%;">
+                <col style="width: 5%;">
+                <col style="width: 12%;">
                 <col style="width: 12%;">
                 <col style="width: 14%;">
-                <col style="width: 18%;">
-                <col style="width: 18%;">
+                <col style="width: 14%;">
             </colgroup>
             <thead>
                 <tr>
@@ -184,7 +184,7 @@
         </table>
         <div style="height:20px;"></div>
         <!-- Legenda de ícones -->
-        <div class="legenda-icones" style="margin-bottom:10px; font-size:13px; display:flex; gap:15px; flex-wrap:wrap;">
+        <div class="legenda-icones" style="margin-bottom:10px; font-size:11px; display:flex; gap:12px; flex-wrap:wrap;">
             <div>Legenda: </div>
             <div><i class="fa-solid fa-circle" style="color: <?= $corNoCentroCirúrgico ?>;"></i> Entrada no Centro Cirúrgico</div>
             <div><i class="fa-solid fa-circle" style="color: <?= $corEmCirurgia ?>;"></i> Entrada na Sala Cirúrgica</div>
