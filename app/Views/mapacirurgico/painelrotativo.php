@@ -60,7 +60,7 @@
         #painel-container table {
             border-collapse: collapse;
             height: 100%;
-            font-size: 8px;
+            font-size: 7px !important;
             line-height: 1.2;
             table-layout: fixed; /* tenta respeitar col widths do colgroup quando houver */
         }
