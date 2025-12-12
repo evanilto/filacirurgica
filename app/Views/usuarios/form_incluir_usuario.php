@@ -32,7 +32,7 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label for="perfis" class="form-label" autofocus>Perfis<b class="text-danger">*</b></label>
+                                    <label for="perfis" class="form-label" autofocus>Permissões<b class="text-danger">*</b></label>
                                     <div class="input-group mb-12 bordered-container">
                                         <div style="max-height: 200px; overflow-y: auto;">
                                             <?php
