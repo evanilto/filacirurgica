@@ -1087,10 +1087,10 @@ class HUAP_Functions
 
         switch ($menu) {
             case 'listaespera':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','4','5','6','7','20','21','22']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','5','6','7','20','21','22']));
 
             case 'listaespera-consultar':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','4','6','7','20','21']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','6','7','20','21']));
 
             case 'listaespera-incluir':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','5']));
@@ -1108,13 +1108,13 @@ class HUAP_Functions
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','22']));
     
             case 'mapacirurgico':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','11','13','14','15','19']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','13','14','15','19']));
 
             case 'mapacirurgico-incluirurgencia':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','19']));
 
             case 'mapacirurgico-consultar':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','11','13','14','15']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','14','15']));
 
             case 'mapacirurgico-alterar':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','14']));
