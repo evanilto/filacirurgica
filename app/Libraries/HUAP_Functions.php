@@ -1108,7 +1108,7 @@ class HUAP_Functions
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','22']));
     
             case 'mapacirurgico':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','13','14','15','19']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','14','15','19']));
 
             case 'mapacirurgico-incluirurgencia':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','19']));
@@ -1135,7 +1135,7 @@ class HUAP_Functions
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));
 
             case 'mapacirurgico-aprovar':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '30']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1']));
 
             case 'bcosangue-reservarhemocomponente':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1', '31']));
@@ -1163,73 +1163,6 @@ class HUAP_Functions
 
             default:
                 return false;
-        }
-    }
-    /**
-    * Função que verifica se o usuário tem os perfis que permitam tramitar
-    * o prontuário localizado em qualquer setor
-    *
-    * @return boolean
-    */
-    public static function tem_perfil_same() {
-
-        $session = \Config\Services::session();
-
-        return in_array($_SESSION['Sessao']['idPerfil'], [1, 2]);
-    }
-    /**
-    * Função que verifica se o usuário tem os perfis que permitam tramitar
-    * o prontuário localizado em qualquer setor
-    *
-    * @return boolean
-    */
-    public static function permite_tramitar(string $setortramite = null) {
-
-        $session = \Config\Services::session();
-
-        $idusuario = $_SESSION['Sessao']['id'];
-        $idperfil = $_SESSION['Sessao']['idPerfil'];
-        $nmsetorusu = $_SESSION['Sessao']['nmSetor'];
-
-        switch ($idperfil) {
-
-            case 1: // Super
-                return TRUE;
-                break;
-
-            case 2: // Liberado
-
-                /* if (!$setortramite) { // ainda não resgatado
-                    return TRUE;
-                } */
-
-                $setortramitemodel = new SetorTramiteModel();
-
-                $setorpermtramite = $setortramitemodel->getSetores($idusuario);
-
-                //;var_dump(array_column($setorpermtramite, 'nmSetor'));die;
-                $array = array_column($setorpermtramite, 'nmSetor');
-                array_push($array, $_SESSION['Sessao']['nmSetor']);
-                //var_dump( in_array($setortramite, $array));die;
-                return in_array($setortramite, $array);
-                break;
-
-            case 3: // Unidade
-
-                /* if (!$setortramite) { // ainda não resgatado
-                    return TRUE;
-                } */
-
-                if ($setortramite == $nmsetorusu) {
-                    return TRUE;
-                } else {
-                    return FALSE;
-                }
-                break;
-            
-            default:
-                return FALSE;
-                break;
         }
     }
     /**
