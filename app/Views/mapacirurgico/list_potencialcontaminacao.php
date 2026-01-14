@@ -46,15 +46,15 @@
                 <th scope="col" data-field="prontuarioaghu" >Potencial Contaminação</th>
                 <th scope="col" data-field="prontuarioaghu" >Início</th>
                 <th scope="col" data-field="prontuarioaghu" >Fim</th>                
-                <th scope="col" data-field="prontuarioaghu" >Data Alta</th>
-                <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th>
-                <th scope="col" data-field="prontuarioaghu" >Descrição Cirúrgica</th>
+                <!-- <th scope="col" data-field="prontuarioaghu" >Indicação PDT</th> -->
+                <!-- <th scope="col" data-field="prontuarioaghu" >Descrição Cirúrgica</th> -->
                 <th scope="col" data-field="meddia" >Antimicrobianos no dia</th>
                 <th scope="col" data-field="meddia" >ATB 24h</th>
                 <th scope="col" data-field="meddia" >ATB 48h</th>
                 <th scope="col" data-field="meddia" >ATB 30 d</th>
                 <th scope="col" data-field="gmr" >Colonização MDR</th>
-                <th scope="col" data-field="matusu" >Materiais Utilizados</th>
+                <th scope="col" data-field="prontuarioaghu" >Data Alta</th>
+                <!-- <th scope="col" data-field="matusu" >Materiais Utilizados</th> -->
                 <th scope="col" data-field="" >Evo. Hosp. 30 d</th>
                 <th scope="col" data-field="" >Evo. Hosp. 30 d-p. chave</th>
                 <th scope="col" data-field="" >Evo. Hosp. 90 d</th>
@@ -140,18 +140,18 @@
                     </td>
                     <td><?php echo $hr_inicio_cirurgia ?></td>
                     <td><?php echo $hr_fim_cirurgia ?></td>
-                    <td><?php echo $dt_alta ?: 'N/D';?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>">
-                        <?php echo htmlspecialchars($cirurgia->indicacao_pdt ?: 'N/D'); ?>
-                    <td><?php echo $situacao_descr ?></td>
+                    <!-- <td class="break-line" title="<--?php echo htmlspecialchars($cirurgia->indicacao_pdt); ?>"> -->
+                        <!-- <--?php echo htmlspecialchars($cirurgia->indicacao_pdt ?: 'N/D'); ?> -->
+                    <!-- <td><--?php echo $situacao_descr ?></td> -->
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_dia) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_24h) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_48h) ?></td>
                     <td><?= htmlspecialchars($cirurgia->antimicrobianos_30d) ?></td>
                     <td><?= htmlspecialchars($cirurgia->gmr) ?></td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->materiais_usados); ?>">
-                        <?php echo htmlspecialchars($cirurgia->materiais_usados); ?>
-                    </td>
+                    <td><?php echo $dt_alta ?: 'N/D';?></td>
+                    <!-- <td class="break-line" title="<--?php echo htmlspecialchars($cirurgia->materiais_usados); ?>">
+                        <--?php echo htmlspecialchars($cirurgia->materiais_usados); ?>
+                    </td> -->
                     <td class="break-line" title="<?php echo htmlspecialchars($cirurgia->evolint_30d); ?>">
                         <?php echo htmlspecialchars($cirurgia->evolint_30d); ?>
                     </td>
@@ -506,15 +506,15 @@
                 { "width": "200px" },  // pot contam
                 { "width": "100px" },  // inicio
                 { "width": "100px" },  // fim
-                { "width": "100px" },  // dt alta
-                { "width": "300px" },  // indic pdt
-                { "width": "150px" },  // descr cir
+                //{ "width": "300px" },  // indic pdt
+                //{ "width": "150px" },  // descr cir
                 { "width": "300px" },  // Antimicr dia
                 { "width": "300px" },  // Antimicr 24h
                 { "width": "300px" },  // Antimicr 28h
                 { "width": "300px" },  // Antimicr 30d
                 { "width": "300px" },  // Gmr
-                { "width": "300px" },  // Materiais usados
+                { "width": "100px" },  // dt alta
+                //{ "width": "300px" },  // Materiais usados
                 { "width": "300px" },  // evol hosp 30 dias
                 { "width": "150px" },  // evol hosp 30 dias palavra chave
                 { "width": "300px" },  // evol hosp 90 dias
