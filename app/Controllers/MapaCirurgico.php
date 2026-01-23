@@ -2636,7 +2636,11 @@ class MapaCirurgico extends ResourceController
             //'hemoderivados' => 'required',
             'complexidade' => 'required',
             'nec_proced' => 'required|max_length[500]|min_length[3]',
-            'justtroca' => 'required|max_length[500]|min_length[3]',
+            //'justtroca' => 'required|max_length[500]|min_length[3]',
+             'justtroca' => [
+                'filters' => 'trim',
+                'rules'   => 'required|minimoCaracteresNaoBrancos[30]|max_length[1024]'
+            ],
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'usarHemocomponentes' => 'required',
             //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
@@ -3915,7 +3919,7 @@ class MapaCirurgico extends ResourceController
             'nec_proced' => 'required|max_length[500]|min_length[3]',
             //'justorig' => 'max_length[1024]|min_length[0]',
             //'justurgencia' => 'required|trim|max_length[500]|min_length[30]',
-            'justurgencia' => [
+            /* 'justurgencia' => [
                 'rules' => [
                     'required',
                     'trim',
@@ -3923,10 +3927,18 @@ class MapaCirurgico extends ResourceController
                     'min_length[30]',
                     'max_length[500]',
                 ]
+            ], */
+            'justurgencia' => [
+                'filters' => 'trim',
+                'rules'   => 'required|minimoCaracteresNaoBrancos[30]|max_length[1024]'
             ],
             'usarHemocomponentes' => 'required',
             'usarEquipamentos' => 'required',
             //'tipo_sanguineo' => 'required'
+        ];
+
+        $labels = [
+            'justurgencia' => 'Justificativa de urgência',
         ];
 
         //dd($this->data);

@@ -1321,13 +1321,15 @@ class ListaEspera extends ResourceController
             'cid' => 'required',
             //'risco' => 'required',
             'opme' => 'required',
-            'justorig' => 'max_length[1024]|min_length[0]',
+            //'justorig' => 'max_length[1024]|min_length[0]',
+            'justorig' => [
+                'filters' => 'trim',
+                'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
+            ],
             'info' => 'max_length[1024]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
-
-            $this->validator->reset();
 
             if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
                 $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
@@ -1345,8 +1347,8 @@ class ListaEspera extends ResourceController
                                                     'data' => $dataform]);
                 } else { */
 
-            if (($data['origem'] == 3 || $data['origem'] == 4) && empty($data['justorig'])) { // Interesse Acadêmico
-                $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
+            if (($data['origem'] == 3 || $data['origem'] == 4) && empty(trim($data['justorig']))) { // Interesse Acadêmico/Judicialização
+                $this->validator->setError('justorig', 'Para Interesse Acadêmico ou Judicialização é obrigatório informar uma justificativa.');
 
                 return view('layouts/sub_content', ['view' => 'listaespera/form_inclui_paciente_listaespera',
                                                 //'validation' => $this->validator,
@@ -1718,14 +1720,20 @@ class ListaEspera extends ResourceController
             'lateralidade' => 'required',
             'congelacao' => 'required',
             'opme' => 'required',
-            'justorig' => 'max_length[1024]|min_length[0]',
+            //'justorig' => 'max_length[1024]|min_length[0]',
+             'justorig' => [
+                'filters' => 'trim',
+                'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
+            ],
             'info' => 'max_length[1024]|min_length[0]',
         ];
 
         if ($this->validate($rules)) {
 
-            if ($data['origem'] == 3 && empty($data['justorig'])) { // Interesse Acadêmico
-                $this->validator->setError('justorig', 'Informe a justificativa para essa origem do paciente!');
+        //die(var_dump($data['justorig']));
+
+            if (($data['origem'] == 3 || $data['origem'] == 4) && empty(trim($data['justorig']))) { // Interesse Acadêmico/Judicialização
+                $this->validator->setError('justorig', 'Para Interesse Acadêmico ou Judicialização é obrigatório informar uma justificativa.');
 
                 $data['filas'] = $this->selectfila;
                 $data['riscos'] = $this->selectrisco;
@@ -1740,7 +1748,7 @@ class ListaEspera extends ResourceController
                                                 //'validation' => $this->validator,
                                                 'data' => $data]);
             }
-            
+
             $paciente = $this->localvwdetalhespacientesmodel->find($data['prontuario']);
 
             if ($paciente->idade > 18) {
@@ -2209,7 +2217,7 @@ class ListaEspera extends ResourceController
             //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'justorig' => 'max_length[1024]|min_length[0]',
             //'justenvio' => 'permit_empty|max_length[500]|min_length[30]',
-            'justenvio' => [
+            /* 'justenvio' => [
                 'rules' => [
                     'permit_empty',
                     'trim',
@@ -2217,6 +2225,10 @@ class ListaEspera extends ResourceController
                     'min_length[30]',
                     'max_length[500]',
                 ]
+            ], */
+            'justenvio' => [
+                'filters' => 'trim',
+                'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
             ],
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
@@ -2269,7 +2281,7 @@ class ListaEspera extends ResourceController
                 }
             }
 
-            if (empty($this->data['justenvio'])) {
+            if (empty(trim($this->data['justenvio']))) {
 
                 $tempacfila = $this->vwordempacientemodel->where('idfila', $this->data['fila'])
                                                          ->where('ordem_fila <', $this->data['ordemfila'])->findAll();
