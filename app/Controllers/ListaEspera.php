@@ -1327,6 +1327,7 @@ class ListaEspera extends ResourceController
                 'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
             ],
             'info' => 'max_length[1024]|min_length[0]',
+            'internacao' => 'required',
         ];
 
         if ($this->validate($rules)) {
@@ -1387,6 +1388,7 @@ class ListaEspera extends ResourceController
                 }
             } */
 
+            //dd($data);
 
             $db = \Config\Database::connect('default');
 
@@ -1403,7 +1405,7 @@ class ListaEspera extends ResourceController
                     'idcomplexidade' => $data['complexidade'],
                     'idtipoprocedimento' => $data['fila'],
                     'idorigempaciente' => $data['origem'],
-                    'idunidadeorigem' =>empty($data['idunidadeorigem']) ? NULL : $data['idunidadeorigem'],
+                    'idunidadeorigem' =>empty($data['unidadeorigem']) ? NULL : $data['unidadeorigem'],
                     'indcongelacao' => $data['congelacao'],
                     'indopme' => $data['opme'],
                     'idprocedimento' => $data['procedimento'],
@@ -1411,6 +1413,7 @@ class ListaEspera extends ResourceController
                     'indsituacao' => 'A',
                     'txtinfoadicionais' => $data['info'],
                     'txtorigemjustificativa' => $data['justorig'],
+                    'indinternacao' => $data['internacao'],
                 ];
                 
                 /* $pacienteregistroAtual = $this->pacientesmodel->find($data['prontuario']);
@@ -1671,6 +1674,7 @@ class ListaEspera extends ResourceController
         $data['origem'] = $lista['idorigempaciente'];
         $data['unidadeorigem'] = $lista['idunidadeorigem'];
         $data['congelacao'] = $lista['indcongelacao'];
+        $data['internacao'] = $lista['indinternacao'];
         $data['opme'] = $lista['indopme'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['lateralidade'] = $lista['idlateralidade'];
@@ -1718,7 +1722,7 @@ class ListaEspera extends ResourceController
             'complexidade' => 'required',
             'origem' => 'required',
             'lateralidade' => 'required',
-            'congelacao' => 'required',
+            'internacao' => 'required',
             'opme' => 'required',
             //'justorig' => 'max_length[1024]|min_length[0]',
              'justorig' => [
@@ -1823,6 +1827,7 @@ class ListaEspera extends ResourceController
                         'idorigempaciente' => $data['origem'],
                         'idunidadeorigem' => empty($data['unidadeorigem']) ? NULL : $data['unidadeorigem'],
                         'indcongelacao' => $data['congelacao'],
+                        'indinternacao' => $data['internacao'],
                         'indopme' => $data['opme'],
                         'idprocedimento' => $data['procedimento'],
                         'idlateralidade' => $data['lateralidade'],
@@ -2137,6 +2142,7 @@ class ListaEspera extends ResourceController
         $data['origem'] = $lista['idorigempaciente'];
         $data['unidadeorigem'] = $lista['idunidadeorigem'];
         $data['congelacao'] = $lista['indcongelacao'];
+        $data['internacao'] = $lista['indinternacao'];
         $data['opme'] = $lista['indopme'];
         $data['procedimento'] = $lista['idprocedimento'];
         $data['proced_adic'] = [];

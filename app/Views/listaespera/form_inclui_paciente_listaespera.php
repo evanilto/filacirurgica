@@ -319,7 +319,7 @@
                                 <?php endif; ?>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-2">
                                     <label class="form-label">Complexidade <b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -344,6 +344,32 @@
                                         </div>
                                     <?php endif; ?>
                                 </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Internar <b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <?php
+                                        $internacoes = [
+                                            'N' => 'Não',
+                                            'S' => 'Sim',
+                                        ];
+                                        foreach ($internacoes as $value => $label) :
+                                            $isChecked = (isset($data['internacao']) && $data['internacao'] == $value) ? 'checked' : '';
+                                        ?>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="internacao" id="internacao<?= $value ?>" value="<?= $value ?>">
+                                                <label class="form-check-label" for="internacao<?= $value ?>"><?= $label ?></label>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('internacao')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('internacao') ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="row g-3">

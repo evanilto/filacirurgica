@@ -40,6 +40,7 @@ class ListaEsperaModel extends Model
         'txtjustificativaexclusao',
         'txtjustificativarecuperacao',
         'txtinfoadicionais',
+        'indinternacao'
     ];
 
     // Dates

@@ -40,6 +40,7 @@
                 <th scope="col" data-field="prontuarioaghu" >OPME</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
                 <th scope="col" data-field="tiposangue" >Tipo Sanguíneo</th>
+                <th scope="col" data-field="internacao" >Internação</th>
             </tr>
         </thead>
         <tbody>
@@ -69,6 +70,7 @@
                     data-dtrisco="<?= $itemlista->data_risco ?>" 
                     data-tiposangue="<?= $itemlista->tiposanguineo ?>"
                     data-infoadic="<?= htmlspecialchars($itemlista->info_adicionais, ENT_QUOTES, 'UTF-8') ?>" 
+                    data-internacao="<?= $itemlista->indinternacao ?>" 
                 >
                     <td><?php echo $itemlista->ordem_lista ?></td>
                     <td title="Ordem de entrada na Lista Cirúrgica"><?php echo $itemlista->ordem_lista ?></td>
@@ -129,6 +131,13 @@
                     <td class="break-line"><?php echo $itemlista->opme == 'S' ? 'SIM' : ($itemlista->opme == 'N' ? 'NÃO' : '') ?></td>
                     <td><?php echo $itemlista->data_risco ?></td>
                     <td><?php echo $itemlista->tiposanguineo ?></td>
+                    <td class="break-line">
+                        <?= match ($itemlista->indinternacao) {
+                            'S' => 'SIM',
+                            'N' => 'NÃO',
+                            default => ''
+                        } ?>
+                    </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -233,7 +242,11 @@
             dtrisco = element.getAttribute('data-dtrisco');  
             justorig = element.getAttribute('data-justorig');
             tiposangue = element.getAttribute('data-tiposangue'); 
-           
+            internacao = ({
+                S: 'SIM',
+                N: 'NÃO'
+            })[element.getAttribute('data-internacao')] ?? '';
+
             $.ajax({
                 url: '/listaespera/carregadadosmodal', // Rota do seu método PHP
                 //url: '<--?= base_url('listaespera/carregadadosmodal/') ?>' + prontuario,
@@ -314,6 +327,7 @@
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
                         <strong>OPME:</strong> ${verificarValor(opme)}<br>
+                        <strong>Internação:</strong> ${verificarValor(internacao)}<br>
                         <strong>Tipo Sanguíneo:</strong> ${verificarValor(tiposangue)}<br>
                         <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                         <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
@@ -439,10 +453,11 @@
                 { "width": "120px" }, // congelacao
                 { "width": "120px" }, // opme
                 { "width": "90px" },
-                { "width": "100px" }   // Tipo Sanguíneo
+                { "width": "100px" },   // Tipo Sanguíneo
+                { "width": "120px" }, // internacao
             ],
             "columnDefs": [
-            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19] },
+            { "orderable": false, "targets": [0, 2, 4, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,20] },
             { "visible": false, "targets": [0] },
             { "width": "500px", "targets": [8] }
             ],

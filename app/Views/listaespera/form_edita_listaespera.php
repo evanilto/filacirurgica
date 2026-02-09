@@ -311,7 +311,7 @@
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
@@ -335,6 +335,28 @@
                                 <?php if ($validation->getError('complexidade')): ?>
                                     <div class="invalid-feedback d-block">
                                         <?= $validation->getError('complexidade') ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Internação<b class="text-danger">*</b></label>
+                                    <div class="input-group mb-2 bordered-container">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="internacao" id="internacaoN" value="N"
+                                                <?= (isset($data['internacao']) && $data['internacao'] == 'N') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="internacaoN" style="margin-right: 10px;">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="internacao" id="internacaoS" value="S"
+                                                <?= (isset($data['internacao']) && $data['internacao'] == 'S') ? 'checked' : '' ?>>
+                                            <label class="form-check-label" for="internacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <?php if ($validation->getError('internacao')): ?>
+                                    <div class="invalid-feedback d-block">
+                                        <?= $validation->getError('internacao') ?>
                                     </div>
                                 <?php endif; ?>
                             </div>

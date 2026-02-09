@@ -745,6 +745,12 @@ padding: 0;
     text-align: center;
 }
 
+.readonly-radio {
+    background-color: #e9ecef;
+    pointer-events: none;
+}
+
+
 .spinner {
 text-align: center;
 }

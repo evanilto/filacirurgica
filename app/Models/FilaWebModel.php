@@ -27,73 +27,17 @@ class FilaWebModel extends Model
 
 
     public function __construct()
-{
-
-    $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
-    $this->localvwaghuantimicrobianos = new LocalVwAghuAntimicrobianosModel();
-    $this->localvwaghuevolamb = new LocalVwAghuEvolAmbModel();
-    $this->localvwaghuevolint = new LocalVwAghuEvolIntModel();
-    $this->localvwaghugmr = new LocalVwAghuGmrModel();
-    $this->localvwexamesliberados = new LocalVwExamesLiberadosModel();
-
-}
-
-    /**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    private function listarMedicamentos($resultados) 
     {
-        if (empty($resultados)) {
-            return 'N/D';
-        }
 
-        $medicamentos = [];
+        $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
+        $this->localvwaghuantimicrobianos = new LocalVwAghuAntimicrobianosModel();
+        $this->localvwaghuevolamb = new LocalVwAghuEvolAmbModel();
+        $this->localvwaghuevolint = new LocalVwAghuEvolIntModel();
+        $this->localvwaghugmr = new LocalVwAghuGmrModel();
+        $this->localvwexamesliberados = new LocalVwExamesLiberadosModel();
 
-        foreach ($resultados as $item) {
-            $data = date('d/m/Y', strtotime($item->data_inicio));
-            $nome = trim($item->descricao_medicamento);
-
-            // Chave composta para garantir unicidade: data + nome
-            $chave = "{$data} - {$nome}";
-
-            $medicamentos[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
-        }
-
-        ksort($medicamentos);
-
-        // Retorna os itens separados por "; "
-        return implode('; ', array_keys($medicamentos));
     }
-/**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    private function listarGmr($resultados) 
-    {
-        if (empty($resultados)) {
-            return 'N/D';
-        }
 
-        $gmrs = [];
-
-        foreach ($resultados as $item) {
-            $data = date('d/m/Y', strtotime($item->dt_identificacao));
-            $nome = trim($item->descr_gmr);
-
-            // Chave composta para garantir unicidade: data + nome
-            $chave = "{$data} - {$nome}";
-
-            $gmrs[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
-        }
-
-        ksort($gmrs);
-
-        // Retorna os itens separados por "; "
-        return implode('; ', array_keys($gmrs));
-    }
     /**
      * Return a new resource object, with default properties
      *
@@ -268,14 +212,63 @@ class FilaWebModel extends Model
         'CCIH'
         ];
 
-       function normalizarTexto($texto) {
+        function normalizarTexto($texto) {
             $texto = mb_strtolower((string)$texto, 'UTF-8');
             $texto = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $texto);
             $texto = preg_replace('/\s+/', ' ', $texto);
             return trim($texto);
         }
 
-        function palavrasEncontradasEvolucao($texto, $palavras) {
+        function listarMedicamentos($resultados) 
+        {
+            if (empty($resultados)) {
+                return 'N/D';
+            }
+
+            $medicamentos = [];
+
+            foreach ($resultados as $item) {
+                $data = date('d/m/Y', strtotime($item->data_inicio));
+                $nome = trim($item->descricao_medicamento);
+
+                // Chave composta para garantir unicidade: data + nome
+                $chave = "{$data} - {$nome}";
+
+                $medicamentos[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
+            }
+
+            ksort($medicamentos);
+
+            // Retorna os itens separados por "; "
+            return implode('; ', array_keys($medicamentos));
+        }
+
+        function listarGmr($resultados) 
+        {
+            if (empty($resultados)) {
+                return 'N/D';
+            }
+
+            $gmrs = [];
+
+            foreach ($resultados as $item) {
+                $data = date('d/m/Y', strtotime($item->dt_identificacao));
+                $nome = trim($item->descr_gmr);
+
+                // Chave composta para garantir unicidade: data + nome
+                $chave = "{$data} - {$nome}";
+
+                $gmrs[$chave] = true;  // O valor não importa, só a chave para garantir unicidade
+            }
+
+            ksort($gmrs);
+
+            // Retorna os itens separados por "; "
+            return implode('; ', array_keys($gmrs));
+        }
+
+        function palavrasEncontradasEvolucao($texto, $palavras)
+        {
             // recebe $texto como string (uma evolução) e $palavras como array
             $textoNormalizado = normalizarTexto($texto);
             $tokens = preg_split('/[^a-z0-9]+/i', $textoNormalizado, -1, PREG_SPLIT_NO_EMPTY);
@@ -300,7 +293,8 @@ class FilaWebModel extends Model
             return empty($encontradas) ? null : implode(', ', $encontradas);
         }
 
-        function listarEvolucoes($resultados, $limitePalavras = 1000) {
+        function listarEvolucoes($resultados, $limitePalavras = 1000)
+        {
             // aceita array ou Traversable; garante ordenação em PHP
             if (empty($resultados) || (!is_array($resultados) && !($resultados instanceof \Traversable))) {
                 return 'N/D';
@@ -333,7 +327,8 @@ class FilaWebModel extends Model
             return implode("\n\n", $evolucoes);
         }
 
-        function listarPalavrasEncontradas($resultados, $palavras) {
+        function listarPalavrasEncontradas($resultados, $palavras)
+        {
             if (empty($resultados) || (!is_array($resultados) && !($resultados instanceof \Traversable))) {
                 return 'N/D';
             }
@@ -363,7 +358,7 @@ class FilaWebModel extends Model
         {
    
             if (empty($result)) {
-                return 'N/D';
+                    return 'N/D';
             }
 
             // Ordena pelo campo de data/hora
@@ -381,7 +376,6 @@ class FilaWebModel extends Model
 
             return $saida;
         }
-
 
         $db = \Config\Database::connect('default');
 
@@ -472,7 +466,7 @@ class FilaWebModel extends Model
                 ->where('data_inicio <=', $fim_cirurgia)
                 ->get()
                 ->getResult();
-            $cirurgia->antimicrobianos_dia = $this->listarMedicamentos($result_dia);
+            $cirurgia->antimicrobianos_dia = listarMedicamentos($result_dia);
 
             // ==================================
             // 🔸 Até 24 horas após (excluindo o dia da cirurgia)
@@ -486,7 +480,7 @@ class FilaWebModel extends Model
                 ->where('data_inicio <=', $fim_24h)
                 ->get()
                 ->getResult();
-            $cirurgia->antimicrobianos_24h = $this->listarMedicamentos($result_24h);
+            $cirurgia->antimicrobianos_24h = listarMedicamentos($result_24h);
 
             // ==================================
             // 🔸 Até 48 horas após
@@ -500,7 +494,7 @@ class FilaWebModel extends Model
                 ->where('data_inicio <=', $fim_48h)
                 ->get()
                 ->getResult();
-            $cirurgia->antimicrobianos_48h = $this->listarMedicamentos($result_48h);
+            $cirurgia->antimicrobianos_48h = listarMedicamentos($result_48h);
 
             // ==================================
             // 🔸 De 48 horas até 30 dias após a cirurgia
@@ -514,7 +508,7 @@ class FilaWebModel extends Model
                 ->where('data_inicio <=', $fim_30d)
                 ->get()
                 ->getResult();
-            $cirurgia->antimicrobianos_30d = $this->listarMedicamentos($result_30d);
+            $cirurgia->antimicrobianos_30d = listarMedicamentos($result_30d);
 
             $gmr = $this->localvwaghugmr
                 ->select('dt_identificacao, descr_gmr')
@@ -523,7 +517,7 @@ class FilaWebModel extends Model
                 //->where('data_inicio <=', $fim_30d)
                 ->get()
                 ->getResult();
-            $cirurgia->gmr = $this->listarGmr($gmr);
+            $cirurgia->gmr = listarGmr($gmr);
 
             /************ Evoluções *****************************************************/
 

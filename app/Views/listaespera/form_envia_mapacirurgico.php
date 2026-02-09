@@ -426,7 +426,7 @@
                                 </div>
                             </div> -->
                         </div>
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo</label>
@@ -496,6 +496,24 @@
                                         <?= $validation->getError('usarHemocomponentes') ?>
                                     </div>
                                 <?php endif; ?>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Internação</label>
+                                    <div class="form-control readonly-radio d-flex align-items-center gap-3">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="radio" disabled
+                                                <?= isset($data['internacao']) && $data['internacao'] === 'N' ? 'checked' : '' ?>>
+                                            <label class="form-check-label text-muted">Não</label>
+                                        </div>
+
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="radio" disabled
+                                                <?= isset($data['internacao']) && $data['internacao'] === 'S' ? 'checked' : '' ?>>
+                                            <label class="form-check-label text-muted">Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row g-3 mb-2">
@@ -727,6 +745,7 @@
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
                         <input type="hidden" name="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
                         <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
+                        <input type="hidden" name="internacao" value="<?= $data['internacao'] ?? null ?>" />
                     </form>
                 </div>
             </div>
