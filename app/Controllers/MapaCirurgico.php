@@ -1693,6 +1693,7 @@ class MapaCirurgico extends ResourceController
         $data['origem'] = $mapa->idorigempaciente;
         $data['unidadeorigem'] = $mapa->idunidadeorigem;
         $data['congelacao'] = $mapa->indcongelacao;
+        $data['internacao'] = $mapa->indinternacao;
         $data['opme'] = $mapa->indopme;
         $data['procedimento'] = $mapa->idprocedimento;
         $data['lateralidade'] = $mapa->lateralidade;
@@ -2236,6 +2237,7 @@ class MapaCirurgico extends ResourceController
         $data['origem'] = $mapa->idorigempaciente;
         $data['unidadeorigem'] = $mapa->idunidadeorigem;
         $data['congelacao'] = $mapa->indcongelacao;
+        $data['internacao'] = $mapa->indinternacao;
         $data['opme'] = $mapa->indopme;
         $data['procedimento'] = $mapa->idprocedimento;
         $data['lateralidade'] = $mapa->lateralidade;
@@ -2507,6 +2509,7 @@ class MapaCirurgico extends ResourceController
                 $candidato['opme'] = $values[18];
                 $candidato['origem'] = $values[19];
                 $candidato['unidadeorigem'] = $values[20];
+                $candidato['internacao'] = $values[21];
 
                 $paciente = $this->pacientesmodel->find($candidato['prontuario']);
                 $candidato['tiposanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
@@ -2516,7 +2519,7 @@ class MapaCirurgico extends ResourceController
             }
         }
 
-        //die(var_dump($data['candidatos']));
+        //dd($data['candidatos']);
 
         /* array_multisort(array_column($data['candidatos'], 'ordem_fila'), SORT_ASC, $data['candidatos']); */
         $filas = array_column($data['candidatos'], 'fila');
@@ -2541,6 +2544,7 @@ class MapaCirurgico extends ResourceController
         $data['origem'] = '';
         $data['unidadeorigem'] = '';
         $data['congelacao'] = '';
+        $data['internacao'] = '';
         $data['procedimento'] = $pacatrocar['idprocedimento'];
         $data['proced_adic'] = [];
         $data['lateralidade'] = '';
@@ -2589,7 +2593,7 @@ class MapaCirurgico extends ResourceController
         $_SESSION['candidatos'] =  $data['candidatos'];
         $_SESSION['pacatrocar'] = $pacatrocar;
 
-        //die(var_dump($data['candidatos']));
+        //dd($data['candidatos']);
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_troca_paciente',
                                             'data' => $data,

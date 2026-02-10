@@ -340,7 +340,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label class="form-label">Internação<b class="text-danger">*</b></label>
+                                    <label class="form-label">Internar<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="internacao" id="internacaoN" value="N"

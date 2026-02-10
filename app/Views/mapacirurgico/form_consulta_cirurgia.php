@@ -458,6 +458,24 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Internar</label>
+                                    <div class="form-control readonly-radio d-flex align-items-center gap-3">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="radio" disabled
+                                                <?= isset($data['internacao']) && $data['internacao'] === 'N' ? 'checked' : '' ?>>
+                                            <label class="form-check-label text-muted">Não</label>
+                                        </div>
+
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input" type="radio" disabled
+                                                <?= isset($data['internacao']) && $data['internacao'] === 'S' ? 'checked' : '' ?>>
+                                            <label class="form-check-label text-muted">Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="row g-3 mb-2">
                             <!-- Lista de hemocomponentes com campo de quantidade -->

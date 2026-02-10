@@ -6,7 +6,9 @@
     $data['eqpts'] = isset($data['eqpts']) ? (array)$data['eqpts'] : [];
     $data['usarEquipamentos'] = $data['usarEquipamentos'] ?? ['N']; 
     $data['hemocomps'] = isset($data['hemocomps']) ? (array)$data['hemocomps'] : [];
-    $data['usarHemocomponentes'] = $data['usarHemocomponentes'] ?? ['N']; ?>
+    $data['usarHemocomponentes'] = $data['usarHemocomponentes'] ?? ['N']; 
+    $internacaoView = old('internacao', $data['internacao'] ?? '');
+?>
 
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
@@ -64,7 +66,7 @@
                                                 echo '<option value="'.$candidato['idlistaespera'].'" data-prontuario="'.$candidato['prontuario'].'" data-idfila="'.$candidato['idfila'].
                                                 '" data-fila="'.$candidato['fila'].'" data-ordem="'.$candidato['ordem_fila'].'" data-id="'.$candidato['idlistaespera'].
                                                 '" data-procedimento="'.$candidato['idprocedimento'].'" data-risco="'.$candidato['riscocirurgico'].'" data-dtrisco="'.$candidato['datariscocirurgico'].
-                                                '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].
+                                                '" data-complexidade="'.$candidato['complexidade'].'" data-congelacao="'.$candidato['congelacao'].'" data-cid="'.$candidato['cid'].'" data-internacao="'.$candidato['internacao'].
                                                 '" data-lateralidade="'.$candidato['lateralidade'].'" data-infoadicionais="'.$candidato['infoadicionais'].'" data-opme="'.$candidato['opme'].
                                                 '" data-tiposanguineo="'.$candidato['tiposanguineo'].'" data-origem="'.$candidato['origem'].'" data-unidadeorigem="'.$candidato['unidadeorigem'].
                                                 '" data-paciente_updated_at_original="'.$candidato['paciente_updated_at_original'].'" data-lista_updated_at_original="'.$candidato['lista_updated_at_original'].
@@ -426,7 +428,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row g-2">
+                        <div class="row g-3">
                             <div class="col-md-2">
                                 <div class="mb-2">
                                     <label for="tipo_sanguineo" class="form-label">Tipo Sanguíneo <b class="text-danger">*</b></label>
@@ -503,6 +505,31 @@
                                         <?= $validation->getError('usarHemocomponentes') ?>
                                     </div>
                                 <?php endif; ?>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="mb-2">
+                                    <label class="form-label">Internar</label>
+                                    <div class="form-control readonly-radio d-flex align-items-center gap-3">
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input"
+                                                type="radio"
+                                                name="internacao_exibicao"
+                                                value="N"
+                                                <?= ($internacaoView === 'N') ? 'checked' : '' ?>
+                                                disabled>
+                                            <label class="form-check-label">&nbsp;Não</label>
+                                        </div>
+                                        <div class="form-check mb-0">
+                                            <input class="form-check-input"
+                                                type="radio"
+                                                name="internacao_exibicao"
+                                                value="S"
+                                                <?= ($internacaoView === 'S') ? 'checked' : '' ?>
+                                                disabled>
+                                            <label class="form-check-label">&nbsp;Sim</label>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row g-3 mb-2">
@@ -735,7 +762,7 @@
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
                         <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
                         <input type="hidden" name="lista_updated_at_original" id="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
-                        
+                        <input type="hidden" name="internacao" value="<?= esc($internacaoView) ?>">
                     </form>
                 </div>
             </div>
@@ -1135,6 +1162,7 @@
             var complexidadeValue = $(this).find('option:selected').data('complexidade');
             var lateralidadeValue = $(this).find('option:selected').data('lateralidade');
             var congelacaoValue = $(this).find('option:selected').data('congelacao');
+            var internacaoValue = $(this).find('option:selected').data('internacao');
             var opmeValue = $(this).find('option:selected').data('opme');
             var tiposanguineoValue = $(this).find('option:selected').data('tiposanguineo');
             var updated_at = $(this).find('option:selected').data('lista_updated_at_original');
@@ -1167,6 +1195,15 @@
             //$('input[name="complexidade"]').val(complexidadeValue).prop('checked', true);; // Define o valor do hidden
             $('input[name="complexidade"][value="' + complexidadeValue + '"]').prop('checked', true).trigger('change');
             $('input[name="congelacao"][value="' + congelacaoValue + '"]').prop('checked', true).trigger('change');
+            $('input[name="internacao_exibicao"]').prop('checked', false);
+            if (internacaoValue === 'S' || internacaoValue === 'N') {
+                $('input[name="internacao_exibicao"][value="' + internacaoValue + '"]')
+                    .prop('checked', true);
+            }
+            // mantém o hidden sincronizado
+            $('input[name="internacao"]').val(
+                (internacaoValue === 'S' || internacaoValue === 'N') ? internacaoValue : ''
+            );
             $('input[name="opme"][value="' + opmeValue + '"]').prop('checked', true).trigger('change');
             $('#lista_updated_at_original').val(updated_at);
             //$('#paciente_updated_at_original').val(paciente_updated_at);

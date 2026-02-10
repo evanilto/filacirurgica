@@ -499,7 +499,7 @@
                             </div>
                             <div class="col-md-2">
                                 <div class="mb-2">
-                                    <label class="form-label">Internação</label>
+                                    <label class="form-label">Internar</label>
                                     <div class="form-control readonly-radio d-flex align-items-center gap-3">
                                         <div class="form-check mb-0">
                                             <input class="form-check-input" type="radio" disabled

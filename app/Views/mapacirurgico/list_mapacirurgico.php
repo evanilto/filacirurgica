@@ -167,6 +167,7 @@
                 <th scope="col" data-field="nome" >Origem</th>
                 <th scope="col" data-field="nome" >Unidade Origem</th>
                 <th scope="col" data-field="nome" >Complex.</th>
+                <th scope="col" data-field="nome" >Internar</th>
                 <th scope="col" data-field="nome" >Observações Enfermagem</th>
             </tr>
         </thead>
@@ -343,6 +344,7 @@
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
                     data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
                     data-congelacao="<?= $itemmapa->congelacao ?>"
+                    data-internacao="<?= $itemmapa->internacao ?>"
                     data-risco="<?= $itemmapa->risco_descricao ?>"
                     data-dtrisco="<?= $itemmapa->dtrisco ? \DateTime::createFromFormat('Y-m-d', $itemmapa->dtrisco)->format('d/m/Y') : 'N/D' ?>"
                     data-infoadic="<?= htmlspecialchars($itemmapa->infoadicionais, ENT_QUOTES, 'UTF-8') ?>"
@@ -522,6 +524,7 @@
                         <?php echo htmlspecialchars($itemmapa->unidade_origem); ?>
                     </td>
                     <td><?php echo $itemmapa->nmcomplexidade ?></td>
+                    <td><?php echo $itemmapa->internacao ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>">
                         <?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>
                     </td>
@@ -1217,6 +1220,7 @@
                     <strong>Usar Hemocomponentes:</strong> ${verificarValor(dados.hemo)}<br>
                     <strong>Hemocomponentes:</strong> ${verificarValor(dados.hemocomponentes)}<br>
                     <strong>Pós-Operatório:</strong> ${dados.posoperatorio}<br>
+                    <strong>Internar:</strong> ${verificarValor(dados.internacao)}<br>
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
                     <strong>Observações da Enfermagem:</strong> ${verificarValor(dados.obsenf)}<br>
@@ -1302,6 +1306,7 @@
                     { "width": "130px" },  // origem
                     { "width": "220px" },  // unidade origem
                     { "width": "100px" },  // complex
+                    { "width": "100px" },  // internacao
                     { "width": "250px" },  //  obs enfermagem
                     
                 ],
@@ -1374,6 +1379,7 @@
                 dtrisco: $(this).data('dtrisco'),
                 lateralidade: $(this).data('lateralidade'),
                 congelacao: $(this).data('congelacao'),
+                internacao: $(this).data('internacao'),
                 hemo: $(this).data('hemo'),
                 opme: $(this).data('opme'),
                 tiposangue: $(this).data('tiposangue'),

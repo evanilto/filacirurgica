@@ -40,7 +40,7 @@
                 <th scope="col" data-field="prontuarioaghu" >OPME</th>
                 <th scope="col" data-field="prontuarioaghu" >Dt.Risco</th>
                 <th scope="col" data-field="tiposangue" >Tipo Sanguíneo</th>
-                <th scope="col" data-field="internacao" >Internação</th>
+                <th scope="col" data-field="internacao" >Internar</th>
             </tr>
         </thead>
         <tbody>
@@ -327,7 +327,7 @@
                         <strong>Lateralidade:</strong> ${lateralidade}<br>
                         <strong>Congelação:</strong> ${congelacao}<br>
                         <strong>OPME:</strong> ${verificarValor(opme)}<br>
-                        <strong>Internação:</strong> ${verificarValor(internacao)}<br>
+                        <strong>Internar:</strong> ${verificarValor(internacao)}<br>
                         <strong>Tipo Sanguíneo:</strong> ${verificarValor(tiposangue)}<br>
                         <strong>Justificativas da Origem:</strong> ${verificarValor(justorig)}<br>
                         <strong>Informações Adicionais:</strong> ${verificarValor(infoadic)}<br>
