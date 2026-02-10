@@ -6,7 +6,8 @@ $routes->setAutoRoute('improved');
 
 $routes->cli('testecli ola', 'Testecli::ola');
 $routes->cli('agendador suspensoesAutomaticas', 'Agendador::suspensoesAutomaticas');
-
+$routes->get('/', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
+$routes->get('(:any)', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
 
 /**
  * @var RouteCollection $routes
@@ -17,14 +18,6 @@ $routes->group('/', function ($routes) {
     $routes->get('home_index', 'Home::index_home');
     $routes->post('home/login', 'Home::login');
     $routes->get('home/logout', 'Home::logout');
-    $routes->get('testeconexao/(:any)', 'Testeconexao::index/$1');
-
-    /* $routes->get('', 'Maintenance::index');
-    $routes->get('home', 'Maintenance::index');
-    $routes->get('home_index', 'Maintenance::index');
-    $routes->post('home/login', 'Maintenance::index');
-    $routes->get('home/logout', 'Maintenance::index'); */
-
     $routes->get('testeconexao/(:any)', 'Testeconexao::index/$1');
 });
 

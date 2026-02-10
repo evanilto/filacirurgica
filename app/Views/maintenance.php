@@ -1,47 +1,34 @@
+<!-- app/Views/maintenance.php -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema em Manutenção</title>
     <style>
         body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: #f4f6f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .box {
+            background: #fff;
+            padding: 40px;
             text-align: center;
-            color: #333;
-        }
-        .container {
-            max-width: 600px;
-            padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-        }
-        img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 10px;
-        }
-        h1 {
-            margin-top: 0;
-            color: #d9534f;
-        }
-        p {
-            font-size: 18px;
+            border-radius: 8px;
+            max-width: 500px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <img src="<?= base_url('assets/img/maintenance-256.png') ?>" alt="Sistema em Manutenção">
-        <h1>Sistema em Manutenção</h1>
-        <p>Nosso sistema está passando por uma manutenção programada. Voltaremos em breve!</p>
+    <div class="box">
+        <h1>🚧 Manutenção Emergencial</h1>
+        <p>O sistema FilaWeb está temporariamente indisponível</p>
+        <!-- <p>Estamos trabalhando para normalizar o serviço o mais breve possível.</p> -->
+        <p>Previsão de retorno em 15 minutos</p>
+        <small><?= date('d/m/Y H:i') ?></small>
     </div>
 </body>
 </html>
