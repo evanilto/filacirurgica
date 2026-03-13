@@ -139,20 +139,15 @@
                     <?php } ?>
                     </li>
                 </ul>
-                <!-- <ul class="nav flex-column submenu-2">
+                <ul class="nav flex-column submenu-2">
+                    <?php if(HUAP_Functions::tem_permissao('relatorios-justificativas')) { ?>
                     <li>
-                    <a href="<-?= base_url('relatorios/prontuariosretidos') ?>" class="nav-link text-white p-2 enabled" tabindex="-1" aria-disabled="false">
-                            <i class="fa-solid fa-user-nurse"></i> Prontuários Retidos
+                        <a href="<?= base_url('relatorios/justificativas') ?>" class="nav-link text-white p-2 enabled" tabindex="-1" aria-disabled="false">
+                                <i class="fa-solid fa-user-nurse"></i> Justificativas
                         </a>
+                    <?php } ?>
                     </li>
                 </ul>
-                <ul class="nav flex-column submenu-2">
-                    <li>
-                        <a href="<-?= base_url('relatorios/movimentacoessetor') ?>" class="nav-link text-white p-2" aria-current="page">
-                            <i class="fa-solid fa-user-nurse"></i> Movimentações entre Setores
-                        </a>
-                    </li>
-                </ul> -->
             </div>
         </li>
         <?php } ?>

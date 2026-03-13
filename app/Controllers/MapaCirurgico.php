@@ -538,6 +538,164 @@ class MapaCirurgico extends ResourceController
                                                 'data' => $data]);
         }
     }
+    public function consultarJustificativas(string $idmapacirurgico = null)
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+        $_SESSION['mapacirurgico'] = NULL;
+
+        //$data['dtinicio'] = date('d/m/Y', strtotime($this->getFirst()['created_at']));
+        //$data['dtinicio'] = date('d/m/Y');
+        //$data['dtfim'] = date('d/m/Y');
+        $data['dtinicio'] = NULL;
+        $data['dtfim'] = NULL;
+        $data['filas'] = $this->selectfilaativas;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
+        $data['tiposJustificativa'] = [
+            'ENV' => 'Envio ao Mapa',
+            'U'   => 'Urgência',
+            'T'   => 'Troca de Paciente',
+            'S'   => 'Suspensão de Cirurgia',
+            'SADM' => 'Suspensão Administrativa',
+            'O'   => 'Origem do Paciente',
+            'E'   => 'Exclusão da Fila',
+            'R'   => 'Recuperação para Fila'
+        ];
+
+        //die(var_dump($data));
+
+        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                                            'data' => $data]);
+
+    }
+    /**
+     * Create a new resource object, from "posted" parameters
+     *
+     * @return mixed
+     */
+    public function exibirJustificativas()
+    {        
+        helper(['form', 'url', 'session']);
+
+        \Config\Services::session();
+
+        $prontuario = null;
+
+        $dataflash = session()->getFlashdata('dataflash');
+        if ($dataflash) {
+            $data = $dataflash;
+        } else {
+            $data = $this->request->getVar();
+        }
+
+        if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+            //$data = $dataflash;
+            $data = $_SESSION['mapacirurgico'];
+        }
+
+        if (!empty($data['dtinicio']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtinicio'])) {
+            $data['dtinicio'] = \DateTime::createFromFormat('Y-m-d', $data['dtinicio'])->format('d/m/Y');
+        }
+        if (!empty($data['dtfim']) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $data['dtfim'])) {
+            $data['dtfim'] = \DateTime::createFromFormat('Y-m-d', $data['dtfim'])->format('d/m/Y');
+        }
+
+        //dd($data);
+
+        if(!empty($data['prontuario']) && is_numeric($data['prontuario'])) {
+            //$resultAGHUX = $this->aghucontroller->getPaciente($data['prontuario']);
+            $paciente = $this->localaippacientesmodel->find($data['prontuario']);
+
+            //if(!empty($resultAGHUX[0])) {
+            if($paciente) {
+                $prontuario = $data['prontuario'];
+            }
+        }
+
+        $rules = [
+            'prontuario' => 'permit_empty|min_length[1]|max_length[8]|equals['.$prontuario.']',
+            'nome' => 'permit_empty|min_length[3]',
+        ];
+
+        if (!$dataflash) {
+            if ((!isset($_SESSION['mapacirurgico']) || !$_SESSION['mapacirurgico'])) {
+                $rules = $rules + [
+                    'dtinicio' => 'permit_empty|valid_date[Y-m-d]',
+                    'dtfim' => 'permit_empty|valid_date[Y-m-d]',
+                ];
+            }
+        }
+
+        if ($this->validate($rules)) {
+            if (($data['dtinicio'] ?? null) || ($data['dtfim'] ?? null)) {
+
+                $data['filas'] = $this->selectfilaativas;
+                $data['especialidades'] = $this->selectAllespecialidadeaghu;
+
+                if (empty($data['dtinicio'])) {
+                    $this->validator->setError('dtinicio', 'Informe a data de início!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (!$data['dtfim']) {
+                    $this->validator->setError('dtfim', 'Informe a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                    'validation' => $this->validator,
+                    'data' => $data]);
+                }
+                if (DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d') < DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d')) {
+                    $this->validator->setError('dtinicio', 'A data de início não pode ser maior que a data final!');
+                    return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                                                        'validation' => $this->validator,
+                                                        'data' => $data]);
+                }
+            
+            }
+            
+            $this->validator->reset();
+
+            $result = $this->getJustificativas($data);
+
+            //die(var_dump($result));
+
+            if (empty($result)) {
+
+                $data['filas'] = $this->selectfilaativas;
+                $data['especialidades'] = $this->selectAllespecialidadeaghu;
+
+                session()->setFlashdata('warning_message', 'Nenhuma cirurgia localizada com os parâmetros informados!');
+                return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                                                    'validation' => $this->validator,
+                                                    'data' => $data]);
+            
+            }
+
+            if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
+                $data['pagina_anterior'] = 'S';
+            } else {
+                $data['pagina_anterior'] = 'N';
+            }
+
+            $_SESSION['mapacirurgico'] = $data;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/list_justificativas',
+                                               'justificativas' => $result,
+                                               'data' => $data]);
+
+        } else {
+            if((!empty($data['prontuario']) && is_numeric($data['prontuario'])) && is_null($paciente)) {
+                $this->validator->setError('prontuario', 'Esse prontuário não existe na base do AGHUX!');
+            }
+            
+            $data['filas'] = $this->filamodel->Where('indsituacao', 'A')->orderBy('nmtipoprocedimento', 'ASC')->findAll();
+            $data['especialidades'] = $this->selectespecialidadeaghu;
+
+            return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
+                                                'validation' => $this->validator,
+                                                'data' => $data]);
+        }
+    }
      /**
      * Create a new resource object, from "posted" parameters
      *
@@ -1050,6 +1208,80 @@ class MapaCirurgico extends ResourceController
        $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
     }
+    
+    //var_dump($builder->getCompiledSelect());die();
+    //var_dump($builder->get()->getResult());die();
+
+    return $builder->get()->getResult();
+}
+/**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function getJustificativas($data) 
+{
+    // Conexão com o banco de dados
+    $db = \Config\Database::connect('default');
+
+    $builder = $db->table('vw_historico_justificativas');
+
+    $builder->join('lista_espera', 'lista_espera.id = vw_historico_justificativas.idlistaespera', 'inner');
+    $builder->join('local_aip_pacientes', 'local_aip_pacientes.prontuario = lista_espera.numprontuario', 'left');
+    $builder->join('tipos_procedimentos', 'tipos_procedimentos.id = lista_espera.idtipoprocedimento', 'left');
+    $builder->join('local_agh_especialidades', 'local_agh_especialidades.seq = lista_espera.idespecialidade', 'left');
+    $builder->join('local_fat_itens_proced_hospitalar', 'local_fat_itens_proced_hospitalar.cod_tabela = lista_espera.idprocedimento', 'left');
+
+    //$builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
+
+    $builder->select('
+        vw_historico_justificativas.dthr_evento,
+        vw_historico_justificativas.evento,
+        vw_historico_justificativas.justificativa,
+        lista_espera.numprontuario as prontuario,
+        local_aip_pacientes.nome as nome_paciente,
+        local_agh_especialidades.nome_especialidade as especialidade_descricao,
+        tipos_procedimentos.nmtipoprocedimento as fila,
+        local_fat_itens_proced_hospitalar.descricao as procedimento_descricao
+    ');
+   
+    
+    //die(var_dump($data));
+
+    if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
+        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
+        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
+
+        $builder->where("vw_historico_justificativas.dthr_evento >=", $dtInicio);
+        $builder->where("vw_historico_justificativas.dthr_evento <=", $dtFim);
+    }
+
+    // Condicional para prontuario
+    if (!empty($data['prontuario'])) {
+        $builder->where('local_aip_pacientes.prontuario', $data['prontuario']);
+    }
+
+    // Condicional para nome
+    if (!empty($data['nome'])) {
+        $builder->like('local_aip_pacientes.nome', strtoupper($data['nome']));
+    }
+
+    // Condicional para especialidade
+    if (!empty($data['especialidade'])) {
+        $builder->where('lista_espera.idespecialidade', $data['especialidade']);
+    }
+
+    // Condicional para fila
+    if (!empty($data['fila'])) {
+        $builder->where('lista_espera.idtipoprocedimento', $data['fila']);
+    }
+
+    if (!empty($data['tipojustificativa'])) {
+        $builder->where('vw_historico_justificativas.tipojustificativa', $data['tipojustificativa']);
+    }
+
+    $builder->orderBy('vw_historico_justificativas.dthr_evento', 'ASC');
+    $builder->orderBy('lista_espera.numprontuario', 'ASC');
     
     //var_dump($builder->getCompiledSelect());die();
     //var_dump($builder->get()->getResult());die();

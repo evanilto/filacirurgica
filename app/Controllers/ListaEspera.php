@@ -19,6 +19,8 @@ use App\Models\EquipeMedicaModel;
 use App\Models\EquipamentosCirurgiaModel;
 use App\Models\HemocomponentesModel;
 use App\Models\HemocomponentesCirurgiaModel;
+use App\Models\JustificativaListaEsperaModel;
+
 
 use App\Models\FilasModel;
 use App\Models\FilaWebModel;
@@ -104,6 +106,7 @@ class ListaEspera extends ResourceController
     private $selectunidades;
     private $hemocomponentescirurgiamodel;
     private $pacientesmodel;
+    private $justificativalistaesperamodel;
 
 
     public function __construct()
@@ -143,6 +146,7 @@ class ListaEspera extends ResourceController
         $this->hemocomponentesmodel = new HemocomponentesModel();
         $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
         //$this->aghucontroller = new Aghu();
+        $this->justificativalistaesperamodel = new JustificativaListaEsperaModel();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------
         $idsEspecialidade = $this->listaesperamodel->withDeleted()->distinct()->select('idespecialidade')->findColumn('idespecialidade');
@@ -1412,7 +1416,7 @@ class ListaEspera extends ResourceController
                     'idlateralidade' => $data['lateralidade'],
                     'indsituacao' => 'A',
                     'txtinfoadicionais' => $data['info'],
-                    'txtorigemjustificativa' => $data['justorig'],
+                    //'txtorigemjustificativa' => $data['justorig'],
                     'indinternacao' => $data['internacao'],
                 ];
                 
@@ -1435,6 +1439,23 @@ class ListaEspera extends ResourceController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao incluir um paciente na Lista! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                if ($data['justorig']) {
+                    $justificativa['idlistaespera'] = $idlista;
+                    $justificativa['txtjustificativa'] = $data['justorig'];
+                    $justificativa['idjustificativa'] = 57;
+                    $this->justificativalistaesperamodel->insert($justificativa);
+                }
+
+                 if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de origem do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 

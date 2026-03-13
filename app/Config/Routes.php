@@ -6,8 +6,8 @@ $routes->setAutoRoute('improved');
 
 $routes->cli('testecli ola', 'Testecli::ola');
 $routes->cli('agendador suspensoesAutomaticas', 'Agendador::suspensoesAutomaticas');
-$routes->get('/', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
-$routes->get('(:any)', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
+//$routes->get('/', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
+//$routes->get('(:any)', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
 
 /**
  * @var RouteCollection $routes
@@ -133,6 +133,8 @@ $routes->group('equipamentos', ['filter' => 'auth'], function ($routes) {
 $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
     $routes->get('potencialcontaminacao', 'MapaCirurgico::consultarPotencialContaminacao');
     $routes->post('exibirpotencialcontaminacao', 'MapaCirurgico::exibirPotencialContaminacao');
+    $routes->get('justificativas', 'MapaCirurgico::consultarJustificativas');
+    $routes->post('exibirjustificativas', 'MapaCirurgico::exibirJustificativas');
 });
 
 $routes->group('transfusao', ['filter' => 'auth'], function($routes) {
