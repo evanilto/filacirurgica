@@ -1675,7 +1675,8 @@ class ListaEspera extends ResourceController
 
         $lista = $this->listaesperamodel->find($id);
         $nome_pac = $this->localaippacientesmodel->find($lista['numprontuario'])->nome;
-        $paciente = $this->pacientesmodel->find($lista['numprontuario']);
+        //$paciente = $this->pacientesmodel->find($lista['numprontuario']);
+        $justificativaorigem = $this->justificativalistaesperamodel->where('idlistaespera', $id)->where('idjustificativa', 57)->first();
 
         //die(var_dump($lista));
 
@@ -1700,7 +1701,8 @@ class ListaEspera extends ResourceController
         $data['procedimento'] = $lista['idprocedimento'];
         $data['lateralidade'] = $lista['idlateralidade'];
         $data['info'] = $lista['txtinfoadicionais'];
-        $data['justorig'] = $lista['txtorigemjustificativa'];
+        //$data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['justorig'] = $justificativaorigem ? $justificativaorigem['txtjustificativa'] : '';
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -1853,7 +1855,7 @@ class ListaEspera extends ResourceController
                         'idprocedimento' => $data['procedimento'],
                         'idlateralidade' => $data['lateralidade'],
                         'txtinfoadicionais' => $data['info'],
-                        'txtorigemjustificativa' => $data['justorig'],
+                        //'txtorigemjustificativa' => $data['justorig'],
                         ];
 
                 /* $pac = [
@@ -1899,6 +1901,19 @@ class ListaEspera extends ResourceController
 
                 $this->listaesperamodel->update($data['id'], $lista);
 
+                $this->justificativalistaesperamodel
+                        ->where('idlistaespera', $data['id'])
+                        ->where('idjustificativa', 57)
+                        ->delete();
+
+                if (!empty($data['justorig'])) {
+                    $this->justificativalistaesperamodel->insert([
+                        'idlistaespera' => $data['id'],
+                        'txtjustificativa' => $data['justorig'],
+                        'idjustificativa' => 57
+                    ]);
+                }
+                
                 if ($db->transStatus() === false) {
                     $error = $db->error();
                     $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
@@ -2144,6 +2159,7 @@ class ListaEspera extends ResourceController
 
         $lista = $this->listaesperamodel->find($id);
         $paciente = $this->pacientesmodel->find($lista['numprontuario']);
+        $justificativaorigem = $this->justificativalistaesperamodel->where('idlistaespera', $id)->where('idjustificativa', 57)->first();
 
         //die(var_dump($id));
 
@@ -2172,7 +2188,8 @@ class ListaEspera extends ResourceController
         $data['posoperatorio'] = null;
         $data['info'] = $lista['txtinfoadicionais'];
         $data['nec_proced'] = '';
-        $data['justorig'] = $lista['txtorigemjustificativa'];
+        //$data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['justorig'] = $justificativaorigem ? $justificativaorigem['txtjustificativa'] : '';
         $data['justenvio'] = '';
         $data['profissional'] = [];
         $data['filas'] = $this->selectfila;
