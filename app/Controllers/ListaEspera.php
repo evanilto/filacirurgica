@@ -1057,7 +1057,11 @@ class ListaEspera extends ResourceController
         $rules = [
             'especialidade' => 'required',
             'fila' => 'required',
-            'justrecuperacao' => 'required'
+            //'justrecuperacao' => 'required',
+            'justrecuperacao' => [
+                'filters' => 'trim',
+                'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
+            ],
         ];
 
         if ($this->validate($rules)) {
@@ -1080,7 +1084,7 @@ class ListaEspera extends ResourceController
                 $db->transStart();
 
                 $lista = [
-                    'txtjustificativarecuperacao' => $data['justrecuperacao'],
+                    //'txtjustificativarecuperacao' => $data['justrecuperacao'],
                     'indsituacao' => 'A',
                     'dtrecuperacao' => date('Y-m-d H:i:s'),
                     'deleted_at' => NULL
@@ -1098,7 +1102,36 @@ class ListaEspera extends ResourceController
                     );
                 }
 
+                // recuperação da justificativa de origem do paciente - id 57 - Inclusão de paciente na lista de espera
+                /* $justorig = $this->justificativalistaesperamodel->withDeleted()
+                    ->where([
+                        'idlistaespera' => $data['id'],
+                        'idjustificativa' => 57
+                    ])
+                    ->first();
+
+                if ($justorig) {
+                    $this->justificativalistaesperamodel->update($justorig['id'], ['deleted_at' => null]);
+                } */
+
+                // justificativa para recuperação do paciente - id 58 - Recuperação de paciente excluído da lista de espera
+                $justificativa['idlistaespera'] = $data['id'];
+                $justificativa['txtjustificativa'] = $data['justrecuperacao'];
+                $justificativa['idjustificativa'] = 58;
+                $this->justificativalistaesperamodel->insert($justificativa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de recuperação do paciente! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
                 $array = [
+
                     'dthrevento' => date('Y-m-d H:i:s'),
                     'idlistaespera' => $data['id'],
                     'idevento' => 9,
@@ -1118,6 +1151,8 @@ class ListaEspera extends ResourceController
                 }
 
                 $db->transComplete();
+
+                session()->setFlashdata('success', 'Paciente recuperado com sucesso!');
         
             } catch (\Throwable $e) {
                 $db->transRollback(); // Reverte a transação em caso de erro
@@ -1125,15 +1160,6 @@ class ListaEspera extends ResourceController
                 $msg .= ' - '.$e->getMessage();
                 log_message('error', $msg.': ' . $e->getMessage());
                 session()->setFlashdata('failed', $msg);
-            }
-
-            if ($db->transStatus() === false) {
-                $dados = $this->request->getPost();
-                $dataflash['idlista'] = $data['id'];
-                session()->setFlashdata('dataflash', $dataflash);
-
-            } else {
-                session()->setFlashdata('success', 'Paciente recuperado com sucesso!');
             }
 
             return redirect()->to(base_url('listaespera/exibirexcluidos'));
@@ -2067,7 +2093,7 @@ class ListaEspera extends ResourceController
                 $lista = [
                     'idexclusao' => $data['idexclusao'],
                     'dtexclusao' => date('Y-m-d H:i:s'),
-                    'txtjustificativaexclusao' => $data['justexclusao'],
+                    //'txtjustificativaexclusao' => $data['justexclusao'],
                     'indsituacao' => 'E'
                     ];
                     
@@ -2094,6 +2120,38 @@ class ListaEspera extends ResourceController
                         sprintf('Erro ao excluir um paciente da Lista! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+
+                if ($data['justexclusao']) {
+                    $justificativa['idlistaespera'] = $data['id'];
+                    $justificativa['txtjustificativa'] = $data['justexclusao'];
+                    $justificativa['idjustificativa'] = $data['idexclusao'];
+                    $this->justificativalistaesperamodel->insert($justificativa);
+                }
+
+                 if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de exclusão do paciente! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                /* $this->justificativalistaesperamodel
+                        ->where('idlistaespera', $data['id'])
+                        ->where('idjustificativa', 57)
+                        ->delete();
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao excluir justificativa do paciente [%d] %s', $errorCode, $errorMessage)
+                    );
+                } */
 
                 $array = [
                     'dthrevento' => date('Y-m-d H:i:s'),
@@ -2259,7 +2317,7 @@ class ListaEspera extends ResourceController
             'usarHemocomponentes' => 'required',
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
-            'justorig' => 'max_length[1024]|min_length[0]',
+            //'justorig' => 'max_length[1024]|min_length[0]',
             //'justenvio' => 'permit_empty|max_length[500]|min_length[30]',
             /* 'justenvio' => [
                 'rules' => [
@@ -2448,16 +2506,16 @@ class ListaEspera extends ResourceController
             try {
 
                 $lista = [
-                        'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
-                        'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
+                        //'idriscocirurgico' => empty($this->data['risco']) ? NULL : $this->data['risco'],
+                        //'dtriscocirurgico' => empty($this->data['dtrisco']) ? NULL : $this->data['dtrisco'],
                         'numcid' => empty($this->data['cid']) ? NULL : $this->data['cid'],
                         'idcomplexidade' => $this->data['complexidade'],
                         'indcongelacao' => $this->data['congelacao'],
                         'indopme' => $this->data['opme'],
                         //'tiposanguineo' => $this->data['tipo_sanguineo'],
                         'idlateralidade' => $this->data['lateralidade'],
-                        'txtinfoadicionais' => $this->data['info'],
-                        'txtorigemjustificativa' => $this->data['justorig'],
+                        //'txtinfoadicionais' => $this->data['info'],
+                        //'txtorigemjustificativa' => $this->data['justorig'],
                         //'indsituacao' => $this->data['idsituacao_cirurgia_hidden'] // (P) Programada ou (EA) Em Aprovação
                         'indsituacao' => 'P' // Programada
                         ];
@@ -2525,7 +2583,7 @@ class ListaEspera extends ResourceController
                     'idposoperatorio' => $this->data['posoperatorio'],
                     'indhemoderivados' => $this->data['usarHemocomponentes'],
                     'txtnecessidadesproced' => $this->data['nec_proced'],
-                    'txtjustificativaenvio' => $this->data['justenvio'],
+                    //'txtjustificativaenvio' => $this->data['justenvio'],
                     'numordem' => $this->data['ordemfila'],
                     'indsituacao' => 'P' // Programada
                     ];
@@ -2541,6 +2599,27 @@ class ListaEspera extends ResourceController
                         sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+
+                // justificativa de envio para o mapa cirúrgico
+                if (!empty($this->data['justenvio'])) {
+
+                    $justificativa['idlistaespera'] = $this->data['id'];
+                    $justificativa['idmapacirurgico'] = $idmapa;
+                    $justificativa['txtjustificativa'] = $this->data['justenvio'];
+                    $justificativa['idjustificativa'] = 59;
+                    $this->justificativalistaesperamodel->insert($justificativa);
+                }
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de origem do paciente! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+                // ---------------------------------------------------
 
                 if (isset($this->data['proced_adic'])) {
 

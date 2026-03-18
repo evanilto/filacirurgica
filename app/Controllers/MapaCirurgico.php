@@ -42,6 +42,7 @@ use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\LocalAipContatosPacientesModel;
 use App\Models\LocalVwAghuCirurgiasModel;
 use App\Models\PacientesModel;
+use App\Models\JustificativaListaEsperaModel;
 
 
 class MapaCirurgico extends ResourceController
@@ -108,6 +109,7 @@ class MapaCirurgico extends ResourceController
     private $localaipcontatospacientesmodel;
     private $localvwaghucirurgiasmodel;
     private $pacientesmodel;
+    private $justificativalistaesperamodel;
 
 
     public function __construct()
@@ -148,6 +150,7 @@ class MapaCirurgico extends ResourceController
         $this->localaipcontatospacientesmodel = new LocalAipContatosPacientesModel();
         $this->localvwaghucirurgiasmodel = new LocalVwAghuCirurgiasModel();
         $this->pacientesmodel = new PacientesModel();
+        $this->justificativalistaesperamodel = new JustificativaListaEsperaModel();
 
         //$this->aghucontroller = new Aghu();
 
@@ -562,7 +565,7 @@ class MapaCirurgico extends ResourceController
             'R'   => 'Recuperação para Fila'
         ];
 
-        //die(var_dump($data));
+        //dd($data);
 
         return view('layouts/sub_content', ['view' => 'mapacirurgico/form_consulta_justificativas',
                                             'data' => $data]);
@@ -587,6 +590,19 @@ class MapaCirurgico extends ResourceController
         } else {
             $data = $this->request->getVar();
         }
+
+        $data['filas'] = $this->selectfilaativas;
+        $data['especialidades'] = $this->selectAllespecialidadeaghu;
+        $data['tiposJustificativa'] = [
+            'ENV' => 'Envio ao Mapa',
+            'U'   => 'Urgência',
+            'T'   => 'Troca de Paciente',
+            'S'   => 'Suspensão de Cirurgia',
+            'SADM' => 'Suspensão Administrativa',
+            'O'   => 'Origem do Paciente',
+            'E'   => 'Exclusão da Fila',
+            'R'   => 'Recuperação para Fila'
+        ];
 
         if (isset($_SESSION['mapacirurgico']) && $_SESSION['mapacirurgico']) {
             //$data = $dataflash;
@@ -1934,7 +1950,7 @@ class MapaCirurgico extends ResourceController
         $data['info'] = $mapa->infoadicionais;
         $data['obs_enf'] = $mapa->obsenfermagem;
         $data['nec_proced'] = $mapa->necessidadesproced;
-        $data['justorig'] = $mapa->origemjustificativa;
+        $data['justorig'] = $mapa->justificativaorigem;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
         $data['sala'] =  $mapa->idsala ?? ' ';
@@ -2478,7 +2494,7 @@ class MapaCirurgico extends ResourceController
         $data['info'] = $mapa->infoadicionais;
         $data['obs_enf'] = $mapa->obsenfermagem;
         $data['nec_proced'] = $mapa->necessidadesproced;
-        $data['justorig'] = $mapa->origemjustificativa;
+        $data['justorig'] = $mapa->justificativaorigem;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['idsuspensao'] = $mapa->idsuspensao;
         //$data['dtsuspensao'] = $mapa->dthrsuspensao;
@@ -2588,7 +2604,7 @@ class MapaCirurgico extends ResourceController
         $data['posoperatorio'] = $mapa->idposoperatorio;
         $data['info'] = $mapa->infoadicionais;
         $data['nec_proced'] = $mapa->necessidadesproced;
-        $data['justorig'] = $mapa->origemjustificativa;
+        $data['justorig'] = $mapa->justificativaorigem;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['idsuspensao'] = $mapa->idsuspensao;
         //$data['dtsuspensao'] = $mapa->dthrsuspensao;
@@ -3378,7 +3394,7 @@ class MapaCirurgico extends ResourceController
                 $mapa = [
                     'idsuspensao' => $data['idsuspensao'],
                     'dthrsuspensao' => date('Y-m-d H:i:s'),
-                    'txtjustificativasuspensao' => $data['justsuspensao'],
+                    //'txtjustificativasuspensao' => $data['justsuspensao'],
                     'indsituacao' => $data['suspadm'] ? 'SADM' : 'S' // SUSPENSA ADMINISTRATIVAMENTE ou simplesmente SUSPENSA
                     ];
 
@@ -3395,6 +3411,27 @@ class MapaCirurgico extends ResourceController
                         sprintf('Erro ao suspender cirurgia! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
+
+                // justificativa de envio para o mapa cirúrgico
+                if (!empty($data['justsuspensao'])) {
+
+                    $justificativa['idlistaespera'] = $data['idlista'];
+                    $justificativa['idmapacirurgico'] = $data['id'];
+                    $justificativa['txtjustificativa'] = $data['justsuspensao'];
+                    $justificativa['idjustificativa'] = $data['idsuspensao'];
+                    $this->justificativalistaesperamodel->insert($justificativa);
+                }
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de suspensão! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+                // ---------------------------------------------------
 
                 $equipamentos = $this->equipamentoscirurgiamodel->where('idmapacirurgico', $data['id'])->findAll();
 
