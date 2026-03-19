@@ -16,7 +16,18 @@
 
     $usarHemocomponentes_disabled = true;
 ?>
-
+<?php
+$mapJustificativas = [
+    'ENV'  => 'Envio ao Mapa',
+    'U'    => 'Urgência',
+    'T'    => 'Troca de Paciente',
+    'S'    => 'Suspensão de Cirurgia',
+    'O'    => 'Origem do Paciente',
+    'E'    => 'Exclusão da Fila',
+    'R'    => 'Recuperação para Fila',
+    'SADM' => 'Suspensão ADM'
+];
+?>
 <div class="container mt-5 mb-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -722,21 +733,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-2">
-                                    <label class="form-label" for="justenvio">Justificativas Envio ao Mapa</label>
-                                    <textarea id="justenvio" maxlength="500" rows="3" disabled
-                                            class="form-control <?= isset($validation) && $validation->getError('justenvio') ? 'is-invalid' : '' ?>"
-                                            name="justenvio"><?= isset($data['justenvio']) ? $data['justenvio'] : '' ?></textarea>
-                                    <?php if (isset($validation) && $validation->getError('justenvio')): ?>
-                                        <div class="invalid-feedback">
-                                            <?= $validation->getError('justenvio') ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <div class="mb-2">
                                     <label class="form-label" for="obs_enf">Observações da Enfermagem</label>
                                     <textarea id="obs_enf" maxlength="500" rows="3" disabled
                                             class="form-control <?= isset($validation) && $validation->getError('obs_enf') ? 'is-invalid' : '' ?>"
@@ -749,106 +745,42 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="row g-3">
-                            <--?php if ($data['indurgencia'] == 'S') { ?>
-                                <div class="col-md-6">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="justurgencia">Justificativas da Urgência</label>
-                                        <textarea id="justurgencia" maxlength="500" rows="3" disabled
-                                                class="form-control <--?= isset($validation) && $validation->getError('justurgencia') ? 'is-invalid' : '' ?>"
-                                                name="justurgencia"><--?= isset($data['justurgencia']) ? $data['justurgencia'] : '' ?></textarea>
-                                        <--?php if (isset($validation) && $validation->getError('justurgencia')): ?>
-                                            <div class="invalid-feedback">
-                                                <--?= $validation->getError('justurgencia') ?>
-                                            </div>
-                                        <--?php endif; ?>
-                                    </div>
-                                </div>
-                            <--?php } ?>
-                        </div> -->
-                        <?php if ($data['dtsuspensao']) { ?>
-                            <div class="row g-3">
-                                <div class="col-md-2">
-                                    <div class="mb-2">
-                                        <label for="dtsuspensao" class="form-label">Data/Hora Suspensão</label>
-                                        <div class="input-group">
-                                            <input type="text" id="dtsuspensao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
-                                                class="form-control<?php if($validation->getError('dtsuspensao')): ?>is-invalid<?php endif ?>"
-                                                name="dtsuspensao" value="<?= set_value('dtsuspensao', $data['dtsuspensao']) ?>" disabled/>
-                                            <?php if ($validation->getError('dtsuspensao')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('dtsuspensao') ?>
-                                                </div>
-                                            <?php endif; ?>
+                         <?php if (!empty($data['justificativas'])) { ?>
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <b>Justificativas de Movimentação</b>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-2">
-                                        <label for="idsuspensao" class="form-label">Justificativa para suspensão</label>
-                                        <div class="input-group">
-                                            <select class="form-select select2-dropdown <?php if($validation->getError('idsuspensao')): ?>is-invalid<?php endif ?>"
-                                                id="idsuspensao" name="idsuspensao" disabled
-                                                data-placeholder="Selecione uma opção" data-allow-clear="1">
-                                                <option value="" <?php echo set_select('idsuspensao', '', TRUE); ?> ></option>
-                                                <?php
-                                                foreach ($data['justificativassuspensao'] as $key => $idsuspensao) {
-                                                    $selected = ($data['idsuspensao'] == $idsuspensao['id']) ? 'selected' : '';
-                                                    echo '<option value="'.$idsuspensao['id'].'" '.$selected.'>'.$idsuspensao['descricao'].'</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                            <?php if ($validation->getError('idsuspensao')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('idsuspensao') ?>
-                                                </div>
-                                            <?php endif; ?>
+                                        <div class="card-body">
+                                            <table id="tabelaJustificativas" class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Data/Hora</th>
+                                                        <th>Tipo</th>
+                                                        <th>Motivo</th>
+                                                        <th>Justificativa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php if (!empty($data['justificativas'])): ?>
+                                                        <?php foreach ($data['justificativas'] as $j): ?>
+                                                            <tr>
+                                                                <td><?= date('d/m/Y H:i:s', strtotime($j->dthr_evento)) ?></td>
+                                                                <td>
+                                                                    <?php
+                                                                        $tipo = $j->tipojustificativa ?? null;
+                                                                        echo esc($mapJustificativas[$tipo] ?? $tipo);
+                                                                    ?>
+                                                                </td>
+                                                                <td><?= esc($j->evento) ?></td>
+                                                                <td><?= esc($j->justificativa) ?></td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="justsuspensao">Observações sobre a suspenssão</label>
-                                        <textarea id="justsuspensao" maxlength="500" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justsuspensao') ? 'is-invalid' : '' ?>"
-                                                name="justsuspensao"><?= isset($data['justsuspensao']) ? $data['justsuspensao'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justsuspensao')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('justsuspensao') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
-                        <?php if ($data['dttroca']) { ?>
-                            <div class="row g-3">
-                                <div class="col-md-2">
-                                    <div class="mb-2">
-                                        <label for="dttroca" class="form-label">Data/Hora Troca</label>
-                                        <div class="input-group">
-                                            <input type="text" id="dttroca" placeholder="DD/MM/AAAA HH:MM:SS" disabled
-                                                class="form-control<?php if($validation->getError('dttroca')): ?>is-invalid<?php endif ?>"
-                                                name="dttroca" value="<?= set_value('dttroca', $data['dttroca']) ?>" disabled/>
-                                            <?php if ($validation->getError('dttroca')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('dttroca') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="justtroca">Observações sobre a troca</label>
-                                        <textarea id="justtroca" maxlength="500" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justtroca') ? 'is-invalid' : '' ?>"
-                                                name="justtroca"><?= isset($data['justtroca']) ? $data['justtroca'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justtroca')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('justtroca') ?>
-                                            </div>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -945,6 +877,20 @@
     fetchPacienteNomeOnLoad();
 
     $(document).ready(function() {
+        $('#tabelaJustificativas').DataTable({
+            order: [[0, 'desc']],
+            autoWidth: false,
+            columnDefs: [
+                { width: "170px", targets: 0 },
+                { width: "180px", targets: 1 },
+                { width: "250px", targets: 2 },
+                { width: "auto", targets: 3 }
+            ],
+            language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                }
+        });
+
         $('.select2-dropdown').select2({
             placeholder: "",
             allowClear: true,

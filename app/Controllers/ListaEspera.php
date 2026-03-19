@@ -1611,10 +1611,11 @@ class ListaEspera extends ResourceController
         $data['info'] = $lista['txtinfoadicionais'];
         $data['justorig'] = $lista['txtorigemjustificativa'];
         $data['idexclusao'] = $lista['idexclusao'];
-        $data['justexclusao'] = $lista['txtjustificativaexclusao'];
+        /* $data['justexclusao'] = $lista['txtjustificativaexclusao'];
         $data['justrecuperacao'] = $lista['txtjustificativarecuperacao'];
         $data['justificativasexclusao'] = $this->selectjustificativasexclusao;
-        $data['justorig'] = $lista['txtorigemjustificativa'];
+        $data['justorig'] = $lista['txtorigemjustificativa']; */
+        $data['justorig'] = $this->justificativalistaesperamodel->where('idlistaespera', $lista['id'])->where('idjustificativa', 57)->first()['txtjustificativa'] ?? '';
         $data['filas'] = $this->selectfila;
         $data['riscos'] = $this->selectrisco;
         $data['origens'] = $this->selectorigempaciente;
@@ -1623,22 +1624,12 @@ class ListaEspera extends ResourceController
         $data['cids'] = $this->selectcids;
         $data['procedimentos'] = $this->selectitensprocedhospitativos;
         $data['unidades'] = $this->selectunidades;
+        $data['justificativas'] = $this->justificativalistaesperamodel->getJustificativas(
+            ['idlista' => $lista['id'],
+             'tipojustificativa' => ['ENV','U', 'T','S', 'E', 'R', 'SADM']
+            ]);
 
-        /* if ($data['idexclusao']) {
-            $historico = $this->historicomodel->where('idevento', 7)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
-            $data['dtexclusao'] = DateTime::createFromFormat('Y-m-d H:i:s', $historico[0]['dthrevento'])->format('d/m/Y H:i');
-        } else {
-            $data['dtexclusao'] = NULL;
-        }
-
-        if ($data['justrecuperacao']) {
-            $historico = $this->historicomodel->where('idevento', 9)->where('idlistaespera', $lista['id'])->orderby('dthrevento', 'DESC')->select('dthrevento')->find();
-            $data['dtrecuperacao'] = DateTime::createFromFormat('Y-m-d H:i:s', $historico[0]['dthrevento'])->format('d/m/Y H:i');
-        } else {
-            $data['dtrecuperacao'] = NULL;
-        } */
-        $data['dtexclusao'] = $lista['dtexclusao'];
-        $data['dtrecuperacao'] = $lista['dtrecuperacao'];
+       //dd('data', $data);
 
         return view('layouts/sub_content', ['view' => 'listaespera/form_consulta_itemlista',
                                             'data' => $data]);

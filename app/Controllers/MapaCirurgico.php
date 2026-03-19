@@ -671,7 +671,7 @@ class MapaCirurgico extends ResourceController
             
             $this->validator->reset();
 
-            $result = $this->getJustificativas($data);
+            $result = $this->justificativalistaesperamodel->getJustificativas($data);
 
             //die(var_dump($result));
 
@@ -1224,80 +1224,6 @@ class MapaCirurgico extends ResourceController
        $builder->orderBy('vw_mapacirurgico.dthrcirurgia', 'ASC');
 
     }
-    
-    //var_dump($builder->getCompiledSelect());die();
-    //var_dump($builder->get()->getResult());die();
-
-    return $builder->get()->getResult();
-}
-/**
-     * Return a new resource object, with default properties
-     *
-     * @return mixed
-     */
-    public function getJustificativas($data) 
-{
-    // Conexão com o banco de dados
-    $db = \Config\Database::connect('default');
-
-    $builder = $db->table('vw_historico_justificativas');
-
-    $builder->join('lista_espera', 'lista_espera.id = vw_historico_justificativas.idlistaespera', 'inner');
-    $builder->join('local_aip_pacientes', 'local_aip_pacientes.prontuario = lista_espera.numprontuario', 'left');
-    $builder->join('tipos_procedimentos', 'tipos_procedimentos.id = lista_espera.idtipoprocedimento', 'left');
-    $builder->join('local_agh_especialidades', 'local_agh_especialidades.seq = lista_espera.idespecialidade', 'left');
-    $builder->join('local_fat_itens_proced_hospitalar', 'local_fat_itens_proced_hospitalar.cod_tabela = lista_espera.idprocedimento', 'left');
-
-    //$builder->join('vw_ordem_paciente', 'vw_ordem_paciente.id = vw_mapacirurgico.idlista', 'left');
-
-    $builder->select('
-        vw_historico_justificativas.dthr_evento,
-        vw_historico_justificativas.evento,
-        vw_historico_justificativas.justificativa,
-        lista_espera.numprontuario as prontuario,
-        local_aip_pacientes.nome as nome_paciente,
-        local_agh_especialidades.nome_especialidade as especialidade_descricao,
-        tipos_procedimentos.nmtipoprocedimento as fila,
-        local_fat_itens_proced_hospitalar.descricao as procedimento_descricao
-    ');
-   
-    
-    //die(var_dump($data));
-
-    if (!empty($data['dtinicio']) && !empty($data['dtfim'])) {
-        $dtInicio = DateTime::createFromFormat('d/m/Y', $data['dtinicio'])->format('Y-m-d 00:00:00');
-        $dtFim = DateTime::createFromFormat('d/m/Y', $data['dtfim'])->format('Y-m-d 23:59:59');
-
-        $builder->where("vw_historico_justificativas.dthr_evento >=", $dtInicio);
-        $builder->where("vw_historico_justificativas.dthr_evento <=", $dtFim);
-    }
-
-    // Condicional para prontuario
-    if (!empty($data['prontuario'])) {
-        $builder->where('local_aip_pacientes.prontuario', $data['prontuario']);
-    }
-
-    // Condicional para nome
-    if (!empty($data['nome'])) {
-        $builder->like('local_aip_pacientes.nome', strtoupper($data['nome']));
-    }
-
-    // Condicional para especialidade
-    if (!empty($data['especialidade'])) {
-        $builder->where('lista_espera.idespecialidade', $data['especialidade']);
-    }
-
-    // Condicional para fila
-    if (!empty($data['fila'])) {
-        $builder->where('lista_espera.idtipoprocedimento', $data['fila']);
-    }
-
-    if (!empty($data['tipojustificativa'])) {
-        $builder->where('vw_historico_justificativas.tipojustificativa', $data['tipojustificativa']);
-    }
-
-    $builder->orderBy('vw_historico_justificativas.dthr_evento', 'ASC');
-    $builder->orderBy('lista_espera.numprontuario', 'ASC');
     
     //var_dump($builder->getCompiledSelect());die();
     //var_dump($builder->get()->getResult());die();
@@ -2494,7 +2420,7 @@ class MapaCirurgico extends ResourceController
         $data['info'] = $mapa->infoadicionais;
         $data['obs_enf'] = $mapa->obsenfermagem;
         $data['nec_proced'] = $mapa->necessidadesproced;
-        $data['justorig'] = $mapa->justificativaorigem;
+        /*$data['justorig'] = $mapa->justificativaorigem;
         $data['justenvio'] = $mapa->justificativaenvio;
         $data['idsuspensao'] = $mapa->idsuspensao;
         //$data['dtsuspensao'] = $mapa->dthrsuspensao;
@@ -2503,7 +2429,8 @@ class MapaCirurgico extends ResourceController
         $data['justificativassuspensao'] = $this->selectjustificativassuspensaoAll;
         $data['dttroca'] = $mapa->dthrtroca ? DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrtroca)->format('d/m/Y H:i') : NULL;
         $data['justtroca'] = $mapa->justificativatroca;
-        $data['justurgencia'] = $mapa->justificativaurgencia;
+        $data['justurgencia'] = $mapa->justificativaurgencia; */
+        $data['justorig'] = $this->justificativalistaesperamodel->where('idlistaespera', $data['idlistaespera'])->where('idjustificativa', 57)->first()['txtjustificativa'] ?? '';
         $data['indurgencia'] = $mapa->indurgencia;
         $data['centrocirurgico'] =  $mapa->idcentrocirurgico;
         $data['sala'] =  $mapa->idsala;
@@ -2528,7 +2455,11 @@ class MapaCirurgico extends ResourceController
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
         $data['unidades'] = $this->selectunidades;
-
+        $data['justificativas'] = $this->justificativalistaesperamodel->getJustificativas(
+            ['idlista' =>  $data['idlistaespera'],
+             'idmapacirurgico' => $data['idmapa'],
+             'tipojustificativa' => ['ENV','U', 'T','S', 'SADM']
+            ]);
 
         $codToRemove = $mapa->idprocedimento;
         $procedimentos = $data['procedimentos'];
@@ -3142,7 +3073,7 @@ class MapaCirurgico extends ResourceController
                 $array = [];
                 $array['dthrtroca'] = date('Y-m-d H:i:s');
                 $array['idlistatroca'] = $this->data['idlistapac2'];
-                $array['txtjustificativatroca'] = $this->data['justtroca'];
+                //$array['txtjustificativatroca'] = $this->data['justtroca'];
                 $array['indsituacao'] = 'T'; // Trocada
 
 
@@ -3157,6 +3088,23 @@ class MapaCirurgico extends ResourceController
 
                     throw new \CodeIgniter\Database\Exceptions\DatabaseException(
                         sprintf('Erro ao atualizar o Mapa Cirúrgico! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+
+                 // ---------------------     justificativa para troca do paciente (61)
+                $justificativa['idlistaespera'] = $this->data['idlistapacatrocar'];
+                $justificativa['idmapacirurgico'] = $this->data['idmapapacatrocar'];
+                $justificativa['txtjustificativa'] = $this->data['justtroca'];
+                $justificativa['idjustificativa'] = 61;
+                $this->justificativalistaesperamodel->insert($justificativa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de recuperação do paciente! [%d] %s', $errorCode, $errorMessage)
                     );
                 }
 

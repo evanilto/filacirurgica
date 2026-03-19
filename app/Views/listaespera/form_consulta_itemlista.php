@@ -1,6 +1,19 @@
 <?= csrf_field() ?>
 <?php $validation = \Config\Services::validation(); ?>
 
+<?php
+$mapJustificativas = [
+    'ENV'  => 'Envio ao Mapa',
+    'U'    => 'Urgência',
+    'T'    => 'Troca de Paciente',
+    'S'    => 'Suspensão de Cirurgia',
+    'O'    => 'Origem do Paciente',
+    'E'    => 'Exclusão da Fila',
+    'R'    => 'Recuperação para Fila',
+    'SADM' => 'Suspensão ADM'
+];
+?>
+
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-12">
@@ -327,89 +340,42 @@
                                 </div>
                             </div>
                         </div>
-                        <?php if ($data['idexclusao']) { ?>
-                            <div class="row g-3">
-                                <div class="col-md-2">
-                                    <div class="mb-2">
-                                        <label for="dtexclusao" class="form-label">Data/Hora da Exclusão</label>
-                                        <div class="input-group">
-                                            <input type="text" id="dtexclusao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
-                                                class="form-control<?php if($validation->getError('dtexclusao')): ?>is-invalid<?php endif ?>"
-                                                name="dtexclusao" value="<?= set_value('dtexclusao', $data['dtexclusao']) ?>" disabled/>
-                                            <?php if ($validation->getError('dtexclusao')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('dtexclusao') ?>
-                                                </div>
-                                            <?php endif; ?>
+                        <?php if (!empty($data['justificativas'])) { ?>
+                            <div class="row g-3 mt-3">
+                                <div class="col-md-12">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <b>Justificativas de Movimentação</b>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="mb-2">
-                                        <label for="idexclusao" class="form-label">Justificativa para exclusão</label>
-                                        <div class="input-group">
-                                            <select class="form-select select2-dropdown <?php if($validation->getError('idexclusao')): ?>is-invalid<?php endif ?>"
-                                                id="idexclusao" name="idexclusao" disabled
-                                                data-placeholder="" data-allow-clear="1">
-                                                <option value="" <?php echo set_select('idexclusao', '', TRUE); ?> ></option>
-                                                <?php
-                                                foreach ($data['justificativasexclusao'] as $key => $idexclusao) {
-                                                    $selected = ($data['idexclusao'] == $idexclusao['id']) ? 'selected' : '';
-                                                    echo '<option value="'.$idexclusao['id'].'" '.$selected.'>'.$idexclusao['descricao'].'</option>';
-                                                }
-                                                ?>
-                                            </select>
-                                            <?php if ($validation->getError('idexclusao')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('idexclusao') ?>
-                                                </div>
-                                            <?php endif; ?>
+                                        <div class="card-body">
+                                            <table id="tabelaJustificativas" class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Data/Hora</th>
+                                                        <th>Tipo</th>
+                                                        <th>Motivo</th>
+                                                        <th>Justificativa</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php if (!empty($data['justificativas'])): ?>
+                                                        <?php foreach ($data['justificativas'] as $j): ?>
+                                                            <tr>
+                                                                <td><?= date('d/m/Y H:i:s', strtotime($j->dthr_evento)) ?></td>
+                                                                <td>
+                                                                    <?php
+                                                                        $tipo = $j->tipojustificativa ?? null;
+                                                                        echo esc($mapJustificativas[$tipo] ?? $tipo);
+                                                                    ?>
+                                                                </td>
+                                                                <td><?= esc($j->evento) ?></td>
+                                                                <td><?= esc($j->justificativa) ?></td>
+                                                            </tr>
+                                                        <?php endforeach; ?>
+                                                    <?php endif; ?>
+                                                </tbody>
+                                            </table>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="justexclusao">Observações sobre a exclusão</label>
-                                        <textarea id="justexclusao" maxlength="500" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justexclusao') ? 'is-invalid' : '' ?>"
-                                                name="justexclusao"><?= isset($data['justexclusao']) ? $data['justexclusao'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justexclusao')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('justexclusao') ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                            </div>
-                        <?php } ?>
-                        <?php if ($data['justrecuperacao']) { ?>
-                            <div class="row g-3">
-                                <div class="col-md-2">
-                                    <div class="mb-2">
-                                        <label for="dtrecuperacao" class="form-label">Data/Hora da Recuperação</label>
-                                        <div class="input-group">
-                                            <input type="text" id="dtrecuperacao" placeholder="DD/MM/AAAA HH:MM:SS" disabled
-                                                class="form-control<?php if($validation->getError('dtrecuperacao')): ?>is-invalid<?php endif ?>"
-                                                name="dtrecuperacao" value="<?= set_value('dtrecuperacao', $data['dtrecuperacao']) ?>" disabled/>
-                                            <?php if ($validation->getError('dtrecuperacao')): ?>
-                                                <div class="invalid-feedback">
-                                                    <?= $validation->getError('dtrecuperacao') ?>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-10">
-                                    <div class="mb-2">
-                                        <label class="form-label" for="justrecuperacao">Justificativa para recuperação</label>
-                                        <textarea id="justrecuperacao" maxlength="500" rows="3" disabled
-                                                class="form-control <?= isset($validation) && $validation->getError('justrecuperacao') ? 'is-invalid' : '' ?>"
-                                                name="justrecuperacao"><?= isset($data['justrecuperacao']) ? $data['justrecuperacao'] : '' ?></textarea>
-                                        <?php if (isset($validation) && $validation->getError('justrecuperacao')): ?>
-                                            <div class="invalid-feedback">
-                                                <?= $validation->getError('justrecuperacao') ?>
-                                            </div>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -522,6 +488,21 @@
     fetchPacienteNomeOnLoad();
 
     $(document).ready(function() {
+
+        $('#tabelaJustificativas').DataTable({
+            order: [[0, 'desc']],
+            autoWidth: false,
+            columnDefs: [
+                { width: "170px", targets: 0 },
+                { width: "180px", targets: 1 },
+                { width: "250px", targets: 2 },
+                { width: "auto", targets: 3 }
+            ],
+            language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                }
+        });
+
         $('#idForm').submit(function() {
             $('#janelaAguarde').show();
             setTimeout(function() {
