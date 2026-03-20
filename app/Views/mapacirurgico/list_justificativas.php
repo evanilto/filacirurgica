@@ -7,7 +7,7 @@
 <?php
     $mapJustificativas = [
         'ENV'  => 'Envio ao Mapa',
-        'U'    => 'Urgência',
+        'U'    => 'Envio com Urgência',
         'T'    => 'Troca de Paciente',
         'S'    => 'Suspensão de Cirurgia',
         'O'    => 'Origem do Paciente',

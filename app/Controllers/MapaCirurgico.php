@@ -488,9 +488,11 @@ class MapaCirurgico extends ResourceController
             /* $horaAtual = date('H:i:s');
             $data['dtfim'] = $data['dtfim'] . ' ' . $horaAtual; */
 
+            //dd($data);
+
             $result = $this->getMapaCirurgico($data);
 
-            //die(var_dump($result));
+            //dd($result);
 
             if (empty($result)) {
 
@@ -521,6 +523,8 @@ class MapaCirurgico extends ResourceController
             }
 
             $_SESSION['mapacirurgico'] = $data;
+
+            //dd($result);
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/list_mapacirurgico',
                                                'mapacirurgico' => $result,
@@ -556,7 +560,7 @@ class MapaCirurgico extends ResourceController
         $data['especialidades'] = $this->selectAllespecialidadeaghu;
         $data['tiposJustificativa'] = [
             'ENV' => 'Envio ao Mapa',
-            'U'   => 'Urgência',
+            'U'    => 'Envio com Urgência',
             'T'   => 'Troca de Paciente',
             'S'   => 'Suspensão de Cirurgia',
             'SADM' => 'Suspensão Administrativa',
@@ -595,7 +599,7 @@ class MapaCirurgico extends ResourceController
         $data['especialidades'] = $this->selectAllespecialidadeaghu;
         $data['tiposJustificativa'] = [
             'ENV' => 'Envio ao Mapa',
-            'U'   => 'Urgência',
+            'U'    => 'Envio com Urgência',
             'T'   => 'Troca de Paciente',
             'S'   => 'Suspensão de Cirurgia',
             'SADM' => 'Suspensão Administrativa',
@@ -4329,7 +4333,7 @@ class MapaCirurgico extends ResourceController
                                                 'idriscocirurgico' => $this->data['risco'],
                                                 'dtriscocirurgico' => $this->data['dtrisco'],
                                                 'idorigempaciente' => $this->data['origem'],
-                                                'txtorigemjustificativa' => $this->data['justorig'],
+                                                //'txtorigemjustificativa' => $this->data['justorig'],
                                                 //'indsituacao' => 'A',
                                                 'indsituacao' => 'P', // Programada
                                                 'indurgencia' => 'S'
@@ -4374,7 +4378,7 @@ class MapaCirurgico extends ResourceController
                                             'idposoperatorio' => $this->data['posoperatorio'],
                                             'indhemoderivados' => $this->data['usarHemocomponentes'],
                                             'txtnecessidadesproced' => $this->data['nec_proced'],
-                                            'txtjustificativaurgencia' => $this->data['justurgencia'],
+                                            //'txtjustificativaurgencia' => $this->data['justurgencia'],
                                             'idcentrocirurgico' => $this->data['centrocirurgico'],
                                             'idsala' => $this->data['sala'],
                                             'indurgencia' => 'S',
@@ -4394,6 +4398,27 @@ class MapaCirurgico extends ResourceController
                                                 sprintf('Erro ao inserir paciente no Mapa [%d] %s', $errorCode, $errorMessage)
                                             );
                                         }
+
+                                        // justificativa de envio para o mapa cirúrgico
+                                        if (!empty($this->data['justurgencia'])) {
+
+                                            $justificativa['idlistaespera'] = $idlista;
+                                            $justificativa['idmapacirurgico'] = $idmapa;
+                                            $justificativa['txtjustificativa'] = $this->data['justurgencia'];
+                                            $justificativa['idjustificativa'] = 60;
+                                            $this->justificativalistaesperamodel->insert($justificativa);
+                                        }
+
+                                        if ($db->transStatus() === false) {
+                                            $error = $db->error();
+                                            $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                                            $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                                            throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                                                sprintf('Erro ao incluir justificativa da urgência! [%d] %s', $errorCode, $errorMessage)
+                                            );
+                                        }
+                                        // ---------------------------------------------------
 
                                         $array = [
                                             'dthrevento' => date('Y-m-d H:i:s'),

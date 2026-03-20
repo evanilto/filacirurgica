@@ -27,7 +27,7 @@
         <h1>🚧 Manutenção Emergencial</h1>
         <p>O sistema FilaWeb está temporariamente indisponível</p>
         <!-- <p>Estamos trabalhando para normalizar o serviço o mais breve possível.</p> -->
-        <p>Previsão de retorno em 15 minutos</p>
+        <p>Previsão de retorno em 30 minutos</p>
         <small><?= date('d/m/Y H:i') ?></small>
     </div>
 </body>

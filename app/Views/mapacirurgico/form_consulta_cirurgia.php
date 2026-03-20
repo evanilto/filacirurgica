@@ -19,7 +19,7 @@
 <?php
 $mapJustificativas = [
     'ENV'  => 'Envio ao Mapa',
-    'U'    => 'Urgência',
+    'U'    => 'Envio com Urgência',
     'T'    => 'Troca de Paciente',
     'S'    => 'Suspensão de Cirurgia',
     'O'    => 'Origem do Paciente',
@@ -750,7 +750,7 @@ $mapJustificativas = [
                                 <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <b>Justificativas de Movimentação</b>
+                                            <b>Movimentações</b>
                                         </div>
                                         <div class="card-body">
                                             <table id="tabelaJustificativas" class="table table-bordered table-striped">
