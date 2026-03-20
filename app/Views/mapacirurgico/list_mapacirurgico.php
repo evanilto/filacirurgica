@@ -169,6 +169,7 @@
                 <th scope="col" data-field="nome" >Complex.</th>
                 <th scope="col" data-field="nome" >Internar</th>
                 <th scope="col" data-field="nome" >Observações Enfermagem</th>
+                <th scope="col" data-field="nome" >Ordem na Fila</th>
             </tr>
         </thead>
         <tbody>
@@ -340,7 +341,7 @@
                     data-procedimento="<?= $itemmapa->procedimento_principal ?>"
                     data-procedimentosadicionais="<?= $itemmapa->procedimentos_adicionais ?>"
                     data-equipe="<?= $itemmapa->equipe_cirurgica ?>"
-                    data-ordem="<?= $itemmapa->ordem_fila ?>"
+                    data-ordem="<?= $itemmapa->numordem ?>"
                     data-complexidade="<?= $itemmapa->nmcomplexidade ?>"
                     data-lateralidade="<?= $itemmapa->nmlateralidade ?>"
                     data-congelacao="<?= $itemmapa->congelacao ?>"
@@ -528,7 +529,9 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>">
                         <?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>
                     </td>
-                    
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->numordem); ?>">
+                        <?php echo htmlspecialchars($itemmapa->numordem); ?>
+                    </td>                    
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -1224,6 +1227,7 @@
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
                     <strong>Observações da Enfermagem:</strong> ${verificarValor(dados.obsenf)}<br>
+                    <strong>Ordem na Fila:</strong> ${verificarValor(dados.ordem)}<br>
                 `);
 
                 $('#modalDetalhes').modal('show');
@@ -1308,6 +1312,7 @@
                     { "width": "100px" },  // complex
                     { "width": "100px" },  // internacao
                     { "width": "250px" },  //  obs enfermagem
+                    { "width": "100px" },  //  ordem
                     
                 ],
             "columnDefs": [
