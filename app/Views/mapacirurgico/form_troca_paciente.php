@@ -753,7 +753,7 @@
                         <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
                         <input type="hidden" name="idlistapac2" id="idlistapac2" value="<?= $data['idlistapac2'] ?? null ?>"/>
                         <input type="hidden" name="prontuariopac2" id="prontuariopac2" value="<?= $data['prontuariopac2'] ?? null ?>"/>
-                        <input type="hidden" name="ordem_hidden" id="ordem_hidden"/>
+                        <input type="hidden" name="ordem_hidden" id="ordem_hidden" value="<?= $data['ordem_hidden'] ?? '' ?>">
                         <input type="hidden" name="action" id="formAction" value="">
                         <input type="hidden" name="alteracao_tipo_sanguineo" id="alteracao_tipo_sanguineo" value="<?= $data['alteracao_tipo_sanguineo'] ?? "0" ?>">
                         <input type="hidden" name="tipo_sanguineo_original" id="tipo_sanguineo_original" value="<?= $data['tipo_sanguineo_original'] ?? "" ?>">

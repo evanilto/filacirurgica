@@ -811,6 +811,7 @@
                         <input type="hidden" name="justificativa_alteracao_hidden" id="justificativa_alteracao_hidden" value="<?= $data['justificativa_alteracao_hidden'] ?? NULL ?>">
                         <input type="hidden" name="paciente_updated_at_original" id="paciente_updated_at_original" value="<?= $data['paciente_updated_at_original'] ?? NULL ?>">
                         <input type="hidden" name="lista_updated_at_original" id="lista_updated_at_original" value="<?= $data['lista_updated_at_original'] ?? NULL ?>">
+                        <input type="hidden" name="lateralidade" id="lateralidade_hidden" value="<?= $data['lateralidade'] ?? NULL ?>">
                     </form>
                 </div>
             </div>
@@ -1122,6 +1123,7 @@
                         
                         // Adicionando atributos data para os IDs
                         //option.setAttribute('data-id', item.id);
+                        option.setAttribute('data-ordem', item.ordem_fila);
                         option.setAttribute('data-updated_at', item.updated_at);
                         option.setAttribute('data-especialidade-id', item.idespecialidade);
                         option.setAttribute('data-fila-id', item.idtipoprocedimento);
@@ -1269,7 +1271,7 @@
     } */
 
     $(document).ready(function() {
-        
+
         $('.select2-dropdown').select2({
             //placeholder: "",
             allowClear: true,
@@ -1544,13 +1546,14 @@
         $('#listapaciente').on('change', function() {
             const selectedValue = this.value;
 
-            //alert(this.value);
+            //alert('Selected value: ' + this.value);
 
             if (selectedValue !== "0" && selectedValue) { // Verifica se o valor selecionado não é zero
                 // Encontrar a opção correspondente que foi selecionada
                 const selectedOption = this.options[this.selectedIndex];
 
                 // Obter os IDs armazenados nos atributos data
+                const ordem = selectedOption.getAttribute('data-ordem');
                 const updated_at = selectedOption.getAttribute('data-updated_at');
                 const especialidadeId = selectedOption.getAttribute('data-especialidade-id');
                 const filaId = selectedOption.getAttribute('data-fila-id');
@@ -1601,12 +1604,14 @@
                 $('#origem_hidden').val(origempacienteId);
                 $('#unidadeorigem').val(unidadeorigemId);
                 $('#unidadeorigem_hidden').val(unidadeorigemId);
+                $('#lateralidade_hidden').val(lateralidade);
                 //$('#tipo_sanguineo').val(tiposanguineoId);
                 //$('#tipo_sanguineo_hidden').val(tiposanguineoId);
                 $('#risco').val(risco); 
                 $('#risco_hidden').val(risco);
                 /* $('#infoadic_hidden').val(info);
                 $('#justorig_hidden').val(justorig); */
+                $('#ordem').val(ordem);
 
                 // Desabilitar os campos após preencher
                 $('#especialidade').prop('disabled', true);
@@ -1641,6 +1646,7 @@
                 $('#unidadeorigem_hidden').val("");
                 //$('#tipo_sanguineo_hidden').val("");
                 $('#info').val("");
+                $('#ordem').val("");
 
                 // Habilitar os campos para nova seleção
                 $('#especialidade').prop('disabled', false);
@@ -1705,6 +1711,10 @@
             
             // Set the especialidade value and update the Select2 component
             //$('#especialidade').val(selectedEspecialidade).trigger('change.select2');
+        });
+
+        $('#lateralidade').change(function() {
+            $('#lateralidade_hidden').val($(this).val());
         });
 
         document.getElementById('idForm').addEventListener('submit', function(event) {
