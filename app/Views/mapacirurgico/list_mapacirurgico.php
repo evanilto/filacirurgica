@@ -530,7 +530,7 @@
                         <?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>
                     </td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->numordem); ?>">
-                        <?php echo htmlspecialchars($itemmapa->numordem); ?>
+                        <?php echo htmlspecialchars($itemmapa->numordem ?? '-'); ?>
                     </td>                    
                 </tr>
             <?php endforeach; ?>

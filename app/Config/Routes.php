@@ -6,8 +6,8 @@ $routes->setAutoRoute('improved');
 
 $routes->cli('testecli ola', 'Testecli::ola');
 $routes->cli('agendador suspensoesAutomaticas', 'Agendador::suspensoesAutomaticas');
-//$routes->get('/', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
-//$routes->get('(:any)', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
+$routes->get('/', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
+$routes->get('(:any)', 'Maintenance::index'); // comentar esta linha para desativar o modo de manutenção
 
 /**
  * @var RouteCollection $routes

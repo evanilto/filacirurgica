@@ -4343,7 +4343,7 @@ class MapaCirurgico extends ResourceController
                                             //dd($this->data);
                                             $mapa = [
                                                 'idlistaespera' => $idlista,
-                                                'numordem' => $this->data['ordem'],
+                                                'numordem' => !empty($this->data['ordem']) ? $this->data['ordem'] : null,
                                                 'dthrcirurgia' => $this->data['dtcirurgia'] . ' ' . substr($this->data['hrcirurgia'], 0, 5),
                                                 'tempoprevisto' => $this->data['tempoprevisto'],
                                                 'idposoperatorio' => $this->data['posoperatorio'],
