@@ -753,7 +753,7 @@ $mapJustificativas = [
                                 <div class="col-md-12">
                                     <div class="card">
                                         <div class="card-header">
-                                            <b>Movimentações</b>
+                                            <b>Justificativas para Movimentações</b>
                                         </div>
                                         <div class="card-body">
                                             <table id="tabelaJustificativas" class="table table-bordered table-striped">

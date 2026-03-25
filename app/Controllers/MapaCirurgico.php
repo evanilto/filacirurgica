@@ -3013,6 +3013,24 @@ class MapaCirurgico extends ResourceController
                     );
                 }
 
+                // Grava justificativa automática de envio do paciente para o mapa cirúrgico por troca ----------
+                $justificativa['idlistaespera'] = $this->data['idlistapac2'];
+                $justificativa['idmapacirurgico'] = $idmapa;
+                $justificativa['txtjustificativa'] = 'Troca do paciente de Prontuário ' . $this->data['prontuario_pacatrocar'] . ' Fila ' .  $this->data['fila_pacatrocar'];
+                $justificativa['idjustificativa'] = 62; // Justificativa automática de envio para o mapa por troca de paciente
+                $this->justificativalistaesperamodel->insert($justificativa);
+
+                if ($db->transStatus() === false) {
+                    $error = $db->error();
+                    $errorMessage = isset($error['message']) ? $error['message'] : 'Erro desconhecido';
+                    $errorCode = isset($error['code']) ? $error['code'] : 0;
+
+                    throw new \CodeIgniter\Database\Exceptions\DatabaseException(
+                        sprintf('Erro ao incluir justificativa de envio do paciente em troca! [%d] %s', $errorCode, $errorMessage)
+                    );
+                }
+                // ----------------------------------------------------------------------------------------
+
                 //die(var_dump($this->data));
 
                 if (isset($this->data['proced_adic'])) {
