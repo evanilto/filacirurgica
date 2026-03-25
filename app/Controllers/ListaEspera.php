@@ -1060,7 +1060,7 @@ class ListaEspera extends ResourceController
             //'justrecuperacao' => 'required',
             'justrecuperacao' => [
                 'filters' => 'trim',
-                'rules'   => 'permit_empty|minimoCaracteresNaoBrancos[30]|max_length[1024]'
+                'rules'   => 'required|minimoCaracteresNaoBrancos[30]|max_length[1024]'
             ],
         ];
 
