@@ -3384,14 +3384,11 @@ class MapaCirurgico extends ResourceController
                 }
 
                 // justificativa de envio para o mapa cirúrgico
-                if (!empty($data['justsuspensao'])) {
-
-                    $justificativa['idlistaespera'] = $data['idlista'];
-                    $justificativa['idmapacirurgico'] = $data['id'];
-                    $justificativa['txtjustificativa'] = $data['justsuspensao'];
-                    $justificativa['idjustificativa'] = $data['idsuspensao'];
-                    $this->justificativalistaesperamodel->insert($justificativa);
-                }
+                $justificativa['idlistaespera'] = $data['idlista'];
+                $justificativa['idmapacirurgico'] = $data['id'];
+                $justificativa['txtjustificativa'] = $data['justsuspensao'];
+                $justificativa['idjustificativa'] = $data['idsuspensao'];
+                $this->justificativalistaesperamodel->insert($justificativa);
 
                 if ($db->transStatus() === false) {
                     $error = $db->error();
