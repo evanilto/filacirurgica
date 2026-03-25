@@ -2112,12 +2112,10 @@ class ListaEspera extends ResourceController
                     );
                 }
 
-                if ($data['justexclusao']) {
-                    $justificativa['idlistaespera'] = $data['id'];
-                    $justificativa['txtjustificativa'] = $data['justexclusao'];
-                    $justificativa['idjustificativa'] = $data['idexclusao'];
-                    $this->justificativalistaesperamodel->insert($justificativa);
-                }
+                $justificativa['idlistaespera'] = $data['id'];
+                $justificativa['txtjustificativa'] = $data['justexclusao'];
+                $justificativa['idjustificativa'] = $data['idexclusao'];
+                $this->justificativalistaesperamodel->insert($justificativa);
 
                  if ($db->transStatus() === false) {
                     $error = $db->error();
