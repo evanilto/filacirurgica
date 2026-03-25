@@ -2,6 +2,9 @@
 <?php $validation = \Config\Services::validation(); ?>
 
 <?php
+
+use App\Libraries\HUAP_Functions;
+
 $mapJustificativas = [
     'ENV'  => 'Envio ao Mapa',
     'U'    => 'Envio com Urgência',
@@ -340,7 +343,7 @@ $mapJustificativas = [
                                 </div>
                             </div>
                         </div>
-                        <?php if (!empty($data['justificativas'])) { ?>
+                        <?php if (HUAP_Functions::tem_permissao('relatorios-justificativas') && !empty($data['justificativas'])) { ?>
                             <div class="row g-3 mt-3">
                                 <div class="col-md-12">
                                     <div class="card">
