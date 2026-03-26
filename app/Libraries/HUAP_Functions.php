@@ -1123,7 +1123,7 @@ class HUAP_Functions
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','74']));
 
             case 'relatorios':
-                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','65']));
+                return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','65', '75']));
 
             case 'cadastros':
                 return !empty(array_intersect($_SESSION['Sessao']['idPerfil'], ['1','2','3']));

@@ -148,7 +148,7 @@
                         <input type="hidden" name="especialidade" id="especialidade-hidden" value="<?php echo $data['especialidade']; ?>">
                         <input type="hidden" name="fila" id="fila-hidden" value="<?php echo $data['fila']; ?>">
                         <input type="hidden" name="idlista" id="idlista-hidden" value="<?php echo $data['idlista']; ?>">
-                        <input type="hidden" name="suspadm" id="suspadm-hidden" value="<?php echo $data['suspensaoadm']; ?>">
+                        <input type="hidden" name="suspensaoadm" id="suspadm-hidden" value="<?php echo $data['suspensaoadm']; ?>">
                 </div>
             </div>
         </div>

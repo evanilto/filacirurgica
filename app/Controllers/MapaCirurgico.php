@@ -3366,7 +3366,7 @@ class MapaCirurgico extends ResourceController
                     'idsuspensao' => $data['idsuspensao'],
                     'dthrsuspensao' => date('Y-m-d H:i:s'),
                     //'txtjustificativasuspensao' => $data['justsuspensao'],
-                    'indsituacao' => $data['suspadm'] ? 'SADM' : 'S' // SUSPENSA ADMINISTRATIVAMENTE ou simplesmente SUSPENSA
+                    'indsituacao' => $data['suspensaoadm'] ? 'SADM' : 'S' // SUSPENSA ADMINISTRATIVAMENTE ou simplesmente SUSPENSA
                     ];
 
                 $this->mapacirurgicomodel->update($data['id'], $mapa);
@@ -3473,7 +3473,7 @@ class MapaCirurgico extends ResourceController
                     $array = [
                         'dthrevento' => date('Y-m-d H:i:s'),
                         'idlistaespera' => $data['idlista'],
-                        'idevento' => $data['suspadm'] ? 15 : 2,
+                        'idevento' => $data['suspensaoadm'] ? 15 : 2,
                         'idlogin' => session()->get('Sessao')['login']
                     ];
 
@@ -3520,7 +3520,7 @@ class MapaCirurgico extends ResourceController
 
             $data['filas'] = $this->selectfilaativas;
             $data['especialidades'] = $this->selectespecialidadeaghu;
-            $data['justificativassuspensao'] = $data['suspadm'] ? $this->selectjustificativassuspensaoadm : $this->selectjustificativassuspensao;
+            $data['justificativassuspensao'] = $data['suspensaoadm'] ? $this->selectjustificativassuspensaoadm : $this->selectjustificativassuspensao;
 
             return view('layouts/sub_content', ['view' => 'mapacirurgico/form_suspende_cirurgia',
                                                 'data' => $data]);
@@ -4404,7 +4404,8 @@ class MapaCirurgico extends ResourceController
                                             $array = [
                                                 'dthrevento' => date('Y-m-d H:i:s'),
                                                 'idlistaespera' => $idlista,
-                                                'idevento' => 1,
+                                                //'idevento' => 1,
+                                                'idevento' => 16, // Envio com urgência
                                                 'idlogin' => session()->get('Sessao')['login']
                                             ];
                                 
