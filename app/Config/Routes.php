@@ -135,6 +135,7 @@ $routes->group('relatorios', ['filter' => 'auth'], function ($routes) {
     $routes->post('exibirpotencialcontaminacao', 'MapaCirurgico::exibirPotencialContaminacao');
     $routes->get('justificativas', 'MapaCirurgico::consultarJustificativas');
     $routes->post('exibirjustificativas', 'MapaCirurgico::exibirJustificativas');
+    $routes->get('exibirdashboard', 'ListaEspera::exibirDashboard');
 });
 
 $routes->group('transfusao', ['filter' => 'auth'], function($routes) {

@@ -343,7 +343,7 @@ $mapJustificativas = [
                                 </div>
                             </div>
                         </div>
-                        <?php if (HUAP_Functions::tem_permissao('relatorios-justificativas') && !empty($data['justificativas'])) { ?>
+                        <?php if (HUAP_Functions::tem_permissao('relatorios-gerenciais') && !empty($data['justificativas'])) { ?>
                             <div class="row g-3 mt-3">
                                 <div class="col-md-12">
                                     <div class="card">

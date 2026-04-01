@@ -140,7 +140,7 @@
                     </li>
                 </ul>
                 <ul class="nav flex-column submenu-2">
-                    <?php if(HUAP_Functions::tem_permissao('relatorios-justificativas')) { ?>
+                    <?php if(HUAP_Functions::tem_permissao('relatorios-gerenciais')) { ?>
                     <li>
                         <a href="<?= base_url('relatorios/justificativas') ?>" class="nav-link text-white p-2 enabled" tabindex="-1" aria-disabled="false">
                                 <i class="fa-solid fa-user-nurse"></i> Justificativas
@@ -248,6 +248,15 @@
             <li>
                 <a href="<?= base_url('mapacirurgico/exibirpaineldiario') ?>" class="nav-link text-white p-2" aria-current="page">
                     <i class="fa-solid fa-user-nurse"></i> Painel Cirúrgico Diário
+                </a>
+            </li>
+        <?php } ?>
+    </ul>
+    <ul class="nav navbar-nav flex-column">
+        <?php if(HUAP_Functions::tem_permissao('relatorios-gerenciais')) { ?>
+            <li>
+                <a href="<?= base_url('relatorios/exibirdashboard') ?>" class="nav-link text-white p-2" aria-current="page">
+                    <i class="fa-solid fa-user-nurse"></i> Dashboard
                 </a>
             </li>
         <?php } ?>

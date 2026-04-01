@@ -3125,6 +3125,18 @@ class ListaEspera extends ResourceController
        
     }
     /**
+     * Return a new resource object, with default properties
+     *
+     * @return mixed
+     */
+    public function exibirDashboard()
+    {
+        HUAP_Functions::limpa_msgs_flash();
+
+       return view('layouts/sub_content', ['view' => 'listaespera/exibe_dashboard']);
+
+    }
+    /**
      * 
      * @return mixed
      */
