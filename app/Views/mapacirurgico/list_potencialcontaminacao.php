@@ -32,6 +32,7 @@
                 <th scope="col" data-field="prontuarioaghu" >Seq Descr Cirúrgica</th>
                 <th scope="col" data-field="prontuarioaghu" >Tipo</th>
                 <th scope="col" data-field="prontuarioaghu" >Situação Cirúrgica</th>
+                <th scope="col" data-field="prontuarioaghu" >Unidade Funcional</th>
                 <th scope="col" data-field="prontuarioaghu" >Nome</th>
                 <th scope="col" data-field="prontuarioaghu" >Prontuário</th>
                 <th scope="col" data-field="prontuarioaghu" >Data Nascimento</th>
@@ -112,6 +113,7 @@
                     <td><?php echo $cirurgia->dcrg_seqp ?></td>
                     <td><?php echo $cirurgia->tipo_cir ?></td>
                     <td><?php echo $cirurgia->situacao_cir ?></td>
+                    <td><?php echo $cirurgia->unf_descricao ?></td>
                     <td><?php echo $cirurgia->nome ?></td>
                     <td><?php echo $cirurgia->prontuario ?></td>
                     <td><?php echo $dt_nascimento ?></td>
@@ -492,6 +494,7 @@
                 { "width": "120px" },  // seq
                 { "width": "70px" },  // tipo procedimento
                 { "width": "120px" },  // sit cir
+                { "width": "300px" },  // Unidade Funcional
                 { "width": "300px" },  // nome
                 { "width": "120px" },  // pront
                 { "width": "100px" },  // dt nasc

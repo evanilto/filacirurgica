@@ -385,6 +385,8 @@ class FilaWebModel extends Model
             local_vw_aghu_cirurgias.crg_seq,
             local_vw_aghu_cirurgias.data_cirurgia,
             local_vw_aghu_cirurgias.dcrg_seqp,
+            local_vw_aghu_cirurgias.unf_seq,
+            local_vw_aghu_cirurgias.unf_descricao,
             local_vw_aghu_cirurgias.codigo,
             local_vw_aghu_cirurgias.prontuario,
             local_vw_aghu_cirurgias.nome,
