@@ -81,6 +81,8 @@ class UpdateTablesCommand extends BaseCommand
         $insertStatus = $db->query('INSERT INTO local_vw_aghu_evol_int SELECT * FROM remoto.vw_aghu_evol_int');
         $insertStatus = $db->query('INSERT INTO local_vw_exames_liberados SELECT * FROM remoto.vw_exames_liberados');
         $insertStatus = $db->query('INSERT INTO local_vw_aghu_notificacoes_infeccao SELECT * FROM remoto.vw_aghu_notificacoes_infeccao');
+        $insertStatus = $db->query('ANALYZE local_vw_aghu_cirurgias;');
+        $insertStatus = $db->query('CLUSTER local_vw_aghu_cirurgias USING idx_cirurgias_data;');
 
         $insertStatus = 'finishing';
 
