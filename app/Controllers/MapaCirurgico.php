@@ -227,7 +227,7 @@ class MapaCirurgico extends ResourceController
         $this->selectitensprocedhospit = $this->localfatitensprocedhospitalarmodel->orderBy('descricao', 'ASC')->findAll();
         $this->selectitensprocedhospitativos = $this->localfatitensprocedhospitalarmodel->Where('ind_situacao', 'A')->orderBy('descricao', 'ASC')->findAll();        //$this->selectsalascirurgicasaghu = $this->vwsalascirurgicasmodel->findAll();
         //$this->selectcentroscirurgicosaghu = $this->aghucontroller->getCentroCirurgico();
-        $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->findAll();
+        $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->orderBy('descricao', 'ASC')->findAll();
         //$this->selectsalascirurgicasaghu = $this->aghucontroller->getSalasCirurgicas();
         $this->selectsalascirurgicasaghu = $this->localmbcsalascirurgicasmodel->Where('situacao', 'A')->orderBy('nome', 'ASC')->findAll();
         $this->selectequipamentos = $this->equipamentosmodel->Where('indsituacao', 'A')->orderBy('descricao', 'ASC')->findAll();
@@ -2656,7 +2656,7 @@ class MapaCirurgico extends ResourceController
 
         $pacatrocar = $this->request->getVar();
 
-        //die(var_dump($pacatrocar));
+        //dd($pacatrocar);
 
         $data = [];
         /* $data['candidatos'] = $this->vwstatusfilacirurgicamodel->where('idfila', $pacatrocar['idfila']) */
@@ -2754,6 +2754,10 @@ class MapaCirurgico extends ResourceController
         $data['hemocomps'] = [];
         $data['tipo_sanguineo'] = '';
         $data['unidades'] = $this->selectunidades;
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
+        $data['salas_cirurgicas'] = $this->selectsalascirurgicasaghu;
+        $data['centrocirurgico'] = $pacatrocar['idcentrocirurgico'];
+        $data['sala'] = $pacatrocar['idsala'];
 
         //$codToRemove = $mapapac1['idprocedimento'];
         //$procedimentos = $data['procedimentos'];
@@ -2805,6 +2809,7 @@ class MapaCirurgico extends ResourceController
         $this->data['origem'] = $this->data['origem'] ?? $this->data['origem_hidden'];
         $this->data['unidadeorigem'] = $this->data['unidadeorigem'] ?? $this->data['unidadeorigem_hidden'];
         $this->data['tipo_sanguineo'] = $this->data['tipo_sanguineo'] ?? $this->data['tipo_sanguineo_hidden'];
+        $this->data['sala'] = $this->data['sala'] ?? NULL;
 
         $rules = [
             'candidato' => 'required',
@@ -2830,6 +2835,7 @@ class MapaCirurgico extends ResourceController
             ],
             'eqpts' => ($this->data['usarEquipamentos'] ?? '') == 'S' ? 'required' : 'permit_empty',
             'usarHemocomponentes' => 'required',
+            'centrocirurgico' => 'required',
             //'hemocomps' => ($this->data['usarHemocomponentes'] ?? '') == 'S' ? 'required' : 'permit_empty',
             //'tipo_sanguineo' => 'required'
         ];
@@ -2979,6 +2985,8 @@ class MapaCirurgico extends ResourceController
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     //'tiposanguineo' => $this->data['tipo_sanguineo'],
                     'numordem' => $this->data['ordem_hidden'],
+                    'idcentrocirurgico' => $this->data['centrocirurgico'],
+                    'idsala' => $this->data['sala'],
                     'indsituacao' => 'P' // Programada
                     ];
 
@@ -4873,8 +4881,10 @@ class MapaCirurgico extends ResourceController
 
                         if ($campos[$atual] && $campos[$proximo]) {
                             if ($campos[$atual] >= $campos[$proximo]) {
-                                $this->validator->setError("{$proximo}", "O horário de {$proximo} deve ser posterior ao horário de {$atual}.");                        
-                                $erro = true;
+                               if ($proximo != 'hraltadayclinic') {
+                                    $this->validator->setError("{$proximo}", "O horário de {$proximo} deve ser posterior ao horário de {$atual}.");
+                                    $erro = true;
+                               }
                             }
                         }
                     }
@@ -4891,14 +4901,14 @@ class MapaCirurgico extends ResourceController
                 }
 
                 // Se hraltadayclinic estiver preenchido, hrleitoposoper (se existir) deve ser anterior
-                if (!$erro) {
+               /*  if (!$erro) {
                     if ($campos['hrleitoposoper'] && $campos['hraltadayclinic']) {
                         if ($campos['hrleitoposoper'] >= $campos['hraltadayclinic']) {
                             $this->validator->setError('hrleitoposoper', 'O horário de leito pós-operatório deve ser anterior à alta do Day Clinic.');                        
                             $erro = true;
                         }
                     }
-                }
+                } */
 
                 if (!$erro) {
                     if ($campos['hrleitoposoper'] && !$campos['hrsaidacentrocirurgico']) {
@@ -4922,6 +4932,13 @@ class MapaCirurgico extends ResourceController
                                 $erro = true;
                             }
                         }
+                    }
+                }
+
+                if (!$erro) {
+                    if ($campos['hraltadayclinic'] && $campos['hrleitoposoper']) {
+                        $this->validator->setError('hraltadayclinic', 'Informe Alta para Leito Pós-Operatório ou Alta Day Clinic.');
+                        $erro = true;
                     }
                 }
 

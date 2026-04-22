@@ -101,8 +101,8 @@
                         <button class="btn btn-header" id="saidadasala" style="background-color: <?= $corSaídaDaSala ?>;" disabled>Saída da Sala</button>
                         <i class="fa-solid fa-arrow-right"></i> 
                         <button class="btn btn-header" id="saidadoccirurgico" style="background-color: <?= $corSaídaCentroCirúrgico ?>;" disabled>Entrada no RPA</button>
-                        <i class="fa-solid fa-arrows-left-right"></i> 
-                        <button class="btn btn-header" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Leito Pós-Operatório</button>
+                        <i class="fa-solid fa-arrow-right"></i> 
+                        <button class="btn btn-header" id="leitoposoper" style="background-color: <?= $corLeitoPosOper ?>;" disabled>Alta p/ Leito Pós-Op</button>
                         <i class="fa-solid fa-arrows-left-right"></i>
                         <button class="btn btn-header" id="altadayclinic" style="background-color: <?= $corAltaDayClinic ?>;" disabled>Alta Day Clinic</button>
                     </div>
@@ -135,13 +135,14 @@
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Entrada no RPA">
                         <i class="fa-solid fa-circle" style="color: <?= $corSaídaCentroCirúrgico ?>; "></i>
                 </th>
-                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Encaminhado ao Leito Pós-Operatório">
+                <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Alta para Leito Pós-Operatório">
                         <i class="fa-solid fa-circle" style="color: <?= $corLeitoPosOper ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" style="text-align: center; vertical-align: middle;" title="Alta Hospitalar Day Clinic">
                         <i class="fa-solid fa-circle" style="color: <?= $corAltaDayClinic ?>; "></i>
                 </th>
                 <th scope="col" class="col-0" >Especialidade</th>
+                <th scope="col" data-field="nome" >Ordem na Fila</th>
                 <th scope="col" data-field="prontuario" >Prontuario</th>
                 <th scope="col" data-field="nome" >Nome do Paciente</th>
                 <th scope="col" data-field="nome" >Idade</th>
@@ -169,7 +170,6 @@
                 <th scope="col" data-field="nome" >Complex.</th>
                 <th scope="col" data-field="nome" >Internar</th>
                 <th scope="col" data-field="nome" >Observações Enfermagem</th>
-                <th scope="col" data-field="nome" >Ordem na Fila</th>
             </tr>
         </thead>
         <tbody>
@@ -240,7 +240,7 @@
                             case 'LeitoPosOper': 
                                 $color = $corLeitoPosOper;
                                 $background_color = $color;
-                                $title = 'Paciente encaminhado ao leito pós-operatório';
+                                $title = 'Paciente com alta para o leito pós-operatório';
                                 break;
                             case 'AltaDayClinic': 
                                 $color = $corAltaDayClinic;
@@ -365,6 +365,8 @@
                     data-origem="<?= htmlspecialchars($itemmapa->origem_descricao, ENT_QUOTES, 'UTF-8') ?>"
                     data-unidadeorigem="<?= htmlspecialchars($itemmapa->unidade_origem, ENT_QUOTES, 'UTF-8') ?>"
                     data-indurgencia="<?= $itemmapa->indurgencia ?>"
+                    data-centrocirurgico="<?= $itemmapa->idcentrocirurgico ?>"
+                    data-sala="<?= $itemmapa->idsala ?>"
                     data-statuscirurgia="<?= $status_cirurgia ?>"
                     data-permiteatualizar="<?= $permiteatualizar ?>"
                     data-tempermissaoconsultar="<?= HUAP_Functions::tem_permissao('mapacirurgico-consultar') ?>"
@@ -400,6 +402,9 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>">
                         <?php echo htmlspecialchars($itemmapa->especialidade_descr_reduz); ?>
                     </td>
+                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->numordem); ?>">
+                        <?php echo htmlspecialchars($itemmapa->numordem ?? '-'); ?>
+                    </td>   
                     <td><?php echo $itemmapa->prontuario ?></td>
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->nome_paciente); ?>">
                         <?php echo htmlspecialchars($itemmapa->nome_paciente); ?>
@@ -529,9 +534,6 @@
                     <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>">
                         <?php echo htmlspecialchars($itemmapa->obsenfermagem); ?>
                     </td>
-                    <td class="break-line" title="<?php echo htmlspecialchars($itemmapa->numordem); ?>">
-                        <?php echo htmlspecialchars($itemmapa->numordem ?? '-'); ?>
-                    </td>                    
                 </tr>
             <?php endforeach; ?>
         </tbody>
@@ -574,7 +576,7 @@
               'Em Cirurgia' => $corEmCirurgia,
               'Saída da Sala' => $corSaídaDaSala,
               'Entrada no RPA' => $corSaídaCentroCirúrgico,
-              'Leito Pós-Operatório' => $corLeitoPosOper,
+              'Alta para Leito Pós-Operatório' => $corLeitoPosOper,
               'Alta Day Clinic' => $corAltaDayClinic,
               'Troca de Paciente' => $corTrocaPaciente,
               'Cirurgia Suspensa' => $corCirurgiaSuspensa,
@@ -756,18 +758,29 @@
                     saidadoccirurgico.disabled = false;
                     saidadoccirurgico.removeAttribute("disabled");
                     saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>"; */
-                } else if (statuscirurgia === "Realizada" && permiteatualizar && tempermissaoalterar) {
-                    saidadoccirurgico.disabled = false;
-                    saidadoccirurgico.removeAttribute("disabled");
-                    saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
+                } else {
+                    // Entrada no RPA
+                    if (statuscirurgia === "Realizada" && permiteatualizar && tempermissaoalterar) {
+                        saidadoccirurgico.disabled = false;
+                        saidadoccirurgico.removeAttribute("disabled");
+                        saidadoccirurgico.style.backgroundColor = "<?= $corSaídaCentroCirúrgico ?>";
+                    }
 
-                    leitoposoper.disabled = false;
-                    leitoposoper.removeAttribute("disabled");
-                    leitoposoper.style.backgroundColor = "<?= $corLeitoPosOper ?>";
+                    // Já está no RPA → NÃO pode clicar de novo
+                    if (statuscirurgia === "NoRPA") {
+                        saidadoccirurgico.disabled = true;
+                    }
 
-                    altadayclinic.disabled = false;
-                    altadayclinic.removeAttribute("disabled");
-                    altadayclinic.style.backgroundColor = "<?= $corAltaDayClinic ?>";
+                    // Após RPA
+                    if (["Realizada", "NoRPA"].includes(statuscirurgia) && permiteatualizar && tempermissaoalterar) {
+                        leitoposoper.disabled = false;
+                        leitoposoper.removeAttribute("disabled");
+                        leitoposoper.style.backgroundColor = "<?= $corLeitoPosOper ?>";
+
+                        altadayclinic.disabled = false;
+                        altadayclinic.removeAttribute("disabled");
+                        altadayclinic.style.backgroundColor = "<?= $corAltaDayClinic ?>";
+                    }
                 }
 
                 if ((["Programada", "PacienteSolicitado", "NoCentroCirurgico"].includes(statuscirurgia)) && tempermissaoalterar){
@@ -884,6 +897,8 @@
                         idespecialidade: selectedRow.dataset.idespecialidade,
                         prontuario: selectedRow.dataset.prontuario,
                         dthrcirurgia: selectedRow.dataset.dthrcirurgia,
+                        idcentrocirurgico: selectedRow.dataset.centrocirurgico,
+                        idsala: selectedRow.dataset.sala,
                     };
 
                     const queryString = new URLSearchParams(params).toString();
@@ -975,7 +990,19 @@
                         break;
                     case 'leitoposoper':
                         evento = 'dthrleitoposoper';
-                        message = 'Confirma o encaminhamento ao leito pós-operatório?';
+                        message = 'Confirma alta para o leito pós-operatório?';
+                        break;
+                    case 'altadayclinic':
+                        evento = 'dthraltadayclinic';
+                        message = 'Confirma a alta hospitalar day clinic?';
+                        break;
+                }
+                break;
+            case 'NoRPA':
+                switch (cirurgia.buttonId) {
+                    case 'leitoposoper':
+                        evento = 'dthrleitoposoper';
+                        message = 'Confirma alta para o leito pós-operatório?';
                         break;
                     case 'altadayclinic':
                         evento = 'dthraltadayclinic';
@@ -1285,6 +1312,7 @@
                     { "width": "57px" }, 
                     { "width": "57px" }, 
                     { "width": "180px" },  // especial
+                    { "width": "100px" },  //  ordem
                     { "width": "95px" },  // pront
                     { "width": "250px" },  // nome 
                     { "width": "55px" },  // idade
@@ -1312,8 +1340,6 @@
                     { "width": "100px" },  // complex
                     { "width": "100px" },  // internacao
                     { "width": "250px" },  //  obs enfermagem
-                    { "width": "100px" },  //  ordem
-                    
                 ],
             "columnDefs": [
                 { "orderable": false, "targets": [1, 6, 7, 8, 9, 10, 11, 12, 13, 21, 22] },

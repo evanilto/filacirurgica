@@ -210,7 +210,7 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label for="hrleitoposoper" class="form-label">Leito Pós-Operatório</label>
+                                    <label for="hrleitoposoper" class="form-label">Alta para Leito Pós-Operatório</label>
                                     <div class="input-group">
                                         <input type="time" id="hrleitoposoper" placeholder="HH:MM"
                                             class="form-control <?php if($validation->getError('hrleitoposoper')): ?>is-invalid<?php endif ?>"

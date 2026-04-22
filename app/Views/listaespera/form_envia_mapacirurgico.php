@@ -604,7 +604,7 @@
                         </div>
                         <div class="row g-3 mb-2">
                             <div class="g-2">
-                                <div class="bordered-container mb-2" style="margin-left: 5px; margin-right: 3px;">
+                                <div class="bordered-container mb-4" style="margin-left: 5px; margin-right: 3px;">
                                     <div class="row g-3">
                                         <div class="col-md-6">
                                             <div class="mb-3">
@@ -644,6 +644,48 @@
                                                 <?php if ($validation->hasError('profissional')): ?>
                                                     <div class="invalid-feedback">
                                                         <?= $validation->getError('profissional') ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row g-3 mb-2">
+                            <div class="g-2">
+                                <div class="bordered-container mb-2" style="margin-left: 5px; margin-right: 3px;">
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="centrocirurgico" class="form-label">Centro Cirúrgico<b class="text-danger">*</b></label>
+                                                <select class="form-select select2-dropdown  <?= $validation->hasError('centrocirurgico') ? 'is-invalid' : '' ?>"
+                                                    id="centrocirurgico" name="centrocirurgico">
+                                                    <option value="" <?php echo set_select('centrocirurgico', '', TRUE); ?> ></option>
+                                                    <?php 
+                                                        foreach ($data['centros_cirurgicos'] as $filtro):
+                                                            $selected = ($data['centrocirurgico'] == $filtro->seq) ? 'selected' : '';
+                                                            echo '<option value="'.$filtro->seq.'" '.$selected.'>'.$filtro->descricao.'</option>';
+                                                        endforeach 
+                                                    ?>
+                                                </select>
+                                                <?php if ($validation->hasError('centrocirurgico')): ?>
+                                                    <div class="invalid-feedback">
+                                                        <?= $validation->getError('centrocirurgico') ?>
+                                                    </div>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                            <label for="sala" class="form-label">Sala</label>
+                                                <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>"
+                                                        id="sala" name="sala" data-placeholder="" data-allow-clear="1" disabled>
+                                                    <!-- As salas irão aparecer aqui dinamicamente -->
+                                                </select>
+                                                <?php if ($validation->hasError('sala')): ?>
+                                                    <div class="invalid-feedback">
+                                                        <?= $validation->getError('sala') ?>
                                                     </div>
                                                 <?php endif; ?>
                                             </div>

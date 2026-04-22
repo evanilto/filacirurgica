@@ -700,7 +700,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-3">
-                                            <label for="sala" class="form-label">Salas<b class="text-danger">*</b></label>
+                                            <label for="sala" class="form-label">Sala<b class="text-danger">*</b></label>
                                                 <select class="form-select select2-dropdown <?= $validation->hasError('sala') ? 'is-invalid' : '' ?>"
                                                         id="sala" name="sala" data-placeholder="" data-allow-clear="1">
                                                     <!-- As salas irão aparecer aqui dinamicamente -->

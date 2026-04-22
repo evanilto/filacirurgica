@@ -38,6 +38,7 @@ use App\Models\LocalVwDetalhesPacientesModel;
 use App\Models\LocalAipContatosPacientesModel;
 use App\Models\LocalAghInstituicoesHospitalaresModel;
 use App\Models\PacientesModel;
+use App\Models\LocalCentrosCirurgicosModel;
 
 //use App\Controllers\MapaCirurgico;
 use DateTime;
@@ -107,6 +108,8 @@ class ListaEspera extends ResourceController
     private $hemocomponentescirurgiamodel;
     private $pacientesmodel;
     private $justificativalistaesperamodel;
+    private $localcentroscirurgicosmodel;
+    private $selectcentroscirurgicosaghu;
 
 
     public function __construct()
@@ -147,6 +150,8 @@ class ListaEspera extends ResourceController
         $this->hemocomponentescirurgiamodel = new HemocomponentesCirurgiaModel();
         //$this->aghucontroller = new Aghu();
         $this->justificativalistaesperamodel = new JustificativaListaEsperaModel();
+        $this->localcentroscirurgicosmodel = new LocalCentrosCirurgicosModel();
+        $this->selectcentroscirurgicosaghu = $this->localcentroscirurgicosmodel->orderBy('descricao', 'ASC')->findAll();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------
         $idsEspecialidade = $this->listaesperamodel->withDeleted()->distinct()->select('idespecialidade')->findColumn('idespecialidade');
@@ -2255,6 +2260,8 @@ class ListaEspera extends ResourceController
         $data['hemocomponentes'] = $this->selecthemocomponentes;
         $data['hemocomps'] = [];
         $data['unidades'] = $this->selectunidades;
+        $data['centrocirurgico'] =  '';
+        $data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
 
         $data['tipo_sanguineo'] = isset($paciente) ? $paciente['tiposanguineo'] : NULL;
         $data['paciente_updated_at_original'] = isset($paciente) ? $paciente['updated_at'] : NULL; 
@@ -2324,6 +2331,7 @@ class ListaEspera extends ResourceController
             'info' => 'max_length[1024]|min_length[0]',
             'nec_proced' => 'required|max_length[250]|min_length[3]',
             //'tipo_sanguineo' => 'required',
+            'centrocirurgico' => 'required',
         ];
 
         if ($this->validate($rules)) {
@@ -2574,6 +2582,7 @@ class ListaEspera extends ResourceController
                     'txtnecessidadesproced' => $this->data['nec_proced'],
                     //'txtjustificativaenvio' => $this->data['justenvio'],
                     'numordem' => $this->data['ordemfila'],
+                    'idcentrocirurgico' => $this->data['centrocirurgico'],
                     'indsituacao' => 'P' // Programada
                     ];
 
@@ -2962,6 +2971,7 @@ class ListaEspera extends ResourceController
         $this->data['procedimentos_adicionais'] = array_filter($procedimentos, function($procedimento) use ($codToRemove) {
             return $procedimento->cod_tabela !== $codToRemove;
         });
+        $this->data['centros_cirurgicos'] = $this->selectcentroscirurgicosaghu;
     }
     /**
      * 
