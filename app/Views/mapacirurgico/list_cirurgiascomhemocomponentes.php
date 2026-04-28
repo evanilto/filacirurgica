@@ -10,6 +10,8 @@ use function PHPUnit\Framework\isEmpty;
     $corEmCirurgia = '#277534';//'#804616';
     $corSaídaDaSala = '#87CEFA';
     $corSaídaCentroCirúrgico = '#00008B'; //'#277534';
+    $corLeitoPosOper = '#5d4037'; // '#8d6e63'
+    $corAltaDayClinic = '#78909c';
     $corTrocaPaciente = 'DarkOrange'; //'#FF7F7F';//'#E9967A';
     $corCirurgiaSuspensa = 'Red';
     $corCirurgiaSuspensaAdm = 'purple';
@@ -115,11 +117,11 @@ use function PHPUnit\Framework\isEmpty;
                         $status_cirurgia = 'TrocaPaciente';
                         $title = 'Troca de Paciente';
 
-                    } elseif ($itemmapa->dthrsaidacentrocirurgico) {
+                    /* } elseif ($itemmapa->dthrsaidacentrocirurgico) {
                         $color = $corSaídaCentroCirúrgico;
                         $background_color = $color;
                         $status_cirurgia = 'Realizada';
-                        $title = 'Cirurgia Realizada';
+                        $title = 'Cirurgia Realizada'; */
                     } else {
 
                         switch ($itemmapa->status_fila) {
@@ -143,7 +145,27 @@ use function PHPUnit\Framework\isEmpty;
                                 $background_color = $color;
                                 $title = 'Paciente em Cirurgia';
                                 break;
-                            case 'SaídaDaSala':
+                            case 'Realizada':
+                                $color =$corSaídaDaSala;
+                                $background_color = $color;
+                                $title = 'Cirurgia Realizada';
+                                break;
+                            case 'NoRPA': // No RPA
+                                $color = $corSaídaCentroCirúrgico;
+                                $background_color = $color;
+                                $title = 'No RPA';
+                                break;
+                            case 'LeitoPosOper': 
+                                $color = $corLeitoPosOper;
+                                $background_color = $color;
+                                $title = 'Paciente com alta para o leito pós-operatório';
+                                break;
+                            case 'AltaDayClinic': 
+                                $color = $corAltaDayClinic;
+                                $background_color = $color;
+                                $title = 'Paciente com alta hospitalar day clinic';
+                                break;
+                            /* case 'SaídaDaSala':
                                 $color =$corSaídaDaSala;
                                 $background_color = $color;
                                 $title = 'Paciente saiu da Sala';
@@ -152,7 +174,7 @@ use function PHPUnit\Framework\isEmpty;
                                 $color = $corSaídaCentroCirúrgico;
                                 $background_color = $color;
                                 $title = 'Cirurgia Realizada';
-                                break;
+                                break; */
                             /* case 'TrocaPaciente':
                                 $color =$corTrocaPaciente;
                                 $background_color = $color;

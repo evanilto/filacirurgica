@@ -7,34 +7,16 @@
     $data['hemocomps'] = isset($data['hemocomps']) ? (array)$data['hemocomps'] : [];
 
     $usarHemocomponentes_disabled = false;
-    $hemocompLiberado = old('hemocomp_qty_liberada')
-        ?? ($data['hemocomp_qty_liberada'] ?? []);
-
-    //dd($hemocompLiberado);
-
-    foreach ($hemocompLiberado as $item) {
-        if ($item !== '' && is_numeric($item) && $item >= 0) {
+    foreach ($data['hemocomp_qty_liberada'] ?? [] as $item) {
+        if (isset($item) && is_numeric($item) && $item >= 0) {
             $usarHemocomponentes_disabled = true;
             break;
         }
     }
 
-    //dd($data);
+    $readonlyGeral = $data['status_fila'];
 
-    $readonlyGeral = '';
-    $somenteCentroSala = false;
-
-    if (
-        !in_array(
-            $data['status_fila'],
-            ['PacienteSolicitado', 'Programada'],
-            true
-        )
-    ) {
-        $somenteCentroSala = true;
-    }
-
-    if ($somenteCentroSala) {
+    if (!empty($data['somenteCentroSala']) && $data['somenteCentroSala']) {
         $readonlyCamposGerais = 'readonly';
         $readonlyCentroSala = '';
     } else {
@@ -50,7 +32,12 @@
         <div class="col-md-12">
             <div class="card form-container">
                 <div class="card-header text-center text-black">
+                <?php if ($data['status_fila'] == 'enabled') { ?>
                     <b><?= 'Atualizar Cirurgia' ?></b>
+                <?php } else { ?>
+                    <b><?= 'Consultar Cirurgia' ?></b>
+                <?php } ?>
+
                 </div>
                 <div class="card-body has-validation">
                     <form id="idForm" method="post" action="<?= base_url('mapacirurgico/atualizar') ?>">
@@ -208,27 +195,17 @@
                                     <label for="proced_adic" class="form-label">Procedimentos Adicionais</label>
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?= $validation->hasError('proced_adic') ? 'is-invalid' : '' ?>"
-                                                id="proced_adic" name="proced_adic[]" multiple="multiple" 
-                                                data-placeholder="" data-allow-clear="1" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
-                                           <?php
-                                                $procedAdicSelecionados = set_value(
-                                                    'proced_adic',
-                                                    isset($data['proced_adic']) ? (array)$data['proced_adic'] : []
-                                                );
-
-                                                $procedAdicSelecionados = (array) $procedAdicSelecionados;
-                                                $procedAdicSelecionados = array_filter($procedAdicSelecionados);
-
-                                                foreach ($data['procedimentos_adicionais'] as $procedimento) {
-                                                    $selected = in_array(
-                                                        $procedimento->cod_tabela,
-                                                        $procedAdicSelecionados
-                                                    ) ? 'selected' : '';
-
-                                                    echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>'
-                                                        . $procedimento->cod_tabela . ' - ' . $procedimento->descricao .
-                                                        '</option>';
-                                                }
+                                                id="proced_adic" name="proced_adic[]" multiple="multiple" <?= $data['status_fila']  ?>
+                                                data-placeholder="" data-allow-clear="1" <?= $readonlyCamposGerais ?>>
+                                            <?php
+                                            // Certifique-se de que $data['proced_adic'] está definido como um array
+                                            $data['proced_adic'] = isset($data['proced_adic']) ? (array)$data['proced_adic'] : [];
+                                            $data['proced_adic'] = array_filter($data['proced_adic']);
+                                            
+                                            foreach ($data['procedimentos_adicionais'] as $procedimento) {
+                                                $selected = in_array($procedimento->cod_tabela, $data['proced_adic']) ? 'selected' : '';
+                                                echo '<option value="' . $procedimento->cod_tabela . '" ' . $selected . '>' . $procedimento->cod_tabela . ' - ' . $procedimento->descricao . '</option>';
+                                            }
                                             ?>
                                         </select>
                                         <?php if ($validation->hasError('proced_adic')): ?>
@@ -247,11 +224,11 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('cid')): ?>is-invalid<?php endif ?>"
                                             id="cid" name="cid"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais ?>>
                                             <option value="" <?php echo set_select('cid', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['cids'] as $key => $cid) {
-                                                $selected = (set_value('cid', $data['cid']) == $cid->seq) ? 'selected' : '';
+                                                $selected = ($data['cid'] == $cid->seq) ? 'selected' : '';
                                                 echo '<option value="'.$cid->seq.'" '.$selected.'>'.$cid->codigo.' - '.$cid->descricao.'</option>';
                                             }
                                             ?>
@@ -308,7 +285,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('lateralidade')): ?>is-invalid<?php endif ?>"
                                             id="lateralidade" name="lateralidade"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais ?>>
                                             <option value="" <?php echo set_select('lateralidade', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['lateralidades'] as $key => $lateralidade) {
@@ -377,7 +354,7 @@
                                     <div class="input-group">
                                         <select class="form-select select2-dropdown <?php if($validation->getError('posoperatorio')): ?>is-invalid<?php endif ?>"
                                             id="posoperatorio" name="posoperatorio"
-                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                            data-placeholder="Selecione uma opção" data-allow-clear="1" <?= $readonlyCamposGerais ?>>
                                             <option value="" <?php echo set_select('posoperatorio', '', TRUE); ?> ></option>
                                             <?php
                                             foreach ($data['posoperatorios'] as $key => $posoperatorio) {
@@ -398,17 +375,16 @@
                                 <div class="mb-2">
                                     <label class="form-label">Congelação<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
-                                        <?php $congelacao = set_value('congelacao', $data['congelacao'] ?? ''); ?>
                                         <div class="form-check form-check-inline <?php if($validation->getError('congelacao')): ?>is-invalid<?php endif ?>">
                                             <input class="form-check-input" 
                                                 type="radio" name="congelacao" id="congelacaoN" value="N"
-                                                <?= $congelacao === 'N' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'N') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="congelacaoN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" 
                                                 type="radio" name="congelacao" id="congelacaoS" value="S"
-                                                <?= $congelacao === 'S' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['congelacao']) && $data['congelacao'] == 'S') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="congelacaoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                         <?php if ($validation->getError('congelacao')): ?>
@@ -445,20 +421,19 @@
                                 <div class="mb-2">
                                     <label class="form-label">Complexidade<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
-                                        <?php $complexidade = set_value('complexidade', $data['complexidade'] ?? ''); ?>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>
-                                                <?= $complexidade === 'A' ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeA" value="A" <?= $readonlyCamposGerais ?>
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'A') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="complexidadeA" style="margin-right: 10px;">&nbsp;Alta</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>
-                                                <?= $complexidade === 'M' ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeM" value="M" <?= $readonlyCamposGerais ?>
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'M') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeM" style="margin-right: 10px;">&nbsp;Média</label>
                                         </div>
                                         <div class="form-check form-check-inline">
-                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>
-                                                <?= $complexidade === 'B' ? 'checked' : '' ?>>
+                                            <input class="form-check-input" type="radio" name="complexidade" id="complexidadeB" value="B" <?= $readonlyCamposGerais ?>
+                                                <?= (isset($data['complexidade']) && $data['complexidade'] == 'B') ? 'checked' : '' ?>>
                                             <label class="form-check-label" for="complexidadeB" style="margin-right: 10px;">&nbsp;Baixa</label>
                                         </div>
                                     </div>
@@ -492,15 +467,14 @@
                                 <div class="mb-2">
                                     <label class="form-label">OPME<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
-                                        <?php $opme = set_value('opme', $data['opme'] ?? ''); ?>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="opme" id="opmeN" value="N"
-                                                <?= $opme === 'N' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['opme']) && $data['opme'] == 'N') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="opmeN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="opme" id="opmeS" value="S"
-                                                <?= $opme === 'S' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['opme']) && $data['opme'] == 'S') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="opmeS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
@@ -516,17 +490,16 @@
                                 <div class="mb-2">
                                     <label class="form-label">Hemocomponentes<b class="text-danger">*</b></label>
                                     <div class="input-group mb-2 bordered-container">
-                                        <?php $usarHemocomponentes = old('usarHemocomponentes') ?? ($data['usarHemocomponentes'] ?? ''); ?>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesN" value="N"
-                                                <?= $usarHemocomponentes === 'N' ? 'checked' : '' ?>
-                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'N') ? 'checked' : '' ?>
+                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?> <?= $readonlyCamposGerais ?>>
                                             <label class="form-check-label" for="usarHemocomponentesN" style="margin-right: 10px;">&nbsp;Não</label>
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="usarHemocomponentes" id="usarHemocomponentesS" value="S"
-                                                <?= $usarHemocomponentes === 'S' ? 'checked' : '' ?>
-                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <?= (isset($data['usarHemocomponentes']) && $data['usarHemocomponentes'] == 'S') ? 'checked' : '' ?>
+                                                <?= $usarHemocomponentes_disabled ? 'disabled' : '' ?>>
                                             <label class="form-check-label" for="usarHemocomponentesS" style="margin-right: 10px;">&nbsp;Sim</label>
                                         </div>
                                     </div>
@@ -558,39 +531,37 @@
                                     <label class="form-label">Selecionar Hemocomponentes e Quantidade</label>
                                     <div class="bordered-container py-3">
                                         <div class="row gx-3 px-3 mb-4">
-                                            <?php foreach ($data['hemocomponentes'] as $hemocomp):
+                                            <?php foreach ($data['hemocomponentes'] as $hemocomp): 
 
                                                 $hemocomp_id = $hemocomp->id;
+                                                $checked = isset($data['hemocomp_qty_solicitada'][$hemocomp_id]);
 
-                                                $hemocompSolicitado = old('hemocomp_qty_solicitada')
-                                                    ?? ($data['hemocomp_qty_solicitada'] ?? []);
+                                                $raw_qty_solicitada = $checked && isset($data['hemocomp_qty_solicitada'][$hemocomp_id])
+                                                    ? $data['hemocomp_qty_solicitada'][$hemocomp_id]
+                                                    : null;
 
-                                                $checked = isset($hemocompSolicitado[$hemocomp_id]);
+                                                $raw_qty_liberada = $checked && isset($data['hemocomp_qty_liberada'][$hemocomp_id])
+                                                    ? $data['hemocomp_qty_liberada'][$hemocomp_id]
+                                                    : null;
 
-                                                $raw_qty_solicitada = $hemocompSolicitado[$hemocomp_id] ?? null;
+                                                $qty_solicitada = htmlspecialchars((string)$raw_qty_solicitada ?? '');
+                                                $qty_liberada   = htmlspecialchars((string)$raw_qty_liberada ?? '');
 
-                                                $raw_qty_liberada = $data['hemocomp_qty_liberada'][$hemocomp_id] ?? null;
+                                                //dd($qty_solicitada, $qty_liberada);
 
-                                                $qty_solicitada = htmlspecialchars((string) ($raw_qty_solicitada ?? ''));
-                                                $qty_liberada   = htmlspecialchars((string) ($raw_qty_liberada ?? ''));
-
-                                                // Habilita somente se quantidade liberada ainda não existir
+                                                // Habilita o campo SOMENTE se qty_liberada NÃO estiver definido ou NÃO for numérico
                                                 $enabled = !is_numeric($raw_qty_liberada);
-
                                             ?>
                                                 <div class="col-md-6 mb-3">
                                                     <div class="row align-items-end">
                                                         <div class="col-8 pt-4"> <!-- pt-4 alinha verticalmente com os inputs -->
                                                             <div>
-                                                                <input
-                                                                    class="form-check-input me-2 hemocomp-checkbox"
-                                                                    type="checkbox"
-                                                                    id="hemocomp_<?= $hemocomp->id ?>"
-                                                                    name="hemocomps[<?= $hemocomp->id ?>]"
+                                                                <input class="form-check-input me-2 hemocomp-checkbox" 
+                                                                    type="checkbox" 
+                                                                    id="hemocomp_<?= $hemocomp->id ?>" 
+                                                                    name="hemocomps[<?= $hemocomp->id ?>]" 
                                                                     value="1"
-                                                                    <?= $checked ? 'checked' : '' ?>
-                                                                    <?= (!$enabled || $readonlyCamposGerais == 'readonly') ? 'disabled' : '' ?>
-                                                                    <?= !$enabled ? 'data-disabled-perm="1"' : '' ?>>
+                                                                   <?= isset($data['hemocomps'][$hemocomp->id]) ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                                                 <label class="form-check-label" for="hemocomp_<?= $hemocomp->id ?>">
                                                                     <?= $hemocomp->descricao ?>
                                                                 </label>
@@ -604,7 +575,7 @@
                                                                     name="hemocomp_qty_solicitada[<?= $hemocomp->id ?>]" 
                                                                     placeholder="" min="1"
                                                                     value="<?= $qty_solicitada ?>"
-                                                                    <?= ($checked && $enabled && $readonlyCamposGerais != 'readonly') ? '' : 'disabled' ?>>
+                                                                    <?= ($checked && $enabled) ? '' : 'disabled' ?> <?= $readonlyCamposGerais ?>>
                                                             </div>
                                                         </div>
                                                         <div class="col-2">
@@ -634,16 +605,16 @@
                                         <div class="col-md-2">
                                             <div class="mb-2">
                                                 <label class="form-label">Utilizará Equipamentos?<b class="text-danger">*</b></label>
-                                                <?php $usarEquipamentos = set_value('usarEquipamentos', $data['usarEquipamentos'] ?? ''); ?>
+                                                <!-- ✅ Manter o bordered-container original aqui -->
                                                 <div class="input-group mb-2 bordered-container">
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoN" value="N"
-                                                            <?= $usarEquipamentos === 'N' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'N') ? 'checked' : '' ?> <?= $readonlyCamposGerais ?>>
                                                         <label class="form-check-label" for="eqptoN">Não</label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input" type="radio" name="usarEquipamentos" id="eqptoS" value="S"
-                                                            <?= $usarEquipamentos === 'S' ? 'checked' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                            <?= (isset($data['usarEquipamentos']) && $data['usarEquipamentos'] === 'S') ? 'checked' : '' ?>>
                                                         <label class="form-check-label" for="eqptoS" style="margin-right: 10px;">&nbsp;Sim</label>
                                                     </div>
                                                 </div>
@@ -655,7 +626,7 @@
                                                 <div class="input-group">
                                                     <select class="form-select select2-dropdown <?= $validation->hasError('eqpts') ? 'is-invalid' : '' ?>"
                                                             id="eqpts" name="eqpts[]" multiple="multiple"
-                                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?> <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                            data-placeholder="" data-allow-clear="1" <?= $validation->hasError('eqpts') ? 'disabled' : '' ?> <?= $readonlyCamposGerais ?>>
                                                         <?php
                                                         foreach ($data['equipamentos'] as $equipamento) {
                                                             $selected = in_array($equipamento->id, $data['eqpts']) ? 'selected' : '';
@@ -682,7 +653,7 @@
                                         <div class="col-md-6">
                                             <div class="mb-3">
                                                 <label for="filtro_especialidades" class="form-label">Especialidade</label>
-                                                <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                <select class="form-select select2-dropdown" id="filtro_especialidades" name="filtro_especialidades" <?= $readonlyCamposGerais ?>>
                                                     <option value="">Todas</option>
                                                     <?php foreach ($data['especialidades_med'] as $filtro): ?>
                                                         <option value="<?= $filtro->seq ?>"><?= $filtro->nome_especialidade ?></option>
@@ -694,34 +665,24 @@
                                             <div class="mb-3">
                                                 <label for="profissional" class="form-label">Equipe Cirúrgica<b class="text-danger">*</b></label>
                                                 <select class="form-select select2-dropdown <?= $validation->hasError('profissional') ? 'is-invalid' : '' ?>"
-                                                        id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1" <?= $readonlyCamposGerais == 'readonly' ? 'disabled' : '' ?>>
+                                                        id="profissional" name="profissional[]" multiple="multiple" data-placeholder="" data-allow-clear="1" <?= $readonlyCamposGerais ?>>
                                                     <?php
-                                                        $profissionaisSelecionados = set_value(
-                                                            'profissional',
-                                                            isset($data['profissional']) ? (array)$data['profissional'] : []
-                                                        );
+                                                    // Certifique-se de que $data['profissional'] está definido como um array
+                                                    $data['profissional'] = isset($data['profissional']) ? (array)$data['profissional'] : [];
 
-                                                        $profissionaisSelecionados = (array) $profissionaisSelecionados;
-                                                        $profissionaisSelecionados = array_filter($profissionaisSelecionados);
+                                                    // Certifique-se de que o array não tenha valores vazios
+                                                    $data['profissional'] = array_filter($data['profissional']);
 
-                                                        $array_selected = [];
-                                                        foreach ($data['prof_especialidades'] as $prof_espec) {
-                                                            if (
-                                                                in_array($prof_espec->pes_codigo, $profissionaisSelecionados, true)
-                                                                && !in_array($prof_espec->pes_codigo, $array_selected, true)
-                                                            ) {
-                                                                $selected = 'selected';
-                                                                $array_selected[] = $prof_espec->pes_codigo;
-                                                            } else {
-                                                                $selected = '';
-                                                            }
-
-                                                            echo '<option value="' . $prof_espec->pes_codigo . '"
-                                                                data-especie="' . $prof_espec->esp_seq . '"
-                                                                ' . $selected . '>'
-                                                                . $prof_espec->nome . ' - ' . $prof_espec->conselho .
-                                                                '</option>';
+                                                    $array_selected = [];
+                                                    foreach ($data['prof_especialidades'] as $prof_espec) {
+                                                        if (in_array($prof_espec->pes_codigo, $data['profissional'], true) && !in_array($prof_espec->pes_codigo, $array_selected, true)) {
+                                                            $selected = 'selected';
+                                                            $array_selected[] = $prof_espec->pes_codigo; // Adicione ao array de selecionados
+                                                        } else {
+                                                            $selected = '';
                                                         }
+                                                        echo '<option value="'.$prof_espec->pes_codigo.'" data-especie="'.$prof_espec->esp_seq.'" '.$selected.'>'.$prof_espec->nome.' - '.$prof_espec->conselho.'</option>';
+                                                    }
                                                     ?>
                                                 </select>
                                                 <?php if ($validation->hasError('profissional')): ?>
@@ -780,10 +741,10 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="mb-2">
-                                    <label class="form-label" for="nec_proced">Necessidades do Procedimento<b class="text-danger">*</b></label>
+                                    <label class="form-label" for="info">Necessidades do Procedimento<b class="text-danger">*</b></label>
                                     <textarea id="nec_proced" maxlength="2048" rows="3" <?= $readonlyCamposGerais ?>
                                             class="form-control <?= isset($validation) && $validation->getError('nec_proced') ? 'is-invalid' : '' ?>"
-                                            name="nec_proced"><?= trim(set_value('nec_proced', $data['nec_proced'] ?? '')) ?></textarea>
+                                            name="nec_proced"><?= isset($data['nec_proced']) ? $data['nec_proced'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('nec_proced')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('nec_proced') ?>
@@ -796,9 +757,9 @@
                             <div class="col-md-12">
                                 <div class="mb-2">
                                     <label class="form-label" for="info">Informações adicionais</label>
-                                    <textarea id="info" maxlength="500" rows="3" readonly
+                                    <textarea id="info" maxlength="500" rows="3" <?= $readonlyCamposGerais ?> disabled
                                             class="form-control <?= isset($validation) && $validation->getError('info') ? 'is-invalid' : '' ?>"
-                                            name="info"><?= set_value('info', $data['info'] ?? '') ?></textarea>
+                                            name="info"><?= isset($data['info']) ? $data['info'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('info')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('info') ?>
@@ -813,7 +774,7 @@
                                     <label class="form-label" for="obs_enf">Observações da Enfermagem</label>
                                     <textarea id="obs_enf" maxlength="500" rows="3" <?= $data['perfil_enfermagem'] ?>
                                             class="form-control <?= isset($validation) && $validation->getError('obs_enf') ? 'is-invalid' : '' ?>"
-                                            name="obs_enf"><?= trim(set_value('obs_enf', $data['obs_enf'] ?? '')) ?></textarea>
+                                            name="obs_enf"><?= isset($data['obs_enf']) ? $data['obs_enf'] : '' ?></textarea>
                                     <?php if (isset($validation) && $validation->getError('obs_enf')): ?>
                                         <div class="invalid-feedback">
                                             <?= $validation->getError('obs_enf') ?>
@@ -824,9 +785,12 @@
                         </div>
                         <div class="row g-3">
                             <div class="col-md-12">
-                                <button class="btn btn-primary mt-3" onclick="return confirma(this);">
+                                <?php if ($data['status_fila'] == 'enabled') { ?>
+                                    <!--button class="btn btn-primary mt-3" id="submit" name="submit" type="submit" value="1"-->
+                                    <button class="btn btn-primary mt-3" onclick="return confirma(this);">
                                     <i class="fa-solid fa-floppy-disk"></i> Salvar
-                                </button>
+                                    </button>
+                                <?php } ?>
                                 <a class="btn btn-warning mt-3" href="<?= base_url('mapacirurgico/exibir') ?>">
                                     <i class="fa-solid fa-arrow-left"></i> Voltar
                                 </a>
@@ -845,73 +809,20 @@
                         <input type="hidden" name="risco" value="<?= $data['risco'] ?>" />
                         <input type="hidden" name="dtrisco" value="<?= $data['dtrisco'] ?>" />
                         <input type="hidden" name="lateralidade" value="<?= $data['lateralidade'] ?>">
-                        <input type="hidden" name="proced_hidden" id="proced_hidden" />
-                        <input type="hidden" name="sala_hidden" id="sala_hidden" />
+                        <input type="hidden" name="proced_adic_hidden" id="proced_adic_hidden" />
+                        <input type="hidden" name="profissional_hidden" id="profissional_adic_hidden" />
+                        <input type="hidden" name="sala_hidden" id="sala_adic_hidden" />
                         <input type="hidden" name="status_fila" value="<?= $data['status_fila'] ?>" />
                         <input type="hidden" name="unidadeorigem" value="<?= $data['unidadeorigem'] ?>" />
+                        <input type="hidden" name="tipo_sanguineo" value="<?= $data['tipo_sanguineo'] ?>" />
                         <input type="hidden" name="perfil_enfermagem" value="<?= $data['perfil_enfermagem'] ?>" />
                         <input type="hidden" name="internacao" value="<?= $data['internacao'] ?? null ?>" />
-
-                        <?php if ($readonlyCamposGerais == 'readonly'): ?>
-                            <input type="hidden" id="cid_hidden" name="cid" value="<?= set_value('cid', $data['cid']) ?>" />
-                            <input type="hidden" id="lateralidade_hidden" name="lateralidade" value="<?= set_value('lateralidade', $data['lateralidade']) ?>" />
-                            <input type="hidden" id="posoperatorio_hidden" name="posoperatorio" value="<?= set_value('posoperatorio', $data['posoperatorio']) ?>" />
-                            <input type="hidden" id="congelacao_hidden" name="congelacao" value="<?= set_value('congelacao', $data['congelacao']) ?>" />
-                            <input type="hidden" id="complexidade_hidden" name="complexidade" value="<?= set_value('complexidade', $data['complexidade']) ?>" />
-                            <input type="hidden" id="opme_hidden" name="opme" value="<?= set_value('opme', $data['opme']) ?>" />
-                             <?php foreach ($procedAdicSelecionados as $item): ?>
-                                <input type="hidden" id="proced_adic_hidden" name="proced_adic[]" value="<?= $item ?>">
+                        <?php if ($usarHemocomponentes_disabled): ?>
+                            <input type="hidden" name="usarHemocomponentes" value="<?= $data['usarHemocomponentes'] ?>">
+                            <?php foreach ($data['hemocomp_qty_solicitada'] as $id => $quantidades): ?>
+                                <input type="hidden" name="hemocomps[<?= $id ?>]" value="1">
+                                <input type="hidden" name="hemocomp_qty_solicitada[<?= $id ?>]" value="<?= htmlspecialchars($quantidades[0]) ?>">
                             <?php endforeach; ?>
-                            <?php foreach ($profissionaisSelecionados as $item): ?>
-                                <input type="hidden" id="profissional_hidden" name="profissional[]" value="<?= $item ?>">
-                            <?php endforeach; ?>
-                            <input type="hidden" name="usarEquipamentos" value="<?= set_value('usarEquipamentos', $data['usarEquipamentos'] ?? '') ?>">
-                            <?php
-                                $equipamentosSelecionados = set_value(
-                                    'eqpts',
-                                    isset($data['eqpts']) ? (array)$data['eqpts'] : []
-                                );
-
-                                $equipamentosSelecionados = (array) $equipamentosSelecionados;
-                            ?>
-
-                            <?php foreach ($equipamentosSelecionados as $item): ?>
-                                <input type="hidden" name="eqpts[]" value="<?= esc($item) ?>">
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                        
-                       <?php
-                        $usarHemocomponentes = old('usarHemocomponentes')
-                            ?? ($data['usarHemocomponentes'] ?? '');
-
-                        $hemocompSolicitado = old('hemocomp_qty_solicitada')
-                            ?? ($data['hemocomp_qty_solicitada'] ?? []);
-
-                            //dd($usarHemocomponentes_disabled);
-                        ?>
-
-                        <?php if ($usarHemocomponentes_disabled || $readonlyCamposGerais == 'readonly'): ?>
-
-                            <input
-                                type="hidden"
-                                id="usarHemocomponentes_hidden"
-                                name="usarHemocomponentes"
-                                value="<?= esc($usarHemocomponentes) ?>" />
-
-                            <?php foreach ($hemocompSolicitado as $id => $quantidade): ?>
-
-                                <input
-                                    type="hidden"
-                                    name="hemocomps[<?= $id ?>]"
-                                    value="1">
-
-                                <input
-                                    type="hidden"
-                                    name="hemocomp_qty_solicitada[<?= $id ?>]"
-                                    value="<?= esc($quantidade) ?>">
-
-                            <?php endforeach; ?>
-
                         <?php endif; ?>
                     </form>
                 </div>
@@ -1079,24 +990,6 @@
             width: 'resolve' // Corrigir a largura
         });
 
-       /*  $('#cid').on('change', function () {
-            $('#cid_hidden').val($(this).val());
-        }); */
-        /* $('#lateralidade').on('change', function () {
-            $('#lateralidade_hidden').val($(this).val());
-        });
-        $('#posoperatorio').on('change', function () {
-            $('#posoperatorio_hidden').val($(this).val());
-        });
-        $('#congelacao').on('change', function () {
-            $('#congelacao_hidden').val($(this).val());
-        });
-        $('#complexidade').on('change', function () {
-            $('#complexidade_hidden').val($(this).val());
-        });
-        $('#opme').on('change', function () {
-            $('#opme_hidden').val($(this).val());
-        }); */
         $('#risco').change(function() {
             var selectedFilter = $(this).val();
             $('input[name="risco"]').val(selectedFilter);
@@ -1112,30 +1005,26 @@
 
         $('#eqpts').select2();
 
-        const readonlyGeral = "<?= $readonlyCamposGerais ?>" === "readonly";
-
-        if (readonlyGeral) {
-            $('#eqpts').prop('disabled', true);
+        if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
+            $('#eqpts').prop('disabled', false);
         } else {
-            if ($('input[name="usarEquipamentos"]:checked').val() === 'S') {
-                $('#eqpts').prop('disabled', false);
+            $('#eqpts').prop('disabled', true);
+        }
+
+        // Atribui um evento de mudança aos radio buttons
+        $('input[name="usarEquipamentos"]').change(function() {
+            if ($(this).val() === 'S') {
+                $('#eqpts').prop('disabled', false); // Habilita o campo eqpts
+                $('#eqpts').select2(); // Inicializa o Select2
             } else {
-                $('#eqpts').prop('disabled', true);
+                $('#eqpts').prop('disabled', true); // Desabilita o campo eqpts
+                $('#eqpts').val([]).trigger('change'); // Limpa a seleção
             }
+        });
 
-            $('input[name="usarEquipamentos"]').change(function () {
-                if ($(this).val() === 'S') {
-                    $('#eqpts').prop('disabled', false);
-                    $('#eqpts').select2();
-                } else {
-                    $('#eqpts').prop('disabled', true);
-                    $('#eqpts').val([]).trigger('change');
-                }
-            });
-
-            if ($('#eqpts').prop('disabled')) {
-                $('#eqpts').val([]).trigger('change');
-            }
+        // Se a validação falhar, recarrega os valores
+        if ($('#eqpts').prop('disabled')) {
+            $('#eqpts').val([]).trigger('change'); // Limpa a seleção se estiver desabilitado
         }
 
         //--------------Hemocomponentes------------------------------
@@ -1167,30 +1056,46 @@
         //--------------------------------------------------------
 
         //------------------------ Filtro de salas cirurgicas baseado no filtro selecionado ----------------
-       function updateSalasCirurgicas(selectedFilter) {
-            // Ao trocar o centro cirúrgico, limpa completamente a seleção atual
+        
+        function updateSalasCirurgicas(selectedFilter) {
+            // Mantenha as opções selecionadas
+            var selectedValues = $('#sala').val() || [];
+
+            // Esvaziar o select
             $("#sala").empty();
 
-            // Adiciona option vazia (importante para Select2 + placeholder)
-            $("#sala").append(new Option('', '', false, false));
+            // Adicione as opções que já estão selecionadas primeiro para garantir que sejam visíveis
+            var addedOptions = [];
+            
+            <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
+                var value = '<?= $sala->seqp ?>';
+                var text = '<?= $sala->nome  ?>';
+                var centrocirurgico = '<?= $sala->unf_seq ?>';
+                
+                /* // Se a sala já está selecionada, adicione-a ao dropdown
+                if (selectedValues.includes(value) && !addedOptions.includes(value)) {
+                    var option = new Option(text, value, true, true);
+                    $("#sala").append(option);
+                    addedOptions.push(value);
+                } */
+            <?php endforeach; ?>
 
-            // Adiciona somente as salas do centro cirúrgico selecionado
+            // Adicione as opções que correspondem ao filtro (mas não estão selecionadas)
             <?php foreach ($data['salas_cirurgicas'] as $sala): ?>
                 var value = '<?= $sala->seqp ?>';
                 var text = '<?= $sala->nome ?>';
                 var centrocirurgico = '<?= $sala->unf_seq ?>';
-
-                if (!selectedFilter || selectedFilter === centrocirurgico) {
+                
+                // Filtra as salas que pertencem ao centro cirúrgico selecionado
+                if ((!selectedValues.includes(value)) && (!addedOptions.includes(value)) && (!selectedFilter || selectedFilter === centrocirurgico)) {
                     var option = new Option(text, value, false, false);
                     $("#sala").append(option);
+                    addedOptions.push(value);
                 }
             <?php endforeach; ?>
 
-            // Limpa seleção anterior e atualiza visualmente o Select2
-            $("#sala").val(null).trigger('change');
-
-            // Mantém hidden sincronizado
-            $("#sala_hidden").val('');
+            // Atualize a seleção do Select2 para as opções visíveis
+            $('#sala').val(selectedValues).trigger('change');
         }
 
         // Atualiza a lista de salas baseado no filtro selecionado
@@ -1262,24 +1167,24 @@
         // Inicializa os profissionais adicionais já selecionados
         updateProfEspecialidades($('#filtro_especialidades').val());
 
-        /* $('#profissional').on('change', function() {
+        $('#profissional').on('change', function() {
             $('#profissional_hidden').val($(this).val());
         });
 
         // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
-        $('#profissional_hidden').val($('#profissional').val()); */
+        $('#profissional_hidden').val($('#profissional').val());
 
         // --------------------- Fim do filtro de profissionais -----------------------------------------------------------------------
 
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
-        /* $('#proced_adic').on('change', function() {
+        $('#proced_adic').on('change', function() {
             $('#proced_adic_hidden').val($(this).val());
         });
 
         // Inicializa o valor do campo hidden, caso existam valores pré-selecionados
         $('#proced_adic_hidden').val($('#proced_adic').val());
-         */
+        
         // Procedimentos Adicionais  ----------------------------------------------------------------------------
 
        /*  $('#idForm').submit(function() {
@@ -1299,45 +1204,34 @@
         const radios = document.querySelectorAll('input[name="usarHemocomponentes"]');
 
         function toggleHemocompSection() {
-            const usarHemocomponentesAtual =
-                document.querySelector('input[name="usarHemocomponentes"]:checked')?.value
-                || document.getElementById('usarHemocomponentes_hidden')?.value
-                || '';                
+            const selected = document.querySelector('input[name="usarHemocomponentes"]:checked');
 
             document.querySelectorAll('.hemocomp-checkbox').forEach(cb => {
                 const parentRow = cb.closest('.row');
                 const qtySolicitada = parentRow.querySelector('[id^="qty_solicitada_"]');
                 const qtyLiberada = parentRow.querySelector('[id^="qty_liberada_"]');
 
-                const readonlyGeral = "<?= $readonlyCamposGerais ?>" === "readonly";
-
-                const bloquearTudoHemocomp =
-                    <?= $usarHemocomponentes_disabled ? 'true' : 'false' ?>;
-
-                if (
-                    usarHemocomponentesAtual === 'S' &&
-                    !readonlyGeral &&
-                    !bloquearTudoHemocomp
-                ) {
+                if (selected && selected.value === 'S') {
                     if (!cb.hasAttribute('data-disabled-perm')) {
                         cb.disabled = false;
                     }
 
-                   const possuiLiberado =
-                        qtyLiberada.value !== '' &&
-                        !isNaN(qtyLiberada.value);
-
-                    if (cb.checked && !cb.disabled && !possuiLiberado) {
+                    // Só desabilita o campo solicitada se o checkbox não estiver marcado
+                    if (cb.checked && !cb.disabled) {
                         qtySolicitada.disabled = false;
                     } else {
                         qtySolicitada.disabled = true;
+                        // ⚠️ Aqui NÃO limpamos o valor! Mantemos o que veio do PHP
                     }
 
                     qtyLiberada.disabled = true;
 
                 } else {
+                    cb.checked = false;
                     cb.disabled = true;
+                    qtySolicitada.value = '';
                     qtySolicitada.disabled = true;
+                    qtyLiberada.value = '';
                     qtyLiberada.disabled = true;
                 }
             });
@@ -1348,16 +1242,10 @@
             checkbox.addEventListener('change', function () {
                 const parentRow = this.closest('.row');
                 const qtySolicitada = parentRow.querySelector('[id^="qty_solicitada_"]');
-                const qtyLiberada =
-                    parentRow.querySelector('[id^="qty_liberada_"]');
-
-                const possuiLiberado =
-                    qtyLiberada.value !== '' &&
-                    !isNaN(qtyLiberada.value);
-
-                if (this.checked && !this.disabled && !possuiLiberado) {
+                if (this.checked && !this.disabled) {
                     qtySolicitada.disabled = false;
                 } else {
+                    qtySolicitada.value = '';
                     qtySolicitada.disabled = true;
                 }
             });

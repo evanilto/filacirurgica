@@ -1845,7 +1845,7 @@ class MapaCirurgico extends ResourceController
 
         $mapa = $this->getMapaCirurgico(['idmapa' => $id])[0];
 
-        //die(var_dump($mapa));
+        //dd($mapa);
 
         $data = [];
         //$data['ordemfila'] = $mapa->ordem_fila;
@@ -1854,7 +1854,7 @@ class MapaCirurgico extends ResourceController
         $data['idmapa'] = $mapa->id;
         $data['idlistaespera'] = $mapa->idlista;
         //$data['status_fila'] = ($mapa->dthrsuspensao || $mapa->dthrtroca || $mapa->dthrsaidacentrocirurgico || !HUAP_Functions::tem_permissao('mapacirurgico-alterar')) ? 'disabled' : 'enabled';
-        $data['status_fila'] = TRUE;
+        $data['status_fila'] = $mapa->status_fila; //TRUE;
         $data['perfil_enfermagem'] = !HUAP_Functions::tem_permissao('mapacirurgico-enfermagem') ? 'readonly' : '';
         //$data['dtcirurgia'] = date('d/m/Y H:i', strtotime('+3 days'));
         $data['dtcirurgia'] = DateTime::createFromFormat('Y-m-d H:i:s', $mapa->dthrcirurgia)->format('d/m/Y');
@@ -1931,6 +1931,13 @@ class MapaCirurgico extends ResourceController
         //$data['usarHemocomponentes'] = empty($data['hemocomps']) ? 'N' : 'S';
         $data['usarHemocomponentes'] = $mapa->indhemoderivados;
 
+        /*
+        $somenteCentroSala = false;
+        if (!in_array($mapa->status_fila, ['PacienteSolicitado', 'Programada'], true)) {
+            $somenteCentroSala = true;
+        }
+        $data['somenteCentroSala'] = $somenteCentroSala; */
+
        //dd($data);
         
        return view('layouts/sub_content', ['view' => 'mapacirurgico/form_atualiza_mapacirurgico',
@@ -1951,7 +1958,7 @@ class MapaCirurgico extends ResourceController
 
         $this->data = $this->request->getVar();
 
-        $this->data['status_fila'] = TRUE;
+        //$this->data['status_fila'] = TRUE;
 
         //dd($this->data);
 
@@ -2367,6 +2374,8 @@ class MapaCirurgico extends ResourceController
         } else {
 
             session()->setFlashdata('error', $this->validator);
+
+            //dd($this->validator->getErrors());
 
             $this->carregaMapa();
 
@@ -3750,6 +3759,7 @@ class MapaCirurgico extends ResourceController
                     'qtd_solicitada' => $data['qtd_solicitada'][$id] ?? null,
                     'qtd_liberada' => $data['qtd_liberada'][$id] ?? null,
                     //'codigo' => $data['codigo'][$id] ?? null,
+                    'observacao' => $data['observacao'][$id] ?? null,
                     'inddisponibilidade' => !empty($data['inddisponibilidade'][$id]),
                 ];
             }

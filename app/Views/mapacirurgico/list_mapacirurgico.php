@@ -806,16 +806,16 @@
                     atualizarhorarios.disabled = false;
                     atualizarhorarios.removeAttribute("disabled");
 
-                    /* editar.disabled = false;
-                    editar.removeAttribute("disabled"); */
+                    editar.disabled = false;
+                    editar.removeAttribute("disabled");
 
                 }
 
                 //if (!["Suspensa", "Cancelada", "TrocaPaciente", "Realizada", "SuspensaAdministrativamente"].includes(statuscirurgia)) {
-                if ((["PacienteSolicitado", "Programada"].includes(statuscirurgia)) && tempermissaoalterar) {
+                /* if ((["PacienteSolicitado", "Programada"].includes(statuscirurgia)) && tempermissaoalterar) {
                     editar.disabled = false;
                     editar.removeAttribute("disabled");
-                }
+                } */
 
                  if (tempermissaotransfusao) {
                     reqtransf.disabled = false;
@@ -1226,6 +1226,7 @@
                     <strong>Leito:</strong> ${verificarValor(paciente.leito)}<br>
                 `);
                 $('#colunaEsquerda2').html(`
+                    <strong>Ordem na Fila:</strong> ${verificarValor(dados.ordem)}<br>
                     <strong>Centro Cirúrgico:</strong> ${verificarValor(dados.centrocir)} ${verificarOutroValor(dados.sala)}<br>
                     <strong>Especialidade:</strong> ${dados.especialidade}<br>
                     <strong>Fila:</strong> ${dados.fila}<br>
@@ -1254,7 +1255,6 @@
                     <strong>Necessidades do Procedimento:</strong> ${verificarValor(dados.necesspro)}<br>
                     <strong>Informações Adicionais:</strong> ${verificarValor(dados.infoadic)}<br>
                     <strong>Observações da Enfermagem:</strong> ${verificarValor(dados.obsenf)}<br>
-                    <strong>Ordem na Fila:</strong> ${verificarValor(dados.ordem)}<br>
                 `);
 
                 $('#modalDetalhes').modal('show');
@@ -1355,8 +1355,8 @@
                 'copy',
                 'csv',
                 'excel',
-                'pdf',
-                'print' 
+                /* 'pdf',
+                'print'  */
             ] } },
             "deferRender": true,
                 initComplete: function() {
