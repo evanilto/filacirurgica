@@ -10,7 +10,12 @@ BACKUP_FILE="$BACKUP_DIR/backup_log_$DATE.tar.gz"
 LOG_FILE="$BACKUP_DIR/log_backup_$DATE.txt"
 
 # Garante que o diretório de backup existe
-mkdir -p "$BACKUP_DIR"
+mkdir -p "$BACKUP_DIR" 2>> /tmp/backup_error.log
+
+if [ $? -ne 0 ]; then
+    echo "Erro ao criar diretório $BACKUP_DIR" >> /tmp/backup_error.log
+    exit 1
+fi
 
 # Função de log
 log() {
